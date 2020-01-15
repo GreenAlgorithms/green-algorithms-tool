@@ -1,0 +1,4 @@
+index,,CPU/GPU/TPU,"Must match the models in ""TDP_cpu"" or ""TDP_gpu""",
+provider,providerName,type,model,source
+csd3,CSD3,CPU,Intel(R) Xeon(R) Gold 6142,CSD3 support team
+csd3,CSD3,GPU,Tesla P100 PCIe 16GB,CSD3 support team

@@ -1,0 +1,53 @@
+index,in Watt,
+model,TDP,source
+Intel(R) Xeon(R) Gold 6142,150,https://ark.intel.com/content/www/us/en/ark/products/120487/intel-xeon-gold-6142-processor-22m-cache-2-60-ghz.html
+Core i7-10700K,125,https://www.techpowerup.com/cpudb/
+Core i5-10600K,95,https://www.techpowerup.com/cpudb/
+Core i5-10600,65,https://www.techpowerup.com/cpudb/
+Core i7-10700,65,https://www.techpowerup.com/cpudb/
+Core i5-10400,65,https://www.techpowerup.com/cpudb/
+Core i3-10300,62,https://www.techpowerup.com/cpudb/
+Core i3-10100,65,https://www.techpowerup.com/cpudb/
+Ryzen 7 3700X,65,https://www.techpowerup.com/cpudb/
+Ryzen 9 3950X,105,https://www.techpowerup.com/cpudb/
+Ryzen 5 3600,65,https://www.techpowerup.com/cpudb/
+Core i5-10500,65,https://www.techpowerup.com/cpudb/
+Core i9-10900KF,105,https://www.techpowerup.com/cpudb/
+A8-7680,45,https://www.techpowerup.com/cpudb/
+Ryzen 5 3400G,65,https://www.techpowerup.com/cpudb/
+Ryzen 7 3800X,105,https://www.techpowerup.com/cpudb/
+Core i9-9900K,95,https://www.techpowerup.com/cpudb/
+Ryzen 9 3900X,125,https://www.techpowerup.com/cpudb/
+Ryzen 5 3600X,95,https://www.techpowerup.com/cpudb/
+Core i3-10320,91,https://www.techpowerup.com/cpudb/
+Core i3-10350K,91,https://www.techpowerup.com/cpudb/
+Ryzen 5 1600,65,https://www.techpowerup.com/cpudb/
+Ryzen 5 2600,65,https://www.techpowerup.com/cpudb/
+Core i9-10900XE,165,https://www.techpowerup.com/cpudb/
+Core i5-9400F,65,https://www.techpowerup.com/cpudb/
+Ryzen 3 3200G,65,https://www.techpowerup.com/cpudb/
+FX-8350,125,https://www.techpowerup.com/cpudb/
+Xeon Platinum 9282,400,https://www.techpowerup.com/cpudb/
+Core i3-9100F,65,https://www.techpowerup.com/cpudb/
+Ryzen 7 2700X,105,https://www.techpowerup.com/cpudb/
+FX-6300,95,https://www.techpowerup.com/cpudb/
+Core i7-9700K,95,https://www.techpowerup.com/cpudb/
+Core i7-9700F,65,https://www.techpowerup.com/cpudb/
+Core i9-10980XE,165,https://www.techpowerup.com/cpudb/
+Core i3-9100,65,https://www.techpowerup.com/cpudb/
+Ryzen 3 2200G,65,https://www.techpowerup.com/cpudb/
+Core i5-3570K,77,https://www.techpowerup.com/cpudb/
+Core i9-10920XE,165,https://www.techpowerup.com/cpudb/
+Athlon 3000G,35,https://www.techpowerup.com/cpudb/
+Ryzen 5 3500U,15,https://www.techpowerup.com/cpudb/
+Ryzen 3 3200U,15,https://www.techpowerup.com/cpudb/
+Core i5-9600KF,95,https://www.techpowerup.com/cpudb/
+Ryzen Threadripper 2990WX,250,https://www.techpowerup.com/cpudb/
+Core i7-6700K,95,https://www.techpowerup.com/cpudb/
+Core i7-4930K,130,https://www.techpowerup.com/cpudb/
+Core 2 Quad Q6600 (95W),95,https://www.techpowerup.com/cpudb/
+Core i5-9500,65,https://www.techpowerup.com/cpudb/
+A9-9425 SoC,15,https://www.techpowerup.com/cpudb/
+Core i9-9900X,165,https://www.techpowerup.com/cpudb/
+Core i5-9400,65,https://www.techpowerup.com/cpudb/
+Core i9-10940XE,165,https://www.techpowerup.com/cpudb/

@@ -1,0 +1,11 @@
+index,,,between 0 and 100,
+provider,providerName,datacenter,offsetRatio,source
+gcp,Google Cloud Platform,default,100,
+aws,Amazon Web Services,default,0,
+aws,Amazon Web Services,USA-Portland,100,
+aws,Amazon Web Services,CAN-Montreal,100,
+aws,Amazon Web Services,DEU-Frankfurt,100,
+aws,Amazon Web Services,IRL-Dublin,100,
+aws,Amazon Web Services,USA-Seattle,100,
+azure,Azure,default,100,
+csd3,CSD3,default,0,
