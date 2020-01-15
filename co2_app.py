@@ -58,11 +58,12 @@ dcc.Dropdown(
     dcc.Input(value=1, type='number',id="numcpu"),
 
     #box for PUE input
+    #default taken from 2018 global average for data centres - Rhonda Ascierto. 2018. Uptime Institute Global Data Center Survey. Technical report, Uptime Institute.
     html.Label('Power Usage Efficiency'),
-    dcc.Input(value=1.5,min=1, type='number',id="PUE"),
+    dcc.Input(value=1.58,min=1, type='number',id="PUE"),
 
     #input for time in hours
-    html.Label('Time (hours)'),
+    html.Label('Runtime (hours)'),
      dcc.Input(value=1, type='number',id="hours"),
     #haven't done memory yet...
 
@@ -94,10 +95,22 @@ def update_output(numcpus,PUEy,time,offsets,wattage,loc_carbon):
     print(numcpus)
     print(wattage)
     print(PUEy)
+    #convert to kg/kwH
+    loc_carbon=loc_carbon*0.001
     #changing by offsets, if 100% offset then should be zero
     co2eq=energy*(100-offsets)*0.01*loc_carbon
+    #convert to pounds
+    co2eqlbs=co2eq*0.453592
     #final return statement of both outputs
-    return 'Energy Consumed is {:10.2f} KWh, \nCO2 equivalent is {:10.2f} KgCO2eq '.format(energy,co2eq)
+    #flight from NY to San Fran pounds of CO2
+    co2_flight_ny_sf=1984#in lbs (from stubell)
+    num_flights_equivalent=float(co2eqlbs)/co2_flight_ny_sf
+    if num_flights_equivalent<=1:
+        #convert to percentage
+        num_flights_equivalent=num_flights_equivalent*100
+        return 'Energy Consumed is {:10.2f} KWh, \nCO2    equivalent is {:10.2f} KgCO2eq, this is {:10.2f}% of one person flight from NY to SF'.format(energy,co2eq,     num_flights_equivalent)
+    else:
+        return 'Energy Consumed is {:10.2f} KWh, \nCO2 equivalent is {:10.2f} KgCO2eq, this is {:10.2f} times a one person flight from NY to SF'.format(energy,co2eq,num_flights_equivalent)
 
 
 if __name__ == '__main__':
