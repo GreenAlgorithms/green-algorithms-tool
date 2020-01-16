@@ -1,3 +1,4 @@
+"Columns names are used as index, and must match the 'provider' variable",,
 gcp,aws,azure
 TWN-Changhua,USA-Columbus,CHN-HongKong
 CHN-HongKong,USA-Ashburn,SGP-Singapore

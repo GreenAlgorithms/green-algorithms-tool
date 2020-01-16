@@ -1,0 +1,6 @@
+index,,,
+provider,providerName,platformType,platformName
+csd3,"CSD3 (University of Cambridge, UK)",localServer,Local server
+gcp,Google Cloud Platform,cloudComputing,Cloud computing
+aws,Amazon Web Services,cloudComputing,Cloud computing
+azure,Azure,cloudComputing,Cloud computing
