@@ -1,0 +1,4 @@
+index,,,>1,
+provider,providerName,datacenter,PUE,source
+default,,,1.58,"2018 global average for data centres - Rhonda Ascierto. 2018. Uptime Institute Global Data Center Survey. Technical report, Uptime Institute"
+csd3,CSD3,default,1.15,CSD3 support team (PUE of West Cambridge Data Centre)
