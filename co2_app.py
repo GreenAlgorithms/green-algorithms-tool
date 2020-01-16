@@ -228,52 +228,51 @@ def update_output(n_clicks, coreType, coreModel, n_cores, runTime, location, PUE
         output += "runTime: {} \n".format(runTime)
         output += "{}: {} \n".format(location, impactValue)
         output += "PUE: {} \n".format(PUE)
-
+        #dividing by 1000 converts to kW.. so this is in g
         energy_consumption = runTime * PUE * n_cores * corePower * impactValue / 1000
+        #convert to kg then to pounds
+        energy_consumption_lbs=energy_consumption*0.453592/1000
 
+        ### CONTEXT ###
+
+        #convert to % of flight
+        co2_flight_ny_sf=1984# in lbsCO2eq (from stubell)
+        car_co2=404# grams of CO2 per mile from EPA US https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle
+        #if job is too small to compare with flight then look at car mileage (can change this)
+        if energy_consumption_lbs > co2_flight_ny_sf*0.10:
+            #percentage of flight
+            context=round(float(energy_consumption_lbs)/co2_flight_ny_sf,2)
+            if context<1:
+                #use percentage
+                context=context*100
+                context_str="This is {}% of a one passenger flight from New York to San Franciso".format(context)
+            else:
+                #use multiples
+                context_str="This is {} times larger than a one passenger flight from New York to San Franciso".format(context)
+        #look at smaller co2 context such as car mileage
+        else:
+            # g of job co2 / g average car co2 -> driving average car for this many km (note 1.60934 km per mile)
+            context=round(energy_consumption*1.60934/(car_co2),2)
+            context_str="This is the same as driving an average car for {} km".format(context)
+
+        #formatting
+        energy_consumption=round(energy_consumption,2)
+
+        #outputting
         output += "/// Energy Consumption: {:.2f}g CO2e".format(energy_consumption)
 
         output2 = f'''
         Summary of the parameters:
         - {n_cores} {coreModel}: {corePower} W
-        - run time: {runTime}
+        - run time: {runTime} hours
         - {location}: {impactValue} g CO2e / kWh
         - PUE: {PUE}
 
         **Your carbon footprint is {energy_consumption} g CO2e**
+
+        **{context_str}**
         '''
         return output2
-
-# def update_output(n_clicks, numcpus,PUEy,time,wattage,loc_carbon):
-#     if n_clicks is None:
-#         raise PreventUpdate
-#     else:
-#
-#         # energy here
-#         energy=float(time)*float(PUEy)*float(numcpus)*float(wattage)
-#         energy=energy/1000.0
-#         print(time)
-#         print(numcpus)
-#         print(wattage)
-#         print(PUEy)
-#         # convert to kg/kwH
-#         loc_carbon=loc_carbon*0.001
-#         # changing by offsets, if 100% offset then should be zero
-#         offsets=0
-#         co2eq=energy*(100-offsets)*0.01*loc_carbon
-#         # convert to pounds
-#         co2eqlbs=co2eq*0.453592
-#         # final return statement of both outputs
-#         # flight from NY to San Fran pounds of CO2
-#         co2_flight_ny_sf=1984#in lbs (from stubell)
-#         num_flights_equivalent=float(co2eqlbs)/co2_flight_ny_sf
-#         if num_flights_equivalent<=1:
-#             # convert to percentage
-#             num_flights_equivalent=num_flights_equivalent*100
-#             return 'Energy Consumed is {:10.2f} KWh, \nCO2    equivalent is {:10.2f} KgCO2eq, this is {:10.2f}% of one person flight from NY to SF'.format(energy,co2eq,     num_flights_equivalent)
-#         else:
-#             return 'Energy Consumed is {:10.2f} KWh, \nCO2 equivalent is {:10.2f} KgCO2eq, this is {:10.2f} times a one person flight from NY to SF'.format(energy,co2eq,num_flights_equivalent)
-
 
 if __name__ == '__main__':
     # allows app to update when code is changed!
