@@ -34,7 +34,6 @@ Core i9-9900K,95,https://www.techpowerup.com/cpudb/
 Core i9-9900X,165,https://www.techpowerup.com/cpudb/
 FX-6300,95,https://www.techpowerup.com/cpudb/
 FX-8350,125,https://www.techpowerup.com/cpudb/
-Xeon Gold 6142,150,https://ark.intel.com/content/www/us/en/ark/products/120487/intel-xeon-gold-6142-processor-22m-cache-2-60-ghz.html
 Ryzen 3 2200G,65,https://www.techpowerup.com/cpudb/
 Ryzen 3 3200G,65,https://www.techpowerup.com/cpudb/
 Ryzen 3 3200U,15,https://www.techpowerup.com/cpudb/
@@ -50,4 +49,7 @@ Ryzen 7 3800X,105,https://www.techpowerup.com/cpudb/
 Ryzen 9 3900X,125,https://www.techpowerup.com/cpudb/
 Ryzen 9 3950X,105,https://www.techpowerup.com/cpudb/
 Ryzen Threadripper 2990WX,250,https://www.techpowerup.com/cpudb/
+Xeon E7-8867 v3,165,https://ark.intel.com/content/www/us/en/ark/products/84681/intel-xeon-processor-e7-8867-v3-45m-cache-2-50-ghz.html
+Xeon Gold 6142,150,https://ark.intel.com/content/www/us/en/ark/products/120487/intel-xeon-gold-6142-processor-22m-cache-2-60-ghz.html
+Xeon L5640 ,60,https://ark.intel.com/content/www/us/en/ark/products/47926/intel-xeon-processor-l5640-12m-cache-2-26-ghz-5-86-gt-s-intel-qpi.html
 Xeon Platinum 9282,400,https://www.techpowerup.com/cpudb/
