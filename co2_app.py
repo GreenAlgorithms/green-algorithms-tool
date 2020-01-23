@@ -85,6 +85,9 @@ for col in datacenters_df.columns:
 providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
                                   sep=',', skiprows=1)
 
+### MEMORY POWER CONSUMPTION ###
+# In W/GB, for DDR4
+memoryPower = 0.3725
 
 ############
 # DASH APP #
@@ -142,7 +145,16 @@ app.layout = html.Div(
 
                 dcc.Dropdown(id="coreType_dropdown", value = 'CPU'),
 
-                dcc.Dropdown(id = "coreModel_dropdown")]),
+                dcc.Dropdown(id = "coreModel_dropdown"),
+
+                html.Div(style = {'display': 'none'},
+                         children = [
+                             html.Label('What is the TDP of your computing core (in W)? (easily accessible online)'),
+                             dcc.Input(type='number',id="tdp_input",value=95)],
+                         id = "tdp_div"
+                         ),
+            ]
+        ),
 
         ### NUMBER OF CORES ###
 
@@ -152,6 +164,16 @@ app.layout = html.Div(
                 html.Label('Number of Cores'),
                 dcc.Input(type='number',
                           id="numberCores_input",
+                          value=1)]),
+
+        ### MEMORY ###
+
+        html.Div(
+            style={'columnCount': 1, 'padding': 10},
+            children=[
+                html.Label('Memory requested (in GB)'),
+                dcc.Input(type='number',
+                          id="memory_input",
                           value=1)]),
 
         ### RUN TIME ###
@@ -237,6 +259,7 @@ def display_provider(selected_platform):
     else:
         return {'display': 'none'}
 
+# This callback updates the choice of providers depending on the platform
 @app.callback(
     Output('provider_dropdown', 'options'),
     [Input('platformType_dropdown', 'value')])
@@ -246,6 +269,7 @@ def set_providers_options(selected_platform):
 
 ### COMPUTING CORES ###
 
+# This callback updates the choice of CPUs/GPUs available
 @app.callback(
     Output('coreType_dropdown', 'options'),
     [Input('provider_dropdown', 'value'),
@@ -269,7 +293,17 @@ def set_coreModels_options(selected_coreType,selected_provider,selected_platform
     else:
         availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
                 hardware_df.provider == selected_provider), 'model'].tolist())
-    return [{'label': k, 'value': k} for k in availableOptions]
+    return [{'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions))+[("Other","other")]]
+
+# This callback shows or hide the TDP input
+@app.callback(
+    Output('tdp_div', 'style'),
+    [Input('coreModel_dropdown', 'value')])
+def display_provider(selected_coreModel):
+    if selected_coreModel == "other":
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
 
 ### LOCATION ###
 
@@ -361,18 +395,19 @@ def display_pue_input(answer_pue):
     [State(component_id="coreType_dropdown", component_property="value"),
      State(component_id="coreModel_dropdown", component_property="value"),
      State(component_id="numberCores_input", component_property="value"),
+     State(component_id="tdp_input", component_property="value"),
+     State(component_id="memory_input", component_property="value"),
      State(component_id="runTime_input", component_property="value"),
      State(component_id="location_city_dropdown", component_property="value"),
      State(component_id="PUE_input", component_property="value"),
      State('platformType_dropdown', 'value')
      ])
-def update_output(n_clicks, coreType, coreModel, n_cores, runTime, location, PUE, selected_platform):
+def update_output(n_clicks, coreType, coreModel, n_cores, tdp, memory, runTime, location, PUE, selected_platform):
     if n_clicks is None:
         # We only display the output when the button is clicked
         raise PreventUpdate
 
     else:
-        corePower = cores_dict[coreType][coreModel]
         impactValue = impact_df.loc[impact_df.location == location, "impact"].values[0]
 
         if selected_platform == 'personalComputer':
@@ -380,8 +415,13 @@ def update_output(n_clicks, coreType, coreModel, n_cores, runTime, location, PUE
         else:
             PUE_used = PUE
 
+        if coreModel == 'other':
+            corePower = tdp
+        else:
+            corePower = cores_dict[coreType][coreModel]
+
         # dividing by 1000 converts to kW.. so this is in g
-        energy_consumption = runTime * PUE_used * n_cores * corePower * impactValue / 1000
+        energy_consumption = runTime * PUE_used * (n_cores * corePower + memory * memoryPower) * impactValue / 1000
         # convert to kg then to pounds
         energy_consumption_lbs=energy_consumption*0.453592/1000
 
@@ -413,7 +453,8 @@ def update_output(n_clicks, coreType, coreModel, n_cores, runTime, location, PUE
         #outputting
         output = f'''
         Summary of the parameters:
-        - {n_cores} {coreModel}: {corePower} W
+        - {n_cores} {coreType} {coreModel}: {corePower} W
+        - {memory} GB of memory: {memory * memoryPower} W
         - run time: {runTime} hours
         - {location}: {impactValue} g CO2e / kWh
         - PUE: {PUE_used}
