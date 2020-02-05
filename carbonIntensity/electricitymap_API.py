@@ -112,7 +112,7 @@ elif choiceMethod == 'custom':
 
         time.sleep(3600)
 
-        for locationCode in set(locationData.location):
+        for locationCode in set(locationData.API_code):
 
             response = requests.get(
                 'https://api.co2signal.com/v1/latest',
@@ -128,7 +128,7 @@ elif choiceMethod == 'custom':
                 response2 = response.json()
                 if 'carbonIntensity' in response2['data']:
                     f.write("{}\n".format(locationCode))
-                    locationData.loc[locationData.location == locationCode, 'carbonIntensity'] = response2['data']['carbonIntensity']
+                    locationData.loc[locationData.API_code == locationCode, 'carbonIntensity'] = response2['data']['carbonIntensity']
                 else:
                     f.write("{} not found\n".format(locationCode))
                     print("{} not found\n".format(locationCode))
@@ -152,7 +152,9 @@ elif choiceMethod == 'custom':
 
         f.write("\n\nExport")
         print("\n\nExport")
-        locationData.to_csv(os.path.join(data_dir, "electricitymapData.csv"), sep="|", index=False)
+        locationData.drop(['API_code'],
+                          axis=1).to_csv(os.path.join(data_dir, "electricitymapData.csv"),
+                                         sep="|", index=False)
 
 elif choiceMethod == 'just1':
 

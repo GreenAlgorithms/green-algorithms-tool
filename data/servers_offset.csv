@@ -1,11 +1,7 @@
 index,,between 0 and 100,
 provider,datacenter,offsetRatio,source
 gcp,default,100,
-aws,default,0,
-aws,USA-Portland,100,
-aws,CAN-Montreal,100,
-aws,DEU-Frankfurt,100,
-aws,IRL-Dublin,100,
-aws,USA-Seattle,100,
+aws,default,100,
 azure,default,100,
 csd3,default,0,
+baker,default,0,

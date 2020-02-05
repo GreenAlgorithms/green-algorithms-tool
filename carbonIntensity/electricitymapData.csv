@@ -1,117 +1,116 @@
 location|continentName|countryName|regionName|carbonIntensity
-AM|Asia|Armenia|Any|244.6060606060606
-AR|South America|Argentina|Any|322.1146428475745
-AT|Europe|Austria|Any|174.7065084424955
-AUS-NSW|Oceania|Australia|New South Wales|668.9897923426428
-AUS-QLD|Oceania|Australia|Queensland|733.041468737273
-AUS-SA|Oceania|Australia|South|243.71048187127815
-AUS-TAS|Oceania|Australia|Tasmania|259.2401174416256
-AUS-VIC|Oceania|Australia|Victoria|679.6928421375914
-AW|North America|Aruba|Any|563.3655335710491
-AX|Europe|Aland Islands|Any|45.478226341758564
-BA|Europe|Bosnia and Herzegovina|Any|632.6183249016301
-BE|Europe|Belgium|Any|197.29477316386993
-BG|Europe|Bulgaria|Any|356.6250221800808
-BO|South America|Bolivia, Plurinational State of|Any|402.65028579113715
-BR-CS|South America|Brazil|Central|86.79104562892046
-BR-N|South America|Brazil|North|149.15050749504934
-BR-NE|South America|Brazil|North-East|176.8042537327127
-BR-S|South America|Brazil|South|105.53469789269728
-CA-AB|North America|Canada|Alberta|517.6895835300784
-CA-NS|North America|Canada|Nova Scotia|612.2530720908942
-CA-ON|North America|Canada|Ontario|51.7581205372449
-CA-PE|North America|Canada|Prince Edward Island|256.50970873786406
-CA-YT|North America|Canada|Yukon|163.5433426257799
-CR|North America|Costa Rica|Any|77.03926368850415
-CY|Asia|Cyprus|Any|577.751256281407
-CZ|Europe|Czechia|Any|478.07220299943816
-DE|Europe|Germany|Any|203.00533856401927
-DK-DK1|Europe|Denmark|West Denmark|200.23070916205162
-DK-DK2|Europe|Denmark|East Denmark|161.08234082746827
-DO|North America|Dominican Republic|Any|527.2980477029831
-EE|Europe|Estonia|Any|446.2163154259871
-ES|Europe|Spain|Any|102.1110361487544
-FI|Europe|Finland|Any|190.36662551040584
-FO|Europe|Faroe Islands|Any|333.80784144765187
-FR|Europe|France|Any|59.09543212352657
-GB|Europe|United Kingdom|Great Britain|273.7113969672998
-GB-NIR|Europe|United Kingdom|Northern Ireland|410.10049426733843
-GE|Asia|Georgia|Any|303.27319190838375
-GT|North America|Guatemala|Any|395.54588373048995
-HN|North America|Honduras|Any|316.6783671789386
-HU|Europe|Hungary|Any|257.9892420638507
-IE|Europe|Ireland|Any|436.9474022982127
+AM|Asia|Armenia|Any|238.18539325842696
+AR|South America|Argentina|Any|365.3952182259523
+AT|Europe|Austria|Any|185.3321278245844
+AU-NSW|Oceania|Australia|New South Wales|769.9378579553802
+AU-QLD|Oceania|Australia|Queensland|784.3943539602166
+AU-SA|Oceania|Australia|South|379.7022936340095
+AU-TAS|Oceania|Australia|Tasmania|322.9384544394713
+AU-VIC|Oceania|Australia|Victoria|731.4564139882939
+AW|North America|Aruba|Any|514.1324051034916
+AX|Europe|Aland Islands|Any|37.520219455749164
+BA|Europe|Bosnia and Herzegovina|Any|510.7215248721525
+BE|Europe|Belgium|Any|275.2898805889581
+BG|Europe|Bulgaria|Any|393.24052415512665
+BO|South America|Bolivia, Plurinational State of|Any|396.60417510309657
+BR-CS|South America|Brazil|Central|81.76047686649866
+BR-N|South America|Brazil|North|145.61630018843152
+BR-NE|South America|Brazil|North-East|186.21601253326412
+BR-S|South America|Brazil|South|99.46709105343766
+CA-AB|North America|Canada|Alberta|520.5104581165187
+CA-NS|North America|Canada|Nova Scotia|503.23466877231044
+CA-ON|North America|Canada|Ontario|56.72092732442762
+CA-PE|North America|Canada|Prince Edward Island|49.800925925925924
+CA-YT|North America|Canada|Yukon|122.49463829787233
+CR|North America|Costa Rica|Any|57.814026936082605
+CY|Europe|Cyprus|Any|535.8906497622821
+CZ|Europe|Czechia|Any|468.762179443406
+DE|Europe|Germany|Any|349.5594204959556
+DK-DK1|Europe|Denmark|West Denmark|226.47798333997426
+DK-DK2|Europe|Denmark|East Denmark|189.37754181805056
+DO|North America|Dominican Republic|Any|545.403406857811
+EE|Europe|Estonia|Any|475.7047445063305
+ES|Europe|Spain|Any|177.0751125867
+FI|Europe|Finland|Any|
+FO|Europe|Faroe Islands|Any|325.79528642697403
+FR|Europe|France|Any|70.85416563056684
+GB|Europe|United Kingdom|Great Britain|311.4084209410338
+GB-NIR|Europe|United Kingdom|Northern Ireland|378.72921311553625
+GE|Asia|Georgia|Any|294.02565295679614
+GT|North America|Guatemala|Any|462.9368679058546
+HN|North America|Honduras|Any|323.99560871042615
+HU|Europe|Hungary|Any|272.01361547906043
+IE|Europe|Ireland|Any|384.84108067039233
 IL|Asia|Israel|Any|580.0
-IN|Asia|India|Any|671.762829783574
-IN-AP|Asia|India|Andhra Pradesh|606.6465551310763
-IN-CT|Asia|India|Chhattisgarh|820.0
-IN-DL|Asia|India|Delhi|475.31946508172365
-IN-KA|Asia|India|Karnataka|
-IN-UP|Asia|India|Uttar Pradesh|668.1862854421737
-IS|Europe|Iceland|Any|28.210171698292726
-IT-CNO|Europe|Italy|Central North|264.16255380906017
-IT-CSO|Europe|Italy|Central South|239.59376742294944
-IT-NO|Europe|Italy|North|370.6983902297308
-IT-SAR|Europe|Italy|Sardinia|353.5323041738136
-IT-SIC|Europe|Italy|Sicily|200.98926377383103
-IT-SO|Europe|Italy|South|194.88886628050082
-JP-KY|Asia|Japan|Kyushu|337.3857558542331
-KR|Asia|Korea, Republic of|Any|530.9687445424806
+IN|Asia|India|Any|669.8697866585607
+IN-AP|Asia|India|Andhra Pradesh|584.2289538569919
+IN-CT|Asia|India|Chhattisgarh|785.6559257236482
+IN-DL|Asia|India|Delhi|475.5988023952096
+IN-KA|Asia|India|Karnataka|489.15789142077074
+IN-UP|Asia|India|Uttar Pradesh|674.1756993622063
+IS|Europe|Iceland|Any|28.09683900787054
+IT-CNO|Europe|Italy|Central North|212.26830646583016
+IT-CSO|Europe|Italy|Central South|215.62614444406307
+IT-NO|Europe|Italy|North|324.36688467147906
+IT-SAR|Europe|Italy|Sardinia|308.94269062651773
+IT-SIC|Europe|Italy|Sicily|150.22530682284227
+IT-SO|Europe|Italy|South|192.5202442585955
+JP-KY|Asia|Japan|Kyushu|478.6118313217106
+KR|Asia|Korea, Republic of|Any|522.8726638370351
 KW|Asia|Kuwait|Any|595.0
-LT|Europe|Lithuania|Any|235.78933786216055
-LV|Europe|Latvia|Any|403.536269669032
-MD|Europe|Moldova, Republic of|Any|605.8291262135922
-ME|Europe|Montenegro|Any|591.110348586935
-MY-WM|Asia|Malaysia|Peninsula|
-NI|North America|Nicaragua|Any|167.7796779339624
-NL|Europe|Netherlands|Any|369.1718326033556
-NO-NO1|Europe|Norway|Southeast|30.40437119601569
-NO-NO2|Europe|Norway|Southwest|24.131464209665154
-NO-NO3|Europe|Norway|Middle|38.8794905811139
-NO-NO4|Europe|Norway|North|58.01443922095366
-NO-NO5|Europe|Norway|West|33.46794951160989
-NZ-NZN|Oceania|New Zealand|North Island|150.32913364017398
-NZ-NZS|Oceania|New Zealand|South Island|23.790979750858845
-PA|North America|Panama|Any|326.94981658184344
-PL|Europe|Poland|Any|586.2203223253038
-PT|Europe|Portugal|Any|183.33672983447642
-RE|Africa|Réunion|Any|703.6348042384203
-RO|Europe|Romania|Any|310.611822964244
-RS|Europe|Serbia|Any|578.630862839401
-SE|Europe|Sweden|Any|43.2713831271902
-SG|Asia|Singapore|Any|491.6383104105173
-SI|Europe|Slovenia|Any|200.89054709303338
-SK|Europe|Slovakia|Any|242.60112032985245
-SV|North America|El Salvador|Any|240.29895962898902
-TR|Asia|Turkey|Any|401.20830691804434
-TW|Asia|Taiwan, Province of China|Any|500.7751054627534
-UA|Europe|Ukraine|Any|238.3114862742246
-US-BPA|North America|United States of America|Washington|61.26913421306727
-US-CA|North America|United States of America|California|210.16573523545938
-US-MISO|North America|United States of America|Louisiana|456.0461813327453
-US-MISO|North America|United States of America|Arkansas|456.0461813327453
-US-MISO|North America|United States of America|Missouri|456.0461813327453
-US-MISO|North America|United States of America|Iowa|456.0461813327453
-US-MISO|North America|United States of America|Minnesota|456.0461813327453
-US-MISO|North America|United States of America|Wisconsin|456.0461813327453
-US-MISO|North America|United States of America|Illinois|456.0461813327453
-US-MISO|North America|United States of America|Michigan|456.0461813327453
-US-MISO|North America|United States of America|Indiana|456.0461813327453
-US-NEISO|North America|United States of America|Massachusetts|276.3636860405136
-US-NEISO|North America|United States of America|Vermont|276.3636860405136
-US-NEISO|North America|United States of America|New Hampshire|276.3636860405136
-US-NEISO|North America|United States of America|Maine|276.3636860405136
-US-NEISO|North America|United States of America|Rhode Island|276.3636860405136
-US-NEISO|North America|United States of America|Connecticut|276.3636860405136
-US-NY|North America|United States of America|New York|
-US-PJM|North America|United States of America|Kentucky|327.3133419525764
-US-PJM|North America|United States of America|Virginia|327.3133419525764
-US-PJM|North America|United States of America|Ohio|327.3133419525764
-US-PJM|North America|United States of America|West Virginia|327.3133419525764
-US-PJM|North America|United States of America|Pennsylvania|327.3133419525764
-US-PJM|North America|United States of America|New Jersey|327.3133419525764
-US-PJM|North America|United States of America|Delaware|327.3133419525764
-US-PJM|North America|United States of America|Maryland|327.3133419525764
-US-PJM|North America|United States of America|Washington, D.C.|327.3133419525764
-US-TX|North America|United States of America|Texas|395.77579875850347
-UY|South America|Uruguay|Any|45.609340501103965
+LT|Europe|Lithuania|Any|202.1382279336716
+LV|Europe|Latvia|Any|247.35590305613525
+MD|Europe|Moldova, Republic of|Any|610.4709759351717
+ME|Europe|Montenegro|Any|523.0272022508234
+NI|North America|Nicaragua|Any|217.21682396191127
+NL|Europe|Netherlands|Any|476.78417680951793
+NO-NO1|Europe|Norway|Southeast|28.405458926745112
+NO-NO2|Europe|Norway|Southwest|23.692006527012946
+NO-NO3|Europe|Norway|Middle|42.88316802255958
+NO-NO4|Europe|Norway|North|60.1447622364206
+NO-NO5|Europe|Norway|West|31.554034582132566
+NZ-NZN|Oceania|New Zealand|North Island|165.6841924806535
+NZ-NZS|Oceania|New Zealand|South Island|23.67473261721922
+PA|North America|Panama|Any|331.084854434829
+PL|Europe|Poland|Any|654.2242727385307
+PT|Europe|Portugal|Any|204.93801365612995
+RE|Africa|Réunion|Any|592.5532340697132
+RO|Europe|Romania|Any|284.48972649003247
+RS|Europe|Serbia|Any|648.6962872341602
+SE|Europe|Sweden|Any|41.58772992847988
+SG|Asia|Singapore|Any|494.347
+SI|Europe|Slovenia|Any|221.885861148215
+SK|Europe|Slovakia|Any|268.2872871324839
+SV|North America|El Salvador|Any|353.8543933475832
+TR|Asia|Turkey|Any|419.4565175808629
+TW|Asia|Taiwan, Province of China|Any|509.33589087737647
+UA|Europe|Ukraine|Any|275.9877781221534
+US-BPA|North America|United States of America|Washington|42.15246158224246
+US-CA|North America|United States of America|California|320.183137587639
+US-LA|North America|United States of America|Louisiana|486.7690445697693
+US-AR|North America|United States of America|Arkansas|486.7690445697693
+US-MO|North America|United States of America|Missouri|486.7690445697693
+IS-IA|North America|United States of America|Iowa|486.7690445697693
+US-MN|North America|United States of America|Minnesota|486.7690445697693
+US-WI|North America|United States of America|Wisconsin|486.7690445697693
+US-IL|North America|United States of America|Illinois|486.7690445697693
+US-MI|North America|United States of America|Michigan|486.7690445697693
+US-IN|North America|United States of America|Indiana|486.7690445697693
+US-MA|North America|United States of America|Massachusetts|259.133778502189
+US-VT|North America|United States of America|Vermont|259.133778502189
+US-NH|North America|United States of America|New Hampshire|259.133778502189
+US-ME|North America|United States of America|Maine|259.133778502189
+US-RI|North America|United States of America|Rhode Island|259.133778502189
+US-CT|North America|United States of America|Connecticut|259.133778502189
+US-NY|North America|United States of America|New York|220.73741480814817
+US-KY|North America|United States of America|Kentucky|339.9999955671597
+US-VA|North America|United States of America|Virginia|339.9999955671597
+US-OH|North America|United States of America|Ohio|339.9999955671597
+US-WV|North America|United States of America|West Virginia|339.9999955671597
+US-PA|North America|United States of America|Pennsylvania|339.9999955671597
+US-NJ|North America|United States of America|New Jersey|339.9999955671597
+US-DE|North America|United States of America|Delaware|339.9999955671597
+US-MD|North America|United States of America|Maryland|339.9999955671597
+US-DC|North America|United States of America|Washington, D.C.|339.9999955671597
+US-TX|North America|United States of America|Texas|416.6190071660063
+UY|South America|Uruguay|Any|74.48448891565327
