@@ -63,10 +63,10 @@ offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
 offset_df.drop(['source'], axis=1, inplace=True)
 
 ### IMPACT BY LOCATION ###
-impact_df = pd.read_csv(os.path.join(data_dir, "impact_by_location.csv"),
+CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                         sep=',', skiprows=1)
-impact_df.drop(['source'], axis=1, inplace=True)
-impact_dict = pd.Series(impact_df.impact.values,index=impact_df.location).to_dict()
+CI_df.drop(['source'], axis=1, inplace=True)
+CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
 
 ### CLOUD DATACENTERS ###
 cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
@@ -110,7 +110,7 @@ app.layout = html.Div(
 
         ### TITLE ###
 
-        html.H1('CO2 calculator for (bio)informatic tools',
+        html.H1('CO2 calculator for informatic tools',
                 style = {
                     'textAlign':'center',
                     'color': colors['text'],
@@ -195,9 +195,9 @@ app.layout = html.Div(
                 html.Label('Select Location'),
                 dcc.Dropdown(id="location_continent_dropdown",value='North America'),
 
-                dcc.Dropdown(id="location_country_dropdown", value="USA"),
+                dcc.Dropdown(id="location_country_dropdown", value="US"),
 
-                dcc.Dropdown(id="location_city_dropdown")]),
+                dcc.Dropdown(id="location_region_dropdown")]),
 
         ### PUE ###
 
@@ -314,10 +314,9 @@ def display_provider(selected_coreModel):
      Input('platformType_dropdown', 'value')])
 def set_continents_options(selected_provider,selected_platform):
     if (selected_provider == 'other')|(selected_platform == 'personalComputer'):
-        availableOptions = list(set(impact_df.loc[:,
-                                                  'continentName']))
+        availableOptions = list(set(CI_df.continentName))
     else:
-        availableOptions = list(set(impact_df.loc[impact_df.location.isin(datacenters_dict[selected_provider]),
+        availableOptions = list(set(CI_df.loc[CI_df.location.isin(datacenters_dict[selected_provider]),
                                               'continentName']))
     return [{'label': k, 'value': k} for k in sorted(availableOptions)]
 
@@ -329,36 +328,36 @@ def set_continents_options(selected_provider,selected_platform):
      Input('platformType_dropdown', 'value')])
 def set_countries_options(selected_continent, selected_provider,selected_platform):
     if (selected_provider == 'other')|(selected_platform == 'personalComputer'):
-        availableOptions = list(set(impact_df.loc[(impact_df.continentName == selected_continent), 'countryName']))
+        availableOptions = list(set(CI_df.loc[(CI_df.continentName == selected_continent), 'countryName']))
     else:
-        availableOptions = list(set(impact_df.loc[(impact_df.location.isin(datacenters_dict[selected_provider])) & (
-            impact_df.continentName == selected_continent), 'countryName']))
+        availableOptions = list(set(CI_df.loc[(CI_df.location.isin(datacenters_dict[selected_provider])) & (
+            CI_df.continentName == selected_continent), 'countryName']))
     return [{'label': k, 'value': k} for k in sorted(availableOptions)]
 
-# and this one adjusts the list of cities depending on the country & the provider
+# and this one adjusts the list of region depending on the country & the provider
 @app.callback(
-    Output('location_city_dropdown', 'options'),
+    Output('location_region_dropdown', 'options'),
     [Input('location_continent_dropdown', 'value'),
      Input('location_country_dropdown', 'value'),
      Input('provider_dropdown', 'value'),
      Input('platformType_dropdown', 'value')])
 def set_cities_options(selected_continent, selected_country,selected_provider,selected_platform):
     if (selected_provider == 'other')|(selected_platform == 'personalComputer'):
-        availableOptions = impact_df.loc[(impact_df.continentName == selected_continent) & (
-                impact_df.countryName == selected_country)]
+        availableOptions = CI_df.loc[(CI_df.continentName == selected_continent) & (
+                CI_df.countryName == selected_country)]
     else:
-        availableOptions = impact_df.loc[(impact_df.location.isin(datacenters_dict[selected_provider])) & (
-                impact_df.continentName == selected_continent) & (
-                impact_df.countryName == selected_country)]
-    availableOptions = availableOptions.sort_values(by=['cityName'])
-    return [{'label': k, 'value': v} for k,v in zip(availableOptions.cityName, availableOptions.location)]
+        availableOptions = CI_df.loc[(CI_df.location.isin(datacenters_dict[selected_provider])) & (
+                CI_df.continentName == selected_continent) & (
+                CI_df.countryName == selected_country)]
+    availableOptions = availableOptions.sort_values(by=['regionName'])
+    return [{'label': k, 'value': v} for k,v in zip(availableOptions.regionName, availableOptions.location)]
 
 ### PUE ###
 
 # This callback shows or hides the PUE question depending on the different answers
 @app.callback(
     Output('PUEquestion_div','style'),
-    [Input('location_city_dropdown','value'),
+    [Input('location_region_dropdown','value'),
      Input('platformType_dropdown', 'value'),
      Input('provider_dropdown', 'value')]
 )
@@ -398,7 +397,7 @@ def display_pue_input(answer_pue):
      State(component_id="tdp_input", component_property="value"),
      State(component_id="memory_input", component_property="value"),
      State(component_id="runTime_input", component_property="value"),
-     State(component_id="location_city_dropdown", component_property="value"),
+     State(component_id="location_region_dropdown", component_property="value"),
      State(component_id="PUE_input", component_property="value"),
      State('platformType_dropdown', 'value')
      ])
@@ -408,7 +407,7 @@ def update_output(n_clicks, coreType, coreModel, n_cores, tdp, memory, runTime, 
         raise PreventUpdate
 
     else:
-        impactValue = impact_df.loc[impact_df.location == location, "impact"].values[0]
+        carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
         if selected_platform == 'personalComputer':
             PUE_used = 1
@@ -421,7 +420,7 @@ def update_output(n_clicks, coreType, coreModel, n_cores, tdp, memory, runTime, 
             corePower = cores_dict[coreType][coreModel]
 
         # dividing by 1000 converts to kW.. so this is in g
-        energy_consumption = runTime * PUE_used * (n_cores * corePower + memory * memoryPower) * impactValue / 1000
+        energy_consumption = runTime * PUE_used * (n_cores * corePower + memory * memoryPower) * carbonIntensity / 1000
         # convert to kg then to pounds
         energy_consumption_lbs=energy_consumption*0.453592/1000
 
@@ -456,7 +455,7 @@ def update_output(n_clicks, coreType, coreModel, n_cores, tdp, memory, runTime, 
         - {n_cores} {coreType} {coreModel}: {corePower} W
         - {memory} GB of memory: {memory * memoryPower} W
         - run time: {runTime} hours
-        - {location}: {impactValue} g CO2e / kWh
+        - {location}: {carbonIntensity} g CO2e / kWh
         - PUE: {PUE_used}
 
         **Your carbon footprint is {energy_consumption} g CO2e**

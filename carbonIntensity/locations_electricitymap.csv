@@ -1,0 +1,116 @@
+﻿location,continentName,countryName,regionName,API_code
+AM,Asia,Armenia,Any,AM
+AR,South America,Argentina,Any,AR
+AT,Europe,Austria,Any,AT
+AU-NSW,Oceania,Australia,New South Wales,AUS-NSW
+AU-QLD,Oceania,Australia,Queensland,AUS-QLD
+AU-SA,Oceania,Australia,South,AUS-SA
+AU-TAS,Oceania,Australia,Tasmania,AUS-TAS
+AU-VIC,Oceania,Australia,Victoria,AUS-VIC
+AW,North America,Aruba,Any,AW
+AX,Europe,Aland Islands,Any,AX
+BA,Europe,Bosnia and Herzegovina,Any,BA
+BE,Europe,Belgium,Any,BE
+BG,Europe,Bulgaria,Any,BG
+BO,South America,"Bolivia, Plurinational State of",Any,BO
+BR-CS,South America,Brazil,Central,BR-CS
+BR-N,South America,Brazil,North,BR-N
+BR-NE,South America,Brazil,North-East,BR-NE
+BR-S,South America,Brazil,South,BR-S
+CA-AB,North America,Canada,Alberta,CA-AB
+CA-NS,North America,Canada,Nova Scotia,CA-NS
+CA-ON,North America,Canada,Ontario,CA-ON
+CA-PE,North America,Canada,Prince Edward Island,CA-PE
+CA-YT,North America,Canada,Yukon,CA-YT
+CR,North America,Costa Rica,Any,CR
+CY,Europe,Cyprus,Any,CY
+CZ,Europe,Czechia,Any,CZ
+DE,Europe,Germany,Any,DE
+DK-DK1,Europe,Denmark,West Denmark,DK-DK1
+DK-DK2,Europe,Denmark,East Denmark,DK-DK2
+DO,North America,Dominican Republic,Any,DO
+EE,Europe,Estonia,Any,EE
+ES,Europe,Spain,Any,ES
+FI,Europe,Finland,Any,FI
+FO,Europe,Faroe Islands,Any,FO
+FR,Europe,France,Any,FR
+GB,Europe,United Kingdom,Great Britain,GB
+GB-NIR,Europe,United Kingdom,Northern Ireland,GB-NIR
+GE,Asia,Georgia,Any,GE
+GT,North America,Guatemala,Any,GT
+HN,North America,Honduras,Any,HN
+HU,Europe,Hungary,Any,HU
+IE,Europe,Ireland,Any,IE
+IL,Asia,Israel,Any,IL
+IN,Asia,India,Any,IN
+IN-AP,Asia,India,Andhra Pradesh,IN-AP
+IN-CT,Asia,India,Chhattisgarh,IN-CT
+IN-DL,Asia,India,Delhi,IN-DL
+IN-KA,Asia,India,Karnataka,IN-KA
+IN-UP,Asia,India,Uttar Pradesh,IN-UP
+IS,Europe,Iceland,Any,IS
+IT-CNO,Europe,Italy,Central North,IT-CNO
+IT-CSO,Europe,Italy,Central South,IT-CSO
+IT-NO,Europe,Italy,North,IT-NO
+IT-SAR,Europe,Italy,Sardinia,IT-SAR
+IT-SIC,Europe,Italy,Sicily,IT-SIC
+IT-SO,Europe,Italy,South,IT-SO
+JP-KY,Asia,Japan,Kyushu,JP-KY
+KR,Asia,"Korea, Republic of",Any,KR
+KW,Asia,Kuwait,Any,KW
+LT,Europe,Lithuania,Any,LT
+LV,Europe,Latvia,Any,LV
+MD,Europe,"Moldova, Republic of",Any,MD
+ME,Europe,Montenegro,Any,ME
+NI,North America,Nicaragua,Any,NI
+NL,Europe,Netherlands,Any,NL
+NO-NO1,Europe,Norway,Southeast,NO-NO1
+NO-NO2,Europe,Norway,Southwest,NO-NO2
+NO-NO3,Europe,Norway,Middle,NO-NO3
+NO-NO4,Europe,Norway,North,NO-NO4
+NO-NO5,Europe,Norway,West,NO-NO5
+NZ-NZN,Oceania,New Zealand,North Island,NZ-NZN
+NZ-NZS,Oceania,New Zealand,South Island,NZ-NZS
+PA,North America,Panama,Any,PA
+PL,Europe,Poland,Any,PL
+PT,Europe,Portugal,Any,PT
+RE,Africa,Réunion,Any,RE
+RO,Europe,Romania,Any,RO
+RS,Europe,Serbia,Any,RS
+SE,Europe,Sweden,Any,SE
+SG,Asia,Singapore,Any,SG
+SI,Europe,Slovenia,Any,SI
+SK,Europe,Slovakia,Any,SK
+SV,North America,El Salvador,Any,SV
+TR,Asia,Turkey,Any,TR
+TW,Asia,"Taiwan, Province of China",Any,TW
+UA,Europe,Ukraine,Any,UA
+US-BPA,North America,United States of America,Washington,US-BPA
+US-CA,North America,United States of America,California,US-CA
+US-LA,North America,United States of America,Louisiana,US-MISO
+US-AR,North America,United States of America,Arkansas,US-MISO
+US-MO,North America,United States of America,Missouri,US-MISO
+IS-IA,North America,United States of America,Iowa,US-MISO
+US-MN,North America,United States of America,Minnesota,US-MISO
+US-WI,North America,United States of America,Wisconsin,US-MISO
+US-IL,North America,United States of America,Illinois,US-MISO
+US-MI,North America,United States of America,Michigan,US-MISO
+US-IN,North America,United States of America,Indiana,US-MISO
+US-MA,North America,United States of America,Massachusetts,US-NEISO
+US-VT,North America,United States of America,Vermont,US-NEISO
+US-NH,North America,United States of America,New Hampshire,US-NEISO
+US-ME,North America,United States of America,Maine,US-NEISO
+US-RI,North America,United States of America,Rhode Island,US-NEISO
+US-CT,North America,United States of America,Connecticut,US-NEISO
+US-NY,North America,United States of America,New York,US-NY
+US-KY,North America,United States of America,Kentucky,US-PJM
+US-VA,North America,United States of America,Virginia,US-PJM
+US-OH,North America,United States of America,Ohio,US-PJM
+US-WV,North America,United States of America,West Virginia,US-PJM
+US-PA,North America,United States of America,Pennsylvania,US-PJM
+US-NJ,North America,United States of America,New Jersey,US-PJM
+US-DE,North America,United States of America,Delaware,US-PJM
+US-MD,North America,United States of America,Maryland,US-PJM
+US-DC,North America,United States of America,"Washington, D.C.",US-PJM
+US-TX,North America,United States of America,Texas,US-TX
+UY,South America,Uruguay,Any,UY
