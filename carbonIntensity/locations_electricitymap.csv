@@ -1,0 +1,116 @@
+﻿location,continentName,countryName,regionName
+AM,Asia,Armenia,Any
+AR,South America,Argentina,Any
+AT,Europe,Austria,Any
+AUS-NSW,Oceania,Australia,New South Wales
+AUS-QLD,Oceania,Australia,Queensland
+AUS-SA,Oceania,Australia,South
+AUS-TAS,Oceania,Australia,Tasmania
+AUS-VIC,Oceania,Australia,Victoria
+AW,North America,Aruba,Any
+AX,Europe,Aland Islands,Any
+BA,Europe,Bosnia and Herzegovina,Any
+BE,Europe,Belgium,Any
+BG,Europe,Bulgaria,Any
+BO,South America,"Bolivia, Plurinational State of",Any
+BR-CS,South America,Brazil,Central
+BR-N,South America,Brazil,North
+BR-NE,South America,Brazil,North-East
+BR-S,South America,Brazil,South
+CA-AB,North America,Canada,Alberta
+CA-NS,North America,Canada,Nova Scotia
+CA-ON,North America,Canada,Ontario
+CA-PE,North America,Canada,Prince Edward Island
+CA-YT,North America,Canada,Yukon
+CR,North America,Costa Rica,Any
+CY,Asia,Cyprus,Any
+CZ,Europe,Czechia,Any
+DE,Europe,Germany,Any
+DK-DK1,Europe,Denmark,West Denmark
+DK-DK2,Europe,Denmark,East Denmark
+DO,North America,Dominican Republic,Any
+EE,Europe,Estonia,Any
+ES,Europe,Spain,Any
+FI,Europe,Finland,Any
+FO,Europe,Faroe Islands,Any
+FR,Europe,France,Any
+GB,Europe,United Kingdom,Great Britain
+GB-NIR,Europe,United Kingdom,Northern Ireland
+GE,Asia,Georgia,Any
+GT,North America,Guatemala,Any
+HN,North America,Honduras,Any
+HU,Europe,Hungary,Any
+IE,Europe,Ireland,Any
+IL,Asia,Israel,Any
+IN,Asia,India,Any
+IN-AP,Asia,India,Andhra Pradesh
+IN-CT,Asia,India,Chhattisgarh
+IN-DL,Asia,India,Delhi
+IN-KA,Asia,India,Karnataka
+IN-UP,Asia,India,Uttar Pradesh
+IS,Europe,Iceland,Any
+IT-CNO,Europe,Italy,Central North
+IT-CSO,Europe,Italy,Central South
+IT-NO,Europe,Italy,North
+IT-SAR,Europe,Italy,Sardinia
+IT-SIC,Europe,Italy,Sicily
+IT-SO,Europe,Italy,South
+JP-KY,Asia,Japan,Kyushu
+KR,Asia,"Korea, Republic of",Any
+KW,Asia,Kuwait,Any
+LT,Europe,Lithuania,Any
+LV,Europe,Latvia,Any
+MD,Europe,"Moldova, Republic of",Any
+ME,Europe,Montenegro,Any
+NI,North America,Nicaragua,Any
+NL,Europe,Netherlands,Any
+NO-NO1,Europe,Norway,Southeast
+NO-NO2,Europe,Norway,Southwest
+NO-NO3,Europe,Norway,Middle
+NO-NO4,Europe,Norway,North
+NO-NO5,Europe,Norway,West
+NZ-NZN,Oceania,New Zealand,North Island
+NZ-NZS,Oceania,New Zealand,South Island
+PA,North America,Panama,Any
+PL,Europe,Poland,Any
+PT,Europe,Portugal,Any
+RE,Africa,Réunion,Any
+RO,Europe,Romania,Any
+RS,Europe,Serbia,Any
+SE,Europe,Sweden,Any
+SG,Asia,Singapore,Any
+SI,Europe,Slovenia,Any
+SK,Europe,Slovakia,Any
+SV,North America,El Salvador,Any
+TR,Asia,Turkey,Any
+TW,Asia,"Taiwan, Province of China",Any
+UA,Europe,Ukraine,Any
+US-BPA,North America,United States of America,Washington
+US-CA,North America,United States of America,California
+US-MISO,North America,United States of America,Louisiana
+US-MISO,North America,United States of America,Arkansas
+US-MISO,North America,United States of America,Missouri
+US-MISO,North America,United States of America,Iowa
+US-MISO,North America,United States of America,Minnesota
+US-MISO,North America,United States of America,Wisconsin
+US-MISO,North America,United States of America,Illinois
+US-MISO,North America,United States of America,Michigan
+US-MISO,North America,United States of America,Indiana
+US-NEISO,North America,United States of America,Massachusetts
+US-NEISO,North America,United States of America,Vermont
+US-NEISO,North America,United States of America,New Hampshire
+US-NEISO,North America,United States of America,Maine
+US-NEISO,North America,United States of America,Rhode Island
+US-NEISO,North America,United States of America,Connecticut
+US-NY,North America,United States of America,New York
+US-PJM,North America,United States of America,Kentucky
+US-PJM,North America,United States of America,Virginia
+US-PJM,North America,United States of America,Ohio
+US-PJM,North America,United States of America,West Virginia
+US-PJM,North America,United States of America,Pennsylvania
+US-PJM,North America,United States of America,New Jersey
+US-PJM,North America,United States of America,Delaware
+US-PJM,North America,United States of America,Maryland
+US-PJM,North America,United States of America,"Washington, D.C."
+US-TX,North America,United States of America,Texas
+UY,South America,Uruguay,Any
