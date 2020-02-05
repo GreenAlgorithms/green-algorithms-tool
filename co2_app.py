@@ -85,9 +85,11 @@ for col in datacenters_df.columns:
 providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
                                   sep=',', skiprows=1)
 
-### MEMORY POWER CONSUMPTION ###
-# In W/GB, for DDR4
-memoryPower = 0.3725
+### REFERENCE VALUES
+refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
+                                  sep=',', skiprows=1)
+refValues_df.drop(['source'], axis=1, inplace=True)
+refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
 
 ############
 # DASH APP #
@@ -420,31 +422,18 @@ def update_output(n_clicks, coreType, coreModel, n_cores, tdp, memory, runTime, 
             corePower = cores_dict[coreType][coreModel]
 
         # dividing by 1000 converts to kW.. so this is in g
-        energy_consumption = runTime * PUE_used * (n_cores * corePower + memory * memoryPower) * carbonIntensity / 1000
+        energy_consumption = runTime * PUE_used * (n_cores * corePower + memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
         # convert to kg then to pounds
-        energy_consumption_lbs=energy_consumption*0.453592/1000
+        # energy_consumption_lbs=energy_consumption*0.453592/1000
 
         ### CONTEXT ###
 
-        # convert to % of flight
-        co2_flight_ny_sf=1984# in lbsCO2eq (from stubell)
-        car_co2=404# grams of CO2 per mile from EPA US https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle
-        # if job is too small to compare with flight then look at car mileage (can change this)
-        if energy_consumption_lbs > co2_flight_ny_sf*0.10:
-            #percentage of flight
-            context=round(float(energy_consumption_lbs)/co2_flight_ny_sf,2)
-            if context<1:
-                #use percentage
-                context=context*100
-                context_str="This is {}% of a one passenger flight from New York to San Franciso".format(context)
-            else:
-                #use multiples
-                context_str="This is {} times larger than a one passenger flight from New York to San Franciso".format(context)
-        #look at smaller co2 context such as car mileage
-        else:
-            # g of job co2 / g average car co2 -> driving average car for this many km (note 1.60934 km per mile)
-            context=round(energy_consumption*1.60934/(car_co2),2)
-            context_str="This is the same as driving an average car for {} km".format(context)
+        n_treeYears = round(energy_consumption / refValues_dict['treeYear'],2)
+
+        nkm_flying = round(energy_consumption / refValues_dict['flight_economy_perkm'],2)
+        nkm_drivingUS = round(energy_consumption / refValues_dict['passengerCar_US_perkm'],2)
+        nkm_drivingEU = round(energy_consumption / refValues_dict['passengerCar_EU_perkm'],2)
+        nkm_train = round(energy_consumption / refValues_dict['train_perkm'],2)
 
         #formatting
         energy_consumption=round(energy_consumption,2)
@@ -453,14 +442,19 @@ def update_output(n_clicks, coreType, coreModel, n_cores, tdp, memory, runTime, 
         output = f'''
         Summary of the parameters:
         - {n_cores} {coreType} {coreModel}: {corePower} W
-        - {memory} GB of memory: {memory * memoryPower} W
+        - {memory} GB of memory: {memory * refValues_dict['memoryPower']} W/GB
         - run time: {runTime} hours
-        - {location}: {carbonIntensity} g CO2e / kWh
+        - {location}: {round(carbonIntensity,2)} g CO2e / kWh
         - PUE: {PUE_used}
 
-        **Your carbon footprint is {energy_consumption} g CO2e**
+        **Your carbon footprint is {energy_consumption} g CO2e.**
+        **This is equivalent to {n_treeYears} tree-years**
+        (i.e. the number of mature trees required for a year to absorb that quantity of CO2).
 
-        **{context_str}**
+        This is also the same as:
+        - {nkm_train} km in train
+        - {nkm_flying} km flying
+        - {nkm_drivingEU} km driving an average European car (or {nkm_drivingUS} km driving an American car)
         '''
         return output
 
