@@ -1,0 +1,8 @@
+variable name,,
+variable,value,source
+memoryPower,0.3725,"in W/GB from http://dl.acm.org/citation.cfm?doid=3076113.3076117 and https://www.tomshardware.com/uk/reviews/intel-core-i7-5960x-haswell-e-cpu,3918-13.html"
+passengerCar_EU_perkm,175,in gCO2/km from http://www.sciencedirect.com/science/article/pii/S1352231018307295 and https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2019
+passengerCar_US_perkm,251,in gCO2/km from https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle
+train_perkm,41,in gCO2/km from https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2019
+flight_economy_perkm,145,in gCO2/km from https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2019
+treeYear,11400,in gCO2/tree/year from http://www.sciencedirect.com/science/article/pii/S0269749101002640
