@@ -6,12 +6,18 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
+import plotly.express as px
+import plotly.graph_objects as go
+
+import flask
 
 import pandas as pd
 import sys
 import numpy as np
 import os
 import copy
+
+import pycountry_convert as pc
 
 # The styles are automatically loaded from the the /assets folder
 
@@ -26,6 +32,8 @@ app = dash.Dash(
 #############
 
 data_dir = os.path.join(os.path.abspath(''),'data')
+image_dir = os.path.join(os.path.abspath(''),'images')
+static_image_route = '/static/'
 
 # We download each csv and store it in a pd.DataFrame
 # We ignore the first row, as it contains metadata
@@ -62,11 +70,20 @@ offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
                         sep=',', skiprows=1)
 offset_df.drop(['source'], axis=1, inplace=True)
 
-### IMPACT BY LOCATION ###
+### CARBON INTENSITY BY LOCATION ###
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                         sep=',', skiprows=1)
 CI_df.drop(['source'], axis=1, inplace=True)
 CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
+
+def iso2_to_iso3(x):
+    try:
+        output = pc.country_name_to_country_alpha3(pc.country_alpha2_to_country_name(x, cn_name_format="default"),
+                                                   cn_name_format="default")
+    except:
+        output = ''
+    return output
+CI_df['ISO3'] = CI_df.location.apply(iso2_to_iso3)
 
 ### CLOUD DATACENTERS ###
 cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
@@ -118,15 +135,69 @@ layout = dict(
     paper_bgcolor="#F9F9F9",
     legend=dict(font=dict(size=10), orientation="h"),
     title="Satellite Overview",
-    # mapbox=dict(
-    #     accesstoken=mapbox_access_token,
-    #     style="light",
-    #     center=dict(lon=-78.05, lat=42.54),
-    #     zoom=7,
     # ),
 )
 
 ## make map
+
+map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
+map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
+
+mapColorScale = [
+    # greens
+    'rgb(116,196,118)',
+    'rgb(161,217,155)',
+    'rgb(199,233,192)',
+    'rgb(229,245,224)',
+    'rgb(255,255,229)',
+    'rgb(255,247,188)',
+    'rgb(254,227,145)',
+    'rgb(254,196,79)',
+    'rgb(254,153,41)',
+    'rgb(236,112,20)',
+    'rgb(204,76,2)',
+    'rgb(153,52,4)',
+    'rgb(102,37,6)'
+]
+
+myColors = {
+    'boxesColor': "#F9F9F9"
+}
+
+mapCI = go.Figure(
+    data=go.Choropleth(
+        geojson=os.path.join(data_dir, 'world.geo.json'),
+        locations = map_df.ISO3,
+        locationmode='geojson-id',
+        z=map_df.carbonIntensity.astype(float).apply(round),
+        colorscale = mapColorScale,
+        colorbar_title = "gCO2e/kWh",
+        hoverinfo='location+z+text', # Any combination of ['location', 'z', 'text', 'name'] joined with '+' characters
+        text=map_df.countryName,
+        # name=map_df.countryName,
+        marker_line_color='darkgray',
+        marker_line_width=0.5,
+        showscale=False,
+    )
+)
+mapCI.update_layout(
+    title_text = 'Carbon Intensity by country',
+    autosize=True,
+    # automargin=True,
+    margin=dict(l=30, r=30, b=20, t=40),
+    hovermode="closest",
+    # legend=dict(font=dict(size=10), orientation="h"),
+    plot_bgcolor=myColors['boxesColor'],
+    paper_bgcolor= myColors['boxesColor'],
+    geo=dict(
+        showframe=False,
+        showcoastlines=False,
+        projection_type='natural earth',#'equirectangular',
+        showocean=True, oceancolor=myColors['boxesColor'], #"#EBF5FB",
+        bgcolor=myColors['boxesColor'],
+    ),
+)
+
 
 
 ##########
@@ -148,8 +219,8 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.Img(
-                            src=os.path.join(images_dir, 'cbsgi_logo_100dpi.png'),
-                            id="cbsgi-logo",
+                            src=static_image_route+'cbsgi_logo_100dpi.png',
+                            id="logo1",
                             style={
                                 "height": "60px",
                                 "width": "auto",
@@ -177,7 +248,7 @@ app.layout = html.Div(
                         )
                     ],
                     className="one-half column",
-                    id="title",
+                    id="title"
                 ),
 
                 html.Div(
@@ -436,7 +507,7 @@ app.layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    [dcc.Graph(id="map")],
+                    [dcc.Graph(id = "map", figure = mapCI)],
                     className="pretty_container seven columns",
                 ),
                 html.Div(
@@ -448,7 +519,11 @@ app.layout = html.Div(
         ),
     ],
     id="mainContainer",
-    style={"display": "flex", "flex-direction": "column"},
+    style={
+        "display": "flex",
+        "flex-direction": "column",
+        # 'background-image':'url(http://blogs.reading.ac.uk/climate-lab-book/files/2018/05/globalcore.png)',
+    },
 )
 
 
@@ -615,53 +690,82 @@ def display_pue_input(answer_pue):
         Input("PUE_input", "value"),
         Input('platformType_dropdown', 'value')
     ],
+    [
+        State("aggregate_data", "data")
+    ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime, location, PUE, selected_platform):
+def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime, location, PUE, selected_platform, existing_state):
     output = dict()
 
-    carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
+    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(runTime is None)|(location is None)|(PUE is None)|(selected_platform is None):
+        print('Not enough information to display the results')
 
-    if selected_platform == 'personalComputer':
-        PUE_used = 1
+        output['coreType'] = None
+        output['coreModel'] = None
+        output['n_cores'] = None
+        output['corePower'] = None
+        output['memory'] = None
+        output['runTime'] = None
+        output['location'] = None
+        output['carbonIntensity'] = None
+        output['PUE'] = None
+        output['selected_platform'] = None
+        output['carbonEmissions'] = 0
+        output['CE_core'] = 0
+        output['CE_memory'] = 0
+        output['n_treeYears'] = 0
+        output['nkm_flying'] = 0
+        output['nkm_drivingUS'] = 0
+        output['nkm_drivingEU'] = 0
+        output['nkm_train'] = 0
+
+        return output
+
     else:
-        PUE_used = PUE
+        print(location)
+        carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
-    if coreModel == 'other':
-        corePower = tdp
-    else:
-        corePower = cores_dict[coreType][coreModel]
+        if selected_platform == 'personalComputer':
+            PUE_used = 1
+        else:
+            PUE_used = PUE
 
-    # dividing by 1000 converts to kW.. so this is in g
-    carbonEmissions = runTime * PUE_used * (
-            n_cores * corePower + memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
+        if coreModel == 'other':
+            corePower = tdp
+        else:
+            corePower = cores_dict[coreType][coreModel]
 
-    CE_core = runTime * PUE_used * (n_cores * corePower) * carbonIntensity / 1000
-    CE_memory = runTime * PUE_used * (memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
+        # dividing by 1000 converts to kW.. so this is in g
+        carbonEmissions = runTime * PUE_used * (
+                n_cores * corePower + memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
 
-    output['coreType'] = coreType
-    output['coreModel'] = coreModel
-    output['n_cores'] = n_cores
-    output['corePower'] = corePower
-    output['memory'] = memory
-    output['runTime'] = runTime
-    output['location'] = location
-    output['carbonIntensity'] = carbonIntensity
-    output['PUE'] = PUE_used
-    output['selected_platform'] = selected_platform
-    output['carbonEmissions'] = carbonEmissions
-    output['CE_core'] = CE_core
-    output['CE_memory'] = CE_memory
+        CE_core = runTime * PUE_used * (n_cores * corePower) * carbonIntensity / 1000
+        CE_memory = runTime * PUE_used * (memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
 
-    ### CONTEXT
+        output['coreType'] = coreType
+        output['coreModel'] = coreModel
+        output['n_cores'] = n_cores
+        output['corePower'] = corePower
+        output['memory'] = memory
+        output['runTime'] = runTime
+        output['location'] = location
+        output['carbonIntensity'] = carbonIntensity
+        output['PUE'] = PUE_used
+        output['selected_platform'] = selected_platform
+        output['carbonEmissions'] = carbonEmissions
+        output['CE_core'] = CE_core
+        output['CE_memory'] = CE_memory
 
-    output['n_treeYears'] = carbonEmissions / refValues_dict['treeYear']
+        ### CONTEXT
 
-    output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
-    output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
-    output['nkm_drivingEU'] = carbonEmissions / refValues_dict['passengerCar_EU_perkm']
-    output['nkm_train'] = carbonEmissions / refValues_dict['train_perkm']
+        output['n_treeYears'] = carbonEmissions / refValues_dict['treeYear']
 
-    return output
+        output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
+        output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
+        output['nkm_drivingEU'] = carbonEmissions / refValues_dict['passengerCar_EU_perkm']
+        output['nkm_train'] = carbonEmissions / refValues_dict['train_perkm']
+
+        return output
 
 ### UPDATE TOP TEXT ###
 
@@ -717,6 +821,15 @@ def create_pie_graph(aggData):
 
     return figure
 
+### UPDATE IMAGES ###
+
+# Add a static image route that serves images from desktop
+# Be *very* careful here - you don't want to serve arbitrary files
+# from your computer or server
+@app.server.route('{}<image_path>.png'.format(static_image_route))
+def serve_image(image_path):
+    image_name = '{}.png'.format(image_path)
+    return flask.send_from_directory(image_dir, image_name)
 
 if __name__ == '__main__':
     # allows app to update when code is changed!
