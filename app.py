@@ -219,7 +219,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.Img(
-                            src=static_image_route+'cbsgi_logo_100dpi.png',
+                            # src=static_image_route+'cbsgi_logo_100dpi.png',
                             id="logo1",
                             style={
                                 "height": "60px",
@@ -254,7 +254,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.A(
-                            html.Button("Doesn't do anything", id="header-button"),
+                            # html.Button("Doesn't do anything", id="header-button"),
                             # href="https://plot.ly/dash/pricing/",
                         )
                     ],
@@ -722,7 +722,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime, l
         return output
 
     else:
-        print(location)
+        # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
         if selected_platform == 'personalComputer':
