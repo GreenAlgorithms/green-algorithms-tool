@@ -1,17 +1,17 @@
-index,in Watt,
-model,TDP,source
-RTX 2080 Ti,250,techpowerup.com
-RTX 2080,215,techpowerup.com
-GTX 1080 Ti,250,techpowerup.com
-GTX 1080,180,techpowerup.com
-AMD RX480,150,techpowerup.com
-Titan V,250,techpowerup.com
-Tesla V100,300,techpowerup.com
-TPU2,250,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
-TPU3,200,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
-Intel Xeon E5-2699,145,
-AGX Xavier,30,
-GTX TITAN X,250,techpowerup.com
-TITAN X Pascal,250,techpowerup.com
-Tesla P100 PCIe 16GB,250,techpowerup.com
-TPU,75,https://www.nextplatform.com/2017/04/05/first-depth-look-googles-tpu-architecture/
+index,in Watt,TO BE CHECKED,,
+model,TDP,n_cores,TDP_per_core,source
+RTX 2080 Ti,250,,250,techpowerup.com
+RTX 2080,215,,215,techpowerup.com
+GTX 1080 Ti,250,,250,techpowerup.com
+GTX 1080,180,,180,techpowerup.com
+AMD RX480,150,,150,techpowerup.com
+Titan V,250,,250,techpowerup.com
+Tesla V100,300,,300,techpowerup.com
+TPU2,250,,250,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
+TPU3,200,,200,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
+Intel Xeon E5-2699,145,,145,
+AGX Xavier,30,,30,
+GTX TITAN X,250,,250,techpowerup.com
+TITAN X Pascal,250,,250,techpowerup.com
+Tesla P100 PCIe 16GB,250,,250,techpowerup.com
+Tesla T4,70,,70,https://www.techpowerup.com/gpu-specs/tesla-t4.c3316
