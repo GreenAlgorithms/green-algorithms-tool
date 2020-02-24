@@ -572,16 +572,16 @@ there.
   .container-display {
     display: flex;
   }
-  #wells,
-  #gas,
-  #oil {
+  #carbonEmissions,
+  #treeYears,
+  #car {
     margin-right: 10px;
   }
 
-  #wells {
+  #carbonEmissions {
     margin-left: 0px;
   }
-  #water {
+  #plane {
     margin-right: 0px;
   }
   .mini_container {

@@ -64,13 +64,13 @@ body {
   position: absolute;
 }
 
-#count_graph {
+#pie_graph {
   position: absolute;
   height: calc(100% - 30px);
   width: calc(100% - 30px);
 }
 
-#countGraphContainer {
+#pieGraphContainer {
   flex: 5;
   position: relative;
 }
@@ -107,11 +107,11 @@ body {
   flex-direction: column;
 }
 
-#wells {
+#carbonEmissions {
   flex: 1;
 }
 
-#gas {
+#treeYears {
   flex: 1;
 }
 
@@ -119,11 +119,11 @@ body {
   align-items: center;
 }
 
-#oil {
+#car {
   flex: 1;
 }
 
-#water {
+#plane {
   flex: 1;
 }
 

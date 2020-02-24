@@ -52,8 +52,8 @@ gpu_df.drop(['source'], axis=1, inplace=True)
 # Dict of dict with all the possible models
 # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
 cores_dict = dict()
-cores_dict['CPU'] = pd.Series(cpu_df.TDP.values,index=cpu_df.model).to_dict()
-cores_dict['GPU'] = pd.Series(gpu_df.TDP.values,index=gpu_df.model).to_dict()
+cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
+cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
 
 ### PUE ###
 pue_df = pd.read_csv(os.path.join(data_dir, "servers_PUE.csv"),
@@ -219,7 +219,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.Img(
-                            # src=static_image_route+'cbsgi_logo_100dpi.png',
+                            src=static_image_route+'_stripes_GLOBE---1850-2018-MO.png',
                             id="logo1",
                             style={
                                 "height": "60px",
@@ -275,7 +275,7 @@ app.layout = html.Div(
                     [
                         ## NUMBER OF CORES
                         html.P(
-                            "How many cores:",
+                            "Number of cores:",
                             className="control_label",
                         ),
 
@@ -301,15 +301,27 @@ app.layout = html.Div(
 
                         ## RUN TIME
                         html.P(
-                            "Runtime (h):",
+                            "Runtime (hours and minutes):",
                             className="control_label",
                         ),
 
-                        dcc.Input(
-                            type='number',
-                            id="runTime_input",
-                            value=5,
-                            className="dcc_control",
+                        html.Div(
+                            [
+                                dcc.Input(
+                                    type='number',
+                                    id="runTime_input",
+                                    value=5,
+                                    className="four columns",
+                                ),
+
+                                dcc.Input(
+                                    type='number',
+                                    id="runTime_min_input",
+                                    value=5,
+                                    className="four columns",
+                                ),
+                            ],
+                            className="row container-display",
                         ),
 
                         ## SELECT COMPUTING PLATFORM
@@ -323,6 +335,9 @@ app.layout = html.Div(
                             value='cloudComputing',
                             labelStyle={"display": "inline-block"},
                             className="dcc_control",
+                            # style={
+                            #     "justify-content":"flex-end"
+                            # }
                         ),
                         # dcc.Dropdown(
                         #     id="platformType_dropdown",
@@ -483,6 +498,9 @@ app.layout = html.Div(
                             ],
                             id="info-container",
                             className="row container-display",
+                            # style={
+                            #     "justify-content":"space-between"
+                            # }
                         ),
 
                         ## SECOND ROW: GRAPH
