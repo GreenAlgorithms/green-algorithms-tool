@@ -109,6 +109,7 @@ refValues_df.drop(['source'], axis=1, inplace=True)
 refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
 
 
+
 ###########
 # OPTIONS #
 ###########
@@ -125,6 +126,12 @@ yesNo_options = [
     {'label': 'No', 'value': 'No'}
 ]
 
+## COLOURS
+myColors = {
+    'boxesColor': "#F9F9F9",
+    'backgroundColor': '#f2f2f2',
+}
+
 ## GLOBAL CHART TEMPLATE
 layout = dict(
     autosize=True,
@@ -136,6 +143,13 @@ layout = dict(
     legend=dict(font=dict(size=10), orientation="h"),
     title="Satellite Overview",
     # ),
+)
+
+layout_plots = dict(
+    autosize=True,
+    margin=dict(l=30, r=30, b=20, t=40),
+    paper_bgcolor=myColors['boxesColor'],
+    plot_bgcolor=myColors['boxesColor'],
 )
 
 style100 = {"height" : "100%", "width" : "100%"}
@@ -162,9 +176,7 @@ mapColorScale = [
     'rgb(102,37,6)'
 ]
 
-myColors = {
-    'boxesColor': "#F9F9F9"
-}
+
 
 mapCI = go.Figure(
     data=go.Choropleth(
@@ -634,15 +646,88 @@ app.layout = html.Div(
                     ],
                     className="pretty_container seven columns",
                 ),
+
+                html.Div(
+                    [
+                        dcc.Graph(
+                            id = "barPlotComparison"
+                        )
+                    ],
+                    id='barPlotComparison_container',
+                    className="pretty_container five columns",
+                )
             ],
             # id='secondRow',
             className="row flex-display",
         ),
+
+        ## THIRD ROW
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H4(
+                            "What can you do about it?"
+                        )
+                    ],
+                    className="pretty_container five columns"
+                ),
+
+                html.Div(
+                    [
+                        html.H4(
+                            "How do we calculate this?"
+                        )
+                    ],
+                    className="pretty_container seven columns"
+                )
+            ],
+            className="row flex-display",
+        ),
+
+        ## FOURTH ROW
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H4(
+                            "What is CO2e?"
+                        )
+                    ],
+                    className="pretty_container four columns"
+                ),
+
+                html.Div(
+                    [
+                        html.H4(
+                            "What is a tree-year?"
+                        )
+                    ],
+                    className="pretty_container four columns"
+                ),
+
+                html.Div(
+                    [
+                        html.H4(
+                            "#ShowYourStripes"
+                        )
+                    ],
+                    className="pretty_container four columns"
+                )
+            ],
+            className="row flex-display",
+        ),
+
+        html.Div(
+            [
+                html.H4(
+                    "Who are we?"
+                )
+            ],
+            className="row pretty_container"
+        )
     ],
     id="mainContainer",
-    # style={
-    #     'backgroundColor':'blue'
-    # }
 )
 
 
@@ -871,9 +956,11 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         else:
             corePower = cores_dict[coreType][coreModel]
 
-        # dividing by 1000 converts to kW.. so this is in g
-        carbonEmissions = runTime * PUE_used * (
-                n_cores * corePower + memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
+        # dividing by 1000 converts to kW
+        powerNeeded = runTime * PUE_used * (
+                n_cores * corePower + memory * refValues_dict['memoryPower']) / 1000
+        # carbonIntensity is in g per kWh, so results in gCO2
+        carbonEmissions = powerNeeded * carbonIntensity
 
         CE_core = runTime * PUE_used * (n_cores * corePower) * carbonIntensity / 1000
         CE_memory = runTime * PUE_used * (memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
@@ -891,6 +978,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['carbonEmissions'] = carbonEmissions
         output['CE_core'] = CE_core
         output['CE_memory'] = CE_memory
+        output['power_needed'] = powerNeeded
 
         ### CONTEXT
 
@@ -935,7 +1023,7 @@ def create_pie_graph(aggData):
             type='pie',
             labels=['Computing cores','Memory'],
             values=[aggData['CE_core'], aggData['CE_memory']],
-            name='Carbon impact breakdown',
+            name='Breakdown of the carbon Emissions',
             text=[
                 'CE due to CPU usage (g CO2)',
                 'CE due to memory usage (g CO2)'
@@ -956,6 +1044,57 @@ def create_pie_graph(aggData):
     figure = dict(data=data, layout=layout_pie)
 
     return figure
+
+
+### UPDATE BAR CHART COMPARISON
+@app.callback(
+    Output("barPlotComparison", "figure"),
+    [Input("aggregate_data", "data")],
+)
+def create_bar_chart(aggData):
+    layout_bar = copy.deepcopy(layout_plots)
+
+    loc_ref = {
+        'CH':{'name':'Switzerland'},
+        'SE':{'name':'Sweden'},
+        'FR':{'name':'France'},
+        'CA':{'name':'Canada'},
+        'GB':{'name':'United Kingdom'},
+        'US':{'name':'USA'},
+        'CN':{'name':'China'},
+        'IN':{'name':'India'},
+        'AU':{'name':'Australia'}
+    }
+
+    # calculate carbon emissions for each location
+    for countryCode in loc_ref.keys():
+        loc_ref[countryCode]['carbonEmissions'] = aggData['power_needed'] * CI_df.loc[CI_df.location == countryCode, "carbonIntensity"].values[0]
+
+    loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
+
+    loc_df.loc['You'] = ["You",aggData['carbonEmissions']]
+
+    loc_df.sort_values(by=['carbonEmissions'], inplace=True)
+
+    layout_bar['title'] = dict(
+        text="Examples of carbon emissions for different locations"
+    )
+
+    fig = go.Figure(
+        data = [go.Bar(
+            x=loc_df.name.values,
+            y=loc_df.carbonEmissions.values,
+            marker = dict(
+                color=loc_df.carbonEmissions.values,
+                colorscale=mapColorScale,
+            ),
+
+        )],
+        layout = layout_bar
+    )
+
+    return fig
+
 
 ### UPDATE IMAGES ###
 

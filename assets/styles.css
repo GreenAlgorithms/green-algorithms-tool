@@ -8,7 +8,7 @@ body {
   background-image: url("stripes_fading3.png");
   background-attachment: scroll;
   background-repeat: no-repeat;
-  background-size: 100% 700px;
+  background-size: 100% 100%; /*700px;*/
   margin: 5%;
 }
 
@@ -185,6 +185,18 @@ body {
 }
 
 #pie_graph,
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+#barPlotComparison_container {
+  align-items:stretch;
+  justify-content: center;
+  flex: auto;
+}
+
+#barPlotComparison,
 #map {
   height: 100%;
   width: 100%;
