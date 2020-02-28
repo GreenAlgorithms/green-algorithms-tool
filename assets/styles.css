@@ -45,11 +45,6 @@ body {
   width: calc(100%-40px);
 }
 
-.rc-slider {
-  margin-left: 0px;
-  padding-left: 0px;
-}
-
 .flex-display {
   display: flex;
 }
