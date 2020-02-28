@@ -138,6 +138,8 @@ layout = dict(
     # ),
 )
 
+style100 = {"height" : "100%", "width" : "100%"}
+
 ## make map
 
 map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
@@ -215,56 +217,24 @@ app.layout = html.Div(
         ## HEADER
         html.Div(
             [
-                # first image
-                html.Div(
-                    [
-                        html.Img(
-                            src=static_image_route+'_stripes_GLOBE---1850-2018-MO.png',
-                            id="logo1",
-                            style={
-                                "height": "60px",
-                                "width": "auto",
-                                "margin-bottom": "25px",
-                            },
-                        )
-                    ],
-                    className="one-third column",
-                ),
-
                 # title
                 html.Div(
                     [
-                        html.Div(
-                            [
-                                html.H3(
-                                    "CO2 impact calculator",
-                                    style={"margin-bottom": "0px"},
-                                ),
-                                html.H5(
-                                    "Is your algorithm bad for the planet?",
-                                    style={"margin-top": "0px"}
-                                ),
-                            ]
-                        )
+                        html.H1(
+                            "CO2 impact calculator",
+                            id='title',
+                        ),
+                        html.H4(
+                            "Is your algorithm bad for the planet?",
+                            id='subtitle'
+                        ),
                     ],
-                    className="one-half column",
-                    id="title"
-                ),
-
-                html.Div(
-                    [
-                        html.A(
-                            # html.Button("Doesn't do anything", id="header-button"),
-                            # href="https://plot.ly/dash/pricing/",
-                        )
-                    ],
-                    className="one-third column",
-                    id="button-title",
+                    className="one-half column flex-display",
+                    id="title_container",
                 ),
             ],
             id="header",
             className="row flex-display",
-            style={"margin-bottom": "25px"},
         ),
 
         ## FIRST ROW
@@ -273,106 +243,159 @@ app.layout = html.Div(
                 ## LEFT COLUMN: CALCULATOR INPUT
                 html.Div(
                     [
-                        ## NUMBER OF CORES
-                        html.P(
-                            "Number of cores:",
-                            className="control_label",
-                        ),
+                        html.Div(
+                            [
+                                html.H3(
+                                    "Details about your algorithm"
+                                ),
 
-                        dcc.Input(
-                            type='number',
-                            id="numberCores_input",
-                            value=1,
-                            className="dcc_control",
-                        ),
-
-                        ## MEMORY
-                        html.P(
-                            "Memory requested (in GB):",
-                            className="control_label",
-                        ),
-
-                        dcc.Input(
-                            type='number',
-                            id="memory_input",
-                            value=64,
-                            className="dcc_control",
+                                # html.P(
+                                #     "Each parameter below affects your carbon footprint"
+                                # ),
+                            ],
+                            className='centered-text',
                         ),
 
                         ## RUN TIME
-                        html.P(
-                            "Runtime (hours and minutes):",
-                            className="control_label",
-                        ),
-
                         html.Div(
                             [
-                                dcc.Input(
-                                    type='number',
-                                    id="runTime_input",
-                                    value=5,
-                                    className="four columns",
+                                html.P(
+                                    "Runtime (hours and minutes):",
+                                    className="control_label flex-half",
+                                ),
+
+                                html.Div(
+                                    [
+                                        dcc.Input(
+                                            type='number',
+                                            id="runTime_hour_input",
+                                            className="dcc_control_row",
+                                            value=5,
+                                        ),
+                                    ],
+                                    className='flex-quarter'
+                                ),
+
+                                html.Div(
+                                    [
+                                        dcc.Input(
+                                            type='number',
+                                            id="runTime_min_input",
+                                            value=5,
+                                            className="dcc_control_row",
+                                        )
+                                    ],
+                                    className='flex-quarter',
+
+                                ),
+                            ],
+                            className="control-container-row",
+                        ),
+
+
+                        ## NUMBER OF CORES
+                        html.Div(
+                            [
+
+                                html.P(
+                                    "Number of cores:",
+                                    className="control_label flex-half",
                                 ),
 
                                 dcc.Input(
                                     type='number',
-                                    id="runTime_min_input",
-                                    value=5,
-                                    className="four columns",
+                                    id="numberCores_input",
+                                    value=1,
+                                    className="dcc_control_column flex-half",
+                                    # style={"width" : "100%"},
                                 ),
                             ],
-                            className="row container-display",
+                            className="control-container-row",
                         ),
+
+                        ## MEMORY
+                        html.Div(
+                            [
+                                html.P(
+                                    "Memory requested (in GB):",
+                                    className="control_label flex-half",
+                                ),
+
+                                dcc.Input(
+                                    type='number',
+                                    id="memory_input",
+                                    value=64,
+                                    className="dcc_control_column flex-half",
+                                ),
+                            ],
+                            className="control-container-row",
+                        ),
+
+
 
                         ## SELECT COMPUTING PLATFORM
-                        html.P(
-                            "Select the platform used for the computations:",
-                            className="control_label",
-                        ),
-                        dcc.RadioItems(
-                            id="platformType_dropdown",
-                            options=platformType_options,
-                            value='cloudComputing',
-                            labelStyle={"display": "inline-block"},
-                            className="dcc_control",
-                            # style={
-                            #     "justify-content":"flex-end"
-                            # }
-                        ),
-                        # dcc.Dropdown(
-                        #     id="platformType_dropdown",
-                        #     options=platformType_options,
-                        #     value='cloudComputing',
-                        #     className="dcc_control",
-                        # ),
                         html.Div(
                             [
+                                html.P(
+                                    "Select the platform used for the computations:",
+                                    className="control_label",
+                                ),
+
                                 dcc.Dropdown(
-                                    id="provider_dropdown",
-                                    value='gcp',
-                                    className="dcc_control",
-                                )
+                                    id="platformType_dropdown",
+                                    options=platformType_options,
+                                    value='cloudComputing',
+                                    className="dcc_control_column",
+                                ),
+
+                                # dcc.RadioItems(
+                                #     id="platformType_dropdown",
+                                #     options=platformType_options,
+                                #     value='cloudComputing',
+                                #     labelStyle={"display": "inline-block"},
+                                #     className="dcc_control",
+                                #     # style={
+                                #     #     "justify-content":"flex-end"
+                                #     # }
+                                # ),
+
+                                html.Div(
+                                    [
+                                        dcc.Dropdown(
+                                            id="provider_dropdown",
+                                            value='gcp',
+                                            className="dcc_control_column",
+                                        )
+                                    ],
+                                    style = {'display': 'none'},
+                                    id = 'provider_div'
+                                ),
                             ],
-                            style = {'display': 'none'},
-                            id = 'provider_div'
+                            className="control-container-column",
                         ),
 
                         ## COMPUTING CORES
-                        html.P(
-                            "What type of core are you using:",
-                            className="control_label",
-                        ),
+                        html.Div(
+                            [
+                                html.P(
+                                    "What type of core are you using:",
+                                    className="control_label",
+                                ),
 
-                        dcc.Dropdown(
-                            id="coreType_dropdown",
-                            value = 'CPU',
-                            className="dcc_control",
-                        ),
+                                dcc.Dropdown(
+                                    id="coreType_dropdown",
+                                    value = 'CPU',
+                                    className="dcc_control_column",
+                                ),
 
-                        dcc.Dropdown(
-                            id = "coreModel_dropdown",
-                            value = "Xeon E5-2683 v4",
-                            className="dcc_control",
+                                dcc.Dropdown(
+                                    id = "coreModel_dropdown",
+                                    value = "Xeon E5-2683 v4",
+                                    className="dcc_control_column",
+                                ),
+
+                            ],
+                            className="control-container-column",
                         ),
 
                         html.Div(
@@ -384,77 +407,83 @@ app.layout = html.Div(
                                 dcc.Input(
                                     type='number',
                                     id="tdp_input",
-                                    value=95,
-                                    className="dcc_control",
+                                    value=15,
+                                    className="dcc_control_column",
                                 )
                             ],
                             id = "tdp_div",
+                            className="control-container-column",
                             style = {'display': 'none'},
-                         ),
+                        ),
 
                         ## LOCATION
-                        html.P(
-                            "Select location:",
-                            className="control_label",
+                        html.Div(
+                            [
+                                html.P(
+                                    "Select location:",
+                                    className="control_label",
+                                ),
+                                dcc.Dropdown(
+                                    id="location_continent_dropdown",
+                                    value='North America',
+                                    className="dcc_control_column",
+                                ),
+                                dcc.Dropdown(
+                                    id="location_country_dropdown",
+                                    value="United States of America",
+                                    className="dcc_control_column",
+                                ),
+                                dcc.Dropdown(
+                                    id="location_region_dropdown",
+                                    value = "US-CA",
+                                    className="dcc_control_column",
+                                ),
+                            ],
+                            className="control-container-column",
                         ),
-                        dcc.Dropdown(
-                            id="location_continent_dropdown",
-                            value='North America',
-                            className="dcc_control",
-                        ),
-                        dcc.Dropdown(
-                            id="location_country_dropdown",
-                            value="United States of America",
-                            className="dcc_control",
-                        ),
-                        dcc.Dropdown(
-                            id="location_region_dropdown",
-                            value = "US-CA",
-                            className="dcc_control",
-                        ),
+
 
                         ## PUE
                         html.Div(
                             [
-                                html.P(
-                                    "Do you know the Power Usage Efficiency (PUE) of your local datacenter?",
-                                    className="control_label",
+                                html.Div(
+                                    [
+                                        html.P(
+                                            "Do you know the Power Usage Efficiency (PUE) of your local datacenter?",
+                                            className="control_label",
+                                        ),
+
+                                        dcc.RadioItems(
+                                            id = 'pue_radio',
+                                            options=yesNo_options,
+                                            value='No',
+                                            labelStyle={"display": "inline-block"},
+                                            className="dcc_control_column",
+                                        ),
+                                    ],
+                                    id = 'PUEquestion_div',
+                                    style = {'display': 'none'},
                                 ),
 
-                                dcc.RadioItems(
-                                    id = 'pue_radio',
-                                    options=yesNo_options,
-                                    value='No',
-                                    labelStyle={"display": "inline-block"},
-                                    className="dcc_control",
+                                html.Div(
+                                    [
+                                        dcc.Input(
+                                            min=1,
+                                            type='number',
+                                            id="PUE_input",
+                                            value=pue_df.loc[pue_df.provider == 'Unknown','PUE'][0],
+                                            className="dcc_control_column",
+                                        ),
+                                    ],
+                                    id = 'PUEinput_div',
+                                    style = {'display': 'none'},
                                 ),
                             ],
-                            id = 'PUEquestion_div',
-                            style = {'display': 'none'},
+                            className="control-container-column",
                         ),
-
-                        html.Div(
-                            [
-                                dcc.Input(
-                                    min=1,
-                                    type='number',
-                                    id="PUE_input",
-                                    value=pue_df.loc[pue_df.provider == 'Unknown','PUE'][0]
-                                ),
-                            ],
-                            id = 'PUEinput_div',
-                            style = {'display': 'none'},
-                            className="dcc_control",
-                        ),
-
-                        # html.Button(
-                        #     'Compute',
-                        #     id='button'
-                        # ),
-
                     ],
                     className="pretty_container four columns",
-                    id="input-calculator",
+                    id="input_calculator"
                 ),
 
                 ## RIGHT COLUMN
@@ -465,59 +494,131 @@ app.layout = html.Div(
                             [
                                 html.Div(
                                     [
-                                        html.H6(id="carbonEmissions_text"),
-                                        html.P("Carbon emissions")
+                                        html.Img(
+                                            src=static_image_route + 'logo_co2.png',
+                                            id="logo_co2",
+                                            className="style-icon"
+                                        ),
+
+                                        html.Div(
+                                            [
+                                                html.H5(
+                                                    id="carbonEmissions_text",
+                                                ),
+
+                                                html.P(
+                                                    "Carbon emissions",
+                                                )
+                                            ],
+                                            className='container-labels-icon'
+                                        ),
+
                                     ],
                                     id="carbonEmissions",
                                     className="mini_container",
                                 ),
+
                                 html.Div(
                                     [
-                                        html.H6(id="treeYears_text"),
-                                        html.P("No. of trees")
+                                        html.Img(
+                                            src=static_image_route + 'logo_tree_1.png',
+                                            id="logo_tree",
+                                            className="style-icon"
+                                        ),
+
+                                        html.Div(
+                                            [
+                                                html.H5(
+                                                    id="treeYears_text",
+                                                ),
+
+                                                html.P(
+                                                    "No. of trees",
+                                                )
+                                            ],
+                                            className='container-labels-icon'
+                                        ),
+
                                     ],
                                     id="treeYears",
                                     className="mini_container",
                                 ),
+
                                 html.Div(
                                     [
-                                        html.H6(id="driving_text"),
-                                        html.P("Driving a passenger car")
+                                        html.Img(
+                                            src=static_image_route + 'logo_car.png',
+                                            id="logo_car",
+                                            className="style-icon"
+                                        ),
+
+                                        html.Div(
+                                            [
+                                                html.H5(
+                                                    id="driving_text",
+                                                ),
+
+                                                html.P(
+                                                    "Driving a passenger car",
+                                                )
+                                            ],
+                                            className='container-labels-icon'
+                                        ),
+
                                     ],
                                     id="car",
                                     className="mini_container",
                                 ),
+
                                 html.Div(
                                     [
-                                        html.H6(id="flying_text"),
-                                        html.P("Flying in economy")
+                                        html.Img(
+                                            src=static_image_route + 'logo_plane.png',
+                                            id="logo_plane",
+                                            className="style-icon"
+                                        ),
+
+                                        html.Div(
+                                            [
+                                                html.H5(
+                                                    id="flying_text",
+                                                ),
+
+                                                html.P(
+                                                    "Flying in economy",
+                                                )
+                                            ],
+                                            className='container-labels-icon'
+                                        ),
+
                                     ],
                                     id="plane",
                                     className="mini_container",
                                 ),
                             ],
-                            id="info-container",
-                            className="row container-display",
-                            # style={
-                            #     "justify-content":"space-between"
-                            # }
+                            id="info_container",
+                            className="row flex-display",
                         ),
 
                         ## SECOND ROW: GRAPH
                         html.Div(
                             [
-                                dcc.Graph(id="pie_graph")
+                                dcc.Graph(
+                                    id="pie_graph",
+                                    # style=style100,
+                                )
                             ],
                             id="pieGraphContainer",
-                            className="pretty_container",
+                            className="row pretty_container",
                         ),
 
                     ],
-                    id="right-column",
-                    className="eight columns",
+                    id="firstRow_rightColumn",
+                    className="eight columns flex-display by-column bare_container",
                 ),
 
             ],
+            # id='row_inputOutput',
             className="row flex-display",
         ),
 
@@ -525,23 +626,23 @@ app.layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    [dcc.Graph(id = "map", figure = mapCI)],
+                    [
+                        dcc.Graph(
+                            id = "map",
+                            figure = mapCI
+                        )
+                    ],
                     className="pretty_container seven columns",
                 ),
-                html.Div(
-                    [dcc.Graph(id="individual_graph")],
-                    className="pretty_container five columns",
-                ),
             ],
+            # id='secondRow',
             className="row flex-display",
         ),
     ],
     id="mainContainer",
-    style={
-        "display": "flex",
-        "flex-direction": "column",
-        # 'background-image':'url(http://blogs.reading.ac.uk/climate-lab-book/files/2018/05/globalcore.png)',
-    },
+    # style={
+    #     'backgroundColor':'blue'
+    # }
 )
 
 
@@ -703,7 +804,8 @@ def display_pue_input(answer_pue):
         Input("numberCores_input", "value"),
         Input("tdp_input", "value"),
         Input("memory_input", "value"),
-        Input("runTime_input", "value"),
+        Input("runTime_hour_input", "value"),
+        Input("runTime_min_input", "value"),
         Input("location_region_dropdown", "value"),
         Input("PUE_input", "value"),
         Input('platformType_dropdown', 'value')
@@ -712,10 +814,26 @@ def display_pue_input(answer_pue):
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime, location, PUE, selected_platform, existing_state):
+def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, PUE, selected_platform, existing_state):
     output = dict()
 
-    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(runTime is None)|(location is None)|(PUE is None)|(selected_platform is None):
+    test_runTime = 0
+
+    if runTime_hours is None:
+        actual_runTime_hours = 0
+        test_runTime += 1
+    else:
+        actual_runTime_hours = runTime_hours
+
+    if runTime_min is None:
+        actual_runTime_min = 0
+        test_runTime += 1
+    else:
+        actual_runTime_min = runTime_min
+
+    runTime = actual_runTime_hours + actual_runTime_min/60.
+
+    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(PUE is None)|(selected_platform is None):
         print('Not enough information to display the results')
 
         output['coreType'] = None
@@ -797,7 +915,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime, l
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = "{} g CO2".format(round(data['carbonEmissions'], 2))
+    text_CE = "{} g CO2e".format(round(data['carbonEmissions'], 2))
     text_ty = "{} tree-years".format(round(data['n_treeYears'],2))
     text_car = "{} km".format(round(data['nkm_drivingEU'], 2))
     text_fly = "{} km".format(round(data['nkm_flying'], 2))
