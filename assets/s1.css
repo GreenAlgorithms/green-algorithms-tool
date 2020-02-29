@@ -192,8 +192,8 @@ body {
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
-  font-family: "Open Sans", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: 'Roboto Slab', Serif; /* "Open Sans", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;*/
   color: rgb(50, 50, 50);
 }
 
@@ -208,6 +208,7 @@ h6 {
   margin-top: 0;
   margin-bottom: 0;
   font-weight: 300;
+  font-family:'Ruda', "Trebuchet MS", Arial, Sans-Serif;
 }
 h1 {
   font-size: 4.5rem;
@@ -244,7 +245,7 @@ h5 {
   margin-top: 0.6rem;
 }
 h6 {
-  font-size: 2rem;
+  font-size: 1.1em; /* 2rem;*/
   line-height: 1.6;
   letter-spacing: 0;
   margin-bottom: 0.75rem;
@@ -253,6 +254,7 @@ h6 {
 
 p {
   margin-top: 0;
+  font-family:'Roboto Slab', Serif;
 }
 
 /* Blockquotes

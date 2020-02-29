@@ -130,6 +130,10 @@ yesNo_options = [
 myColors = {
     'boxesColor': "#F9F9F9",
     'backgroundColor': '#f2f2f2',
+    'pieChart': ['#E8A09A','#9BBFE0'],
+    'map':['#78E7A2','#86D987','#93CB70','#9EBC5C',
+           '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
+
 }
 
 ## GLOBAL CHART TEMPLATE
@@ -150,6 +154,7 @@ layout_plots = dict(
     margin=dict(l=30, r=30, b=20, t=40),
     paper_bgcolor=myColors['boxesColor'],
     plot_bgcolor=myColors['boxesColor'],
+    height=400,
 )
 
 style100 = {"height" : "100%", "width" : "100%"}
@@ -175,6 +180,9 @@ mapColorScale = [
     'rgb(153,52,4)',
     'rgb(102,37,6)'
 ]
+
+mapColorScale = ['#78E7A2','#86D987','#93CB70','#9EBC5C',
+                 '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
 
 
 
@@ -271,7 +279,7 @@ app.layout = html.Div(
                         ## RUN TIME
                         html.Div(
                             [
-                                html.P(
+                                html.H6(
                                     "Runtime (hours and minutes):",
                                     className="control_label flex-half",
                                 ),
@@ -309,7 +317,7 @@ app.layout = html.Div(
                         html.Div(
                             [
 
-                                html.P(
+                                html.H6(
                                     "Number of cores:",
                                     className="control_label flex-half",
                                 ),
@@ -328,7 +336,7 @@ app.layout = html.Div(
                         ## MEMORY
                         html.Div(
                             [
-                                html.P(
+                                html.H6(
                                     "Memory requested (in GB):",
                                     className="control_label flex-half",
                                 ),
@@ -348,7 +356,7 @@ app.layout = html.Div(
                         ## SELECT COMPUTING PLATFORM
                         html.Div(
                             [
-                                html.P(
+                                html.H6(
                                     "Select the platform used for the computations:",
                                     className="control_label",
                                 ),
@@ -389,7 +397,7 @@ app.layout = html.Div(
                         ## COMPUTING CORES
                         html.Div(
                             [
-                                html.P(
+                                html.H6(
                                     "What type of core are you using:",
                                     className="control_label",
                                 ),
@@ -412,7 +420,7 @@ app.layout = html.Div(
 
                         html.Div(
                             [
-                                html.P(
+                                html.H6(
                                     'What is the TDP of your computing core (in W)? (easily accessible online)',
                                     className="control_label",
                                 ),
@@ -431,7 +439,7 @@ app.layout = html.Div(
                         ## LOCATION
                         html.Div(
                             [
-                                html.P(
+                                html.H6(
                                     "Select location:",
                                     className="control_label",
                                 ),
@@ -460,7 +468,7 @@ app.layout = html.Div(
                             [
                                 html.Div(
                                     [
-                                        html.P(
+                                        html.H6(
                                             "Do you know the Power Usage Efficiency (PUE) of your local datacenter?",
                                             className="control_label",
                                         ),
@@ -518,7 +526,7 @@ app.layout = html.Div(
                                                     id="carbonEmissions_text",
                                                 ),
 
-                                                html.P(
+                                                html.H6(
                                                     "Carbon emissions",
                                                 )
                                             ],
@@ -544,7 +552,7 @@ app.layout = html.Div(
                                                     id="treeYears_text",
                                                 ),
 
-                                                html.P(
+                                                html.H6(
                                                     "No. of trees",
                                                 )
                                             ],
@@ -570,7 +578,7 @@ app.layout = html.Div(
                                                     id="driving_text",
                                                 ),
 
-                                                html.P(
+                                                html.H6(
                                                     "Driving a passenger car",
                                                 )
                                             ],
@@ -596,7 +604,7 @@ app.layout = html.Div(
                                                     id="flying_text",
                                                 ),
 
-                                                html.P(
+                                                html.H6(
                                                     "Flying in economy",
                                                 )
                                             ],
@@ -676,7 +684,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H4(
-                            "How do we calculate this?"
+                            "The formula"
                         )
                     ],
                     className="pretty_container seven columns"
@@ -701,9 +709,13 @@ app.layout = html.Div(
                     [
                         html.H4(
                             "What is a tree-year?"
+                        ),
+
+                        html.P(
+                            'A tree-year measures how much CO2 is sequestred in a tree in a year.'
                         )
                     ],
-                    className="pretty_container four columns"
+                    className="pretty_container four columns by-column"
                 ),
 
                 html.Div(
@@ -939,6 +951,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['nkm_drivingUS'] = 0
         output['nkm_drivingEU'] = 0
         output['nkm_train'] = 0
+        output['power_needed'] = 0
 
         return output
 
@@ -1016,34 +1029,57 @@ def update_text(data):
     [Input("aggregate_data", "data")],
 )
 def create_pie_graph(aggData):
-    layout_pie = copy.deepcopy(layout)
+    layout_pie = copy.deepcopy(layout_plots)
 
-    data = [
-        dict(
-            type='pie',
-            labels=['Computing cores','Memory'],
-            values=[aggData['CE_core'], aggData['CE_memory']],
-            name='Breakdown of the carbon Emissions',
-            text=[
-                'CE due to CPU usage (g CO2)',
-                'CE due to memory usage (g CO2)'
-            ],
-            hoverinfo="text+value+percent",
-            textinfo="label+percent+name",
-            hole=0.5,
-            marker=dict(colors=["#fac1b7", "#a9bb95", "#92d8d8"]),
-        )
-    ]
-
-    layout_pie["title"] = "Impact breakdown"
-    layout_pie["font"] = dict(color="#777777")
-    layout_pie["legend"] = dict(
-        font=dict(color="#CCCCCC", size="10"), orientation="h", bgcolor="rgba(0,0,0,0)"
+    layout_pie['title'] = dict(
+        text="Breakdown of the carbon Emissions"
     )
 
-    figure = dict(data=data, layout=layout_pie)
+    fig = go.Figure(
+        data=[
+            go.Pie(
+                labels=['Computing <br> cores', 'Memory'],
+                values=[aggData['CE_core'], aggData['CE_memory']],
+                hole=0.4,
+                insidetextorientation='horizontal',
+                showlegend=False,
+                pull=[0.05, 0.05],
+                marker=dict(
+                    colors=myColors['pieChart']
+                ),
+                texttemplate="<b>%{label}</b><br>%{percent}",
+                hovertemplate='%{value:.0f} gCO2e<extra></extra>',
+            )
+        ],
+        layout=layout_pie
+    )
 
-    return figure
+    # data = [
+    #     dict(
+    #         type='pie',
+    #         labels=['Computing cores','Memory'],
+    #         values=[aggData['CE_core'], aggData['CE_memory']],
+    #         name='Breakdown of the carbon Emissions',
+    #         text=[
+    #             'CE due to CPU usage (g CO2)',
+    #             'CE due to memory usage (g CO2)'
+    #         ],
+    #         hoverinfo="text+value+percent",
+    #         textinfo="label+percent+name",
+    #         hole=0.5,
+    #         marker=dict(colors=["#fac1b7", "#a9bb95", "#92d8d8"]),
+    #     )
+    # ]
+    #
+    # layout_pie["title"] = "Impact breakdown"
+    # layout_pie["font"] = dict(color="#777777")
+    # layout_pie["legend"] = dict(
+    #     font=dict(color="#CCCCCC", size="10"), orientation="h", bgcolor="rgba(0,0,0,0)"
+    # )
+
+    # figure = dict(data=data, layout=layout_pie)
+
+    return fig
 
 
 ### UPDATE BAR CHART COMPARISON
@@ -1070,9 +1106,12 @@ def create_bar_chart(aggData):
     for countryCode in loc_ref.keys():
         loc_ref[countryCode]['carbonEmissions'] = aggData['power_needed'] * CI_df.loc[CI_df.location == countryCode, "carbonIntensity"].values[0]
 
-    loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
+    loc_ref['You'] = dict(
+        name='You',
+        carbonEmissions=aggData['carbonEmissions']
+    )
 
-    loc_df.loc['You'] = ["You",aggData['carbonEmissions']]
+    loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
 
     loc_df.sort_values(by=['carbonEmissions'], inplace=True)
 
@@ -1081,15 +1120,16 @@ def create_bar_chart(aggData):
     )
 
     fig = go.Figure(
-        data = [go.Bar(
-            x=loc_df.name.values,
-            y=loc_df.carbonEmissions.values,
-            marker = dict(
-                color=loc_df.carbonEmissions.values,
-                colorscale=mapColorScale,
-            ),
-
-        )],
+        data = [
+            go.Bar(
+                x=loc_df.name.values,
+                y=loc_df.carbonEmissions.values,
+                marker = dict(
+                    color=loc_df.carbonEmissions.values,
+                    colorscale=mapColorScale,
+                ),
+            )
+        ],
         layout = layout_bar
     )
 

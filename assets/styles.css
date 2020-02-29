@@ -91,8 +91,8 @@ body {
 .style-icon {
   height: 130px;
   width: 130px;
-  margin-top:5px;
-  margin-bottom:5px
+  margin-top:0px;
+  margin-bottom:0px
 }
 
 .container-labels-icon {
@@ -165,6 +165,7 @@ body {
 
 #input_calculator {
   flex-direction:column;
+  flex:auto;
   align-items: stretch;
   min-width: 300px;
 }
