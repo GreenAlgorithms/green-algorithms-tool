@@ -89,9 +89,10 @@ body {
 }
 
 .style-icon {
-  height: 70px;
-  width: 70px;
-  margin-top:10px;
+  height: 130px;
+  width: 130px;
+  margin-top:5px;
+  margin-bottom:5px
 }
 
 .container-labels-icon {
@@ -100,7 +101,7 @@ body {
   align-items:center;
   justify-content:center;
   margin-bottom:0px;
-  margin-top:10px;
+  margin-top:0;
 }
 
 .control-container-row {
