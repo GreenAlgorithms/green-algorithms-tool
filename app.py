@@ -128,13 +128,26 @@ yesNo_options = [
 
 ## COLOURS
 myColors = {
+    'fontColor':'rgb(60, 60, 60)',
     'boxesColor': "#F9F9F9",
     'backgroundColor': '#f2f2f2',
     'pieChart': ['#E8A09A','#9BBFE0'],
+    'plotGrid':'#e6e6e6',
     'map':['#78E7A2','#86D987','#93CB70','#9EBC5C',
            '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
 
 }
+
+def colours_hex2rgba(hex):
+    h = hex.lstrip('#')
+    return('rgba({},{},{})'.format(*tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))))
+
+def convertList_hex2rgba(hex_list):
+    out = []
+    for hex in hex_list:
+        out.append(colours_hex2rgba(hex))
+
+    return out
 
 ## GLOBAL CHART TEMPLATE
 layout = dict(
@@ -157,69 +170,56 @@ layout_plots = dict(
     height=400,
 )
 
-style100 = {"height" : "100%", "width" : "100%"}
-
 ## make map
 
 map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
-mapColorScale = [
-    # greens
-    'rgb(116,196,118)',
-    'rgb(161,217,155)',
-    'rgb(199,233,192)',
-    'rgb(229,245,224)',
-    'rgb(255,255,229)',
-    'rgb(255,247,188)',
-    'rgb(254,227,145)',
-    'rgb(254,196,79)',
-    'rgb(254,153,41)',
-    'rgb(236,112,20)',
-    'rgb(204,76,2)',
-    'rgb(153,52,4)',
-    'rgb(102,37,6)'
-]
+layout_map = copy.deepcopy(layout_plots)
 
-mapColorScale = ['#78E7A2','#86D987','#93CB70','#9EBC5C',
-                 '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
-
-
+layout_map['geo'] = dict(
+    projection=dict(
+        type='natural earth',
+    ),
+    showcoastlines=False,
+    showocean=True,
+    oceancolor=myColors['boxesColor'],
+    showcountries=True,
+    countrycolor=myColors['boxesColor'],
+    showframe=False,
+    bgcolor=myColors['boxesColor'],
+)
 
 mapCI = go.Figure(
     data=go.Choropleth(
         geojson=os.path.join(data_dir, 'world.geo.json'),
         locations = map_df.ISO3,
         locationmode='geojson-id',
-        z=map_df.carbonIntensity.astype(float).apply(round),
-        colorscale = mapColorScale,
-        colorbar_title = "gCO2e/kWh",
-        hoverinfo='location+z+text', # Any combination of ['location', 'z', 'text', 'name'] joined with '+' characters
+        z=map_df.carbonIntensity.astype(float),
+        colorscale=myColors['map'],
+        colorbar=dict(
+            title=dict(
+                text="Carbon <br> intensity <br> (gCO2e/kWh)",
+                font=dict(
+                    color=myColors['fontColor'],
+                )
+            ),
+            tickfont=dict(
+                color=myColors['fontColor'],
+            )
+        ),
+        showscale=True,
+        hovertemplate="%{text} <extra> %{z:.0f} gCO2e/kWh </extra>",
         text=map_df.countryName,
-        # name=map_df.countryName,
-        marker_line_color='darkgray',
-        marker_line_width=0.5,
-        showscale=False,
-    )
-)
-mapCI.update_layout(
-    title_text = 'Carbon Intensity by country',
-    autosize=True,
-    # automargin=True,
-    margin=dict(l=30, r=30, b=20, t=40),
-    hovermode="closest",
-    # legend=dict(font=dict(size=10), orientation="h"),
-    plot_bgcolor=myColors['boxesColor'],
-    paper_bgcolor= myColors['boxesColor'],
-    geo=dict(
-        showframe=False,
-        showcoastlines=False,
-        projection_type='natural earth',#'equirectangular',
-        showocean=True, oceancolor=myColors['boxesColor'], #"#EBF5FB",
-        bgcolor=myColors['boxesColor'],
+        marker=dict(
+            line=dict(
+                color=myColors['boxesColor'],
+                width=0.5
+            )
+        ),
     ),
+    layout=layout_map
 )
-
 
 
 ##########
@@ -549,18 +549,18 @@ app.layout = html.Div(
                                         html.Div(
                                             [
                                                 html.H5(
-                                                    id="treeYears_text",
+                                                    id="treeMonths_text",
                                                 ),
 
                                                 html.H6(
-                                                    "No. of trees",
+                                                    "Carbon sequestration",
                                                 )
                                             ],
                                             className='container-labels-icon'
                                         ),
 
                                     ],
-                                    id="treeYears",
+                                    id="treeMonths",
                                     className="mini_container",
                                 ),
 
@@ -623,13 +623,16 @@ app.layout = html.Div(
                         ## SECOND ROW: GRAPH
                         html.Div(
                             [
+                                html.H4(
+                                    "Breakdown of the emissions"
+                                ),
+
                                 dcc.Graph(
                                     id="pie_graph",
-                                    # style=style100,
                                 )
                             ],
                             id="pieGraphContainer",
-                            className="row pretty_container",
+                            className="pretty_container by-column",
                         ),
 
                     ],
@@ -647,22 +650,27 @@ app.layout = html.Div(
             [
                 html.Div(
                     [
+                        html.H4("Carbon Intensity across the world"),
                         dcc.Graph(
                             id = "map",
                             figure = mapCI
                         )
                     ],
-                    className="pretty_container seven columns",
+                    className="pretty_container seven columns by-column",
                 ),
 
                 html.Div(
                     [
+                        html.H4(
+                            "And elsewhere?"
+                        ),
+
                         dcc.Graph(
                             id = "barPlotComparison"
                         )
                     ],
                     id='barPlotComparison_container',
-                    className="pretty_container five columns",
+                    className="pretty_container five columns by-column",
                 )
             ],
             # id='secondRow',
@@ -676,18 +684,46 @@ app.layout = html.Div(
                     [
                         html.H4(
                             "What can you do about it?"
-                        )
+                        ),
+
+                        dcc.Markdown('''
+                        The main factor impacting your Carbon Emissions is the location of your servers: 
+                        the same algorithm will emit __64 times more__ CO2e if ran in Australia compared to Switzerland.
+                        
+                        Only requesting the necessary memory can also improve greatly your carbon footprint. 
+                        
+                        Generally, writing sensible code that runs faster with fewer resources saves both money
+                         and the planet.
+                        ''')
                     ],
-                    className="pretty_container five columns"
+                    className="pretty_container five columns by-column"
                 ),
 
                 html.Div(
                     [
                         html.H4(
                             "The formula"
-                        )
+                        ),
+
+                        dcc.Markdown('''
+                        The carbon emission is calculated by estimating the energy draw of the algorithm 
+                        and the carbon intensity of producing such energy at a given location:
+                        
+                        `carbon_emissions = energy_needed * carbon_intensity`
+                        
+                        The energy needed is: 
+                        
+                        `energy_needed = time * (power_computing_cores + power_memory) * PUE`
+                         
+                        * the power draw from the computing cores depend on the model and number of cores
+                        * the memory power draw depends on the size of memory requested. 
+                        * the PUE (Power Usage Effectiveness) measures how much extra energy is needed 
+                        for cooling, lighting etc.
+                        
+                        The Carbon Intensity depends on the location and the technologies used to produce electricity. 
+                        ''')
                     ],
-                    className="pretty_container seven columns"
+                    className="pretty_container seven columns by-column"
                 )
             ],
             className="row flex-display",
@@ -700,20 +736,27 @@ app.layout = html.Div(
                     [
                         html.H4(
                             "What is CO2e?"
-                        )
+                        ),
+
+                        dcc.Markdown('''
+                        It's a metric used to measure the Global Warming Potential of a mixture of greenhouse gases. 
+                        It represents the quantity of CO2 that would have the same impact of the environment.
+                        ''')
                     ],
-                    className="pretty_container four columns"
+                    className="pretty_container four columns by-column"
                 ),
 
                 html.Div(
                     [
                         html.H4(
-                            "What is a tree-year?"
+                            "What is a tree-month?"
                         ),
 
-                        html.P(
-                            'A tree-year measures how much CO2 is sequestred in a tree in a year.'
-                        )
+                        dcc.Markdown('''
+                        It measures how long it would take for a tree to absorb the CO2e emitted by your algorithm. 
+                        
+                        As an estimate here, we use 11.4 kg CO2e/year, which is roughly __1kg CO2e/month__.
+                        '''),
                     ],
                     className="pretty_container four columns by-column"
                 ),
@@ -722,9 +765,17 @@ app.layout = html.Div(
                     [
                         html.H4(
                             "#ShowYourStripes"
-                        )
+                        ),
+
+                        dcc.Markdown('''
+                        These coloured stripes in the background represent the change in world temperatures 
+                        from 1850 to 2018. 
+                        This striking design has been made by Ed Hawkins from the University of Reading.
+                        
+                        More on [ShowYourStipes.info]('https://showyourstripes.info')
+                        ''')
                     ],
-                    className="pretty_container four columns"
+                    className="pretty_container four columns by-column"
                 )
             ],
             className="row flex-display",
@@ -946,7 +997,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['carbonEmissions'] = 0
         output['CE_core'] = 0
         output['CE_memory'] = 0
-        output['n_treeYears'] = 0
+        output['n_treeMonths'] = 0
         output['nkm_flying'] = 0
         output['nkm_drivingUS'] = 0
         output['nkm_drivingEU'] = 0
@@ -995,7 +1046,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
         ### CONTEXT
 
-        output['n_treeYears'] = carbonEmissions / refValues_dict['treeYear']
+        output['n_treeMonths'] = carbonEmissions / refValues_dict['treeYear'] * 12
 
         output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
         output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
@@ -1009,7 +1060,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 @app.callback(
     [
         Output("carbonEmissions_text", "children"),
-        Output("treeYears_text", "children"),
+        Output("treeMonths_text", "children"),
         Output("driving_text", "children"),
         Output("flying_text", "children"),
     ],
@@ -1017,7 +1068,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 )
 def update_text(data):
     text_CE = "{} g CO2e".format(round(data['carbonEmissions'], 2))
-    text_ty = "{} tree-years".format(round(data['n_treeYears'],2))
+    text_ty = "{} tree-months".format(round(data['n_treeMonths'],2))
     text_car = "{} km".format(round(data['nkm_drivingEU'], 2))
     text_fly = "{} km".format(round(data['nkm_flying'], 2))
 
@@ -1030,10 +1081,6 @@ def update_text(data):
 )
 def create_pie_graph(aggData):
     layout_pie = copy.deepcopy(layout_plots)
-
-    layout_pie['title'] = dict(
-        text="Breakdown of the carbon Emissions"
-    )
 
     fig = go.Figure(
         data=[
@@ -1048,36 +1095,19 @@ def create_pie_graph(aggData):
                     colors=myColors['pieChart']
                 ),
                 texttemplate="<b>%{label}</b><br>%{percent}",
+                textfont=dict(
+                    color=myColors['fontColor'],
+                ),
                 hovertemplate='%{value:.0f} gCO2e<extra></extra>',
+                hoverlabel=dict(
+                    font=dict(
+                        color=myColors['fontColor'],
+                    )
+                )
             )
         ],
         layout=layout_pie
     )
-
-    # data = [
-    #     dict(
-    #         type='pie',
-    #         labels=['Computing cores','Memory'],
-    #         values=[aggData['CE_core'], aggData['CE_memory']],
-    #         name='Breakdown of the carbon Emissions',
-    #         text=[
-    #             'CE due to CPU usage (g CO2)',
-    #             'CE due to memory usage (g CO2)'
-    #         ],
-    #         hoverinfo="text+value+percent",
-    #         textinfo="label+percent+name",
-    #         hole=0.5,
-    #         marker=dict(colors=["#fac1b7", "#a9bb95", "#92d8d8"]),
-    #     )
-    # ]
-    #
-    # layout_pie["title"] = "Impact breakdown"
-    # layout_pie["font"] = dict(color="#777777")
-    # layout_pie["legend"] = dict(
-    #     font=dict(color="#CCCCCC", size="10"), orientation="h", bgcolor="rgba(0,0,0,0)"
-    # )
-
-    # figure = dict(data=data, layout=layout_pie)
 
     return fig
 
@@ -1089,6 +1119,20 @@ def create_pie_graph(aggData):
 )
 def create_bar_chart(aggData):
     layout_bar = copy.deepcopy(layout_plots)
+
+    layout_bar['xaxis'] = dict(
+        color=myColors['fontColor'],
+    )
+
+    layout_bar['yaxis'] = dict(
+        color=myColors['fontColor'],
+        title=dict(
+            text='Emissions (gCO2e)'
+        ),
+        showspikes=False,
+        showgrid=True,
+        gridcolor=myColors['plotGrid'],
+    )
 
     loc_ref = {
         'CH':{'name':'Switzerland'},
@@ -1105,19 +1149,20 @@ def create_bar_chart(aggData):
     # calculate carbon emissions for each location
     for countryCode in loc_ref.keys():
         loc_ref[countryCode]['carbonEmissions'] = aggData['power_needed'] * CI_df.loc[CI_df.location == countryCode, "carbonIntensity"].values[0]
+        loc_ref[countryCode]['opacity'] = 0.2
 
     loc_ref['You'] = dict(
-        name='You',
-        carbonEmissions=aggData['carbonEmissions']
+        name='Your algorithm',
+        carbonEmissions=aggData['carbonEmissions'],
+        opacity=1
     )
 
     loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
 
     loc_df.sort_values(by=['carbonEmissions'], inplace=True)
 
-    layout_bar['title'] = dict(
-        text="Examples of carbon emissions for different locations"
-    )
+    lines_thickness = [0] * len(loc_df)
+    lines_thickness[loc_df.index.get_loc('You')] = 4
 
     fig = go.Figure(
         data = [
@@ -1126,8 +1171,19 @@ def create_bar_chart(aggData):
                 y=loc_df.carbonEmissions.values,
                 marker = dict(
                     color=loc_df.carbonEmissions.values,
-                    colorscale=mapColorScale,
+                    colorscale=myColors['map'],
+                    line=dict(
+                        width=lines_thickness,
+                        color=myColors['fontColor'],
+                    )
                 ),
+                hovertemplate='%{y:.0f} gCO2e<extra></extra>',
+                hoverlabel=dict(
+                    font=dict(
+                        color=myColors['fontColor'],
+                    )
+                ),
+
             )
         ],
         layout = layout_bar
