@@ -154,14 +154,18 @@ body {
 #title_container {
   text-align: center;
   flex-direction:column;
+  width:100%;
+  padding-top:25px;
+  background-color: rgba(249, 249, 249,0.6);
 }
 
 #title {
-  margin-bottom: 0
+  margin-bottom: 5px
 }
 
 #subtitle {
-  margin-top: 0
+  margin-top: 0;
+  font-style:italic;
 }
 
 #input_calculator {

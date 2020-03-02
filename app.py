@@ -241,15 +241,16 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H1(
-                            "CO2 impact calculator",
+                            "Green Algorithms Initiative",
                             id='title',
                         ),
                         html.H4(
-                            "Is your algorithm bad for the planet?",
+                            "How green is your research?",
                             id='subtitle'
                         ),
                     ],
-                    className="one-half column flex-display",
+                    # className="one-half column flex-display",
+                    className="pretty_container",
                     id="title_container",
                 ),
             ],
@@ -753,7 +754,9 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        It measures how long it would take for a tree to absorb the CO2e emitted by your algorithm. 
+                        It's the amount of CO2 sequestred by a tree in a month. 
+                        It's a unit measuring how long it would take for a mature tree 
+                        to absorb the CO2e emitted by your algorithm. 
                         
                         As an estimate here, we use 11.4 kg CO2e/year, which is roughly __1kg CO2e/month__.
                         '''),
@@ -779,6 +782,15 @@ app.layout = html.Div(
                 )
             ],
             className="row flex-display",
+        ),
+
+        html.Div(
+            [
+                html.H4(
+                    "How to report it?"
+                )
+            ],
+            className="row pretty_container"
         ),
 
         html.Div(
