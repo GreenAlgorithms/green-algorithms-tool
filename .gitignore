@@ -1,0 +1,6 @@
+/carbonIntensity/access_tokens.json
+/carbonIntensity/logFile.txt
+.idea/*
+*.pyc
+.DS_Store
+.env
