@@ -5,6 +5,10 @@
 
 body {
   background-color: #f2f2f2;
+  background-image: url("stripes_fading3.png");
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: 100% 100%; /*700px;*/
   margin: 5%;
 }
 
@@ -17,127 +21,190 @@ body {
   margin-left: 0.5%;
 }
 
+.centered-text {
+  text-align: center
+}
+
 .pretty_container {
+  display: flex;
   border-radius: 5px;
   background-color: #f9f9f9;
   margin: 10px;
   padding: 15px;
-  position: relative;
+  /*position: relative;*/
   box-shadow: 2px 2px 2px lightgrey;
 }
 
 .bare_container {
-  margin: 0 0 0 0;
-  padding: 0 0 0 0;
+  margin: 0;
+  padding: 0;
 }
 
-.dcc_control {
-  margin: 0;
-  padding: 5px;
-  width: calc(100%-40px);
+.dcc_control_row {
+  margin: 0px;
+  padding: 0;
+  width:100%;
+  min-width:50px;
+}
+
+.dcc_control_column {
+  margin:0;
+  padding: 0;
+  margin-top:2px;
+  margin-bottom:2px;
+  width: 100%;
+  /*font-family: 'Raleway', 'Titillium Web', "Trebuchet MS", Helvetica, sans-serif;*/
 }
 
 .control_label {
   margin: 0;
-  padding: 10px;
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-  width: calc(100%-40px);
-}
-
-.rc-slider {
-  margin-left: 0px;
-  padding-left: 0px;
+  padding: 0;
 }
 
 .flex-display {
   display: flex;
 }
 
-.container-display {
+.icons-display {
   display: flex;
-}
-
-#individual_graph,
-#aggregate_graph {
-  width: calc(100% - 30px);
-  position: absolute;
-}
-
-#pie_graph {
-  position: absolute;
-  height: calc(100% - 30px);
-  width: calc(100% - 30px);
-}
-
-#pieGraphContainer {
-  flex: 5;
-  position: relative;
-}
-
-#header {
-  align-items: center;
-}
-
-#learn-more-button {
-  text-align: center;
-  height: 100%;
-  padding: 0 20px;
-  text-transform: none;
-  font-size: 15px;
-  float: right;
-  margin-right: 10px;
-  margin-top: 30px;
-}
-#title {
-  text-align: center;
+  justify-content: center;
+  margin: 0;
+  padding: 20px;
 }
 
 .mini_container {
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  flex: auto;
+  /*flex: 1 25%;*/
+  flex-wrap: wrap;
   border-radius: 5px;
   background-color: #f9f9f9;
   margin: 10px;
   padding: 15px;
-  position: relative;
+  /*position: relative;*/
   box-shadow: 2px 2px 2px lightgrey;
+  /*text-align: center;*/
 }
 
-#right-column {
+.style-icon {
+  height: 130px;
+  width: 130px;
+  margin-top:0px;
+  margin-bottom:0px
+}
+
+.container-labels-icon {
   display: flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:0px;
+  margin-top:0;
+}
+
+.control-container-row {
+  display:flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: center;
+  flex-wrap: wrap;
+  margin:7px;
+}
+
+.control-container-column {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  margin:7px;
+  /*flex-wrap: wrap;*/
+}
+
+.flex-half {
+ flex:1 50%;
+}
+
+.flex-quarter {
+ flex:1 25%;
+}
+
+.by-column {
   flex-direction: column;
 }
 
-#carbonEmissions {
-  flex: 1;
-}
 
-#treeYears {
-  flex: 1;
-}
 
-#aggregate_data {
-  align-items: center;
-}
-
-#car {
-  flex: 1;
-}
-
-#plane {
-  flex: 1;
-}
-
-#tripleContainer {
-  display: flex;
-  flex: 3;
-}
+/* CUSTOMISED CONTAINER DESIGN (by name) */
 
 #mainContainer {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 
-#pie_graph > div > div > svg:nth-child(3) > g.infolayer > g.legend {
-  pointer-events: all;
-  transform: translate(30px, 349px);
+#header {
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+#title_container {
+  text-align: center;
+  flex-direction:column;
+  width:100%;
+  padding-top:25px;
+  background-color: rgba(249, 249, 249,0.6);
+}
+
+#title {
+  margin-bottom: 5px
+}
+
+#subtitle {
+  margin-top: 0;
+  font-style:italic;
+}
+
+#input_calculator {
+  flex-direction:column;
+  flex:auto;
+  align-items: stretch;
+  min-width: 300px;
+}
+
+#firstRow_rightColumn {
+  justify-content: space-between;
+}
+
+#info_container {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex: auto;
+}
+
+#pieGraphContainer {
+  align-items:center;
+  justify-content: center;
+  flex: 2 1 auto;
+}
+
+#pie_graph,
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+#barPlotComparison_container {
+  align-items:stretch;
+  justify-content: center;
+  flex: auto;
+}
+
+#barPlotComparison,
+#map {
+  height: 100%;
+  width: 100%;
 }
