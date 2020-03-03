@@ -22,6 +22,7 @@ app = dash.Dash(
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[{"name": "viewport", "content": "width=device-width"}]
 )
+server = app.server
 
 #############
 # LOAD DATA #
