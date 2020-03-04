@@ -433,16 +433,29 @@ app.layout = html.Div(
                                     value='North America',
                                     className="dcc_control_column",
                                 ),
-                                dcc.Dropdown(
-                                    id="location_country_dropdown",
-                                    value="United States of America",
-                                    className="dcc_control_column",
+
+                                html.Div(
+                                    [
+                                        dcc.Dropdown(
+                                            id="location_country_dropdown",
+                                            value="United States of America",
+                                            className="dcc_control_column",
+                                        ),
+                                    ],
+                                    id='container-country'
                                 ),
-                                dcc.Dropdown(
-                                    id="location_region_dropdown",
-                                    value = "US-CA",
-                                    className="dcc_control_column",
+
+                                html.Div(
+                                    [
+                                        dcc.Dropdown(
+                                            id="location_region_dropdown",
+                                            value = "US",
+                                            className="dcc_control_column",
+                                        ),
+                                    ],
+                                    id='container-region'
                                 ),
+
                             ],
                             className="control-container-column",
                         ),
@@ -943,6 +956,33 @@ def set_cities_options(selected_continent, selected_country,selected_provider,se
                                              CI_df.countryName == selected_country)]
     availableOptions = availableOptions.sort_values(by=['regionName'])
     return [{'label': k, 'value': v} for k,v in zip(availableOptions.regionName, availableOptions.location)]
+
+# This callback shows or hide the country/region if WORLD is selected
+@app.callback(
+    [
+        Output('container-country', 'style'),
+        Output('container-region', 'style'),
+        Output('location_country_dropdown', 'value'),
+        Output('location_region_dropdown', 'value')
+    ],
+    [Input('location_continent_dropdown', 'value')])
+def display_countryRegion(selected_continent):
+    dictOut = {'display': 'block'}
+    if selected_continent == 'Africa':
+        return dictOut, dictOut, 'South Africa', 'ZA'
+    elif selected_continent == 'Asia':
+        return dictOut, dictOut, 'China', 'CN'
+    elif selected_continent == 'Europe':
+        return dictOut, dictOut, 'United Kingdom', 'GB'
+    elif selected_continent == 'North America':
+        return dictOut, dictOut, 'United States of America', 'US'
+    elif selected_continent == 'Oceania':
+        return dictOut, dictOut, 'Australia', 'AU'
+    elif selected_continent == 'South America':
+        return dictOut, dictOut, 'Brazil', 'BR'
+    else: # selected_continent == 'World
+        return {'display': 'none'}, {'display': 'none'}, 'Any', 'WORLD'
+
 
 ### PUE ###
 
