@@ -362,26 +362,14 @@ app.layout = html.Div(
                                 dcc.Dropdown(
                                     id="platformType_dropdown",
                                     options=platformType_options,
-                                    value='cloudComputing',
+                                    value='localServer',
                                     className="dcc_control_column",
                                 ),
-
-                                # dcc.RadioItems(
-                                #     id="platformType_dropdown",
-                                #     options=platformType_options,
-                                #     value='cloudComputing',
-                                #     labelStyle={"display": "inline-block"},
-                                #     className="dcc_control",
-                                #     # style={
-                                #     #     "justify-content":"flex-end"
-                                #     # }
-                                # ),
 
                                 html.Div(
                                     [
                                         dcc.Dropdown(
                                             id="provider_dropdown",
-                                            value='gcp',
                                             className="dcc_control_column",
                                         )
                                     ],
@@ -821,8 +809,8 @@ app.clientside_callback(
     Output('provider_div', 'style'),
     [Input('platformType_dropdown', 'value')])
 def display_provider(selected_platform):
-    # if selected_platform == 'personalComputer':
-    if selected_platform in ['cloudComputing','localServer']:
+    # if selected_platform in ['cloudComputing','localServer']:
+    if selected_platform in ['cloudComputing']:
         return {'display': 'block'}
     else:
         return {'display': 'none'}
@@ -833,7 +821,17 @@ def display_provider(selected_platform):
     [Input('platformType_dropdown', 'value')])
 def set_providers_options(selected_platform):
     availableOptions = providersNames_df.loc[providersNames_df.platformType == selected_platform]
-    return [{'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider))+[("Other","other")]]
+    return [{'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider))+
+            [("Other","other")]]
+
+@app.callback(
+    Output('provider_dropdown', 'value'),
+    [Input('platformType_dropdown', 'value')])
+def set_providers_value(selected_platform):
+    if selected_platform in ['cloudComputing']:
+        return 'aws'
+    else:
+        return 'other'
 
 ### COMPUTING CORES ###
 
