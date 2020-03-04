@@ -396,7 +396,6 @@ app.layout = html.Div(
 
                                 dcc.Dropdown(
                                     id = "coreModel_dropdown",
-                                    value = "Xeon E5-2683 v4",
                                     className="dcc_control_column",
                                 ),
 
@@ -407,13 +406,13 @@ app.layout = html.Div(
                         html.Div(
                             [
                                 html.H6(
-                                    'What is the TDP of your computing core (in W)? (easily accessible online)',
+                                    'What is the Thermal Design Power (TDP) value per core of your core? '
+                                    'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)',
                                     className="control_label",
                                 ),
                                 dcc.Input(
                                     type='number',
                                     id="tdp_input",
-                                    value=15,
                                     className="dcc_control_column",
                                 )
                             ],
@@ -824,6 +823,7 @@ def set_providers_options(selected_platform):
     return [{'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider))+
             [("Other","other")]]
 
+# ...and the default value
 @app.callback(
     Output('provider_dropdown', 'value'),
     [Input('platformType_dropdown', 'value')])
@@ -835,13 +835,13 @@ def set_providers_value(selected_platform):
 
 ### COMPUTING CORES ###
 
-# This callback updates the choice of CPUs/GPUs available
+# This callback updates the choice between CPU/GPU
 @app.callback(
     Output('coreType_dropdown', 'options'),
     [Input('provider_dropdown', 'value'),
      Input('platformType_dropdown', 'value')])
 def set_coreType_options(selected_provider, selected_platform):
-    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing']):
+    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing','localServer']):
         availableOptions = cores_dict.keys()
     else:
         availableOptions = list(set(hardware_df.loc[hardware_df.provider == selected_provider, 'type']))
@@ -854,22 +854,48 @@ def set_coreType_options(selected_provider, selected_platform):
      Input('provider_dropdown','value'),
      Input('platformType_dropdown', 'value')])
 def set_coreModels_options(selected_coreType,selected_provider,selected_platform):
-    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing']):
+    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing','localServer']):
         availableOptions = sorted(list(cores_dict[selected_coreType].keys()))
     else:
         availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
                 hardware_df.provider == selected_provider), 'model'].tolist())
     return [{'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions))+[("Other","other")]]
 
+@app.callback(
+    Output('coreModel_dropdown', 'value'),
+    [Input('coreType_dropdown', 'value'),
+     Input('provider_dropdown','value'),
+     Input('platformType_dropdown', 'value')])
+
+def set_coreModels_value(selected_coreType,selected_provider,selected_platform):
+    if (selected_provider == 'other') | (selected_platform in ['personalComputer', 'cloudComputing', 'localServer']):
+        if selected_coreType == 'CPU':
+            return 'Xeon E5-2683 v4'
+        else:
+            return 'Tesla V100'
+    else:
+        return sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
+                hardware_df.provider == selected_provider), 'model'].tolist())[0]
+
 # This callback shows or hide the TDP input
 @app.callback(
     Output('tdp_div', 'style'),
     [Input('coreModel_dropdown', 'value')])
-def display_provider(selected_coreModel):
+def display_TDP(selected_coreModel):
     if selected_coreModel == "other":
         return {'display': 'block'}
     else:
         return {'display': 'none'}
+
+@app.callback(
+    Output('tdp_input','value'),
+    [Input('coreType_dropdown', 'value')]
+)
+def tdp_default(selected_coreType):
+    if selected_coreType == 'GPU':
+        return 200
+    else:
+        return 15
 
 ### LOCATION ###
 
