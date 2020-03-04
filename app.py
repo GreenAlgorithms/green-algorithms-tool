@@ -406,7 +406,7 @@ app.layout = html.Div(
                         html.Div(
                             [
                                 html.H6(
-                                    'What is the Thermal Design Power (TDP) value per core of your core? '
+                                    'What is the Thermal Design Power (TDP) value per core of your processor? '
                                     'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)',
                                     className="control_label",
                                 ),
@@ -785,9 +785,11 @@ app.layout = html.Div(
             [
                 html.H4(
                     "How to report it?"
-                )
+                ),
+
+                dcc.Markdown(id='report_markdown')
             ],
-            className="row pretty_container"
+            className="pretty_container by-column"
         ),
 
         html.Div(
@@ -908,7 +910,7 @@ def tdp_default(selected_coreType):
     if selected_coreType == 'GPU':
         return 200
     else:
-        return 15
+        return 12
 
 ### LOCATION ###
 
@@ -1062,6 +1064,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['n_cores'] = None
         output['corePower'] = None
         output['memory'] = None
+        output['runTime_hours'] = None
+        output['runTime_min'] = None
         output['runTime'] = None
         output['location'] = None
         output['carbonIntensity'] = None
@@ -1107,6 +1111,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['n_cores'] = n_cores
         output['corePower'] = corePower
         output['memory'] = memory
+        output['runTime_hours'] = runTime_hours
+        output['runTime_min'] = runTime_min
         output['runTime'] = runTime
         output['location'] = location
         output['carbonIntensity'] = carbonIntensity
@@ -1263,6 +1269,50 @@ def create_bar_chart(aggData):
     )
 
     return fig
+
+
+### UPDATE THE REPORT TEXT ###
+
+@app.callback(
+    Output('report_markdown', 'children'),
+    [Input("aggregate_data", "data")],
+)
+def fillin_report_text(aggData):
+
+    if aggData['n_cores'] > 1:
+        suffixProcessor = 's'
+    else:
+        suffixProcessor = ''
+
+    country = CI_df.loc[CI_df.location == aggData['location'], 'countryName'].values[0]
+    region = CI_df.loc[CI_df.location == aggData['location'], 'regionName'].values[0]
+
+    if region == 'Any':
+        textRegion = ''
+    else:
+        textRegion = ' ({})'.format(region)
+
+    if country in ['United States of America', 'United Kingdom']:
+        prefixCountry = 'the '
+    else:
+        prefixCountry = ''
+
+    myText = '''
+    Why not reporting the environmental footprint of your computations alongside other performance metrics? 
+    
+    Here is an example:  
+    
+    > This algorithm runs in {}h and {}min on {} {}{} {}.
+    > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months.
+    '''.format(
+        aggData['runTime_hours'], aggData['runTime_min'],
+        aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
+        prefixCountry, country, textRegion,
+        aggData['carbonEmissions'], aggData['n_treeMonths']
+    )
+
+    return myText
+
 
 
 ### UPDATE IMAGES ###
