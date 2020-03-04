@@ -3,7 +3,7 @@ model,TDP,n_cores,TDP_per_core,source
 A8-7680,45,4,11.3,https://www.techpowerup.com/cpu-specs/
 A9-9425 SoC,15,2,7.5,https://www.techpowerup.com/cpu-specs/
 Athlon 3000G,35,2,17.5,https://www.techpowerup.com/cpu-specs/
-Core 2 Quad Q6600 (95W),95,4,23.8,https://www.techpowerup.com/cpu-specs/
+Core 2 Quad Q6600,95,4,23.8,https://www.techpowerup.com/cpu-specs/
 Core i3-10100,65,4,16.3,https://www.techpowerup.com/cpu-specs/
 Core i3-10300,62,4,15.5,https://www.techpowerup.com/cpu-specs/
 Core i3-10320,91,4,22.8,https://www.techpowerup.com/cpu-specs/
@@ -61,3 +61,4 @@ Xeon Platinum 9282,400,56,7.1,https://www.techpowerup.com/cpu-specs/
 Xeon X3430,95,4,23.8,https://ark.intel.com/content/www/us/en/ark/products/42927/intel-xeon-processor-x3430-8m-cache-2-40-ghz.html
 Xeon E5-2690 v3,135,12,11.3,https://ark.intel.com/content/www/us/en/ark/products/81713/intel-xeon-processor-e5-2690-v3-30m-cache-2-60-ghz.html
 Xeon E5-4650L,115,8,14.4,https://ark.intel.com/content/www/us/en/ark/products/64606/intel-xeon-processor-e5-4650l-20m-cache-2-60-ghz-8-00-gt-s-intel-qpi.html
+Xeon X5660,95,6,15.8,https://ark.intel.com/content/www/us/en/ark/products/47921/intel-xeon-processor-x5660-12m-cache-2-80-ghz-6-40-gt-s-intel-qpi.html
