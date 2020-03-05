@@ -1,4 +1,7 @@
-index,,>1,
-provider,datacenter,PUE,source
-Unknown,,1.58,"2018 global average for data centres - Rhonda Ascierto. 2018. Uptime Institute Global Data Center Survey. Technical report, Uptime Institute"
-csd3,GB,1.15,CSD3 support team (PUE of West Cambridge Data Centre)
+index,>1,
+provider,PUE,source
+Unknown,1.67,2019 https://journal.uptimeinstitute.com/is-pue-actually-going-up/
+csd3,1.15,CSD3 support team (PUE of West Cambridge Data Centre)
+gcp,1.11,https://www.google.co.uk/about/datacenters/efficiency/
+aws,1.2,https://aws.amazon.com/about-aws/sustainability/
+azure,1.125,but only for new datacentres https://azure.microsoft.com/en-gb/global-infrastructure/

@@ -1031,13 +1031,14 @@ def display_pue_input(answer_pue):
         Input("runTime_min_input", "value"),
         Input("location_region_dropdown", "value"),
         Input("PUE_input", "value"),
-        Input('platformType_dropdown', 'value')
+        Input('platformType_dropdown', 'value'),
+        Input('provider_dropdown', 'value')
     ],
     [
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, PUE, selected_platform, existing_state):
+def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, PUE, selected_platform, selected_provider, existing_state):
     output = dict()
 
     test_runTime = 0
@@ -1087,8 +1088,12 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
+        print(selected_provider)
+
         if selected_platform == 'personalComputer':
             PUE_used = 1
+        elif selected_provider in pue_df.provider.values:
+            PUE_used = pue_df.loc[pue_df.provider == selected_provider, "PUE"].values[0]
         else:
             PUE_used = PUE
 
