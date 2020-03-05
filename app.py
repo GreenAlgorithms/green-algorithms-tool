@@ -115,7 +115,8 @@ platformType_options = [
     {'label': k,
      'value': v} for k,v in list(providersNames_df.loc[:,['platformName',
                                                           'platformType']].drop_duplicates().apply(tuple, axis=1)) +
-                            [('Personal computer', 'personalComputer')]
+                            [('Personal computer', 'personalComputer')] +
+                            [('Local server', 'localServer')]
 ]
 
 yesNo_options = [
