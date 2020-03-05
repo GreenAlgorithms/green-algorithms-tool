@@ -362,26 +362,14 @@ app.layout = html.Div(
                                 dcc.Dropdown(
                                     id="platformType_dropdown",
                                     options=platformType_options,
-                                    value='cloudComputing',
+                                    value='localServer',
                                     className="dcc_control_column",
                                 ),
-
-                                # dcc.RadioItems(
-                                #     id="platformType_dropdown",
-                                #     options=platformType_options,
-                                #     value='cloudComputing',
-                                #     labelStyle={"display": "inline-block"},
-                                #     className="dcc_control",
-                                #     # style={
-                                #     #     "justify-content":"flex-end"
-                                #     # }
-                                # ),
 
                                 html.Div(
                                     [
                                         dcc.Dropdown(
                                             id="provider_dropdown",
-                                            value='gcp',
                                             className="dcc_control_column",
                                         )
                                     ],
@@ -408,7 +396,6 @@ app.layout = html.Div(
 
                                 dcc.Dropdown(
                                     id = "coreModel_dropdown",
-                                    value = "Xeon E5-2683 v4",
                                     className="dcc_control_column",
                                 ),
 
@@ -419,13 +406,13 @@ app.layout = html.Div(
                         html.Div(
                             [
                                 html.H6(
-                                    'What is the TDP of your computing core (in W)? (easily accessible online)',
+                                    'What is the Thermal Design Power (TDP) value per core of your processor? '
+                                    'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)',
                                     className="control_label",
                                 ),
                                 dcc.Input(
                                     type='number',
                                     id="tdp_input",
-                                    value=15,
                                     className="dcc_control_column",
                                 )
                             ],
@@ -446,16 +433,29 @@ app.layout = html.Div(
                                     value='North America',
                                     className="dcc_control_column",
                                 ),
-                                dcc.Dropdown(
-                                    id="location_country_dropdown",
-                                    value="United States of America",
-                                    className="dcc_control_column",
+
+                                html.Div(
+                                    [
+                                        dcc.Dropdown(
+                                            id="location_country_dropdown",
+                                            value="United States of America",
+                                            className="dcc_control_column",
+                                        ),
+                                    ],
+                                    id='container-country'
                                 ),
-                                dcc.Dropdown(
-                                    id="location_region_dropdown",
-                                    value = "US-CA",
-                                    className="dcc_control_column",
+
+                                html.Div(
+                                    [
+                                        dcc.Dropdown(
+                                            id="location_region_dropdown",
+                                            value = "US",
+                                            className="dcc_control_column",
+                                        ),
+                                    ],
+                                    id='container-region'
                                 ),
+
                             ],
                             className="control-container-column",
                         ),
@@ -785,9 +785,11 @@ app.layout = html.Div(
             [
                 html.H4(
                     "How to report it?"
-                )
+                ),
+
+                dcc.Markdown(id='report_markdown')
             ],
-            className="row pretty_container"
+            className="pretty_container by-column"
         ),
 
         html.Div(
@@ -821,8 +823,8 @@ app.clientside_callback(
     Output('provider_div', 'style'),
     [Input('platformType_dropdown', 'value')])
 def display_provider(selected_platform):
-    # if selected_platform == 'personalComputer':
-    if selected_platform in ['cloudComputing','localServer']:
+    # if selected_platform in ['cloudComputing','localServer']:
+    if selected_platform in ['cloudComputing']:
         return {'display': 'block'}
     else:
         return {'display': 'none'}
@@ -833,17 +835,28 @@ def display_provider(selected_platform):
     [Input('platformType_dropdown', 'value')])
 def set_providers_options(selected_platform):
     availableOptions = providersNames_df.loc[providersNames_df.platformType == selected_platform]
-    return [{'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider))+[("Other","other")]]
+    return [{'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider))+
+            [("Other","other")]]
+
+# ...and the default value
+@app.callback(
+    Output('provider_dropdown', 'value'),
+    [Input('platformType_dropdown', 'value')])
+def set_providers_value(selected_platform):
+    if selected_platform in ['cloudComputing']:
+        return 'aws'
+    else:
+        return 'other'
 
 ### COMPUTING CORES ###
 
-# This callback updates the choice of CPUs/GPUs available
+# This callback updates the choice between CPU/GPU
 @app.callback(
     Output('coreType_dropdown', 'options'),
     [Input('provider_dropdown', 'value'),
      Input('platformType_dropdown', 'value')])
 def set_coreType_options(selected_provider, selected_platform):
-    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing']):
+    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing','localServer']):
         availableOptions = cores_dict.keys()
     else:
         availableOptions = list(set(hardware_df.loc[hardware_df.provider == selected_provider, 'type']))
@@ -856,22 +869,48 @@ def set_coreType_options(selected_provider, selected_platform):
      Input('provider_dropdown','value'),
      Input('platformType_dropdown', 'value')])
 def set_coreModels_options(selected_coreType,selected_provider,selected_platform):
-    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing']):
+    if (selected_provider == 'other')|(selected_platform in ['personalComputer','cloudComputing','localServer']):
         availableOptions = sorted(list(cores_dict[selected_coreType].keys()))
     else:
         availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
                 hardware_df.provider == selected_provider), 'model'].tolist())
     return [{'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions))+[("Other","other")]]
 
+@app.callback(
+    Output('coreModel_dropdown', 'value'),
+    [Input('coreType_dropdown', 'value'),
+     Input('provider_dropdown','value'),
+     Input('platformType_dropdown', 'value')])
+
+def set_coreModels_value(selected_coreType,selected_provider,selected_platform):
+    if (selected_provider == 'other') | (selected_platform in ['personalComputer', 'cloudComputing', 'localServer']):
+        if selected_coreType == 'CPU':
+            return 'Xeon E5-2683 v4'
+        else:
+            return 'Tesla V100'
+    else:
+        return sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
+                hardware_df.provider == selected_provider), 'model'].tolist())[0]
+
 # This callback shows or hide the TDP input
 @app.callback(
     Output('tdp_div', 'style'),
     [Input('coreModel_dropdown', 'value')])
-def display_provider(selected_coreModel):
+def display_TDP(selected_coreModel):
     if selected_coreModel == "other":
         return {'display': 'block'}
     else:
         return {'display': 'none'}
+
+@app.callback(
+    Output('tdp_input','value'),
+    [Input('coreType_dropdown', 'value')]
+)
+def tdp_default(selected_coreType):
+    if selected_coreType == 'GPU':
+        return 200
+    else:
+        return 12
 
 ### LOCATION ###
 
@@ -920,6 +959,33 @@ def set_cities_options(selected_continent, selected_country,selected_provider,se
     availableOptions = availableOptions.sort_values(by=['regionName'])
     return [{'label': k, 'value': v} for k,v in zip(availableOptions.regionName, availableOptions.location)]
 
+# This callback shows or hide the country/region if WORLD is selected
+@app.callback(
+    [
+        Output('container-country', 'style'),
+        Output('container-region', 'style'),
+        Output('location_country_dropdown', 'value'),
+        Output('location_region_dropdown', 'value')
+    ],
+    [Input('location_continent_dropdown', 'value')])
+def display_countryRegion(selected_continent):
+    dictOut = {'display': 'block'}
+    if selected_continent == 'Africa':
+        return dictOut, dictOut, 'South Africa', 'ZA'
+    elif selected_continent == 'Asia':
+        return dictOut, dictOut, 'China', 'CN'
+    elif selected_continent == 'Europe':
+        return dictOut, dictOut, 'United Kingdom', 'GB'
+    elif selected_continent == 'North America':
+        return dictOut, dictOut, 'United States of America', 'US'
+    elif selected_continent == 'Oceania':
+        return dictOut, dictOut, 'Australia', 'AU'
+    elif selected_continent == 'South America':
+        return dictOut, dictOut, 'Brazil', 'BR'
+    else: # selected_continent == 'World
+        return {'display': 'none'}, {'display': 'none'}, 'Any', 'WORLD'
+
+
 ### PUE ###
 
 # This callback shows or hides the PUE question depending on the different answers
@@ -965,13 +1031,14 @@ def display_pue_input(answer_pue):
         Input("runTime_min_input", "value"),
         Input("location_region_dropdown", "value"),
         Input("PUE_input", "value"),
-        Input('platformType_dropdown', 'value')
+        Input('platformType_dropdown', 'value'),
+        Input('provider_dropdown', 'value')
     ],
     [
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, PUE, selected_platform, existing_state):
+def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, PUE, selected_platform, selected_provider, existing_state):
     output = dict()
 
     test_runTime = 0
@@ -998,6 +1065,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['n_cores'] = None
         output['corePower'] = None
         output['memory'] = None
+        output['runTime_hours'] = None
+        output['runTime_min'] = None
         output['runTime'] = None
         output['location'] = None
         output['carbonIntensity'] = None
@@ -1019,8 +1088,12 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
+        print(selected_provider)
+
         if selected_platform == 'personalComputer':
             PUE_used = 1
+        elif selected_provider in pue_df.provider.values:
+            PUE_used = pue_df.loc[pue_df.provider == selected_provider, "PUE"].values[0]
         else:
             PUE_used = PUE
 
@@ -1043,6 +1116,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['n_cores'] = n_cores
         output['corePower'] = corePower
         output['memory'] = memory
+        output['runTime_hours'] = runTime_hours
+        output['runTime_min'] = runTime_min
         output['runTime'] = runTime
         output['location'] = location
         output['carbonIntensity'] = carbonIntensity
@@ -1199,6 +1274,50 @@ def create_bar_chart(aggData):
     )
 
     return fig
+
+
+### UPDATE THE REPORT TEXT ###
+
+@app.callback(
+    Output('report_markdown', 'children'),
+    [Input("aggregate_data", "data")],
+)
+def fillin_report_text(aggData):
+
+    if aggData['n_cores'] > 1:
+        suffixProcessor = 's'
+    else:
+        suffixProcessor = ''
+
+    country = CI_df.loc[CI_df.location == aggData['location'], 'countryName'].values[0]
+    region = CI_df.loc[CI_df.location == aggData['location'], 'regionName'].values[0]
+
+    if region == 'Any':
+        textRegion = ''
+    else:
+        textRegion = ' ({})'.format(region)
+
+    if country in ['United States of America', 'United Kingdom']:
+        prefixCountry = 'the '
+    else:
+        prefixCountry = ''
+
+    myText = '''
+    Why not reporting the environmental footprint of your computations alongside other performance metrics? 
+    
+    Here is an example:  
+    
+    > This algorithm runs in {}h and {}min on {} {}{} {}.
+    > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months.
+    '''.format(
+        aggData['runTime_hours'], aggData['runTime_min'],
+        aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
+        prefixCountry, country, textRegion,
+        aggData['carbonEmissions'], aggData['n_treeMonths']
+    )
+
+    return myText
+
 
 
 ### UPDATE IMAGES ###
