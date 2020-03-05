@@ -152,14 +152,15 @@ body {
 #header {
   align-items: center;
   justify-content: center;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 #title_container {
   text-align: center;
   flex-direction:column;
   width:100%;
-  padding-top:25px;
+  padding:35px;
+  padding-top:40px;
   background-color: rgba(249, 249, 249,0.6);
 }
 
