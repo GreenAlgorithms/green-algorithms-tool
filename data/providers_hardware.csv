@@ -1,6 +1,2 @@
 index,CPU/GPU/TPU,"Must match the models in ""TDP_cpu"" or ""TDP_gpu""",
 provider,type,model,source
-csd3,CPU,Xeon Gold 6142,CSD3 support team
-csd3,GPU,Tesla P100 PCIe 16GB,CSD3 support team
-massive,CPU,Xeon E5-2680 v3,https://docs.massive.org.au/M3/m3users.html
-baker,CPU,Xeon E5-2683 v4,cluster documentation

@@ -5,7 +5,7 @@
 
 body {
   background-color: #f2f2f2;
-  background-image: url("stripes_fading_light2.png");
+  background-image: url("stripes_sym2.png");
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-size: 100% 100%; /*700px;*/
@@ -131,6 +131,10 @@ body {
  flex:1 25%;
 }
 
+.flex-auto {
+  flex:auto;
+}
+
 .by-column {
   flex-direction: column;
 }
@@ -148,14 +152,15 @@ body {
 #header {
   align-items: center;
   justify-content: center;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 #title_container {
   text-align: center;
   flex-direction:column;
   width:100%;
-  padding-top:25px;
+  padding:35px;
+  padding-top:40px;
   background-color: rgba(249, 249, 249,0.6);
 }
 
@@ -186,22 +191,16 @@ body {
 }
 
 #pieGraphContainer {
-  align-items:center;
+  /*align-items:center;*/
   justify-content: center;
   flex: 2 1 auto;
 }
 
-#pie_graph,
-#map {
-  height: 100%;
+#pie_graph {
+  height: 70%;
   width: 100%;
 }
 
-#barPlotComparison_container {
-  align-items:stretch;
-  justify-content: center;
-  flex: auto;
-}
 
 #barPlotComparison,
 #map {

@@ -238,13 +238,13 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H1(
-                            "Green Algorithms Initiative",
+                            "How green is your research?",
                             id='title',
                         ),
-                        html.H4(
-                            "How green is your research?",
-                            id='subtitle'
-                        ),
+                        # html.H4(
+                        #     "How sustainable is your research?",
+                        #     id='subtitle'
+                        # ),
                     ],
                     # className="one-half column flex-display",
                     className="pretty_container",
@@ -267,9 +267,10 @@ app.layout = html.Div(
                                     "Details about your algorithm"
                                 ),
 
-                                # html.P(
-                                #     "Each parameter below affects your carbon footprint"
-                                # ),
+                                dcc.Markdown('''
+                                _To understand how each parameter impacts your Carbon Emissions, 
+                                check out the formula below._
+                                '''),
                             ],
                             className='centered-text',
                         ),
@@ -467,7 +468,7 @@ app.layout = html.Div(
                                 html.Div(
                                     [
                                         html.H6(
-                                            "Do you know the Power Usage Efficiency (PUE) of your local datacenter?",
+                                            "Do you know the Power Usage Efficiency (PUE) of your local datacentre?",
                                             className="control_label",
                                         ),
 
@@ -577,7 +578,7 @@ app.layout = html.Div(
                                                 ),
 
                                                 html.H6(
-                                                    "Driving a passenger car",
+                                                    "in a passenger car",
                                                 )
                                             ],
                                             className='container-labels-icon'
@@ -603,7 +604,7 @@ app.layout = html.Div(
                                                 ),
 
                                                 html.H6(
-                                                    "Flying in economy",
+                                                    "of a flight NY -> SF",
                                                 )
                                             ],
                                             className='container-labels-icon'
@@ -621,21 +622,41 @@ app.layout = html.Div(
                         ## SECOND ROW: GRAPH
                         html.Div(
                             [
-                                html.H4(
-                                    "Breakdown of the emissions"
+                                html.Div(
+                                    [
+                                        html.H4(
+                                            "Computing cores VS Memory"
+                                        ),
+
+                                        dcc.Graph(
+                                            id="pie_graph",
+                                        )
+                                    ],
+                                    className='flex-display by-column one-half column',
                                 ),
 
-                                dcc.Graph(
-                                    id="pie_graph",
-                                )
+                                html.Div(
+                                    [
+                                        html.H4(
+                                            "How the location impacts your footprint"
+                                        ),
+
+                                        dcc.Graph(
+                                            id = "barPlotComparison"
+                                        )
+                                    ],
+                                    className='flex-display by-column one-half column flex-auto',
+
+                                ),
+
                             ],
                             id="pieGraphContainer",
-                            className="pretty_container by-column",
+                            className="pretty_container row",
                         ),
 
                     ],
                     id="firstRow_rightColumn",
-                    className="eight columns flex-display by-column bare_container",
+                    className="eight columns flex-display by-column bare_container flex-auto",
                 ),
 
             ],
@@ -659,16 +680,41 @@ app.layout = html.Div(
 
                 html.Div(
                     [
-                        html.H4(
-                            "And elsewhere?"
+                        html.Div(
+                            [
+                                html.H4(
+                                    "About CO2e"
+                                ),
+
+                                dcc.Markdown('''
+                                Carbon Dioxide equivalent measures 
+                                the Global Warming Potential of a mixture of greenhouse gases.
+                                __It represents the quantity of CO2 that would have 
+                                the same impact on the environment__ as the mix of interest
+                                and is used as a standardised unit to assess of 
+                                the environmental impact of human activities.
+                                ''')
+                            ],
+                            className="pretty_container by-column flex-auto centered-text"
                         ),
 
-                        dcc.Graph(
-                            id = "barPlotComparison"
-                        )
+                        html.Div(
+                            [
+                                html.H4(
+                                    "What is a tree-month?"
+                                ),
+
+                                dcc.Markdown('''
+                                It's the amount of CO2 sequestered by a tree in a month.
+                                __We use it to measure how long it would take to a mature tree
+                                to absorb the CO2 emitted by an algorithm.__
+                                We use the value of 11.4 kg CO2/year, which is roughly 1kg CO2/month.
+                                '''),
+                            ],
+                            className="pretty_container by-column flex-auto centered-text"
+                        ),
                     ],
-                    id='barPlotComparison_container',
-                    className="pretty_container five columns by-column",
+                    className="flex-display five columns by-column",
                 )
             ],
             # id='secondRow',
@@ -687,17 +733,23 @@ app.layout = html.Div(
                                 ),
 
                                 dcc.Markdown('''
-                                The main factor impacting your Carbon Emissions is the location of your servers:
+                                The main factor impacting your carbon emissions is the location of your servers:
                                 the same algorithm will emit __64 times more__ CO2e
-                                if ran in Australia compared to Switzerland.
+                                if ran in Australia compared to Switzerland. Although it's not always the case, 
+                                many cloud providers offer the option to select a datacentre.
+                                
+                                Memory power draw is a huge source of waste: 
+                                because __the energy consumption depends on the memory requested, 
+                                not the actual usage__, only requesting the needed memory 
+                                is a painless way to reduce the emissions.
 
-                                Only requesting the necessary memory can also improve greatly your carbon footprint.
-
-                                Generally, writing sensible code that runs faster with fewer resources saves both money
-                                and the planet.
+                                __Generally, taking the time to write optimised code that runs faster with fewer 
+                                resources saves both money and the planet.__
+                                
+                                And of course, only run jobs that you need!
                                 ''')
                             ],
-                            className="pretty_container by-column"
+                            className="pretty_container by-column centered-text"
                         ),
 
                         html.Div(
@@ -708,7 +760,7 @@ app.layout = html.Div(
 
                                 dcc.Markdown(id='report_markdown')
                             ],
-                            className="pretty_container by-column"
+                            className="pretty_container by-column centered-text"
                         ),
                     ],
                     className='flex-display six columns by-column'
@@ -722,23 +774,22 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        The carbon emission is calculated by estimating the energy draw of the algorithm
-                        and the carbon intensity of producing such energy at a given location:
+                        The carbon emissions are calculated by estimating the energy draw of the algorithm
+                        and the carbon intensity of producing this energy at a given location:
 
                         `carbon emissions = energy needed * carbon intensity`
 
-                        The energy needed is:
+                        The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
 
-                        `energy needed = time * (power draw for computing cores + power draw for memory) * PUE`
-
-                        * the power draw for the computing cores depends on the CPU model and number of cores
-                        * the memory power draw depends on the size of memory requested.
-                        * the PUE (Power Usage Effectiveness) measures how much extra energy is needed for the data centre's cooling and lighting etc.
+                        The power draw for the computing cores depends on the CPU model and number of cores, 
+                        while the memory power draw only depends on the size of memory requested.
+                        The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
+                        to operate the datacentre (cooling, lighting etc.).
 
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.
                         ''')
                     ],
-                    className="pretty_container six columns by-column"
+                    className="pretty_container six columns by-column centered-text"
                 )
             ],
             className="row flex-display",
@@ -747,35 +798,40 @@ app.layout = html.Div(
         ## FOURTH ROW
         html.Div(
             [
+
                 html.Div(
                     [
                         html.H4(
-                            "What is CO2e?"
+                            "About us"
                         ),
 
                         dcc.Markdown('''
-                        It's a metric used to measure the Global Warming Potential of a mixture of greenhouse gases.
-                        It represents the quantity of CO2 that would have the same impact of the environment.
-                        ''')
+                        The Green Algorithms project was jointly developed by 
+                        Loïc Lannelongue¹, Jason Grealey², and Michael Inouye³
+                        
+                        (1) University of Cambridge
+                        
+                        (2) Baker Heart and Diabetes Institute and La Trobe University
+                        
+                        (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
+                        
+                        More information [here](https://sysgenresearch.org)
+                         ''')
                     ],
-                    className="pretty_container four columns by-column"
+                    className="pretty_container four columns by-column centered-text"
                 ),
 
                 html.Div(
                     [
                         html.H4(
-                            "What is a tree-month?"
+                            "The data"
                         ),
 
                         dcc.Markdown('''
-                        It's the amount of CO2 sequestred by a tree in a month.
-                        It's a unit measuring how long it would take for a mature tree
-                        to absorb the CO2e emitted by your algorithm.
-
-                        As an estimate here, we use 11.4 kg CO2e/year, which is roughly __1kg CO2e/month__.
-                        '''),
+                        The data used to run this calculator can be found on github: 
+                         ''')
                     ],
-                    className="pretty_container four columns by-column"
+                    className="pretty_container four columns by-column centered-text"
                 ),
 
                 html.Div(
@@ -789,29 +845,14 @@ app.layout = html.Div(
                         from 1850 to 2018.
                         This striking design has been made by Ed Hawkins from the University of Reading.
 
-                        More on [ShowYourStipes.info]('https://showyourstripes.info')
+                        More on [ShowYourStipes.info](https://showyourstripes.info)
                         ''')
                     ],
-                    className="pretty_container four columns by-column"
-                )
+                    className="pretty_container four columns by-column centered-text"
+                ),
             ],
             className="row flex-display",
         ),
-
-        html.Div(
-            [
-                html.H4(
-                    "Who are we?"
-                ),
-
-                dcc.Markdown('''
-                    \nThe Green algorithms initiative was created by \[1\] Loic Lannelongue, \[2\] Jason Grealey, and \[3\] Michael Inouye\n\n \[1\] University of Cambridge \n \[2\] Baker Heart and Diabetes Institute and La Trobe University \n Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
-                        \nInformation about our lab is available [here]('https://sysgenresearch.org')
-                         ''')
-            ],
-            className="pretty_container"
-            #className="row pretty_container"
-            )
     ],
     id="mainContainer",
 )
@@ -1088,7 +1129,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['CE_core'] = 0
         output['CE_memory'] = 0
         output['n_treeMonths'] = 0
-        output['nkm_flying'] = 0
+        # output['nkm_flying'] = 0
+        output['flying_context'] = 0
         output['nkm_drivingUS'] = 0
         output['nkm_drivingEU'] = 0
         output['nkm_train'] = 0
@@ -1099,8 +1141,6 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     else:
         # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
-
-        print(selected_provider)
 
         if selected_platform == 'personalComputer':
             PUE_used = 1
@@ -1144,7 +1184,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
         output['n_treeMonths'] = carbonEmissions / refValues_dict['treeYear'] * 12
 
-        output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
+        # output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
+        output['flying_context'] =  carbonEmissions / refValues_dict['flight_NY-SF']
         output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
         output['nkm_drivingEU'] = carbonEmissions / refValues_dict['passengerCar_EU_perkm']
         output['nkm_train'] = carbonEmissions / refValues_dict['train_perkm']
@@ -1166,7 +1207,7 @@ def update_text(data):
     text_CE = "{} g CO2e".format(round(data['carbonEmissions'], 2))
     text_ty = "{} tree-months".format(round(data['n_treeMonths'],2))
     text_car = "{} km".format(round(data['nkm_drivingEU'], 2))
-    text_fly = "{} km".format(round(data['nkm_flying'], 2))
+    text_fly = "{} %".format(round(data['flying_context']*100, 0))
 
     return text_CE, text_ty, text_car, text_fly
 
@@ -1315,12 +1356,14 @@ def fillin_report_text(aggData):
         prefixCountry = ''
 
     myText = '''
-    Why not reporting the environmental footprint of your computations alongside other performance metrics?
-
-    Here is an example:
+    It's important to track the impact 
+    of computational research on climate change in order to stimulate greener algorithms.
+    For that, we believe that the carbon footprint of a project should be reported on articles
+    alongside other performance metrics. Here is an example you can include in your paper:
 
     > This algorithm runs in {}h and {}min on {} {}{} {}.
-    > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months.
+    > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months 
+    (calculated using www.green-algorithms.org).
     '''.format(
         aggData['runTime_hours'], aggData['runTime_min'],
         aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],

@@ -6,4 +6,4 @@ passengerCar_US_perkm,251,in gCO2/km from https://www.epa.gov/greenvehicles/gree
 train_perkm,41,in gCO2/km from https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2019
 flight_economy_perkm,145,in gCO2/km from https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2019
 treeYear,11400,in gCO2/tree/year from http://www.sciencedirect.com/science/article/pii/S0269749101002640
-worldAverageCI,475,in gCO2e/kWh
+flight_NY-SF,57000000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
