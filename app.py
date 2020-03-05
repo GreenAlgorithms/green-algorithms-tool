@@ -238,11 +238,11 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H1(
-                            "Green Algorithms Initiative",
+                            "Green Algorithms",
                             id='title',
                         ),
                         html.H4(
-                            "How green is your research?",
+                            "How sustainable is your research?",
                             id='subtitle'
                         ),
                     ],
@@ -267,9 +267,9 @@ app.layout = html.Div(
                                     "Details about your algorithm"
                                 ),
 
-                                # html.P(
-                                #     "Each parameter below affects your carbon footprint"
-                                # ),
+                                dcc.Markdown('''
+                                _To understand how each parameter impacts your Carboon Emissions, check out the formula below._
+                                '''),
                             ],
                             className='centered-text',
                         ),
@@ -577,7 +577,7 @@ app.layout = html.Div(
                                                 ),
 
                                                 html.H6(
-                                                    "Driving a passenger car",
+                                                    "in a passenger car",
                                                 )
                                             ],
                                             className='container-labels-icon'
@@ -603,7 +603,7 @@ app.layout = html.Div(
                                                 ),
 
                                                 html.H6(
-                                                    "Flying in economy",
+                                                    "of a flight NY -> SF",
                                                 )
                                             ],
                                             className='container-labels-icon'
@@ -621,21 +621,41 @@ app.layout = html.Div(
                         ## SECOND ROW: GRAPH
                         html.Div(
                             [
-                                html.H4(
-                                    "Breakdown of the emissions"
+                                html.Div(
+                                    [
+                                        html.H4(
+                                            "Breakdown of the emissions"
+                                        ),
+
+                                        dcc.Graph(
+                                            id="pie_graph",
+                                        )
+                                    ],
+                                    className='flex-display by-column one-half column',
                                 ),
 
-                                dcc.Graph(
-                                    id="pie_graph",
-                                )
+                                html.Div(
+                                    [
+                                        html.H4(
+                                            "How the location impacts your footprint"
+                                        ),
+
+                                        dcc.Graph(
+                                            id = "barPlotComparison"
+                                        )
+                                    ],
+                                    className='flex-display by-column one-half column flex-auto',
+
+                                ),
+
                             ],
                             id="pieGraphContainer",
-                            className="pretty_container by-column",
+                            className="pretty_container row",
                         ),
 
                     ],
                     id="firstRow_rightColumn",
-                    className="eight columns flex-display by-column bare_container",
+                    className="eight columns flex-display by-column bare_container flex-auto",
                 ),
 
             ],
@@ -659,16 +679,38 @@ app.layout = html.Div(
 
                 html.Div(
                     [
-                        html.H4(
-                            "And elsewhere?"
+                        html.Div(
+                            [
+                                html.H4(
+                                    "About CO2e"
+                                ),
+
+                                dcc.Markdown('''
+                                It's a metric used to measure the Global Warming Potential of a mixture of greenhouse gases.
+                                It represents the quantity of CO2 that would have the same impact of the environment.
+                                ''')
+                            ],
+                            className="pretty_container by-column flex-auto"
                         ),
 
-                        dcc.Graph(
-                            id = "barPlotComparison"
-                        )
+                        html.Div(
+                            [
+                                html.H4(
+                                    "What is a tree-month?"
+                                ),
+
+                                dcc.Markdown('''
+                                It's the amount of CO2 sequestred by a tree in a month.
+                                It's a unit measuring how long it would take for a mature tree
+                                to absorb the CO2e emitted by your algorithm.
+                                
+                                As an estimate here, we use 11.4 kg CO2e/year, which is roughly __1kg CO2e/month__.
+                                '''),
+                            ],
+                            className="pretty_container by-column flex-auto"
+                        ),
                     ],
-                    id='barPlotComparison_container',
-                    className="pretty_container five columns by-column",
+                    className="flex-display five columns by-column",
                 )
             ],
             # id='secondRow',
@@ -747,16 +789,24 @@ app.layout = html.Div(
         ## FOURTH ROW
         html.Div(
             [
+
                 html.Div(
                     [
                         html.H4(
-                            "What is CO2e?"
+                            "Who are we?"
                         ),
 
                         dcc.Markdown('''
-                        It's a metric used to measure the Global Warming Potential of a mixture of greenhouse gases.
-                        It represents the quantity of CO2 that would have the same impact of the environment.
-                        ''')
+                        The Green algorithms initiative was created by 
+                        \[1\] Loic Lannelongue, \[2\] Jason Grealey, and \[3\] Michael Inouye
+                        
+                        \[1\] University of Cambridge
+                        
+                        \[2\] Baker Heart and Diabetes Institute and La Trobe University
+                        Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
+                        
+                        Information about our lab is available [here]('https://sysgenresearch.org')
+                         ''')
                     ],
                     className="pretty_container four columns by-column"
                 ),
@@ -764,16 +814,12 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H4(
-                            "What is a tree-month?"
+                            "The data"
                         ),
 
                         dcc.Markdown('''
-                        It's the amount of CO2 sequestred by a tree in a month.
-                        It's a unit measuring how long it would take for a mature tree
-                        to absorb the CO2e emitted by your algorithm.
-
-                        As an estimate here, we use 11.4 kg CO2e/year, which is roughly __1kg CO2e/month__.
-                        '''),
+                        The data used to run this calculator can be found on github: 
+                         ''')
                     ],
                     className="pretty_container four columns by-column"
                 ),
@@ -793,25 +839,10 @@ app.layout = html.Div(
                         ''')
                     ],
                     className="pretty_container four columns by-column"
-                )
+                ),
             ],
             className="row flex-display",
         ),
-
-        html.Div(
-            [
-                html.H4(
-                    "Who are we?"
-                ),
-
-                dcc.Markdown('''
-                    \nThe Green algorithms initiative was created by \[1\] Loic Lannelongue, \[2\] Jason Grealey, and \[3\] Michael Inouye\n\n \[1\] University of Cambridge \n \[2\] Baker Heart and Diabetes Institute and La Trobe University \n Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
-                        \nInformation about our lab is available [here]('https://sysgenresearch.org')
-                         ''')
-            ],
-            className="pretty_container"
-            #className="row pretty_container"
-            )
     ],
     id="mainContainer",
 )
@@ -1088,7 +1119,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['CE_core'] = 0
         output['CE_memory'] = 0
         output['n_treeMonths'] = 0
-        output['nkm_flying'] = 0
+        # output['nkm_flying'] = 0
+        output['flying_context'] = 0
         output['nkm_drivingUS'] = 0
         output['nkm_drivingEU'] = 0
         output['nkm_train'] = 0
@@ -1099,8 +1131,6 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     else:
         # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
-
-        print(selected_provider)
 
         if selected_platform == 'personalComputer':
             PUE_used = 1
@@ -1144,7 +1174,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
         output['n_treeMonths'] = carbonEmissions / refValues_dict['treeYear'] * 12
 
-        output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
+        # output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
+        output['flying_context'] =  carbonEmissions / refValues_dict['flight_NY-SF']
         output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
         output['nkm_drivingEU'] = carbonEmissions / refValues_dict['passengerCar_EU_perkm']
         output['nkm_train'] = carbonEmissions / refValues_dict['train_perkm']
@@ -1166,7 +1197,7 @@ def update_text(data):
     text_CE = "{} g CO2e".format(round(data['carbonEmissions'], 2))
     text_ty = "{} tree-months".format(round(data['n_treeMonths'],2))
     text_car = "{} km".format(round(data['nkm_drivingEU'], 2))
-    text_fly = "{} km".format(round(data['nkm_flying'], 2))
+    text_fly = "{} %".format(round(data['flying_context']*100, 0))
 
     return text_CE, text_ty, text_car, text_fly
 
