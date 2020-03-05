@@ -680,21 +680,39 @@ app.layout = html.Div(
             [
                 html.Div(
                     [
-                        html.H4(
-                            "What can you do about it?"
+                        html.Div(
+                            [
+                                html.H4(
+                                    "What can you do about it?"
+                                ),
+
+                                dcc.Markdown('''
+                                The main factor impacting your Carbon Emissions is the location of your servers: 
+                                the same algorithm will emit __64 times more__ CO2e 
+                                if ran in Australia compared to Switzerland.
+                                
+                                Only requesting the necessary memory can also improve greatly your carbon footprint. 
+                                
+                                Generally, writing sensible code that runs faster with fewer resources saves both money
+                                and the planet.
+                                ''')
+                            ],
+                            className="pretty_container by-column"
                         ),
 
-                        dcc.Markdown('''
-                        The main factor impacting your Carbon Emissions is the location of your servers: 
-                        the same algorithm will emit __64 times more__ CO2e if ran in Australia compared to Switzerland.
-                        
-                        Only requesting the necessary memory can also improve greatly your carbon footprint. 
-                        
-                        Generally, writing sensible code that runs faster with fewer resources saves both money
-                         and the planet.
-                        ''')
+                        html.Div(
+                            [
+                                html.H4(
+                                    "How to report it?"
+                                ),
+
+                                dcc.Markdown(id='report_markdown')
+                            ],
+                            className="pretty_container by-column"
+                        ),
                     ],
-                    className="pretty_container five columns by-column"
+                    className='flex-display six columns by-column'
+
                 ),
 
                 html.Div(
@@ -721,7 +739,7 @@ app.layout = html.Div(
                         The Carbon Intensity depends on the location and the technologies used to produce electricity. 
                         ''')
                     ],
-                    className="pretty_container seven columns by-column"
+                    className="pretty_container six columns by-column"
                 )
             ],
             className="row flex-display",
@@ -779,17 +797,6 @@ app.layout = html.Div(
                 )
             ],
             className="row flex-display",
-        ),
-
-        html.Div(
-            [
-                html.H4(
-                    "How to report it?"
-                ),
-
-                dcc.Markdown(id='report_markdown')
-            ],
-            className="pretty_container by-column"
         ),
 
         html.Div(
