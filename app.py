@@ -687,12 +687,12 @@ app.layout = html.Div(
                                 ),
 
                                 dcc.Markdown('''
-                                The main factor impacting your Carbon Emissions is the location of your servers: 
-                                the same algorithm will emit __64 times more__ CO2e 
+                                The main factor impacting your Carbon Emissions is the location of your servers:
+                                the same algorithm will emit __64 times more__ CO2e
                                 if ran in Australia compared to Switzerland.
-                                
-                                Only requesting the necessary memory can also improve greatly your carbon footprint. 
-                                
+
+                                Only requesting the necessary memory can also improve greatly your carbon footprint.
+
                                 Generally, writing sensible code that runs faster with fewer resources saves both money
                                 and the planet.
                                 ''')
@@ -722,21 +722,20 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        The carbon emission is calculated by estimating the energy draw of the algorithm 
+                        The carbon emission is calculated by estimating the energy draw of the algorithm
                         and the carbon intensity of producing such energy at a given location:
-                        
-                        `carbon_emissions = energy_needed * carbon_intensity`
-                        
-                        The energy needed is: 
-                        
-                        `energy_needed = time * (power_computing_cores + power_memory) * PUE`
-                         
-                        * the power draw from the computing cores depend on the model and number of cores
-                        * the memory power draw depends on the size of memory requested. 
-                        * the PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                        for cooling, lighting etc.
-                        
-                        The Carbon Intensity depends on the location and the technologies used to produce electricity. 
+
+                        `carbon emissions = energy needed * carbon intensity`
+
+                        The energy needed is:
+
+                        `energy needed = time * (power draw for computing cores + power draw for memory) * PUE`
+
+                        * the power draw for the computing cores depends on the CPU model and number of cores
+                        * the memory power draw depends on the size of memory requested.
+                        * the PUE (Power Usage Effectiveness) measures how much extra energy is needed for the data centre's cooling and lighting etc.
+
+                        The Carbon Intensity depends on the location and the technologies used to produce electricity.
                         ''')
                     ],
                     className="pretty_container six columns by-column"
@@ -755,7 +754,7 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        It's a metric used to measure the Global Warming Potential of a mixture of greenhouse gases. 
+                        It's a metric used to measure the Global Warming Potential of a mixture of greenhouse gases.
                         It represents the quantity of CO2 that would have the same impact of the environment.
                         ''')
                     ],
@@ -769,10 +768,10 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        It's the amount of CO2 sequestred by a tree in a month. 
-                        It's a unit measuring how long it would take for a mature tree 
-                        to absorb the CO2e emitted by your algorithm. 
-                        
+                        It's the amount of CO2 sequestred by a tree in a month.
+                        It's a unit measuring how long it would take for a mature tree
+                        to absorb the CO2e emitted by your algorithm.
+
                         As an estimate here, we use 11.4 kg CO2e/year, which is roughly __1kg CO2e/month__.
                         '''),
                     ],
@@ -786,10 +785,10 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        These coloured stripes in the background represent the change in world temperatures 
-                        from 1850 to 2018. 
+                        These coloured stripes in the background represent the change in world temperatures
+                        from 1850 to 2018.
                         This striking design has been made by Ed Hawkins from the University of Reading.
-                        
+
                         More on [ShowYourStipes.info]('https://showyourstripes.info')
                         ''')
                     ],
@@ -803,10 +802,16 @@ app.layout = html.Div(
             [
                 html.H4(
                     "Who are we?"
-                )
+                ),
+
+                dcc.Markdown('''
+                    \nThe Green algorithms initiative was created by \[1\] Loic Lannelongue, \[2\] Jason Grealey, and \[3\] Michael Inouye\n\n \[1\] University of Cambridge \n \[2\] Baker Heart and Diabetes Institute and La Trobe University \n Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
+                        \nInformation about our lab is available [here]('https://sysgenresearch.org')
+                         ''')
             ],
-            className="row pretty_container"
-        )
+            className="pretty_container"
+            #className="row pretty_container"
+            )
     ],
     id="mainContainer",
 )
@@ -1310,10 +1315,10 @@ def fillin_report_text(aggData):
         prefixCountry = ''
 
     myText = '''
-    Why not reporting the environmental footprint of your computations alongside other performance metrics? 
-    
-    Here is an example:  
-    
+    Why not reporting the environmental footprint of your computations alongside other performance metrics?
+
+    Here is an example:
+
     > This algorithm runs in {}h and {}min on {} {}{} {}.
     > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months.
     '''.format(
