@@ -625,7 +625,7 @@ app.layout = html.Div(
                                 html.Div(
                                     [
                                         html.H4(
-                                            "cores VS memory"
+                                            "Computing cores VS Memory"
                                         ),
 
                                         dcc.Graph(
