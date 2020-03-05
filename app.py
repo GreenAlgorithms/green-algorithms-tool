@@ -816,7 +816,7 @@ app.layout = html.Div(
                         
                         (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
                         
-                        More information [here](https://sysgenresearch.org)
+                        More information [here](http://www.inouyelab.org/)
                          ''')
                     ],
                     className="pretty_container four columns by-column centered-text"
