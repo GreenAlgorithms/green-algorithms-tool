@@ -751,48 +751,12 @@ app.layout = html.Div(
                                 And of course, only run jobs that you need!
                                 ''')
                             ],
-                            className="pretty_container by-column centered-text"
+                            className="pretty_container by-column centered-text flex-auto"
                         ),
-
-                        html.Div(
-                            [
-                                html.H4(
-                                    "How to report it?"
-                                ),
-
-                                dcc.Markdown(id='report_markdown')
-                            ],
-                            className="pretty_container by-column centered-text"
-                        ),
-
-                        html.Div(
-                            [
-                                html.H4(
-                                    "The formula"
-                                ),
-
-                                dcc.Markdown('''
-                                The carbon emissions are calculated by estimating the energy draw of the algorithm
-                                and the carbon intensity of producing this energy at a given location:
-        
-                                `carbon emissions = energy needed * carbon intensity`
-        
-                                The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
-        
-                                The power draw for the computing cores depends on the CPU model and number of cores, 
-                                while the memory power draw only depends on the size of memory requested.
-                                The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                                to operate the datacentre (cooling, lighting etc.).
-        
-                                The Carbon Intensity depends on the location and the technologies used to produce electricity.
-                                ''')
-                            ],
-                            className="pretty_container by-column centered-text"
-                        )
                     ],
-                    className='flex-display six columns by-column'
-
+                    className='flex-display five columns by-column'
                 ),
+
 
                 html.Div(
                     [
@@ -806,10 +770,55 @@ app.layout = html.Div(
 
 
                     ],
-                    className="pretty_container six columns by-column centered-text"
+                    className="pretty_container seven columns by-column centered-text"
                 )
             ],
             className="row flex-display",
+        ),
+
+        # FOURTH ROW
+        html.Div(
+            [
+
+                html.Div(
+                    [
+                        html.H4(
+                            "The formula"
+                        ),
+
+                        dcc.Markdown('''
+                        The carbon emissions are calculated by estimating the energy draw of the algorithm
+                        and the carbon intensity of producing this energy at a given location:
+        
+                        `carbon emissions = energy needed * carbon intensity`
+        
+                        The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
+        
+                        The power draw for the computing cores depends on the CPU model and number of cores, 
+                        while the memory power draw only depends on the size of memory requested.
+                        The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
+                        to operate the datacentre (cooling, lighting etc.).
+        
+                        The Carbon Intensity depends on the location and the technologies used to produce electricity.
+                        ''')
+                    ],
+                    className="pretty_container seven columns by-column centered-text"
+                ),
+
+                html.Div(
+                    [
+                        html.H4(
+                            "How to report it?"
+                        ),
+
+                        dcc.Markdown(id='report_markdown')
+                    ],
+                    className="pretty_container five columns by-column centered-text"
+                ),
+
+            ],
+            className='flex-display row'
+
         ),
 
         ## FOURTH ROW
@@ -1165,7 +1174,6 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         return output
 
     else:
-        # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
         if selected_platform == 'personalComputer':
@@ -1413,7 +1421,6 @@ def create_bar_chart_cores(aggData):
     # calculate carbon emissions for each location
     if aggData['coreType'] == 'GPU':
         for gpu in list_cores:
-            print(gpu)
             power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
     else:
         for cpu in list_cores:
