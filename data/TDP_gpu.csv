@@ -1,17 +1,17 @@
 index,in Watt,TO BE CHECKED,,
 model,TDP,n_cores,TDP_per_core,source
-RTX 2080 Ti,250,,250,techpowerup.com
-RTX 2080,215,,215,techpowerup.com
-GTX 1080 Ti,250,,250,techpowerup.com
-GTX 1080,180,,180,techpowerup.com
+Jetson AGX Xavier,30,,30,https://www.techpowerup.com/gpu-specs/jetson-agx-xavier.c3232
+Tesla T4,70,,70,https://www.techpowerup.com/gpu-specs/tesla-t4.c3316
 AMD RX480,150,,150,techpowerup.com
-Titan V,250,,250,techpowerup.com
-Tesla V100,300,,300,techpowerup.com
-TPU2,250,,250,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
+GTX 1080,180,,180,techpowerup.com
 TPU3,200,,200,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
-AGX Xavier,30,,30,
+Any,,,200,
+RTX 2080,215,,215,techpowerup.com
+RTX 2080 Ti,250,,250,techpowerup.com
+GTX 1080 Ti,250,,250,techpowerup.com
+Titan V,250,,250,techpowerup.com
+TPU2,250,,250,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
 GTX TITAN X,250,,250,techpowerup.com
 TITAN X Pascal,250,,250,techpowerup.com
 Tesla P100 PCIe,250,,250,techpowerup.com
-Tesla T4,70,,70,https://www.techpowerup.com/gpu-specs/tesla-t4.c3316
-Any,,,200,
+Tesla V100,300,,300,techpowerup.com

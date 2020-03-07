@@ -22,6 +22,7 @@ app = dash.Dash(
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[{"name": "viewport", "content": "width=device-width"}]
 )
+app.title = "Green Algorithms"
 server = app.server
 
 #############
@@ -63,9 +64,9 @@ hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
 hardware_df.drop(['source'], axis=1, inplace=True)
 
 ### OFFSET ###
-offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
-                        sep=',', skiprows=1)
-offset_df.drop(['source'], axis=1, inplace=True)
+# offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
+#                         sep=',', skiprows=1)
+# offset_df.drop(['source'], axis=1, inplace=True)
 
 ### CARBON INTENSITY BY LOCATION ###
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
@@ -763,6 +764,31 @@ app.layout = html.Div(
                             ],
                             className="pretty_container by-column centered-text"
                         ),
+
+                        html.Div(
+                            [
+                                html.H4(
+                                    "The formula"
+                                ),
+
+                                dcc.Markdown('''
+                                The carbon emissions are calculated by estimating the energy draw of the algorithm
+                                and the carbon intensity of producing this energy at a given location:
+        
+                                `carbon emissions = energy needed * carbon intensity`
+        
+                                The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
+        
+                                The power draw for the computing cores depends on the CPU model and number of cores, 
+                                while the memory power draw only depends on the size of memory requested.
+                                The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
+                                to operate the datacentre (cooling, lighting etc.).
+        
+                                The Carbon Intensity depends on the location and the technologies used to produce electricity.
+                                ''')
+                            ],
+                            className="pretty_container by-column centered-text"
+                        )
                     ],
                     className='flex-display six columns by-column'
 
@@ -771,24 +797,14 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H4(
-                            "The formula"
+                            "Power draw of different processors"
                         ),
 
-                        dcc.Markdown('''
-                        The carbon emissions are calculated by estimating the energy draw of the algorithm
-                        and the carbon intensity of producing this energy at a given location:
+                        dcc.Graph(
+                            id = "barPlotComparison_cores"
+                        ),
 
-                        `carbon emissions = energy needed * carbon intensity`
 
-                        The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
-
-                        The power draw for the computing cores depends on the CPU model and number of cores, 
-                        while the memory power draw only depends on the size of memory requested.
-                        The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                        to operate the datacentre (cooling, lighting etc.).
-
-                        The Carbon Intensity depends on the location and the technologies used to produce electricity.
-                        ''')
                     ],
                     className="pretty_container six columns by-column centered-text"
                 )
@@ -829,8 +845,17 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        The data used to run this calculator can be found on github: 
-                         ''')
+                        The data used to run this calculator can be found 
+                        on [github](https://github.com/green-algorithms/project)
+                         '''),
+
+                        html.H6(
+                            'Questions/Suggestions?'
+                        ),
+
+                        dcc.Markdown('''
+                        You can reach out to us here: green.algorithms@gmail.com 
+                        ''')
                     ],
                     className="pretty_container four columns by-column centered-text"
                 ),
@@ -1316,6 +1341,107 @@ def create_bar_chart(aggData):
                     )
                 ),
                 hovertemplate='%{y:.0f} gCO2e<extra></extra>',
+                hoverlabel=dict(
+                    font=dict(
+                        color=myColors['fontColor'],
+                    )
+                ),
+
+            )
+        ],
+        layout = layout_bar
+    )
+
+    return fig
+
+### UPDATE BAR CHARTCPU
+@app.callback(
+    Output("barPlotComparison_cores", "figure"),
+    [Input("aggregate_data", "data")],
+)
+def create_bar_chart_cores(aggData):
+    layout_bar = copy.deepcopy(layout_plots)
+
+    layout_bar['xaxis'] = dict(
+        color=myColors['fontColor'],
+    )
+
+    layout_bar['yaxis'] = dict(
+        color=myColors['fontColor'],
+        showspikes=False,
+        showgrid=True,
+        gridcolor=myColors['plotGrid'],
+    )
+
+    if aggData['coreType'] == 'GPU':
+        layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
+
+        list_cores = [
+            'Jetson AGX Xavier',
+            'Tesla T4',
+            'GTX 1080',
+            'TPU3',
+            'RTX 2080 Ti',
+            'GTX TITAN X',
+            'Tesla P100 PCIe',
+            'Tesla V100'
+        ]
+
+    else:
+        layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
+
+        list_cores = [
+            'Ryzen 5 3500U',
+            'Xeon Platinum 9282',
+            'Xeon E5-2683 v4',
+            'Core i7-10700',
+            'Xeon Gold 6142',
+            'Core i5-10600',
+            'Ryzen 5 3600',
+            'Core i9-10920XE',
+            'Core i5-10600K',
+            'Ryzen 5 3400G',
+            'Core i3-10320',
+            'Xeon X3430'
+        ]
+
+    if aggData['coreModel'] not in list_cores:
+        list_cores.append(aggData['coreModel'])
+
+    power_list = []
+
+    # calculate carbon emissions for each location
+    if aggData['coreType'] == 'GPU':
+        for gpu in list_cores:
+            print(gpu)
+            power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
+    else:
+        for cpu in list_cores:
+            power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
+
+    power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
+
+    power_df.sort_values(by=['corePower'], inplace=True)
+
+    power_df.set_index('coreModel', inplace=True)
+
+    lines_thickness = [0] * len(power_df)
+    lines_thickness[power_df.index.get_loc(aggData['coreModel'])] = 4
+
+    fig = go.Figure(
+        data = [
+            go.Bar(
+                x=list(power_df.index),
+                y=power_df.corePower.values,
+                marker = dict(
+                    color=power_df.corePower.values,
+                    colorscale='OrRd',
+                    line=dict(
+                        width=lines_thickness,
+                        color=myColors['fontColor'],
+                    )
+                ),
+                hovertemplate='%{y:.1f} W<extra></extra>',
                 hoverlabel=dict(
                     font=dict(
                         color=myColors['fontColor'],
