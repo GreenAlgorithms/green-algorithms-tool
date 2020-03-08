@@ -22,6 +22,7 @@ app = dash.Dash(
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[{"name": "viewport", "content": "width=device-width"}]
 )
+app.title = "Green Algorithms"
 server = app.server
 
 #############
@@ -63,9 +64,9 @@ hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
 hardware_df.drop(['source'], axis=1, inplace=True)
 
 ### OFFSET ###
-offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
-                        sep=',', skiprows=1)
-offset_df.drop(['source'], axis=1, inplace=True)
+# offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
+#                         sep=',', skiprows=1)
+# offset_df.drop(['source'], axis=1, inplace=True)
 
 ### CARBON INTENSITY BY LOCATION ###
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
@@ -290,7 +291,7 @@ app.layout = html.Div(
                                             type='number',
                                             id="runTime_hour_input",
                                             className="dcc_control_row",
-                                            value=5,
+                                            value=12,
                                         ),
                                     ],
                                     className='flex-quarter'
@@ -301,7 +302,7 @@ app.layout = html.Div(
                                         dcc.Input(
                                             type='number',
                                             id="runTime_min_input",
-                                            value=5,
+                                            value=0,
                                             className="dcc_control_row",
                                         )
                                     ],
@@ -325,7 +326,7 @@ app.layout = html.Div(
                                 dcc.Input(
                                     type='number',
                                     id="numberCores_input",
-                                    value=1,
+                                    value=12,
                                     className="dcc_control_column flex-half",
                                     # style={"width" : "100%"},
                                 ),
@@ -605,7 +606,7 @@ app.layout = html.Div(
                                                 ),
 
                                                 html.H6(
-                                                    "of a flight NY -> SF",
+                                                    id="flying_label",
                                                 )
                                             ],
                                             className='container-labels-icon'
@@ -750,23 +751,34 @@ app.layout = html.Div(
                                 And of course, only run jobs that you need!
                                 ''')
                             ],
-                            className="pretty_container by-column centered-text"
-                        ),
-
-                        html.Div(
-                            [
-                                html.H4(
-                                    "How to report it?"
-                                ),
-
-                                dcc.Markdown(id='report_markdown')
-                            ],
-                            className="pretty_container by-column centered-text"
+                            className="pretty_container by-column centered-text flex-auto"
                         ),
                     ],
-                    className='flex-display six columns by-column'
-
+                    className='flex-display five columns by-column'
                 ),
+
+
+                html.Div(
+                    [
+                        html.H4(
+                            "Power draw of different processors"
+                        ),
+
+                        dcc.Graph(
+                            id = "barPlotComparison_cores"
+                        ),
+
+
+                    ],
+                    className="pretty_container seven columns by-column centered-text"
+                )
+            ],
+            className="row flex-display",
+        ),
+
+        # FOURTH ROW
+        html.Div(
+            [
 
                 html.Div(
                     [
@@ -777,23 +789,43 @@ app.layout = html.Div(
                         dcc.Markdown('''
                         The carbon emissions are calculated by estimating the energy draw of the algorithm
                         and the carbon intensity of producing this energy at a given location:
-
+        
                         `carbon emissions = energy needed * carbon intensity`
-
+        
                         The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
-
+        
                         The power draw for the computing cores depends on the CPU model and number of cores, 
                         while the memory power draw only depends on the size of memory requested.
                         The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
                         to operate the datacentre (cooling, lighting etc.).
-
+        
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.
                         ''')
                     ],
-                    className="pretty_container six columns by-column centered-text"
-                )
+                    className="pretty_container seven columns by-column centered-text"
+                ),
+
+                html.Div(
+                    [
+                        html.H4(
+                            "How to report it?"
+                        ),
+
+                        dcc.Markdown('''
+                        It's important to track the impact 
+                        of computational research on climate change in order to stimulate greener algorithms.
+                        For that, we believe that the carbon footprint of a project should be reported on articles
+                        alongside other performance metrics. Here is an example you can include in your paper:
+                        '''),
+
+                        dcc.Markdown(id='report_markdown')
+                    ],
+                    className="pretty_container five columns by-column centered-text"
+                ),
+
             ],
-            className="row flex-display",
+            className='flex-display row'
+
         ),
 
         ## FOURTH ROW
@@ -829,8 +861,17 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        The data used to run this calculator can be found on github: 
-                         ''')
+                        The data used to run this calculator can be found 
+                        on [github](https://github.com/green-algorithms/project)
+                         '''),
+
+                        html.H5(
+                            'Questions/Suggestions?'
+                        ),
+
+                        dcc.Markdown('''
+                        You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
+                        ''')
                     ],
                     className="pretty_container four columns by-column centered-text"
                 ),
@@ -1136,11 +1177,11 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['nkm_drivingEU'] = 0
         output['nkm_train'] = 0
         output['power_needed'] = 0
+        output['flying_text'] = None
 
         return output
 
     else:
-        # print(location)
         carbonIntensity = CI_df.loc[CI_df.location == location, "carbonIntensity"].values[0]
 
         if selected_platform == 'personalComputer':
@@ -1185,11 +1226,19 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
         output['n_treeMonths'] = carbonEmissions / refValues_dict['treeYear'] * 12
 
-        # output['nkm_flying'] = carbonEmissions / refValues_dict['flight_economy_perkm']
-        output['flying_context'] =  carbonEmissions / refValues_dict['flight_NY-SF']
         output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
         output['nkm_drivingEU'] = carbonEmissions / refValues_dict['passengerCar_EU_perkm']
         output['nkm_train'] = carbonEmissions / refValues_dict['train_perkm']
+
+        if carbonEmissions < 0.5 * refValues_dict['flight_NY-SF']:
+            output['flying_context'] = carbonEmissions / refValues_dict['flight_PAR-LON']
+            output['flying_text'] = "Paris - London"
+        elif carbonEmissions < 0.5 * refValues_dict['flight_NYC-MEL']:
+            output['flying_context'] = carbonEmissions / refValues_dict['flight_NY-SF']
+            output['flying_text'] = "NYC - San Francisco"
+        else:
+            output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
+            output['flying_text'] = "NYC - Melbourne"
 
         return output
 
@@ -1205,12 +1254,19 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = "{} g CO2e".format(round(data['carbonEmissions'], 2))
+    text_CE = "{:.0f} g CO2e".format(round(data['carbonEmissions'], 2))
     text_ty = "{} tree-months".format(round(data['n_treeMonths'],2))
-    text_car = "{} km".format(round(data['nkm_drivingEU'], 2))
-    text_fly = "{} %".format(round(data['flying_context']*100, 0))
+    text_car = "{} km".format(round(data['nkm_drivingUS'], 2))
+    text_fly = "{:.0f} %".format(round(data['flying_context']*100, 0))
 
     return text_CE, text_ty, text_car, text_fly
+
+@app.callback(
+    Output("flying_label", "children"),
+    [Input("aggregate_data", "data")],
+)
+def update_text(data):
+    return "of a flight {}".format(data['flying_text'])
 
 ### UPDATE PIE GRAPH ###
 @app.callback(
@@ -1329,6 +1385,111 @@ def create_bar_chart(aggData):
 
     return fig
 
+### UPDATE BAR CHARTCPU
+@app.callback(
+    Output("barPlotComparison_cores", "figure"),
+    [Input("aggregate_data", "data")],
+)
+def create_bar_chart_cores(aggData):
+    layout_bar = copy.deepcopy(layout_plots)
+
+    layout_bar['xaxis'] = dict(
+        color=myColors['fontColor'],
+    )
+
+    layout_bar['yaxis'] = dict(
+        color=myColors['fontColor'],
+        showspikes=False,
+        showgrid=True,
+        gridcolor=myColors['plotGrid'],
+    )
+
+    if aggData['coreType'] is None:
+        return go.Figure()
+
+    else:
+
+        if aggData['coreType'] == 'GPU':
+            layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
+
+            list_cores = [
+                'Jetson AGX Xavier',
+                'Tesla T4',
+                'GTX 1080',
+                'TPU3',
+                'RTX 2080 Ti',
+                'GTX TITAN X',
+                'Tesla P100 PCIe',
+                'Tesla V100'
+            ]
+
+        else:
+            layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
+
+            list_cores = [
+                'Ryzen 5 3500U',
+                'Xeon Platinum 9282',
+                'Xeon E5-2683 v4',
+                'Core i7-10700',
+                'Xeon Gold 6142',
+                'Core i5-10600',
+                'Ryzen 5 3600',
+                'Core i9-10920XE',
+                'Core i5-10600K',
+                'Ryzen 5 3400G',
+                'Core i3-10320',
+                'Xeon X3430'
+            ]
+
+        if aggData['coreModel'] not in list_cores:
+            list_cores.append(aggData['coreModel'])
+
+        power_list = []
+
+        # calculate carbon emissions for each location
+        if aggData['coreType'] == 'GPU':
+            for gpu in list_cores:
+                power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
+        else:
+            for cpu in list_cores:
+                power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
+
+        power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
+
+        power_df.sort_values(by=['corePower'], inplace=True)
+
+        power_df.set_index('coreModel', inplace=True)
+
+        lines_thickness = [0] * len(power_df)
+        lines_thickness[power_df.index.get_loc(aggData['coreModel'])] = 4
+
+        fig = go.Figure(
+            data = [
+                go.Bar(
+                    x=list(power_df.index),
+                    y=power_df.corePower.values,
+                    marker = dict(
+                        color=power_df.corePower.values,
+                        colorscale='OrRd',
+                        line=dict(
+                            width=lines_thickness,
+                            color=myColors['fontColor'],
+                        )
+                    ),
+                    hovertemplate='%{y:.1f} W<extra></extra>',
+                    hoverlabel=dict(
+                        font=dict(
+                            color=myColors['fontColor'],
+                        )
+                    ),
+
+                )
+            ],
+            layout = layout_bar
+        )
+
+        return fig
+
 
 ### UPDATE THE REPORT TEXT ###
 
@@ -1338,41 +1499,42 @@ def create_bar_chart(aggData):
 )
 def fillin_report_text(aggData):
 
-    if aggData['n_cores'] > 1:
-        suffixProcessor = 's'
+    if (aggData['n_cores'] is None):
+        return('')
+
     else:
-        suffixProcessor = ''
 
-    country = CI_df.loc[CI_df.location == aggData['location'], 'countryName'].values[0]
-    region = CI_df.loc[CI_df.location == aggData['location'], 'regionName'].values[0]
+        if aggData['n_cores'] > 1:
+            suffixProcessor = 's'
 
-    if region == 'Any':
-        textRegion = ''
-    else:
-        textRegion = ' ({})'.format(region)
+        else:
+            suffixProcessor = ''
 
-    if country in ['United States of America', 'United Kingdom']:
-        prefixCountry = 'the '
-    else:
-        prefixCountry = ''
+        country = CI_df.loc[CI_df.location == aggData['location'], 'countryName'].values[0]
+        region = CI_df.loc[CI_df.location == aggData['location'], 'regionName'].values[0]
 
-    myText = '''
-    It's important to track the impact 
-    of computational research on climate change in order to stimulate greener algorithms.
-    For that, we believe that the carbon footprint of a project should be reported on articles
-    alongside other performance metrics. Here is an example you can include in your paper:
+        if region == 'Any':
+            textRegion = ''
+        else:
+            textRegion = ' ({})'.format(region)
 
-    > This algorithm runs in {}h and {}min on {} {}{} {}.
-    > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months 
-    (calculated using www.green-algorithms.org).
-    '''.format(
-        aggData['runTime_hours'], aggData['runTime_min'],
-        aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
-        prefixCountry, country, textRegion,
-        aggData['carbonEmissions'], aggData['n_treeMonths']
-    )
+        if country in ['United States of America', 'United Kingdom']:
+            prefixCountry = 'the '
+        else:
+            prefixCountry = ''
 
-    return myText
+        myText = '''
+        > This algorithm runs in {}h and {}min on {} {}{} {}.
+        > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months
+        (calculated using [green-algorithms.org](www.green-algorithms.org)).
+        '''.format(
+            aggData['runTime_hours'], aggData['runTime_min'],
+            aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
+            prefixCountry, country, textRegion,
+            aggData['carbonEmissions'], aggData['n_treeMonths']
+        )
+
+        return myText
 
 
 
