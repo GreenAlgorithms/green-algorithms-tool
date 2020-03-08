@@ -811,6 +811,13 @@ app.layout = html.Div(
                             "How to report it?"
                         ),
 
+                        dcc.Markdown('''
+                        It's important to track the impact 
+                        of computational research on climate change in order to stimulate greener algorithms.
+                        For that, we believe that the carbon footprint of a project should be reported on articles
+                        alongside other performance metrics. Here is an example you can include in your paper:
+                        '''),
+
                         dcc.Markdown(id='report_markdown')
                     ],
                     className="pretty_container five columns by-column centered-text"
@@ -858,7 +865,7 @@ app.layout = html.Div(
                         on [github](https://github.com/green-algorithms/project)
                          '''),
 
-                        html.H6(
+                        html.H5(
                             'Questions/Suggestions?'
                         ),
 
@@ -1493,7 +1500,7 @@ def create_bar_chart_cores(aggData):
 def fillin_report_text(aggData):
 
     if (aggData['n_cores'] is None):
-        report_expl = ''
+        return('')
 
     else:
 
@@ -1516,10 +1523,10 @@ def fillin_report_text(aggData):
         else:
             prefixCountry = ''
 
-        report_expl = '''
+        myText = '''
         > This algorithm runs in {}h and {}min on {} {}{} {}.
         > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months
-        (calculated using www.green-algorithms.org).
+        (calculated using [green-algorithms.org](www.green-algorithms.org)).
         '''.format(
             aggData['runTime_hours'], aggData['runTime_min'],
             aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
@@ -1527,17 +1534,7 @@ def fillin_report_text(aggData):
             aggData['carbonEmissions'], aggData['n_treeMonths']
         )
 
-
-    myText = '''
-    It's important to track the impact 
-    of computational research on climate change in order to stimulate greener algorithms.
-    For that, we believe that the carbon footprint of a project should be reported on articles
-    alongside other performance metrics. Here is an example you can include in your paper:
-    
-    {}
-    '''.format(report_expl)
-
-    return myText
+        return myText
 
 
 
