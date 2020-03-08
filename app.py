@@ -839,7 +839,8 @@ app.layout = html.Div(
                         ),
 
                         dcc.Markdown('''
-                        The Green Algorithms project was jointly developed by 
+                        The Green Algorithms project was jointly developed by
+                         
                         Loïc Lannelongue¹, Jason Grealey², and Michael Inouye³
                         
                         (1) University of Cambridge
@@ -865,11 +866,13 @@ app.layout = html.Div(
                         on [github](https://github.com/green-algorithms/project)
                          '''),
 
-                        html.H5(
+                        html.H4(
                             'Questions/Suggestions?'
                         ),
 
                         dcc.Markdown('''
+                        The app is still under development and new data and features are coming soon.
+                        
                         You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
                         ''')
                     ],
@@ -890,7 +893,8 @@ app.layout = html.Div(
                         More on [ShowYourStipes.info](https://showyourstripes.info)
                         ''')
                     ],
-                    className="pretty_container four columns by-column centered-text"
+                    className="pretty_container four columns by-column centered-text",
+                    id='container_showYourStripes'
                 ),
             ],
             className="row flex-display",
