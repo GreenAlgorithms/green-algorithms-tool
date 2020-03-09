@@ -848,7 +848,7 @@ app.layout = html.Div(
                         More information [here](http://www.inouyelab.org/)
                          ''')
                     ],
-                    className="pretty_container three columns by-column centered-text flex-auto"
+                    className="pretty_container two columns by-column centered-text flex-auto"
                 ),
 
                 html.Div(
@@ -872,7 +872,7 @@ app.layout = html.Div(
                         You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
                         ''')
                     ],
-                    className="pretty_container three columns by-column centered-text flex-auto"
+                    className="pretty_container two columns by-column centered-text flex-auto"
                 ),
 
                 html.Div(
@@ -889,7 +889,7 @@ app.layout = html.Div(
                         More on [ShowYourStipes.info](https://showyourstripes.info)
                         ''')
                     ],
-                    className="pretty_container three columns by-column centered-text flex-auto",
+                    className="pretty_container two columns by-column centered-text flex-auto",
                     id='container_showYourStripes'
                 ),
             ],
