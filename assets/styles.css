@@ -31,8 +31,12 @@ body {
   background-color: #f9f9f9;
   margin: 10px;
   padding: 15px;
+  padding-left: 25px;
+  padding-right: 25px;
   /*position: relative;*/
   box-shadow: 2px 2px 2px lightgrey;
+  min-width:550px;
+  max-width:100%;
 }
 
 .bare_container {
@@ -139,6 +143,14 @@ body {
   flex-direction: column;
 }
 
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-wrapReverse {
+  flex-wrap: wrap-reverse;
+}
+
 
 
 /* CUSTOMISED CONTAINER DESIGN (by name) */
@@ -147,25 +159,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  width=100%;
 }
 
 #header {
   align-items: center;
   justify-content: center;
   margin-bottom: 15px;
+  max-width: 100%;
 }
 
 #title_container {
   text-align: center;
   flex-direction:column;
   width:100%;
+  max-width: 100%;
   padding:35px;
   padding-top:40px;
   background-color: rgba(249, 249, 249,0.6);
 }
 
 #title {
-  margin-bottom: 5px
+  margin-bottom: 5px;
+  max-width:100%;
 }
 
 #subtitle {
@@ -186,8 +202,12 @@ body {
 
 #info_container {
   justify-content: space-between;
-  flex-wrap: wrap;
   flex: auto;
+}
+
+#coontainer_pie,
+#container_barLocation {
+  min-width: 300px;
 }
 
 #pieGraphContainer {

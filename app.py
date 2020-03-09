@@ -249,12 +249,12 @@ app.layout = html.Div(
                         # ),
                     ],
                     # className="one-half column flex-display",
-                    className="pretty_container",
+                    className="pretty_container flex-auto",
                     id="title_container",
                 ),
             ],
             id="header",
-            className="row flex-display",
+            className="row flex-display flex-auto",
         ),
 
         ## FIRST ROW
@@ -618,7 +618,7 @@ app.layout = html.Div(
                                 ),
                             ],
                             id="info_container",
-                            className="row flex-display",
+                            className="row flex-display flex-wrapReverse",
                         ),
 
                         ## SECOND ROW: GRAPH
@@ -634,6 +634,7 @@ app.layout = html.Div(
                                             id="pie_graph",
                                         )
                                     ],
+                                    id = 'coontainer_pie',
                                     className='flex-display by-column one-half column',
                                 ),
 
@@ -647,23 +648,24 @@ app.layout = html.Div(
                                             id = "barPlotComparison"
                                         )
                                     ],
+                                    id = 'container_barLocation',
                                     className='flex-display by-column one-half column flex-auto',
 
                                 ),
 
                             ],
                             id="pieGraphContainer",
-                            className="pretty_container row",
+                            className="pretty_container row  flex-auto flex-wrap",
                         ),
 
                     ],
                     id="firstRow_rightColumn",
-                    className="eight columns flex-display by-column bare_container flex-auto",
+                    className="eight columns flex-display by-column bare_container flex-auto flex-wrap",
                 ),
 
             ],
             # id='row_inputOutput',
-            className="row flex-display",
+            className="row flex-display flex-wrap",
         ),
 
         ## SECOND ROW
@@ -677,7 +679,7 @@ app.layout = html.Div(
                             figure = mapCI
                         )
                     ],
-                    className="pretty_container seven columns by-column",
+                    className="pretty_container six columns by-column flex-auto",
                 ),
 
                 html.Div(
@@ -716,11 +718,11 @@ app.layout = html.Div(
                             className="pretty_container by-column flex-auto centered-text"
                         ),
                     ],
-                    className="flex-display five columns by-column",
+                    className="flex-display four columns by-column flex-auto",
                 )
             ],
             # id='secondRow',
-            className="row flex-display",
+            className="row flex-display flex-wrap",
         ),
 
         ## THIRD ROW
@@ -728,35 +730,29 @@ app.layout = html.Div(
             [
                 html.Div(
                     [
-                        html.Div(
-                            [
-                                html.H4(
-                                    "What can you do about it?"
-                                ),
-
-                                dcc.Markdown('''
-                                The main factor impacting your carbon emissions is the location of your servers:
-                                the same algorithm will emit __64 times more__ CO2e
-                                if ran in Australia compared to Switzerland. Although it's not always the case, 
-                                many cloud providers offer the option to select a datacentre.
-                                
-                                Memory power draw is a huge source of waste: 
-                                because __the energy consumption depends on the memory requested, 
-                                not the actual usage__, only requesting the needed memory 
-                                is a painless way to reduce the emissions.
-
-                                __Generally, taking the time to write optimised code that runs faster with fewer 
-                                resources saves both money and the planet.__
-                                
-                                And of course, only run jobs that you need!
-                                ''')
-                            ],
-                            className="pretty_container by-column centered-text flex-auto"
+                        html.H4(
+                            "What can you do about it?"
                         ),
-                    ],
-                    className='flex-display five columns by-column'
-                ),
 
+                        dcc.Markdown('''
+                        The main factor impacting your carbon emissions is the location of your servers:
+                        the same algorithm will emit __64 times more__ CO2e
+                        if ran in Australia compared to Switzerland. Although it's not always the case, 
+                        many cloud providers offer the option to select a datacentre.
+                        
+                        Memory power draw is a huge source of waste: 
+                        because __the energy consumption depends on the memory requested, 
+                        not the actual usage__, only requesting the needed memory 
+                        is a painless way to reduce the emissions.
+
+                        __Generally, taking the time to write optimised code that runs faster with fewer 
+                        resources saves both money and the planet.__
+                        
+                        And of course, only run jobs that you need!
+                        ''')
+                    ],
+                    className="pretty_container by-column four columns centered-text flex-auto"
+                ),
 
                 html.Div(
                     [
@@ -770,10 +766,10 @@ app.layout = html.Div(
 
 
                     ],
-                    className="pretty_container seven columns by-column centered-text"
+                    className="pretty_container six columns by-column centered-text flex-auto"
                 )
             ],
-            className="row flex-display",
+            className="row flex-display flex-wrap",
         ),
 
         # FOURTH ROW
@@ -802,7 +798,7 @@ app.layout = html.Div(
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.
                         ''')
                     ],
-                    className="pretty_container seven columns by-column centered-text"
+                    className="pretty_container six columns by-column centered-text flex-auto"
                 ),
 
                 html.Div(
@@ -820,11 +816,11 @@ app.layout = html.Div(
 
                         dcc.Markdown(id='report_markdown')
                     ],
-                    className="pretty_container five columns by-column centered-text"
+                    className="pretty_container four columns by-column centered-text flex-auto"
                 ),
 
             ],
-            className='flex-display row'
+            className='flex-display row flex-wrap'
 
         ),
 
@@ -852,7 +848,7 @@ app.layout = html.Div(
                         More information [here](http://www.inouyelab.org/)
                          ''')
                     ],
-                    className="pretty_container four columns by-column centered-text"
+                    className="pretty_container three columns by-column centered-text flex-auto"
                 ),
 
                 html.Div(
@@ -876,7 +872,7 @@ app.layout = html.Div(
                         You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
                         ''')
                     ],
-                    className="pretty_container four columns by-column centered-text"
+                    className="pretty_container three columns by-column centered-text flex-auto"
                 ),
 
                 html.Div(
@@ -893,11 +889,11 @@ app.layout = html.Div(
                         More on [ShowYourStipes.info](https://showyourstripes.info)
                         ''')
                     ],
-                    className="pretty_container four columns by-column centered-text",
+                    className="pretty_container three columns by-column centered-text flex-auto",
                     id='container_showYourStripes'
                 ),
             ],
-            className="row flex-display",
+            className="row flex-display flex-wrap",
         ),
     ],
     id="mainContainer",
