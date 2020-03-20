@@ -240,21 +240,20 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.H1(
-                            "How green is your research?",
+                            "Green Algorithms",
                             id='title',
                         ),
-                        # html.H4(
-                        #     "How sustainable is your research?",
-                        #     id='subtitle'
-                        # ),
+                        html.H4(
+                            "How green are your computations?",
+                            id='subtitle'
+                        ),
                     ],
-                    # className="one-half column flex-display",
-                    className="pretty_container flex-auto",
+                    className="pretty_container",
                     id="title_container",
                 ),
             ],
             id="header",
-            className="row flex-display flex-auto",
+            className="big_row",
         ),
 
         ## FIRST ROW
@@ -270,7 +269,7 @@ app.layout = html.Div(
                                 ),
 
                                 dcc.Markdown('''
-                                _To understand how each parameter impacts your Carbon Emissions, 
+                                _To understand how each parameter impacts your carbon emissions, 
                                 check out the formula below._
                                 '''),
                             ],
@@ -618,7 +617,7 @@ app.layout = html.Div(
                                 ),
                             ],
                             id="info_container",
-                            className="row flex-display flex-wrapReverse",
+                            className="big_row",
                         ),
 
                         ## SECOND ROW: GRAPH
@@ -634,7 +633,7 @@ app.layout = html.Div(
                                             id="pie_graph",
                                         )
                                     ],
-                                    id = 'coontainer_pie',
+                                    id = 'container_pie',
                                     className='flex-display by-column one-half column',
                                 ),
 
@@ -649,23 +648,22 @@ app.layout = html.Div(
                                         )
                                     ],
                                     id = 'container_barLocation',
-                                    className='flex-display by-column one-half column flex-auto',
+                                    className='flex-display by-column one-half column',
 
                                 ),
 
                             ],
                             id="pieGraphContainer",
-                            className="pretty_container row  flex-auto flex-wrap",
+                            className="pretty_container",
                         ),
 
                     ],
                     id="firstRow_rightColumn",
-                    className="eight columns flex-display by-column bare_container flex-auto flex-wrap",
+                    className="eight columns flex-display by-column bare_container",
                 ),
 
             ],
-            # id='row_inputOutput',
-            className="row flex-display flex-wrap",
+            className="big_row",
         ),
 
         ## SECOND ROW
@@ -679,7 +677,7 @@ app.layout = html.Div(
                             figure = mapCI
                         )
                     ],
-                    className="pretty_container six columns by-column flex-auto",
+                    className="pretty_container six columns",
                 ),
 
                 html.Div(
@@ -699,7 +697,7 @@ app.layout = html.Div(
                                 the environmental impact of human activities.
                                 ''')
                             ],
-                            className="pretty_container by-column flex-auto centered-text"
+                            className="pretty_container"
                         ),
 
                         html.Div(
@@ -715,14 +713,14 @@ app.layout = html.Div(
                                 We use the value of 11.4 kg CO2/year, which is roughly 1kg CO2/month.
                                 '''),
                             ],
-                            className="pretty_container by-column flex-auto centered-text"
+                            className="pretty_container"
                         ),
                     ],
-                    className="flex-display four columns by-column flex-auto",
+                    className="flex-display five columns by-column",
                 )
             ],
             # id='secondRow',
-            className="row flex-display flex-wrap",
+            className="big_row",
         ),
 
         ## THIRD ROW
@@ -751,7 +749,7 @@ app.layout = html.Div(
                         And of course, only run jobs that you need!
                         ''')
                     ],
-                    className="pretty_container by-column four columns centered-text flex-auto"
+                    className="pretty_container five columns"
                 ),
 
                 html.Div(
@@ -766,10 +764,10 @@ app.layout = html.Div(
 
 
                     ],
-                    className="pretty_container six columns by-column centered-text flex-auto"
+                    className="pretty_container seven columns"
                 )
             ],
-            className="row flex-display flex-wrap",
+            className="big_row",
         ),
 
         # FOURTH ROW
@@ -798,7 +796,7 @@ app.layout = html.Div(
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.
                         ''')
                     ],
-                    className="pretty_container six columns by-column centered-text flex-auto"
+                    className="seven columns pretty_container"
                 ),
 
                 html.Div(
@@ -816,11 +814,11 @@ app.layout = html.Div(
 
                         dcc.Markdown(id='report_markdown')
                     ],
-                    className="pretty_container four columns by-column centered-text flex-auto"
+                    className="five columns pretty_container"
                 ),
 
             ],
-            className='flex-display row flex-wrap'
+            className='big_row'
 
         ),
 
@@ -848,7 +846,8 @@ app.layout = html.Div(
                         More information [here](http://www.inouyelab.org/)
                          ''')
                     ],
-                    className="pretty_container two columns by-column centered-text flex-auto"
+                    className="pretty_container four columns",
+                    id = 'container_aboutus'
                 ),
 
                 html.Div(
@@ -872,7 +871,8 @@ app.layout = html.Div(
                         You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
                         ''')
                     ],
-                    className="pretty_container two columns by-column centered-text flex-auto"
+                    className="pretty_container four columns",
+                    id = 'container_thedata'
                 ),
 
                 html.Div(
@@ -889,11 +889,11 @@ app.layout = html.Div(
                         More on [ShowYourStipes.info](https://showyourstripes.info)
                         ''')
                     ],
-                    className="pretty_container two columns by-column centered-text flex-auto",
+                    className="pretty_container four columns",
                     id='container_showYourStripes'
                 ),
             ],
-            className="row flex-display flex-wrap",
+            className="big_row",
         ),
     ],
     id="mainContainer",

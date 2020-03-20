@@ -1,0 +1,91 @@
+body {
+  background-color: #f2f2f2;
+  background-image: url("stripes_sym2.png");
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: 100% 100%; /*700px;*/
+  /*margin: 5%;*/
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.fullPage {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.super-section {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    text-align:center;
+
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 10px;
+    padding: 15px;
+    padding-left: 25px;
+    padding-right: 25px;
+    box-shadow: 2px 2px 2px lightgrey;
+}
+
+.header {
+    background-color: rgba(249, 249, 249,0.6);
+    padding:35px;
+}
+
+.input-form {
+    display: block;
+    text-align:left;
+}
+
+.form-row {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.mini-box {
+    height: 300px;
+}
+
+.style-icon {
+    height: 130px;
+    width: 130px;
+    margin-top:0px;
+    margin-bottom:0px
+}
+
+.two-graphs-box {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.graph-container {
+    width: 100%;
+    display: block;
+}
+
+/*
+.graph {
+    width: 100%;
+    display: block;
+}
+*/
