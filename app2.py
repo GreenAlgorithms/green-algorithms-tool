@@ -22,7 +22,7 @@ from html_layout import create_appLayout
 #############
 
 data_dir = os.path.join(os.path.abspath(''),'data')
-image_dir = os.path.join(os.path.abspath(''),'images')
+image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
 
 # We download each csv and store it in a pd.DataFrame
@@ -218,11 +218,19 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 ##############
 
 # The styles are automatically loaded from the the /assets folder
+external_stylesheets = [
+    dict(href="https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Ruda:400,500,600,700,800,900&display=swap",
+         rel="stylesheet")
+]
 
 app = dash.Dash(
     __name__,
+    external_stylesheets=external_stylesheets,
     # these tags are to insure proper responsiveness on mobile devices
-    meta_tags=[{"name": "viewport", "content": "width=device-width"}]
+    meta_tags=[dict(
+        name= 'viewport',
+        content="width=device-width, initial-scale=1.0" #maximum-scale=1.0
+    )]
 )
 app.title = "Green Algorithms"
 server = app.server
@@ -231,7 +239,7 @@ app.layout = create_appLayout(
     platformType_options=platformType_options,
     yesNo_options=yesNo_options,
     PUE_default=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
-    static_image_route=static_image_route,
+    image_dir=image_dir,
     mapCI=mapCI,
 )
 
@@ -429,13 +437,13 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     providers_knownPUE = list(set(pue_df.provider))
 
     if selected_platform in ['cloudComputing','personalComputer']:
-        return {'columnCount': 1,'padding': 10,'display': 'none'}
+        return {'display': 'none'}
 
     elif selected_provider in providers_knownPUE:
-        return {'columnCount': 1,'padding': 10,'display': 'none'}
+        return {'display': 'none'}
 
     else:
-        return {'columnCount': 1,'padding': 10,'display': 'block'}
+        return {'display': 'block'}
 
 # And then asks for PUE input if necessary
 @app.callback(
@@ -444,9 +452,9 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
 )
 def display_pue_input(answer_pue):
     if answer_pue == 'No':
-        return {'columnCount': 1,'padding': 10,'display': 'none'}
+        return {'display': 'none'}
     else:
-        return {'columnCount': 1,'padding': 10,'display': 'block'}
+        return {'display': 'block'}
 
 ### STORE ###
 @app.callback(
@@ -878,10 +886,10 @@ def fillin_report_text(aggData):
 # Add a static image route that serves images from desktop
 # Be *very* careful here - you don't want to serve arbitrary files
 # from your computer or server
-@app.server.route('{}<image_path>.png'.format(static_image_route))
-def serve_image(image_path):
-    image_name = '{}.png'.format(image_path)
-    return flask.send_from_directory(image_dir, image_name)
+# @app.server.route('{}<image_path>.png'.format(static_image_route))
+# def serve_image(image_path):
+#     image_name = '{}.png'.format(image_path)
+#     return flask.send_from_directory(image_dir, image_name)
 
 if __name__ == '__main__':
     # allows app to update when code is changed!

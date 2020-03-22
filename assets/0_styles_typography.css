@@ -1,33 +1,85 @@
+html {
+  font-size: 62.5%;
+}
+
 body {
     font-size: 18px;
-    font-family: 'Raleway', 'Titillium Web', Tahoma, Geneva, sans-serif;
+    font-size: 1.8rem;
+    font-family: 'Raleway', serif;
     color: rgb(60, 60, 60);
+    font-weight: 300;
+    line-height: 1.3;
 }
 
 h1,h2,h3,h4,h5,h6 {
-    font-family:'Ruda', "Trebuchet MS", Arial, Sans-Serif;
+    font-family: 'Ruda', sans-serif;
+    font-weight: 700;
     text-align: center;
+    letter-spacing: -0.15rem;
+    line-height: 1.2;
 }
+
+strong {
+    font-weight: 600;
+}
+
 h1 {
-    font-size: 3em;
+    font-size: 37px;
+    font-size: 3.7rem;
+    margin-bottom: 9px;
 }
+
 h2 {
-    font-size: 2.5em;
+    font-size: 28px;
+    font-size: 2.8rem;
+    margin-bottom: 11px;
 }
-h3 {
-    font-size: 2em;
-}
-h4 {
-    font-size: 1.7em;
-}
-h5 {
-    font-size: 1.4em;
-}
-h6 {
-    font-size: 1.2em;
+
+.header p {
+    font-family: 'Ruda', sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 21px;
+    font-size: 2.1rem;
+    letter-spacing: -0.02rem;
 }
 
 form p {
     font-style: italic;
     text-align: center;
+    margin-bottom: 15px;
 }
+
+.form-row > label {
+    font-weight: 400;
+}
+
+input, select, .Select, textarea {
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    font-size: 15px;font-size: 1.5rem;
+}
+
+.form-row input[type='number'] {
+    text-align: center;
+}
+
+/*
+.Select,
+#platformType_dropdown .Select-value-label,
+#provider_dropdown .Select-value-label,
+#coreType_dropdown .Select-value-label,
+#coreModel_dropdown .Select-value-label,
+#location_continent_dropdown .Select-value-label,
+#location_country_dropdown .Select-value-label,
+#location_region_dropdown .Select-value-label {
+    font-size: 15px;
+    font-size: 1.5rem;
+    color: #ff0000;
+}
+*/
+
+
+
+

@@ -4,10 +4,12 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
+import os
+
 def create_appLayout(platformType_options,
                      yesNo_options,
                      PUE_default,
-                     static_image_route,
+                     image_dir,
                      mapCI):
 
     appLayout = html.Div(
@@ -19,7 +21,7 @@ def create_appLayout(platformType_options,
             html.Div(
                 [
                     html.H1("Green Algorithms"),
-                    html.H4("How green are your computations?"),
+                    html.P("How green are your computations?"),
                 ],
                 className='container header'
             ),
@@ -28,7 +30,7 @@ def create_appLayout(platformType_options,
 
             html.Form(
                 [
-                    html.H3(
+                    html.H2(
                         "Details about your algorithm"
                     ),
 
@@ -40,18 +42,22 @@ def create_appLayout(platformType_options,
                         [
                             html.Label("Runtime (hours and minutes)"),
 
-                            dcc.Input(
-                                type='number',
-                                id="runTime_hour_input",
-                                value=12,
+                            html.Div(
+                                [
+                                    dcc.Input(
+                                        type='number',
+                                        id="runTime_hour_input",
+                                        value=12,
+                                    ),
+
+                                    dcc.Input(
+                                        type='number',
+                                        id="runTime_min_input",
+                                        value=0,
+                                    )
+                                ],
+                                className="box-runtime"
                             ),
-
-                            dcc.Input(
-                                type='number',
-                                id="runTime_min_input",
-                                value=0,
-                            )
-
                         ],
                         className='form-row'
                     ),
@@ -97,8 +103,8 @@ def create_appLayout(platformType_options,
 
                             dcc.Dropdown(
                                 id="provider_dropdown",
-                                className="dcc_control_column",
-                                style=dict(display='none')
+                                style=dict(display='none'),
+                                className = 'bottom-dropdown'
                             )
                         ],
                         className='form-row'
@@ -116,6 +122,7 @@ def create_appLayout(platformType_options,
 
                             dcc.Dropdown(
                                 id="coreModel_dropdown",
+                                className='bottom-dropdown'
                             ),
                         ],
                         className='form-row'
@@ -150,11 +157,13 @@ def create_appLayout(platformType_options,
                             dcc.Dropdown(
                                 id="location_country_dropdown",
                                 value="United States of America",
+                                className='bottom-dropdown'
                             ),
 
                             dcc.Dropdown(
                                 id="location_region_dropdown",
                                 value="US",
+                                className='bottom-dropdown'
                             ),
                         ],
                         className='form-row'
@@ -169,6 +178,7 @@ def create_appLayout(platformType_options,
                                 id='pue_radio',
                                 options=yesNo_options,
                                 value='No',
+                                className="radio-input"
                                 # labelStyle={"display": "inline-block"},
                             ),
 
@@ -195,16 +205,16 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=static_image_route + 'logo_co2.png',
+                                src=os.path.join(image_dir,'logo_co2.png'),
                                 id="logo_co2",
                                 className="style-icon"
                             ),
 
-                            html.H5(
+                            html.P(
                                 id="carbonEmissions_text",
                             ),
 
-                            html.H6(
+                            html.P(
                                 "Carbon emissions",
                             )
                         ],
@@ -214,16 +224,16 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=static_image_route + 'logo_tree_1.png',
+                                src=os.path.join(image_dir,'logo_tree_1.png'),
                                 id="logo_tree",
                                 className="style-icon"
                             ),
 
-                            html.H5(
+                            html.P(
                                 id="treeMonths_text",
                             ),
 
-                            html.H6(
+                            html.P(
                                 "Carbon sequestration",
                             )
                         ],
@@ -233,16 +243,16 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=static_image_route + 'logo_car.png',
+                                src=os.path.join(image_dir,'logo_car.png'),
                                 id="logo_car",
                                 className="style-icon"
                             ),
 
-                            html.H5(
+                            html.P(
                                 id="driving_text",
                             ),
 
-                            html.H6(
+                            html.P(
                                 "in a passenger car",
                             )
                         ],
@@ -252,16 +262,16 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=static_image_route + 'logo_plane.png',
+                                src=os.path.join(image_dir,'logo_plane.png'),
                                 id="logo_plane",
                                 className="style-icon"
                             ),
 
-                            html.H5(
+                            html.P(
                                 id="flying_text",
                             ),
 
-                            html.H6(
+                            html.P(
                                 id="flying_label",
                             ),
                         ],
@@ -272,28 +282,31 @@ def create_appLayout(platformType_options,
                         [
                             html.Div(
                                 [
-                                    html.H4(
+                                    html.H2(
                                         "Computing cores VS Memory"
                                     ),
 
                                     dcc.Graph(
                                         id="pie_graph",
+                                        className='graph-container',
+                                        # style=dict(border="1px solid blue")
                                     )
                                 ],
-                                className='graph-container two-graphs'
+                                className='one-of-two-graphs'
                             ),
 
                             html.Div(
                                 [
-                                    html.H4(
+                                    html.H2(
                                         "How the location impacts your footprint"
                                     ),
 
                                     dcc.Graph(
-                                        id="barPlotComparison"
+                                        id="barPlotComparison",
+                                        className='graph-container'
                                     )
                                 ],
-                                className='graph-container two-graphs'
+                                className='one-of-two-graphs'
                             )
                         ],
                         className="container two-graphs-box"
@@ -306,7 +319,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("Carbon Intensity across the world"),
+                    html.H2("Carbon Intensity across the world"),
                     html.Div(
                         [
                             dcc.Graph(
@@ -327,7 +340,7 @@ def create_appLayout(platformType_options,
                 [
                     html.Div(
                         [
-                            html.H4("About CO2e"),
+                            html.H2("About CO2e"),
 
                             dcc.Markdown('''
                             Carbon Dioxide equivalent measures 
@@ -343,7 +356,7 @@ def create_appLayout(platformType_options,
 
                     html.Div(
                         [
-                            html.H4("What is a tree-month?"),
+                            html.H2("What is a tree-month?"),
 
                             dcc.Markdown('''
                             It's the amount of CO2 sequestered by a tree in a month.
@@ -362,7 +375,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("Power draw of different processors"),
+                    html.H2("Power draw of different processors"),
 
                     html.Div(
                         [
@@ -380,7 +393,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("What can you do about it?"),
+                    html.H2("What can you do about it?"),
 
                     dcc.Markdown('''
                     The main factor impacting your carbon emissions is the location of your servers:
@@ -406,7 +419,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("The formula"),
+                    html.H2("The formula"),
 
                     dcc.Markdown('''
                     The carbon emissions are calculated by estimating the energy draw of the algorithm
@@ -431,7 +444,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4( "How to report it?"),
+                    html.H2( "How to report it?"),
 
                     dcc.Markdown('''
                     It's important to track the impact 
@@ -449,14 +462,14 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("The data"),
+                    html.H2("The data"),
 
                     dcc.Markdown('''
                     The data used to run this calculator can be found 
                     on [github](https://github.com/green-algorithms/project)
                      '''),
 
-                    html.H4('Questions/Suggestions?'),
+                    html.H2('Questions/Suggestions?'),
 
                     dcc.Markdown('''
                     The app is still under development and new data and features are coming soon.
@@ -471,7 +484,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("About us"),
+                    html.H2("About us"),
 
                     dcc.Markdown('''
                     The Green Algorithms project was jointly developed by
@@ -494,7 +507,7 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H4("#ShowYourStripes"),
+                    html.H2("#ShowYourStripes"),
 
                     dcc.Markdown('''
                     These coloured stripes in the background represent the change in world temperatures
