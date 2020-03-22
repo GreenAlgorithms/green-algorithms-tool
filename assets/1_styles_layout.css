@@ -100,6 +100,14 @@ body {
     width:50%;
 }
 
+.box-runtime input:first-of-type {
+    margin-right:2px;
+}
+
+.box-runtime input:last-of-type {
+    margin-left:2px;
+}
+
 .radio-input {
     width: 100%;
     margin: 10px 0 13px 0;
