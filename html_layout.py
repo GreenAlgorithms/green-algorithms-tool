@@ -205,17 +205,26 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=os.path.join(image_dir,'logo_co2.png'),
+                                src=os.path.join(image_dir,'logo_co2.svg'),
                                 id="logo_co2",
-                                className="style-icon"
+                                className="style-icon",
+                                style={
+                                    'margin-top':'-7px',
+                                    'margin-bottom':'7px'
+                                },
                             ),
 
-                            html.P(
-                                id="carbonEmissions_text",
-                            ),
+                            html.Div(
+                                [
+                                    html.P(
+                                        id="carbonEmissions_text",
+                                    ),
 
-                            html.P(
-                                "Carbon emissions",
+                                    html.P(
+                                        "Carbon emissions",
+                                    )
+                                ],
+                                className='caption-icons'
                             )
                         ],
                         className="container mini-box"
@@ -224,18 +233,27 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=os.path.join(image_dir,'logo_tree_1.png'),
+                                src=os.path.join(image_dir,'logo_tree_1.svg'),
                                 id="logo_tree",
-                                className="style-icon"
+                                className="style-icon",
+                                style={
+                                    'padding':'15px'
+                                },
                             ),
 
-                            html.P(
-                                id="treeMonths_text",
-                            ),
+                            html.Div(
+                                [
+                                    html.P(
+                                        id="treeMonths_text",
+                                    ),
 
-                            html.P(
-                                "Carbon sequestration",
+                                    html.P(
+                                        "Carbon sequestration",
+                                    )
+                                ],
+                                className='caption-icons'
                             )
+
                         ],
                         className="container mini-box"
                     ),
@@ -243,17 +261,25 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=os.path.join(image_dir,'logo_car.png'),
+                                src=os.path.join(image_dir,'logo_car_3.svg'),
                                 id="logo_car",
-                                className="style-icon"
+                                className="style-icon",
+                                style={
+                                    'padding': '13px'
+                                },
                             ),
 
-                            html.P(
-                                id="driving_text",
-                            ),
+                            html.Div(
+                                [
+                                    html.P(
+                                        id="driving_text",
+                                    ),
 
-                            html.P(
-                                "in a passenger car",
+                                    html.P(
+                                        "in a passenger car",
+                                    )
+                                ],
+                                className='caption-icons'
                             )
                         ],
                         className="container mini-box"
@@ -262,18 +288,26 @@ def create_appLayout(platformType_options,
                     html.Div(
                         [
                             html.Img(
-                                src=os.path.join(image_dir,'logo_plane.png'),
+                                src=os.path.join(image_dir,'logo_plane_1.svg'),
                                 id="logo_plane",
-                                className="style-icon"
+                                className="style-icon",
+                                style={
+                                    'padding': '4px'
+                                },
                             ),
 
-                            html.P(
-                                id="flying_text",
-                            ),
+                            html.Div(
+                                [
+                                    html.P(
+                                        id="flying_text",
+                                    ),
 
-                            html.P(
-                                id="flying_label",
-                            ),
+                                    html.P(
+                                        id="flying_label",
+                                    ),
+                                ],
+                                className='caption-icons'
+                            )
                         ],
                         className="container mini-box"
                     ),
@@ -289,7 +323,6 @@ def create_appLayout(platformType_options,
                                     dcc.Graph(
                                         id="pie_graph",
                                         className='graph-container',
-                                        # style=dict(border="1px solid blue")
                                     )
                                 ],
                                 className='one-of-two-graphs'
@@ -303,7 +336,10 @@ def create_appLayout(platformType_options,
 
                                     dcc.Graph(
                                         id="barPlotComparison",
-                                        className='graph-container'
+                                        className='graph-container',
+                                        style={
+                                            'margin-top':'20px'
+                                        }
                                     )
                                 ],
                                 className='one-of-two-graphs'
@@ -343,11 +379,11 @@ def create_appLayout(platformType_options,
                             html.H2("About CO2e"),
 
                             dcc.Markdown('''
-                            Carbon Dioxide equivalent measures 
-                            the Global Warming Potential of a mixture of greenhouse gases.
+                            "Carbon dioxide equivalent" (CO2e) measures 
+                            the global warming potential of a mixture of greenhouse gases.
                             __It represents the quantity of CO2 that would have 
                             the same impact on the environment__ as the mix of interest
-                            and is used as a standardised unit to assess of 
+                            and is used as a standardised unit to assess 
                             the environmental impact of human activities.
                             ''')
                         ],
@@ -396,20 +432,21 @@ def create_appLayout(platformType_options,
                     html.H2("What can you do about it?"),
 
                     dcc.Markdown('''
-                    The main factor impacting your carbon emissions is the location of your servers:
+                    The main factor impacting your footprint is the location of your servers:
                     the same algorithm will emit __64 times more__ CO2e
-                    if ran in Australia compared to Switzerland. Although it's not always the case, 
+                    if ran in Australia compared to Switzerland. 
+                    Although it's not always the case, 
                     many cloud providers offer the option to select a datacentre.
-
+                    
                     Memory power draw is a huge source of waste: 
                     because __the energy consumption depends on the memory requested, 
                     not the actual usage__, only requesting the needed memory 
-                    is a painless way to reduce the emissions.
-
-                    __Generally, taking the time to write optimised code that runs faster with fewer 
-                    resources saves both money and the planet.__
-
-                    And of course, only run jobs that you need!
+                    is a painless way to reduce emissions.  
+                    
+                    Generally, taking the time to write optimised code that runs faster with fewer 
+                    resources saves both money and the planet.
+                    
+                    And above all, __only run jobs that you need!__
                     ''')
                 ],
                 className='container to-do'
@@ -427,7 +464,9 @@ def create_appLayout(platformType_options,
 
                     `carbon emissions = energy needed * carbon intensity`
 
-                    The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
+                    Where the energy needed is: 
+                    
+                    `time * (power draw for computing cores + power draw for memory) * PUE`
 
                     The power draw for the computing cores depends on the CPU model and number of cores, 
                     while the memory power draw only depends on the size of memory requested.
@@ -449,8 +488,10 @@ def create_appLayout(platformType_options,
                     dcc.Markdown('''
                     It's important to track the impact 
                     of computational research on climate change in order to stimulate greener algorithms.
-                    For that, we believe that the carbon footprint of a project should be reported on articles
-                    alongside other performance metrics. Here is an example you can include in your paper:
+                    For that, __we believe that the carbon footprint of a project should be reported on articles
+                    alongside other performance metrics__. 
+                    
+                    Here is an example you can include in your paper:
                     '''),
 
                     dcc.Markdown(id='report_markdown')

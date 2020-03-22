@@ -151,12 +151,18 @@ def convertList_hex2rgba(hex_list):
 #     # ),
 # )
 
+font_graphs = "Raleway"
+
 layout_plots = dict(
     autosize=True,
-    margin=dict(l=30, r=30, b=20, t=40),
+    # margin=dict(l=30, r=30, b=20, t=40),
+    margin=dict(l=0, r=0, b=0, t=50),
     paper_bgcolor=myColors['boxesColor'],
     plot_bgcolor=myColors['boxesColor'],
     # height=400,
+    font = dict(family=font_graphs, color=myColors['fontColor']),
+    separators=".,",
+    # modebar = dict(bgcolor='#ff0000')
 )
 
 ## make map
@@ -165,6 +171,10 @@ map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
 layout_map = copy.deepcopy(layout_plots)
+
+layout_map['height'] = 250
+
+layout_map['margin']['t'] = 30
 
 layout_map['geo'] = dict(
     projection=dict(
@@ -188,14 +198,18 @@ mapCI = go.Figure(
         colorscale=myColors['map'],
         colorbar=dict(
             title=dict(
-                text="Carbon <br> intensity <br> (gCO2e/kWh)",
+                # text="Carbon <br> intensity <br> (gCO2e/kWh)",
                 font=dict(
                     color=myColors['fontColor'],
                 )
             ),
             tickfont=dict(
                 color=myColors['fontColor'],
-            )
+                size=12,
+            ),
+            thicknessmode='fraction',
+            thickness=0.04,
+            xpad=3,
         ),
         showscale=True,
         hovertemplate="%{text} <extra> %{z:.0f} gCO2e/kWh </extra>",
@@ -495,7 +509,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(PUE is None)|(selected_platform is None):
+    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(PUE is None)|(selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
         print('Not enough information to display the results')
 
         output['coreType'] = None
@@ -575,13 +589,13 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
         if carbonEmissions < 0.5 * refValues_dict['flight_NY-SF']:
             output['flying_context'] = carbonEmissions / refValues_dict['flight_PAR-LON']
-            output['flying_text'] = "Paris - London"
+            output['flying_text'] = "Paris-London"
         elif carbonEmissions < 0.5 * refValues_dict['flight_NYC-MEL']:
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NY-SF']
-            output['flying_text'] = "NYC - San Francisco"
+            output['flying_text'] = "NYC-San Francisco"
         else:
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
-            output['flying_text'] = "NYC - Melbourne"
+            output['flying_text'] = "NYC-Melbourne"
 
         return output
 
@@ -610,6 +624,7 @@ def update_text(data):
 )
 def update_text(data):
     return "of a flight {}".format(data['flying_text'])
+    # return ["of a flight", html.Br(), "{}".format(data['flying_text'])]
 
 ### UPDATE PIE GRAPH ###
 @app.callback(
@@ -618,6 +633,10 @@ def update_text(data):
 )
 def create_pie_graph(aggData):
     layout_pie = copy.deepcopy(layout_plots)
+
+    layout_pie['margin'] = dict(l=0, r=0, b=0, t=20)
+
+    layout_pie['height'] = 250
 
     fig = go.Figure(
         data=[
@@ -633,11 +652,13 @@ def create_pie_graph(aggData):
                 ),
                 texttemplate="<b>%{label}</b><br>%{percent}",
                 textfont=dict(
+                    family=font_graphs,
                     color=myColors['fontColor'],
                 ),
                 hovertemplate='%{value:.0f} gCO2e<extra></extra>',
                 hoverlabel=dict(
                     font=dict(
+                        family=font_graphs,
                         color=myColors['fontColor'],
                     )
                 )
@@ -664,7 +685,8 @@ def create_bar_chart(aggData):
     layout_bar['yaxis'] = dict(
         color=myColors['fontColor'],
         title=dict(
-            text='Emissions (gCO2e)'
+            text='Emissions (gCO2e)',
+            standoff=100,
         ),
         showspikes=False,
         showgrid=True,
@@ -735,6 +757,8 @@ def create_bar_chart(aggData):
 )
 def create_bar_chart_cores(aggData):
     layout_bar = copy.deepcopy(layout_plots)
+
+    layout_bar['margin']['t'] = 60
 
     layout_bar['xaxis'] = dict(
         color=myColors['fontColor'],
@@ -842,10 +866,21 @@ def create_bar_chart_cores(aggData):
 )
 def fillin_report_text(aggData):
 
-    if (aggData['n_cores'] is None):
+    if aggData['n_cores'] is None:
         return('')
 
     else:
+
+        minutes = aggData['runTime_min']
+        hours = aggData['runTime_hours']
+
+        if (minutes > 0)&(hours>0):
+            textRuntime = "{}h and {}min".format(hours, minutes)
+        elif (hours > 0):
+            textRuntime = "{}h".format(hours)
+        else:
+            textRuntime = "{}min".format(minutes)
+
 
         if aggData['n_cores'] > 1:
             suffixProcessor = 's'
@@ -867,11 +902,11 @@ def fillin_report_text(aggData):
             prefixCountry = ''
 
         myText = '''
-        > This algorithm runs in {}h and {}min on {} {}{} {}.
+        > This algorithm runs in {} on {} {}{} {}.
         > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months
-        (calculated using [green-algorithms.org](www.green-algorithms.org)).
+        (calculated using green-algorithms.org).
         '''.format(
-            aggData['runTime_hours'], aggData['runTime_min'],
+            textRuntime,
             aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
             prefixCountry, country, textRegion,
             aggData['carbonEmissions'], aggData['n_treeMonths']

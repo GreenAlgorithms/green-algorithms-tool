@@ -35,6 +35,15 @@ h2 {
     margin-bottom: 11px;
 }
 
+p:not(:last-of-type) {
+    margin-bottom: 1rem;
+}
+
+/*
+---------------------------------- HEADER ----------------------------------------
+*/
+
+
 .header p {
     font-family: 'Ruda', sans-serif;
     font-weight: 400;
@@ -42,7 +51,12 @@ h2 {
     font-size: 21px;
     font-size: 2.1rem;
     letter-spacing: -0.02rem;
+    margin-bottom: 0;
 }
+
+/*
+---------------------------------- INPUT FORM ----------------------------------------
+*/
 
 form p {
     font-style: italic;
@@ -58,7 +72,8 @@ input, select, .Select, textarea {
     font-family: inherit;
     font-weight: inherit;
     color: inherit;
-    font-size: 15px;font-size: 1.5rem;
+    font-size: 15px;
+    font-size: 1.5rem;
 }
 
 .form-row input[type='number'] {
@@ -80,6 +95,37 @@ input, select, .Select, textarea {
 }
 */
 
+/*
+---------------------------------- MINI-BOX ----------------------------------------
+*/
 
+.caption-icons p {
+    margin-bottom: 0;
+}
 
+.caption-icons p:first-of-type {
+    font-weight: 700;
+    font-size: 25px;
+    font-size: 2.5rem;
+    margin-bottom: 6px;
+}
 
+.caption-icons p:last-of-type {
+    font-weight: 400;
+    /*font-style: italic;
+    font-size: 20px;
+    font-size: 2rem;*/
+}
+
+/*
+---------------------------------- DESCRIPTIONS ----------------------------------------
+*/
+
+.report p {
+    margin-bottom: 1rem;
+}
+
+blockquote {
+    font-style: italic;
+    font-weight:400;
+}
