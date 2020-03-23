@@ -204,112 +204,117 @@ def create_appLayout(platformType_options,
                 [
                     html.Div(
                         [
-                            html.Img(
-                                src=os.path.join(image_dir,'logo_co2.svg'),
-                                id="logo_co2",
-                                className="style-icon",
-                                style={
-                                    'margin-top':'-7px',
-                                    'margin-bottom':'7px'
-                                },
-                            ),
-
                             html.Div(
                                 [
-                                    html.P(
-                                        id="carbonEmissions_text",
+                                    html.Img(
+                                        src=os.path.join(image_dir, 'logo_co2.svg'),
+                                        id="logo_co2",
+                                        className="style-icon",
+                                        style={
+                                            'margin-top': '-7px',
+                                            'margin-bottom': '7px'
+                                        },
                                     ),
 
-                                    html.P(
-                                        "Carbon emissions",
+                                    html.Div(
+                                        [
+                                            html.P(
+                                                id="carbonEmissions_text",
+                                            ),
+
+                                            html.P(
+                                                "Carbon emissions",
+                                            )
+                                        ],
+                                        className='caption-icons'
                                     )
                                 ],
-                                className='caption-icons'
-                            )
-                        ],
-                        className="container mini-box"
-                    ),
-
-                    html.Div(
-                        [
-                            html.Img(
-                                src=os.path.join(image_dir,'logo_tree_1.svg'),
-                                id="logo_tree",
-                                className="style-icon",
-                                style={
-                                    'padding':'15px'
-                                },
+                                className="container mini-box"
                             ),
 
                             html.Div(
                                 [
-                                    html.P(
-                                        id="treeMonths_text",
+                                    html.Img(
+                                        src=os.path.join(image_dir, 'logo_tree_1.svg'),
+                                        id="logo_tree",
+                                        className="style-icon",
+                                        style={
+                                            'padding': '15px'
+                                        },
                                     ),
 
-                                    html.P(
-                                        "Carbon sequestration",
+                                    html.Div(
+                                        [
+                                            html.P(
+                                                id="treeMonths_text",
+                                            ),
+
+                                            html.P(
+                                                "Carbon sequestration",
+                                            )
+                                        ],
+                                        className='caption-icons'
+                                    )
+
+                                ],
+                                className="container mini-box"
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Img(
+                                        src=os.path.join(image_dir, 'logo_car_3.svg'),
+                                        id="logo_car",
+                                        className="style-icon",
+                                        style={
+                                            'padding': '13px'
+                                        },
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.P(
+                                                id="driving_text",
+                                            ),
+
+                                            html.P(
+                                                "in a passenger car",
+                                            )
+                                        ],
+                                        className='caption-icons'
                                     )
                                 ],
-                                className='caption-icons'
-                            )
-
-                        ],
-                        className="container mini-box"
-                    ),
-
-                    html.Div(
-                        [
-                            html.Img(
-                                src=os.path.join(image_dir,'logo_car_3.svg'),
-                                id="logo_car",
-                                className="style-icon",
-                                style={
-                                    'padding': '13px'
-                                },
+                                className="container mini-box"
                             ),
 
                             html.Div(
                                 [
-                                    html.P(
-                                        id="driving_text",
+                                    html.Img(
+                                        src=os.path.join(image_dir, 'logo_plane_1.svg'),
+                                        id="logo_plane",
+                                        className="style-icon",
+                                        style={
+                                            'padding': '4px'
+                                        },
                                     ),
 
-                                    html.P(
-                                        "in a passenger car",
+                                    html.Div(
+                                        [
+                                            html.P(
+                                                id="flying_text",
+                                            ),
+
+                                            html.P(
+                                                id="flying_label",
+                                            ),
+                                        ],
+                                        className='caption-icons'
                                     )
                                 ],
-                                className='caption-icons'
-                            )
-                        ],
-                        className="container mini-box"
-                    ),
-
-                    html.Div(
-                        [
-                            html.Img(
-                                src=os.path.join(image_dir,'logo_plane_1.svg'),
-                                id="logo_plane",
-                                className="style-icon",
-                                style={
-                                    'padding': '4px'
-                                },
+                                className="container mini-box"
                             ),
-
-                            html.Div(
-                                [
-                                    html.P(
-                                        id="flying_text",
-                                    ),
-
-                                    html.P(
-                                        id="flying_label",
-                                    ),
-                                ],
-                                className='caption-icons'
-                            )
                         ],
-                        className="container mini-box"
+                        className='super-section mini-boxes'
                     ),
 
                     html.Div(
@@ -322,7 +327,7 @@ def create_appLayout(platformType_options,
 
                                     dcc.Graph(
                                         id="pie_graph",
-                                        className='graph-container',
+                                        className='graph-container pie-graph',
                                     )
                                 ],
                                 className='one-of-two-graphs'
@@ -512,7 +517,7 @@ def create_appLayout(platformType_options,
                             on [github](https://github.com/green-algorithms/project).
                              '''),
                         ],
-                        className='container'
+                        className='container footer'
                     ),
 
                     html.Div(
@@ -525,10 +530,10 @@ def create_appLayout(platformType_options,
                             You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
                             ''')
                         ],
-                        className='container'
+                        className='container footer'
                     )
                 ],
-                className='super-section questions'
+                className='super-section data-questions'
             ),
 
             #### ABOUT US ####
@@ -559,7 +564,7 @@ def create_appLayout(platformType_options,
                     More information [here](http://www.inouyelab.org/)
                      ''')
                 ],
-                className='container about-us'
+                className='container about-us footer'
             ),
 
             #### SHOW YOUR STRIPES ####
@@ -578,7 +583,7 @@ def create_appLayout(platformType_options,
                     Additional credits can be found on the [github](https://github.com/green-algorithms/project).
                     ''')
                 ],
-                className='container show-stripes'
+                className='container show-stripes footer'
             ),
 
         ],
