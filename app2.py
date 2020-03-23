@@ -611,9 +611,9 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = "{:.0f} g CO2e".format(round(data['carbonEmissions'], 2))
-    text_ty = "{} tree-months".format(round(data['n_treeMonths'],2))
-    text_car = "{} km".format(round(data['nkm_drivingUS'], 2))
+    text_CE = "{:,.0f} g CO2e".format(round(data['carbonEmissions'], 2))
+    text_ty = "{:,} tree-months".format(round(data['n_treeMonths'],2))
+    text_car = "{:,} km".format(round(data['nkm_drivingUS'], 2))
     text_fly = "{:.0f} %".format(round(data['flying_context']*100, 0))
 
     return text_CE, text_ty, text_car, text_fly
@@ -903,7 +903,7 @@ def fillin_report_text(aggData):
 
         myText = '''
         > This algorithm runs in {} on {} {}{} {}.
-        > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months
+        > Based in {}{}{}, this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
         (calculated using green-algorithms.org).
         '''.format(
             textRuntime,

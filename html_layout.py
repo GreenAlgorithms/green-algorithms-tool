@@ -503,22 +503,32 @@ def create_appLayout(platformType_options,
 
             html.Div(
                 [
-                    html.H2("The data"),
+                    html.Div(
+                        [
+                            html.H2("The data"),
 
-                    dcc.Markdown('''
-                    The data used to run this calculator can be found 
-                    on [github](https://github.com/green-algorithms/project)
-                     '''),
+                            dcc.Markdown('''
+                            All the data used to run this calculator can be found 
+                            on [github](https://github.com/green-algorithms/project).
+                             '''),
+                        ],
+                        className='container'
+                    ),
 
-                    html.H2('Questions/Suggestions?'),
+                    html.Div(
+                        [
+                            html.H2('Questions / Suggestions?'),
 
-                    dcc.Markdown('''
-                    The app is still under development and new data and features are coming soon.
-
-                    You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
-                    ''')
+                            dcc.Markdown('''
+                            The app is still under development and new data and features are coming soon.
+    
+                            You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
+                            ''')
+                        ],
+                        className='container'
+                    )
                 ],
-                className='container questions'
+                className='super-section questions'
             ),
 
             #### ABOUT US ####
@@ -531,13 +541,21 @@ def create_appLayout(platformType_options,
                     The Green Algorithms project was jointly developed by
 
                     Loïc Lannelongue¹, Jason Grealey², and Michael Inouye³
+                    ''',
+                     className='authors'
+                     ),
 
+                    dcc.Markdown('''
                     (1) University of Cambridge
 
                     (2) Baker Heart and Diabetes Institute and La Trobe University
 
                     (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
+                    ''',
+                    className='affiliations'
+                    ),
 
+                    dcc.Markdown('''
                     More information [here](http://www.inouyelab.org/)
                      ''')
                 ],
@@ -556,6 +574,8 @@ def create_appLayout(platformType_options,
                     This striking design has been made by Ed Hawkins from the University of Reading.
 
                     More on [ShowYourStipes.info](https://showyourstripes.info)
+                    
+                    Additional credits can be found on the [github](https://github.com/green-algorithms/project).
                     ''')
                 ],
                 className='container show-stripes'

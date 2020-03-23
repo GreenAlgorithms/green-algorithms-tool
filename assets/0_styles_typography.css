@@ -129,3 +129,29 @@ blockquote {
     font-style: italic;
     font-weight:400;
 }
+
+/*
+---------------------------------- ABOUT US ----------------------------------------
+*/
+
+.authors p:first-of-type {
+    margin-bottom: 0.5rem;
+}
+
+.affiliations  p {
+    text-align: left;
+    font-size: 18px;
+    font-size: 1.4rem;
+}
+
+.affiliations p:not(:last-of-type) {
+    margin-bottom: 0.5rem;
+}
+
+.affiliations  p:first-of-type {
+    margin-top: 1rem
+}
+
+.affiliations p:last-of-type {
+    margin-bottom: 1rem;
+}

@@ -100,9 +100,12 @@ body {
     display: flex;
 }
 
-.box-runtime input {
+/*
+.box-runtime input[type='number'] {
     width:50%;
 }
+*/
+
 
 .box-runtime input:first-of-type {
     margin-right:2px;
@@ -181,3 +184,4 @@ blockquote {
   padding-left: 1rem;
   text-align:left;
 }
+
