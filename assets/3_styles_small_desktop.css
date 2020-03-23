@@ -1,7 +1,12 @@
 /* Small desktop Styles */
-@media only screen and (min-width: 1025px) {
+@media only screen and (min-width: 1001px) {
+
+    html {
+      font-size: 62.5%;
+    }
+
     .fullPage {
-        width: 1024px;
+        width: 1000px;
         margin: 0 auto;
     }
 
@@ -37,16 +42,16 @@
     }
 
     .one-of-two-graphs {
-        width: calc((50%) - (5px));
+        width: calc((50%) - (10px));
     }
 
     .one-of-two-graphs:first-of-type {
-        margin-right: 10px
+        margin-right: 20px;
         margin-bottom: 0;
     }
 
     .pie-graph {
-        margin-top: 90px;
+        margin-top: 70px;
     }
 
     /*
@@ -56,6 +61,10 @@
     .map {
         margin-right: 12px;
         width: calc((50%) - (6px));
+    }
+
+    .map .graph-container {
+        margin-top: 30px;
     }
 
     /*
@@ -117,11 +126,5 @@
     .show-stripes {
         order: 2;
         width: calc((33.3%) - (8px));
-    }
-
-
-    .affiliations  p {
-        font-size: 18px;
-        font-size: 1.4rem;
     }
 }

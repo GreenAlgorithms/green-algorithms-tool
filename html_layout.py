@@ -56,10 +56,10 @@ def create_appLayout(platformType_options,
                                         value=0,
                                     )
                                 ],
-                                className="box-runtime"
+                                className="box-runtime box-fields"
                             ),
                         ],
-                        className='form-row'
+                        className='form-row short-input'
                     ),
 
                     ## NUMBER OF CORES
@@ -73,7 +73,7 @@ def create_appLayout(platformType_options,
                                 value=12,
                             ),
                         ],
-                        className='form-row'
+                        className='form-row short-input'
                     ),
 
                     ## MEMORY
@@ -87,7 +87,7 @@ def create_appLayout(platformType_options,
                                 value=64,
                             ),
                         ],
-                        className='form-row'
+                        className='form-row short-input'
                     ),
 
                     ## SELECT COMPUTING PLATFORM
@@ -95,16 +95,21 @@ def create_appLayout(platformType_options,
                         [
                             html.Label("Select the platform used for the computations"),
 
-                            dcc.Dropdown(
-                                id="platformType_dropdown",
-                                options=platformType_options,
-                                value='localServer',
-                            ),
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="platformType_dropdown",
+                                        options=platformType_options,
+                                        value='localServer',
+                                    ),
 
-                            dcc.Dropdown(
-                                id="provider_dropdown",
-                                style=dict(display='none'),
-                                className = 'bottom-dropdown'
+                                    dcc.Dropdown(
+                                        id="provider_dropdown",
+                                        style=dict(display='none'),
+                                        className='bottom-dropdown'
+                                    )
+                                ],
+                                className="box-fields"
                             )
                         ],
                         className='form-row'
@@ -115,15 +120,20 @@ def create_appLayout(platformType_options,
                         [
                             html.Label("What type of core are you using"),
 
-                            dcc.Dropdown(
-                                id="coreType_dropdown",
-                                value='CPU',
-                            ),
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="coreType_dropdown",
+                                        value='CPU',
+                                    ),
 
-                            dcc.Dropdown(
-                                id="coreModel_dropdown",
-                                className='bottom-dropdown'
-                            ),
+                                    dcc.Dropdown(
+                                        id="coreModel_dropdown",
+                                        className='bottom-dropdown'
+                                    ),
+                                ],
+                                className="box-fields"
+                            )
                         ],
                         className='form-row'
                     ),
@@ -149,22 +159,27 @@ def create_appLayout(platformType_options,
                         [
                             html.Label("Select location"),
 
-                            dcc.Dropdown(
-                                id="location_continent_dropdown",
-                                value='North America',
-                            ),
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="location_continent_dropdown",
+                                        value='North America',
+                                    ),
 
-                            dcc.Dropdown(
-                                id="location_country_dropdown",
-                                value="United States of America",
-                                className='bottom-dropdown'
-                            ),
+                                    dcc.Dropdown(
+                                        id="location_country_dropdown",
+                                        value="United States of America",
+                                        className='bottom-dropdown'
+                                    ),
 
-                            dcc.Dropdown(
-                                id="location_region_dropdown",
-                                value="US",
-                                className='bottom-dropdown'
-                            ),
+                                    dcc.Dropdown(
+                                        id="location_region_dropdown",
+                                        value="US",
+                                        className='bottom-dropdown'
+                                    ),
+                                ],
+                                className="box-fields"
+                            )
                         ],
                         className='form-row'
                     ),

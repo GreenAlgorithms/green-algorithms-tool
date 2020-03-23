@@ -1,5 +1,5 @@
 html {
-  font-size: 62.5%;
+  font-size: 50%;
 }
 
 body {
@@ -149,9 +149,13 @@ blockquote {
 }
 
 .affiliations  p:first-of-type {
-    margin-top: 1rem
+    margin-top: 1rem;
 }
 
 .affiliations p:last-of-type {
     margin-bottom: 1rem;
+}
+
+.show-stripes p:last-of-type {
+    margin-top: 3rem
 }

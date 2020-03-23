@@ -233,7 +233,7 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 
 # The styles are automatically loaded from the the /assets folder
 external_stylesheets = [
-    dict(href="https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Ruda:400,500,600,700,800,900&display=swap",
+    dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600,700|Ruda:400,700&display=swap",
          rel="stylesheet")
 ]
 
@@ -350,7 +350,7 @@ def set_coreModels_value(selected_coreType,selected_provider,selected_platform):
     [Input('coreModel_dropdown', 'value')])
 def display_TDP(selected_coreModel):
     if selected_coreModel == "other":
-        return {'display': 'block'}
+        return {'display': 'flex'}
     else:
         return {'display': 'none'}
 
@@ -636,7 +636,7 @@ def create_pie_graph(aggData):
 
     layout_pie['margin'] = dict(l=0, r=0, b=0, t=20)
 
-    layout_pie['height'] = 250
+    layout_pie['height'] = 300
 
     fig = go.Figure(
         data=[
@@ -816,10 +816,16 @@ def create_bar_chart_cores(aggData):
         # calculate carbon emissions for each location
         if aggData['coreType'] == 'GPU':
             for gpu in list_cores:
-                power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
+                if gpu == 'other':
+                    power_list.append(aggData['corePower'])
+                else:
+                    power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
         else:
             for cpu in list_cores:
-                power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
+                if cpu == 'other':
+                    power_list.append(aggData['corePower'])
+                else:
+                    power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
 
         power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
 
