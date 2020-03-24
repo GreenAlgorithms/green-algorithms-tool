@@ -233,7 +233,7 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 
 # The styles are automatically loaded from the the /assets folder
 external_stylesheets = [
-    dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600,700|Ruda:400,700&display=swap",
+    dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
          rel="stylesheet")
 ]
 
@@ -457,7 +457,7 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
         return {'display': 'none'}
 
     else:
-        return {'display': 'block'}
+        return {'display': 'flex'}
 
 # And then asks for PUE input if necessary
 @app.callback(

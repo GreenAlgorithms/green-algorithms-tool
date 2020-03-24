@@ -189,6 +189,7 @@ def create_appLayout(platformType_options,
                         [
                             html.Label("Do you know the Power Usage Efficiency (PUE) of your local datacentre?"),
 
+
                             dcc.RadioItems(
                                 id='pue_radio',
                                 options=yesNo_options,
@@ -204,8 +205,10 @@ def create_appLayout(platformType_options,
                                 value=PUE_default,
                                 style=dict(display='none'),
                             ),
+
+
                         ],
-                        className='form-row',
+                        className='form-row radio-and-field',
                         id='PUEquestion_div',
                         style=dict(display='none'),
                     ),

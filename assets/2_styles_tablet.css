@@ -26,7 +26,7 @@
         align-items: center;
     }
 
-    .form-row label {
+    .form-row > label {
         width: 50%;
         margin-bottom: 0;
         /*text-align: right;
@@ -52,6 +52,15 @@
         width: 50%;
     }
 
+    .radio-input {
+        width: 30%;
+        margin: 0;
+    }
+
+    .radio-and-field input[type='number'] {
+        width: 20%;
+    }
+
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
@@ -64,20 +73,6 @@
         height: 180px;
         width:calc((50%) - (6px));
     }
-
-    /*
-    .mini-box {
-        flex-direction: column;
-        height: 260px;
-        width:calc((50%) - (6px));
-    }
-
-
-    .caption-icons p:first-of-type {
-        font-size: 22px;
-        font-size: 2.2rem;
-    }
-    */
 
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------

@@ -1,6 +1,6 @@
 body {
   background-color: #f2f2f2;
-  background-image: url("stripes_sym2.png");
+  background-image: url("stripes_sym3.png");
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-size: 100% 100%; /*700px;*/
@@ -118,8 +118,16 @@ body {
     margin-left:2px;
 }
 
-.radio-input {
+.radio-and-field {
+    flex-direction: row;
+}
+
+.radio-and-field > label {
     width: 100%;
+}
+
+.radio-input {
+    width: 60%;
     margin: 10px 0 13px 0;
     display: flex;
     justify-content: space-around;
@@ -131,6 +139,10 @@ body {
 
 .form-row input[type='radio'] {
     margin-right: 7px;
+}
+
+.radio-and-field input[type='number'] {
+    width: 40%;
 }
 
 /*
