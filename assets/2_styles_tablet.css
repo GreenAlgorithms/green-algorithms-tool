@@ -1,6 +1,6 @@
 /* Tablet Styles */
 
-@media only screen and (min-width: 480px) and (max-width: 1000px) {
+@media only screen and (min-width: 550px) and (max-width: 1000px) {
 
     html {
       font-size: 57%;
