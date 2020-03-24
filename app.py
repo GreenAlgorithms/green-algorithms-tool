@@ -233,9 +233,8 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 
 # The styles are automatically loaded from the the /assets folder
 # external_scripts =[
-#     {
-#         'src':"https://www.googletagmanager.com/gtag/js?id=UA-161168162-1"
-#     },
+#     'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-1.js',
+#     'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-2.js'
 # ]
 
 external_stylesheets = [
@@ -263,6 +262,14 @@ app.layout = create_appLayout(
     image_dir=image_dir,
     mapCI=mapCI,
 )
+
+# app.scripts.config.serve_locally = False
+# app.scripts.append_script({
+#     'external_url': 'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-1.js'
+# })
+# app.scripts.append_script({
+#     'external_url': 'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-2.js'
+# })
 
 ##############
 # CALLBACKS #
