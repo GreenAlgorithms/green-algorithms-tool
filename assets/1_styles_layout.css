@@ -1,0 +1,214 @@
+body {
+  background-color: #f2f2f2;
+  background-image: url("stripes_sym3.png");
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: 100% 100%; /*700px;*/
+  /*margin: 5%;*/
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.fullPage {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    padding: 15px;
+}
+
+.super-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    text-align:center;
+
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 6px 0;
+    padding: 25px;
+    box-shadow: 2px 2px 2px lightgrey;
+}
+
+/*
+---------------------------------- HEADER ----------------------------------------
+*/
+
+.header {
+    background-color: rgba(249, 249, 249,0.6);
+    padding-top: 38px;
+    padding-bottom: 35px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/*
+---------------------------------- INPUT FORM ----------------------------------------
+*/
+
+.input-form {
+    display: block;
+    text-align:left;
+}
+
+.form-row {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.form-row:last-of-type {
+    margin-bottom: 0;
+}
+
+.form-row > label {
+    margin-bottom: 7px;
+}
+
+
+.form-row  input[type='number'],
+.form-row .Select-control {
+    background-color: #FFFFFF;
+    border: 1px solid #D6D9DC;
+    border-radius: 3px;
+    width: 100%;
+}
+
+.form-row input[type='number'] {
+    padding: 7px;
+}
+
+.bottom-dropdown {
+    margin-top: 5px;
+}
+
+.box-runtime {
+    display: flex;
+}
+
+/*
+.box-runtime input[type='number'] {
+    width:50%;
+}
+*/
+
+
+.box-runtime input:first-of-type {
+    margin-right:2px;
+}
+
+.box-runtime input:last-of-type {
+    margin-left:2px;
+}
+
+.radio-and-field {
+    flex-direction: row;
+}
+
+.radio-and-field > label {
+    width: 100%;
+}
+
+.radio-input {
+    width: 60%;
+    margin: 10px 0 13px 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+.radio-input label:last-of-type {
+    margin-right: 20px;
+}
+
+.form-row input[type='radio'] {
+    margin-right: 7px;
+}
+
+.radio-and-field input[type='number'] {
+    width: 40%;
+}
+
+/*
+---------------------------------- MINI-BOX ----------------------------------------
+*/
+
+.mini-boxes {
+    flex-direction: row;
+}
+
+.mini-box {
+    /*height: 200px;*/
+    flex-direction: row;
+}
+
+.style-icon {
+    height: 100px;
+    width: 100px;
+    margin-top:0px;
+    margin-bottom:0px
+}
+
+.caption-icons {
+    width: 100%;
+}
+
+/*
+---------------------------------- TWO-GRAPHS BOX ----------------------------------------
+*/
+
+.two-graphs-box {
+    flex-direction: row;
+    flex-wrap: wrap;
+    /*justify-content: space-around;*/
+    align-items: flex-start;
+}
+
+.graph-container {
+    width: 100%;
+    /*height: 100%;
+    display: block;*/
+    margin-top: 10px;
+}
+
+.one-of-two-graphs {
+    width: 100%;
+}
+
+.one-of-two-graphs:first-of-type {
+    margin-bottom: 50px;
+}
+
+/*
+---------------------------------- DESCRIPTIONS ----------------------------------------
+*/
+
+blockquote {
+  border-left: 4px lightgrey solid;
+  padding-left: 1rem;
+  text-align:left;
+}
+
+/*
+---------------------------------- FOOTER ----------------------------------------
+*/
+
+.footer {
+    background-color: rgba(249, 249, 249,0.6);
+}

@@ -15,22 +15,14 @@ import copy
 
 import pycountry_convert as pc
 
-# The styles are automatically loaded from the the /assets folder
-
-app = dash.Dash(
-    __name__,
-    # these tags are to insure proper responsiveness on mobile devices
-    meta_tags=[{"name": "viewport", "content": "width=device-width"}]
-)
-app.title = "Green Algorithms"
-server = app.server
+from html_layout import create_appLayout
 
 #############
 # LOAD DATA #
 #############
 
 data_dir = os.path.join(os.path.abspath(''),'data')
-image_dir = os.path.join(os.path.abspath(''),'images')
+image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
 
 # We download each csv and store it in a pd.DataFrame
@@ -70,7 +62,7 @@ hardware_df.drop(['source'], axis=1, inplace=True)
 
 ### CARBON INTENSITY BY LOCATION ###
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
-                        sep=',', skiprows=1)
+                     sep=',', skiprows=1)
 CI_df.drop(['source'], axis=1, inplace=True)
 CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
 
@@ -98,15 +90,13 @@ for col in datacenters_df.columns:
 
 ### PROVIDERS CODES AND NAMES ###
 providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
-                                  sep=',', skiprows=1)
+                                sep=',', skiprows=1)
 
 ### REFERENCE VALUES
 refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
-                                  sep=',', skiprows=1)
+                           sep=',', skiprows=1)
 refValues_df.drop(['source'], axis=1, inplace=True)
 refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
-
-
 
 ###########
 # OPTIONS #
@@ -149,24 +139,30 @@ def convertList_hex2rgba(hex_list):
     return out
 
 ## GLOBAL CHART TEMPLATE
-layout = dict(
-    autosize=True,
-    automargin=True,
-    margin=dict(l=30, r=30, b=20, t=40),
-    hovermode="closest",
-    plot_bgcolor="#F9F9F9",
-    paper_bgcolor="#F9F9F9",
-    legend=dict(font=dict(size=10), orientation="h"),
-    title="Satellite Overview",
-    # ),
-)
+# layout = dict(
+#     autosize=True,
+#     automargin=True,
+#     margin=dict(l=30, r=30, b=20, t=40),
+#     hovermode="closest",
+#     plot_bgcolor="#F9F9F9",
+#     paper_bgcolor="#F9F9F9",
+#     legend=dict(font=dict(size=10), orientation="h"),
+#     title="Satellite Overview",
+#     # ),
+# )
+
+font_graphs = "Raleway"
 
 layout_plots = dict(
     autosize=True,
-    margin=dict(l=30, r=30, b=20, t=40),
+    # margin=dict(l=30, r=30, b=20, t=40),
+    margin=dict(l=0, r=0, b=0, t=50),
     paper_bgcolor=myColors['boxesColor'],
     plot_bgcolor=myColors['boxesColor'],
-    height=400,
+    # height=400,
+    font = dict(family=font_graphs, color=myColors['fontColor']),
+    separators=".,",
+    # modebar = dict(bgcolor='#ff0000')
 )
 
 ## make map
@@ -175,6 +171,10 @@ map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
 layout_map = copy.deepcopy(layout_plots)
+
+layout_map['height'] = 250
+
+layout_map['margin']['t'] = 30
 
 layout_map['geo'] = dict(
     projection=dict(
@@ -198,14 +198,18 @@ mapCI = go.Figure(
         colorscale=myColors['map'],
         colorbar=dict(
             title=dict(
-                text="Carbon <br> intensity <br> (gCO2e/kWh)",
+                # text="Carbon <br> intensity <br> (gCO2e/kWh)",
                 font=dict(
                     color=myColors['fontColor'],
                 )
             ),
             tickfont=dict(
                 color=myColors['fontColor'],
-            )
+                size=12,
+            ),
+            thicknessmode='fraction',
+            thickness=0.04,
+            xpad=3,
         ),
         showscale=True,
         hovertemplate="%{text} <extra> %{z:.0f} gCO2e/kWh </extra>",
@@ -220,702 +224,55 @@ mapCI = go.Figure(
     layout=layout_map
 )
 
-
-##########
-# LAYOUT #
-##########
-
 images_dir = os.path.join(os.path.abspath(''),'images')
 
-app.layout = html.Div(
-    [
-        dcc.Store(id="aggregate_data"),
-        # empty Div to trigger javascript file for graph resizing
-        html.Div(id="output-clientside"),
 
-        ## HEADER
-        html.Div(
-            [
-                # title
-                html.Div(
-                    [
-                        html.H1(
-                            "How green is your research?",
-                            id='title',
-                        ),
-                        # html.H4(
-                        #     "How sustainable is your research?",
-                        #     id='subtitle'
-                        # ),
-                    ],
-                    # className="one-half column flex-display",
-                    className="pretty_container flex-auto",
-                    id="title_container",
-                ),
-            ],
-            id="header",
-            className="row flex-display flex-auto",
-        ),
-
-        ## FIRST ROW
-        html.Div(
-            [
-                ## LEFT COLUMN: CALCULATOR INPUT
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.H3(
-                                    "Details about your algorithm"
-                                ),
-
-                                dcc.Markdown('''
-                                _To understand how each parameter impacts your Carbon Emissions, 
-                                check out the formula below._
-                                '''),
-                            ],
-                            className='centered-text',
-                        ),
-
-                        ## RUN TIME
-                        html.Div(
-                            [
-                                html.H6(
-                                    "Runtime (hours and minutes):",
-                                    className="control_label flex-half",
-                                ),
-
-                                html.Div(
-                                    [
-                                        dcc.Input(
-                                            type='number',
-                                            id="runTime_hour_input",
-                                            className="dcc_control_row",
-                                            value=12,
-                                        ),
-                                    ],
-                                    className='flex-quarter'
-                                ),
-
-                                html.Div(
-                                    [
-                                        dcc.Input(
-                                            type='number',
-                                            id="runTime_min_input",
-                                            value=0,
-                                            className="dcc_control_row",
-                                        )
-                                    ],
-                                    className='flex-quarter',
-
-                                ),
-                            ],
-                            className="control-container-row",
-                        ),
-
-
-                        ## NUMBER OF CORES
-                        html.Div(
-                            [
-
-                                html.H6(
-                                    "Number of cores:",
-                                    className="control_label flex-half",
-                                ),
-
-                                dcc.Input(
-                                    type='number',
-                                    id="numberCores_input",
-                                    value=12,
-                                    className="dcc_control_column flex-half",
-                                    # style={"width" : "100%"},
-                                ),
-                            ],
-                            className="control-container-row",
-                        ),
-
-                        ## MEMORY
-                        html.Div(
-                            [
-                                html.H6(
-                                    "Memory requested (in GB):",
-                                    className="control_label flex-half",
-                                ),
-
-                                dcc.Input(
-                                    type='number',
-                                    id="memory_input",
-                                    value=64,
-                                    className="dcc_control_column flex-half",
-                                ),
-                            ],
-                            className="control-container-row",
-                        ),
-
-
-
-                        ## SELECT COMPUTING PLATFORM
-                        html.Div(
-                            [
-                                html.H6(
-                                    "Select the platform used for the computations:",
-                                    className="control_label",
-                                ),
-
-                                dcc.Dropdown(
-                                    id="platformType_dropdown",
-                                    options=platformType_options,
-                                    value='localServer',
-                                    className="dcc_control_column",
-                                ),
-
-                                html.Div(
-                                    [
-                                        dcc.Dropdown(
-                                            id="provider_dropdown",
-                                            className="dcc_control_column",
-                                        )
-                                    ],
-                                    style = {'display': 'none'},
-                                    id = 'provider_div'
-                                ),
-                            ],
-                            className="control-container-column",
-                        ),
-
-                        ## COMPUTING CORES
-                        html.Div(
-                            [
-                                html.H6(
-                                    "What type of core are you using:",
-                                    className="control_label",
-                                ),
-
-                                dcc.Dropdown(
-                                    id="coreType_dropdown",
-                                    value = 'CPU',
-                                    className="dcc_control_column",
-                                ),
-
-                                dcc.Dropdown(
-                                    id = "coreModel_dropdown",
-                                    className="dcc_control_column",
-                                ),
-
-                            ],
-                            className="control-container-column",
-                        ),
-
-                        html.Div(
-                            [
-                                html.H6(
-                                    'What is the Thermal Design Power (TDP) value per core of your processor? '
-                                    'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)',
-                                    className="control_label",
-                                ),
-                                dcc.Input(
-                                    type='number',
-                                    id="tdp_input",
-                                    className="dcc_control_column",
-                                )
-                            ],
-                            id = "tdp_div",
-                            className="control-container-column",
-                            style = {'display': 'none'},
-                        ),
-
-                        ## LOCATION
-                        html.Div(
-                            [
-                                html.H6(
-                                    "Select location:",
-                                    className="control_label",
-                                ),
-                                dcc.Dropdown(
-                                    id="location_continent_dropdown",
-                                    value='North America',
-                                    className="dcc_control_column",
-                                ),
-
-                                html.Div(
-                                    [
-                                        dcc.Dropdown(
-                                            id="location_country_dropdown",
-                                            value="United States of America",
-                                            className="dcc_control_column",
-                                        ),
-                                    ],
-                                    id='container-country'
-                                ),
-
-                                html.Div(
-                                    [
-                                        dcc.Dropdown(
-                                            id="location_region_dropdown",
-                                            value = "US",
-                                            className="dcc_control_column",
-                                        ),
-                                    ],
-                                    id='container-region'
-                                ),
-
-                            ],
-                            className="control-container-column",
-                        ),
-
-
-                        ## PUE
-                        html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.H6(
-                                            "Do you know the Power Usage Efficiency (PUE) of your local datacentre?",
-                                            className="control_label",
-                                        ),
-
-                                        dcc.RadioItems(
-                                            id = 'pue_radio',
-                                            options=yesNo_options,
-                                            value='No',
-                                            labelStyle={"display": "inline-block"},
-                                            className="dcc_control_column",
-                                        ),
-                                    ],
-                                    id = 'PUEquestion_div',
-                                    style = {'display': 'none'},
-                                ),
-
-                                html.Div(
-                                    [
-                                        dcc.Input(
-                                            min=1,
-                                            type='number',
-                                            id="PUE_input",
-                                            value=pue_df.loc[pue_df.provider == 'Unknown','PUE'][0],
-                                            className="dcc_control_column",
-                                        ),
-                                    ],
-                                    id = 'PUEinput_div',
-                                    style = {'display': 'none'},
-                                ),
-                            ],
-                            className="control-container-column",
-                        ),
-                    ],
-                    className="pretty_container four columns",
-                    id="input_calculator"
-                ),
-
-                ## RIGHT COLUMN
-                html.Div(
-                    [
-                        ## FIRST ROW: DISPLAY RESULTS
-                        html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.Img(
-                                            src=static_image_route + 'logo_co2.png',
-                                            id="logo_co2",
-                                            className="style-icon"
-                                        ),
-
-                                        html.Div(
-                                            [
-                                                html.H5(
-                                                    id="carbonEmissions_text",
-                                                ),
-
-                                                html.H6(
-                                                    "Carbon emissions",
-                                                )
-                                            ],
-                                            className='container-labels-icon'
-                                        ),
-
-                                    ],
-                                    id="carbonEmissions",
-                                    className="mini_container",
-                                ),
-
-                                html.Div(
-                                    [
-                                        html.Img(
-                                            src=static_image_route + 'logo_tree_1.png',
-                                            id="logo_tree",
-                                            className="style-icon"
-                                        ),
-
-                                        html.Div(
-                                            [
-                                                html.H5(
-                                                    id="treeMonths_text",
-                                                ),
-
-                                                html.H6(
-                                                    "Carbon sequestration",
-                                                )
-                                            ],
-                                            className='container-labels-icon'
-                                        ),
-
-                                    ],
-                                    id="treeMonths",
-                                    className="mini_container",
-                                ),
-
-                                html.Div(
-                                    [
-                                        html.Img(
-                                            src=static_image_route + 'logo_car.png',
-                                            id="logo_car",
-                                            className="style-icon"
-                                        ),
-
-                                        html.Div(
-                                            [
-                                                html.H5(
-                                                    id="driving_text",
-                                                ),
-
-                                                html.H6(
-                                                    "in a passenger car",
-                                                )
-                                            ],
-                                            className='container-labels-icon'
-                                        ),
-
-                                    ],
-                                    id="car",
-                                    className="mini_container",
-                                ),
-
-                                html.Div(
-                                    [
-                                        html.Img(
-                                            src=static_image_route + 'logo_plane.png',
-                                            id="logo_plane",
-                                            className="style-icon"
-                                        ),
-
-                                        html.Div(
-                                            [
-                                                html.H5(
-                                                    id="flying_text",
-                                                ),
-
-                                                html.H6(
-                                                    id="flying_label",
-                                                )
-                                            ],
-                                            className='container-labels-icon'
-                                        ),
-
-                                    ],
-                                    id="plane",
-                                    className="mini_container",
-                                ),
-                            ],
-                            id="info_container",
-                            className="row flex-display flex-wrapReverse",
-                        ),
-
-                        ## SECOND ROW: GRAPH
-                        html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.H4(
-                                            "Computing cores VS Memory"
-                                        ),
-
-                                        dcc.Graph(
-                                            id="pie_graph",
-                                        )
-                                    ],
-                                    id = 'coontainer_pie',
-                                    className='flex-display by-column one-half column',
-                                ),
-
-                                html.Div(
-                                    [
-                                        html.H4(
-                                            "How the location impacts your footprint"
-                                        ),
-
-                                        dcc.Graph(
-                                            id = "barPlotComparison"
-                                        )
-                                    ],
-                                    id = 'container_barLocation',
-                                    className='flex-display by-column one-half column flex-auto',
-
-                                ),
-
-                            ],
-                            id="pieGraphContainer",
-                            className="pretty_container row  flex-auto flex-wrap",
-                        ),
-
-                    ],
-                    id="firstRow_rightColumn",
-                    className="eight columns flex-display by-column bare_container flex-auto flex-wrap",
-                ),
-
-            ],
-            # id='row_inputOutput',
-            className="row flex-display flex-wrap",
-        ),
-
-        ## SECOND ROW
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H4("Carbon Intensity across the world"),
-                        dcc.Graph(
-                            id = "map",
-                            figure = mapCI
-                        )
-                    ],
-                    className="pretty_container six columns by-column flex-auto",
-                ),
-
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.H4(
-                                    "About CO2e"
-                                ),
-
-                                dcc.Markdown('''
-                                Carbon Dioxide equivalent measures 
-                                the Global Warming Potential of a mixture of greenhouse gases.
-                                __It represents the quantity of CO2 that would have 
-                                the same impact on the environment__ as the mix of interest
-                                and is used as a standardised unit to assess of 
-                                the environmental impact of human activities.
-                                ''')
-                            ],
-                            className="pretty_container by-column flex-auto centered-text"
-                        ),
-
-                        html.Div(
-                            [
-                                html.H4(
-                                    "What is a tree-month?"
-                                ),
-
-                                dcc.Markdown('''
-                                It's the amount of CO2 sequestered by a tree in a month.
-                                __We use it to measure how long it would take to a mature tree
-                                to absorb the CO2 emitted by an algorithm.__
-                                We use the value of 11.4 kg CO2/year, which is roughly 1kg CO2/month.
-                                '''),
-                            ],
-                            className="pretty_container by-column flex-auto centered-text"
-                        ),
-                    ],
-                    className="flex-display four columns by-column flex-auto",
-                )
-            ],
-            # id='secondRow',
-            className="row flex-display flex-wrap",
-        ),
-
-        ## THIRD ROW
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H4(
-                            "What can you do about it?"
-                        ),
-
-                        dcc.Markdown('''
-                        The main factor impacting your carbon emissions is the location of your servers:
-                        the same algorithm will emit __64 times more__ CO2e
-                        if ran in Australia compared to Switzerland. Although it's not always the case, 
-                        many cloud providers offer the option to select a datacentre.
-                        
-                        Memory power draw is a huge source of waste: 
-                        because __the energy consumption depends on the memory requested, 
-                        not the actual usage__, only requesting the needed memory 
-                        is a painless way to reduce the emissions.
-
-                        __Generally, taking the time to write optimised code that runs faster with fewer 
-                        resources saves both money and the planet.__
-                        
-                        And of course, only run jobs that you need!
-                        ''')
-                    ],
-                    className="pretty_container by-column four columns centered-text flex-auto"
-                ),
-
-                html.Div(
-                    [
-                        html.H4(
-                            "Power draw of different processors"
-                        ),
-
-                        dcc.Graph(
-                            id = "barPlotComparison_cores"
-                        ),
-
-
-                    ],
-                    className="pretty_container six columns by-column centered-text flex-auto"
-                )
-            ],
-            className="row flex-display flex-wrap",
-        ),
-
-        # FOURTH ROW
-        html.Div(
-            [
-
-                html.Div(
-                    [
-                        html.H4(
-                            "The formula"
-                        ),
-
-                        dcc.Markdown('''
-                        The carbon emissions are calculated by estimating the energy draw of the algorithm
-                        and the carbon intensity of producing this energy at a given location:
-        
-                        `carbon emissions = energy needed * carbon intensity`
-        
-                        The energy needed is: `time * (power draw for computing cores + power draw for memory) * PUE`
-        
-                        The power draw for the computing cores depends on the CPU model and number of cores, 
-                        while the memory power draw only depends on the size of memory requested.
-                        The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                        to operate the datacentre (cooling, lighting etc.).
-        
-                        The Carbon Intensity depends on the location and the technologies used to produce electricity.
-                        ''')
-                    ],
-                    className="pretty_container six columns by-column centered-text flex-auto"
-                ),
-
-                html.Div(
-                    [
-                        html.H4(
-                            "How to report it?"
-                        ),
-
-                        dcc.Markdown('''
-                        It's important to track the impact 
-                        of computational research on climate change in order to stimulate greener algorithms.
-                        For that, we believe that the carbon footprint of a project should be reported on articles
-                        alongside other performance metrics. Here is an example you can include in your paper:
-                        '''),
-
-                        dcc.Markdown(id='report_markdown')
-                    ],
-                    className="pretty_container four columns by-column centered-text flex-auto"
-                ),
-
-            ],
-            className='flex-display row flex-wrap'
-
-        ),
-
-        ## FOURTH ROW
-        html.Div(
-            [
-
-                html.Div(
-                    [
-                        html.H4(
-                            "About us"
-                        ),
-
-                        dcc.Markdown('''
-                        The Green Algorithms project was jointly developed by
-                         
-                        Loïc Lannelongue¹, Jason Grealey², and Michael Inouye³
-                        
-                        (1) University of Cambridge
-                        
-                        (2) Baker Heart and Diabetes Institute and La Trobe University
-                        
-                        (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
-                        
-                        More information [here](http://www.inouyelab.org/)
-                         ''')
-                    ],
-                    className="pretty_container two columns by-column centered-text flex-auto"
-                ),
-
-                html.Div(
-                    [
-                        html.H4(
-                            "The data"
-                        ),
-
-                        dcc.Markdown('''
-                        The data used to run this calculator can be found 
-                        on [github](https://github.com/green-algorithms/project)
-                         '''),
-
-                        html.H4(
-                            'Questions/Suggestions?'
-                        ),
-
-                        dcc.Markdown('''
-                        The app is still under development and new data and features are coming soon.
-                        
-                        You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
-                        ''')
-                    ],
-                    className="pretty_container two columns by-column centered-text flex-auto"
-                ),
-
-                html.Div(
-                    [
-                        html.H4(
-                            "#ShowYourStripes"
-                        ),
-
-                        dcc.Markdown('''
-                        These coloured stripes in the background represent the change in world temperatures
-                        from 1850 to 2018.
-                        This striking design has been made by Ed Hawkins from the University of Reading.
-
-                        More on [ShowYourStipes.info](https://showyourstripes.info)
-                        ''')
-                    ],
-                    className="pretty_container two columns by-column centered-text flex-auto",
-                    id='container_showYourStripes'
-                ),
-            ],
-            className="row flex-display flex-wrap",
-        ),
-    ],
-    id="mainContainer",
+##############
+# CREATE APP #
+##############
+
+# The styles are automatically loaded from the the /assets folder
+external_stylesheets = [
+    dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
+         rel="stylesheet")
+]
+
+app = dash.Dash(
+    __name__,
+    external_stylesheets=external_stylesheets,
+    # these tags are to insure proper responsiveness on mobile devices
+    meta_tags=[dict(
+        name= 'viewport',
+        content="width=device-width, initial-scale=1.0" #maximum-scale=1.0
+    )]
 )
+app.title = "Green Algorithms"
+server = app.server
 
+app.layout = create_appLayout(
+    platformType_options=platformType_options,
+    yesNo_options=yesNo_options,
+    PUE_default=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
+    image_dir=image_dir,
+    mapCI=mapCI,
+)
 
 ##############
 # CALLBACKS #
 ##############
 
-app.clientside_callback(
-    ClientsideFunction(namespace="clientside", function_name="resize"),
-    Output("output-clientside", "children"),
-    [Input("pie_graph", "figure")],
-)
+# app.clientside_callback(
+#     ClientsideFunction(namespace="clientside", function_name="resize"),
+#     Output("output-clientside", "children"),
+#     [Input("pie_graph", "figure")],
+# )
 
 
 ### PLATFORM AND PROVIDER ###
 
 # This callback shows or hides the choice of provider
 @app.callback(
-    Output('provider_div', 'style'),
+    Output('provider_dropdown', 'style'),
     [Input('platformType_dropdown', 'value')])
 def display_provider(selected_platform):
     # if selected_platform in ['cloudComputing','localServer']:
@@ -993,7 +350,7 @@ def set_coreModels_value(selected_coreType,selected_provider,selected_platform):
     [Input('coreModel_dropdown', 'value')])
 def display_TDP(selected_coreModel):
     if selected_coreModel == "other":
-        return {'display': 'block'}
+        return {'display': 'flex'}
     else:
         return {'display': 'none'}
 
@@ -1057,8 +414,8 @@ def set_cities_options(selected_continent, selected_country,selected_provider,se
 # This callback shows or hide the country/region if WORLD is selected
 @app.callback(
     [
-        Output('container-country', 'style'),
-        Output('container-region', 'style'),
+        Output('location_country_dropdown', 'style'),
+        Output('location_region_dropdown', 'style'),
         Output('location_country_dropdown', 'value'),
         Output('location_region_dropdown', 'value')
     ],
@@ -1094,24 +451,24 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     providers_knownPUE = list(set(pue_df.provider))
 
     if selected_platform in ['cloudComputing','personalComputer']:
-        return {'columnCount': 1,'padding': 10,'display': 'none'}
+        return {'display': 'none'}
 
     elif selected_provider in providers_knownPUE:
-        return {'columnCount': 1,'padding': 10,'display': 'none'}
+        return {'display': 'none'}
 
     else:
-        return {'columnCount': 1,'padding': 10,'display': 'block'}
+        return {'display': 'flex'}
 
 # And then asks for PUE input if necessary
 @app.callback(
-    Output('PUEinput_div','style'),
+    Output('PUE_input','style'),
     [Input('pue_radio', 'value')]
 )
 def display_pue_input(answer_pue):
     if answer_pue == 'No':
-        return {'columnCount': 1,'padding': 10,'display': 'none'}
+        return {'display': 'none'}
     else:
-        return {'columnCount': 1,'padding': 10,'display': 'block'}
+        return {'display': 'block'}
 
 ### STORE ###
 @app.callback(
@@ -1152,7 +509,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(PUE is None)|(selected_platform is None):
+    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(PUE is None)|(selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
         print('Not enough information to display the results')
 
         output['coreType'] = None
@@ -1232,13 +589,13 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
         if carbonEmissions < 0.5 * refValues_dict['flight_NY-SF']:
             output['flying_context'] = carbonEmissions / refValues_dict['flight_PAR-LON']
-            output['flying_text'] = "Paris - London"
+            output['flying_text'] = "Paris-London"
         elif carbonEmissions < 0.5 * refValues_dict['flight_NYC-MEL']:
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NY-SF']
-            output['flying_text'] = "NYC - San Francisco"
+            output['flying_text'] = "NYC-San Francisco"
         else:
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
-            output['flying_text'] = "NYC - Melbourne"
+            output['flying_text'] = "NYC-Melbourne"
 
         return output
 
@@ -1254,9 +611,9 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = "{:.0f} g CO2e".format(round(data['carbonEmissions'], 2))
-    text_ty = "{} tree-months".format(round(data['n_treeMonths'],2))
-    text_car = "{} km".format(round(data['nkm_drivingUS'], 2))
+    text_CE = "{:,.0f} g CO2e".format(round(data['carbonEmissions'], 2))
+    text_ty = "{:,} tree-months".format(round(data['n_treeMonths'],2))
+    text_car = "{:,} km".format(round(data['nkm_drivingUS'], 2))
     text_fly = "{:.0f} %".format(round(data['flying_context']*100, 0))
 
     return text_CE, text_ty, text_car, text_fly
@@ -1267,6 +624,7 @@ def update_text(data):
 )
 def update_text(data):
     return "of a flight {}".format(data['flying_text'])
+    # return ["of a flight", html.Br(), "{}".format(data['flying_text'])]
 
 ### UPDATE PIE GRAPH ###
 @app.callback(
@@ -1275,6 +633,10 @@ def update_text(data):
 )
 def create_pie_graph(aggData):
     layout_pie = copy.deepcopy(layout_plots)
+
+    layout_pie['margin'] = dict(l=0, r=0, b=0, t=20)
+
+    layout_pie['height'] = 300
 
     fig = go.Figure(
         data=[
@@ -1290,11 +652,13 @@ def create_pie_graph(aggData):
                 ),
                 texttemplate="<b>%{label}</b><br>%{percent}",
                 textfont=dict(
+                    family=font_graphs,
                     color=myColors['fontColor'],
                 ),
                 hovertemplate='%{value:.0f} gCO2e<extra></extra>',
                 hoverlabel=dict(
                     font=dict(
+                        family=font_graphs,
                         color=myColors['fontColor'],
                     )
                 )
@@ -1321,7 +685,8 @@ def create_bar_chart(aggData):
     layout_bar['yaxis'] = dict(
         color=myColors['fontColor'],
         title=dict(
-            text='Emissions (gCO2e)'
+            text='Emissions (gCO2e)',
+            standoff=100,
         ),
         showspikes=False,
         showgrid=True,
@@ -1393,6 +758,8 @@ def create_bar_chart(aggData):
 def create_bar_chart_cores(aggData):
     layout_bar = copy.deepcopy(layout_plots)
 
+    layout_bar['margin']['t'] = 60
+
     layout_bar['xaxis'] = dict(
         color=myColors['fontColor'],
     )
@@ -1449,10 +816,16 @@ def create_bar_chart_cores(aggData):
         # calculate carbon emissions for each location
         if aggData['coreType'] == 'GPU':
             for gpu in list_cores:
-                power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
+                if gpu == 'other':
+                    power_list.append(aggData['corePower'])
+                else:
+                    power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
         else:
             for cpu in list_cores:
-                power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
+                if cpu == 'other':
+                    power_list.append(aggData['corePower'])
+                else:
+                    power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
 
         power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
 
@@ -1499,10 +872,21 @@ def create_bar_chart_cores(aggData):
 )
 def fillin_report_text(aggData):
 
-    if (aggData['n_cores'] is None):
+    if aggData['n_cores'] is None:
         return('')
 
     else:
+
+        minutes = aggData['runTime_min']
+        hours = aggData['runTime_hours']
+
+        if (minutes > 0)&(hours>0):
+            textRuntime = "{}h and {}min".format(hours, minutes)
+        elif (hours > 0):
+            textRuntime = "{}h".format(hours)
+        else:
+            textRuntime = "{}min".format(minutes)
+
 
         if aggData['n_cores'] > 1:
             suffixProcessor = 's'
@@ -1524,11 +908,11 @@ def fillin_report_text(aggData):
             prefixCountry = ''
 
         myText = '''
-        > This algorithm runs in {}h and {}min on {} {}{} {}.
-        > Based in {}{}{}, this produces {:.0f}g of CO2e, which is equivalent to {:.2f} tree-months
-        (calculated using [green-algorithms.org](www.green-algorithms.org)).
+        > This algorithm runs in {} on {} {}{} {}.
+        > Based in {}{}{}, this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
+        (calculated using green-algorithms.org).
         '''.format(
-            aggData['runTime_hours'], aggData['runTime_min'],
+            textRuntime,
             aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
             prefixCountry, country, textRegion,
             aggData['carbonEmissions'], aggData['n_treeMonths']
@@ -1543,10 +927,10 @@ def fillin_report_text(aggData):
 # Add a static image route that serves images from desktop
 # Be *very* careful here - you don't want to serve arbitrary files
 # from your computer or server
-@app.server.route('{}<image_path>.png'.format(static_image_route))
-def serve_image(image_path):
-    image_name = '{}.png'.format(image_path)
-    return flask.send_from_directory(image_dir, image_name)
+# @app.server.route('{}<image_path>.png'.format(static_image_route))
+# def serve_image(image_path):
+#     image_name = '{}.png'.format(image_path)
+#     return flask.send_from_directory(image_dir, image_name)
 
 if __name__ == '__main__':
     # allows app to update when code is changed!

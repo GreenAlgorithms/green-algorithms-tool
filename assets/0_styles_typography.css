@@ -1,0 +1,163 @@
+html {
+  font-size: 50%;
+}
+
+body {
+    font-size: 18px;
+    font-size: 1.8rem;
+    font-family: 'Raleway', serif;
+    color: rgb(60, 60, 60);
+    font-weight: 300;
+    line-height: 1.3;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Ruda', sans-serif;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: -0.15rem;
+    line-height: 1.2;
+}
+
+strong {
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 37px;
+    font-size: 3.7rem;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+h2 {
+    font-size: 28px;
+    font-size: 2.8rem;
+    margin-bottom: 11px;
+}
+
+p:not(:last-of-type) {
+    margin-bottom: 1rem;
+}
+
+/*
+---------------------------------- HEADER ----------------------------------------
+*/
+
+
+.header p {
+    font-family: 'Ruda', sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 21px;
+    font-size: 2.1rem;
+    letter-spacing: -0.02rem;
+    margin-bottom: 0;
+}
+
+/*
+---------------------------------- INPUT FORM ----------------------------------------
+*/
+
+form p {
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.7rem;
+}
+
+.form-row > label {
+    font-weight: 400;
+}
+
+input, select, .Select, textarea {
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    font-size: 15px;
+    font-size: 1.5rem;
+}
+
+.form-row input[type='number'] {
+    text-align: center;
+}
+
+/*
+.Select,
+#platformType_dropdown .Select-value-label,
+#provider_dropdown .Select-value-label,
+#coreType_dropdown .Select-value-label,
+#coreModel_dropdown .Select-value-label,
+#location_continent_dropdown .Select-value-label,
+#location_country_dropdown .Select-value-label,
+#location_region_dropdown .Select-value-label {
+    font-size: 15px;
+    font-size: 1.5rem;
+    color: #ff0000;
+}
+*/
+
+/*
+---------------------------------- MINI-BOX ----------------------------------------
+*/
+
+.caption-icons p {
+    margin-bottom: 0;
+}
+
+.caption-icons p:first-of-type {
+    font-weight: 600;
+    font-size: 25px;
+    font-size: 2.5rem;
+    margin-bottom: 6px;
+}
+
+.caption-icons p:last-of-type {
+    font-weight: 400;
+    /*font-style: italic;
+    font-size: 20px;
+    font-size: 2rem;*/
+}
+
+/*
+---------------------------------- DESCRIPTIONS ----------------------------------------
+*/
+
+.report p {
+    margin-bottom: 1rem;
+}
+
+blockquote {
+    font-style: italic;
+    font-weight:400;
+}
+
+/*
+---------------------------------- ABOUT US ----------------------------------------
+*/
+
+.authors p:first-of-type {
+    margin-bottom: 0.5rem;
+}
+
+.affiliations  p {
+    text-align: left;
+    font-size: 14px;
+    font-size: 1.4rem;
+}
+
+.affiliations p:not(:last-of-type) {
+    margin-bottom: 0.5rem;
+}
+
+.affiliations  p:first-of-type {
+    margin-top: 1rem;
+}
+
+.affiliations p:last-of-type {
+    margin-bottom: 1rem;
+}
+
+.show-stripes p:last-of-type {
+    margin-top: 3rem
+}

@@ -1,0 +1,248 @@
+.js-plotly-plot .plotly .modebar {
+  padding-top: 5%;
+  margin-right: 3.5%;
+}
+
+body {
+  background-color: #f2f2f2;
+  background-image: url("stripes_sym2.png");
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: 100% 100%; /*700px;*/
+  margin: 5%;
+}
+
+.two.columns {
+  width: 16.25%;
+}
+
+.column,
+.columns {
+  margin-left: 0.5%;
+}
+
+.centered-text {
+  text-align: center
+}
+
+.pretty_container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 10px;
+  padding: 15px;
+  padding-left: 25px;
+  padding-right: 25px;
+  /*position: relative;*/
+  box-shadow: 2px 2px 2px lightgrey;
+  /*min-width:550px;*/
+  flex: 1 1 auto;
+}
+
+.big_row {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.bare_container {
+  margin: 0;
+  padding: 0;
+}
+
+.dcc_control_row {
+  margin: 0px;
+  padding: 0;
+  width:100%;
+  min-width:50px;
+}
+
+.dcc_control_column {
+  margin:0;
+  padding: 0;
+  margin-top:2px;
+  margin-bottom:2px;
+  width: 100%;
+  /*font-family: 'Raleway', 'Titillium Web', "Trebuchet MS", Helvetica, sans-serif;*/
+}
+
+.control_label {
+  margin: 0;
+  padding: 0;
+}
+
+.flex-display {
+  display: flex;
+}
+
+.icons-display {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.mini_container {
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  flex: auto;
+  /*flex: 1 25%;*/
+  flex-wrap: wrap;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 10px;
+  padding: 15px;
+  /*position: relative;*/
+  box-shadow: 2px 2px 2px lightgrey;
+  /*text-align: center;*/
+}
+
+.style-icon {
+  height: 130px;
+  width: 130px;
+  margin-top:0px;
+  margin-bottom:0px
+}
+
+.container-labels-icon {
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:0px;
+  margin-top:0;
+}
+
+.control-container-row {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin:7px;
+}
+
+.control-container-column {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  margin:7px;
+  /*flex-wrap: wrap;*/
+}
+
+.flex-half {
+ flex:1 50%;
+}
+
+.flex-quarter {
+ flex:1 25%;
+}
+
+.flex-auto {
+  flex:auto;
+}
+
+.by-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-wrapReverse {
+  flex-wrap: wrap-reverse;
+}
+
+.flex {
+  flex: 1 0 0;
+}
+
+/* CUSTOMISED CONTAINER DESIGN (by name) */
+
+#mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width=100%;
+}
+
+#header {
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+#title_container {
+  width:100%;
+  padding:35px;
+  padding-top:40px;
+  background-color: rgba(249, 249, 249,0.6);
+}
+
+#title {
+  margin-bottom: 5px;
+  max-width:100%;
+}
+
+#subtitle {
+  margin-top: 0;
+  font-style:italic;
+}
+
+#input_calculator {
+  /*flex:auto;*/
+  align-items: stretch;
+  min-width: 300px;
+  text-align: left;
+}
+
+#firstRow_rightColumn {
+  justify-content: space-between;
+}
+
+#info_container {
+  justify-content: space-between;
+  flex-wrap:wrap;
+  /*flex: auto;*/
+}
+
+#container_pie {
+  flex-wrap: wrap;
+}
+
+#container_pie,
+#container_barLocation {
+  /*min-width: 300px;*/
+  flex:auto;
+}
+
+#pieGraphContainer {
+  /*align-items:center;*/
+  flex-direction: row;
+  /*flex: 2 1 auto;*/
+}
+
+#pie_graph {
+  height: 70%;
+}
+
+#pie_graph,
+#barPlotComparison,
+#map {
+  height: 100%;
+  width: 100%;
+  flex: 1 1 0;
+  min-height:0;
+}
+
+/*
+#container_showYourStripes {
+  justify-content: center;
+} */

@@ -1,0 +1,138 @@
+/* Tablet Styles */
+
+@media only screen and (min-width: 550px) and (max-width: 1000px) {
+
+    html {
+      font-size: 57%;
+    }
+
+    /*
+    ---------------------------------- INPUT FORM ----------------------------------------
+    */
+
+    /*
+    .input-form {
+        margin-right: 12px;
+        width: calc((50%) - (6px));
+    }
+
+    .first-output {
+        width:calc((50%) - (6px));
+    }
+    */
+
+    .form-row  {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .form-row > label {
+        width: 50%;
+        margin-bottom: 0;
+        /*text-align: right;
+        padding-right: 10px;*/
+    }
+
+    .form-row .box-fields {
+        display:block;
+        width: 50%;
+    }
+
+    .form-row .box-runtime input:first-of-type {
+        margin-right:0;
+        margin-bottom:2px;
+
+    }
+
+    .form-row input:last-of-type {
+        margin-left:0;
+    }
+
+    .form-row > input[type='number'] {
+        width: 50%;
+    }
+
+    .radio-input {
+        width: 30%;
+        margin: 0;
+    }
+
+    .radio-and-field input[type='number'] {
+        width: 20%;
+    }
+
+    /*
+    ---------------------------------- MINI-BOX ----------------------------------------
+    */
+
+    .mini-box:nth-of-type(2n+1) {
+        margin-right: 12px;
+    }
+
+    .mini-box {
+        height: 180px;
+        width:calc((50%) - (6px));
+    }
+
+    /*
+    ---------------------------------- FIRST OUTPUT ----------------------------------------
+    */
+
+    .one-of-two-graphs {
+        width: calc((50%) - (10px));
+    }
+
+    .one-of-two-graphs:first-of-type {
+        margin-right: 20px;
+        margin-bottom: 0;
+    }
+
+    .pie-graph {
+        margin-top: 70px;
+    }
+
+    /*
+    ---------------------------------- MAP AND DEFINITIONS ----------------------------------------
+    */
+
+    .definitions {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .definitions .container:first-of-type {
+        margin-right: 12px;
+        width: calc((55%) - (6px));
+    }
+
+    .definitions .container:last-of-type {
+        width: calc((45%) - (6px));
+    }
+
+    /*
+    ---------------------------------- FOOTER ----------------------------------------
+    */
+
+    .data-questions {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .data-questions .container:first-of-type {
+        margin-right: 12px;
+        width: calc((40%) - (6px));
+    }
+
+    .data-questions .container:last-of-type {
+        width: calc((60%) - (6px));
+    }
+
+    .about-us {
+        margin-right: 12px;
+        width: calc((55%) - (6px));
+    }
+
+    .show-stripes {
+        width: calc((45%) - (6px));
+    }
+}

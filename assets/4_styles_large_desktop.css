@@ -1,0 +1,59 @@
+/* Small desktop Styles */
+@media only screen and (min-width: 1281px) {
+
+    body {
+        background-image: url("stripes_sym2.png");
+    }
+
+    .fullPage {
+        width: 1280px;
+        margin: 0 auto;
+    }
+
+    /*
+    ---------------------------------- INPUT FORM and FIRST OUTPUT ----------------------------------------
+    */
+
+    .short-input  {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .short-input label {
+        width: 50%;
+        margin-bottom: 0;
+    }
+
+    .short-input .box-runtime {
+        display:block;
+        width: 50%;
+    }
+
+    .short-input .box-runtime input:first-of-type {
+        margin-right:0;
+        margin-bottom:2px;
+
+    }
+
+    .box-runtime input:last-of-type {
+        margin-left:0;
+    }
+
+    .short-input > input[type='number'] {
+        width: 50%;
+    }
+
+    .mini-box:not(:last-of-type)  {
+        margin-right: 12px;
+    }
+
+    .mini-box {
+        flex-direction: column;
+        height: 260px;
+        width:calc((25%) - (9px));
+    }
+
+    .pie-graph {
+        margin-top: 100px;
+    }
+}
