@@ -232,6 +232,12 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 ##############
 
 # The styles are automatically loaded from the the /assets folder
+# external_scripts =[
+#     {
+#         'src':"https://www.googletagmanager.com/gtag/js?id=UA-161168162-1"
+#     },
+# ]
+
 external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
          rel="stylesheet")
@@ -239,6 +245,7 @@ external_stylesheets = [
 
 app = dash.Dash(
     __name__,
+    # external_scripts=external_scripts,
     external_stylesheets=external_stylesheets,
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[dict(
