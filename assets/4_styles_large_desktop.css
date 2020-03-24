@@ -52,4 +52,8 @@
         height: 260px;
         width:calc((25%) - (9px));
     }
+
+    .pie-graph {
+        margin-top: 100px;
+    }
 }
