@@ -138,19 +138,6 @@ def convertList_hex2rgba(hex_list):
 
     return out
 
-## GLOBAL CHART TEMPLATE
-# layout = dict(
-#     autosize=True,
-#     automargin=True,
-#     margin=dict(l=30, r=30, b=20, t=40),
-#     hovermode="closest",
-#     plot_bgcolor="#F9F9F9",
-#     paper_bgcolor="#F9F9F9",
-#     legend=dict(font=dict(size=10), orientation="h"),
-#     title="Satellite Overview",
-#     # ),
-# )
-
 font_graphs = "Raleway"
 
 layout_plots = dict(
@@ -231,12 +218,6 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 # CREATE APP #
 ##############
 
-# The styles are automatically loaded from the the /assets folder
-# external_scripts =[
-#     'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-1.js',
-#     'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-2.js'
-# ]
-
 external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
          rel="stylesheet")
@@ -244,7 +225,6 @@ external_stylesheets = [
 
 app = dash.Dash(
     __name__,
-    # external_scripts=external_scripts,
     external_stylesheets=external_stylesheets,
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[dict(
@@ -263,24 +243,10 @@ app.layout = create_appLayout(
     mapCI=mapCI,
 )
 
-# app.scripts.config.serve_locally = False
-# app.scripts.append_script({
-#     'external_url': 'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-1.js'
-# })
-# app.scripts.append_script({
-#     'external_url': 'https://cdn.jsdelivr.net/gh/Llannelongue/carbonImpact-public/analytics-2.js'
-# })
 
 ##############
 # CALLBACKS #
 ##############
-
-# app.clientside_callback(
-#     ClientsideFunction(namespace="clientside", function_name="resize"),
-#     Output("output-clientside", "children"),
-#     [Input("pie_graph", "figure")],
-# )
-
 
 ### PLATFORM AND PROVIDER ###
 
@@ -933,18 +899,6 @@ def fillin_report_text(aggData):
         )
 
         return myText
-
-
-
-### UPDATE IMAGES ###
-
-# Add a static image route that serves images from desktop
-# Be *very* careful here - you don't want to serve arbitrary files
-# from your computer or server
-# @app.server.route('{}<image_path>.png'.format(static_image_route))
-# def serve_image(image_path):
-#     image_name = '{}.png'.format(image_path)
-#     return flask.send_from_directory(image_dir, image_name)
 
 if __name__ == '__main__':
     # allows app to update when code is changed!
