@@ -103,11 +103,10 @@ body {
     display: flex;
 }
 
-/*
+
 .box-runtime input[type='number'] {
     width:50%;
 }
-*/
 
 
 .box-runtime input:first-of-type {
