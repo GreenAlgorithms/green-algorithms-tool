@@ -23,24 +23,47 @@
     ---------------------------------- MINI-BOX ----------------------------------------
     */
 
-    .mini-box:nth-of-type(2n) {
-        margin-right: 12px;
-    }
+    /*.mini-box:nth-of-type(2n) {*/
+    /*    margin-right: 12px;*/
+    /*}*/
 
-    .mini-box {
-        height: 180px;
-        width:calc((50%) - (6px));
-    }
+    /*.mini-box {*/
+    /*    height: 180px;*/
+    /*    width:calc((50%) - (6px));*/
+    /*}*/
 
-    .mini-box:first-of-type {
-        margin-right: 0;
-        width: 100%;
-    }
+    /*.mini-box:first-of-type {*/
+    /*    margin-right: 0;*/
+    /*    width: 100%;*/
+    /*}*/
 
     .caption-icons p:first-of-type {
         font-size: 22px;
         font-size: 2.2rem;
     }
+
+    .mini-box {
+        margin-right: 12px;
+        height: 170px;
+    }
+
+    .mini-box:nth-of-type(2), .mini-box:nth-of-type(5) {
+        margin-right: 0;
+    }
+
+    .mini-box:nth-of-type(-n+2) {
+        width: calc((50%) - (6px));
+    }
+
+    .mini-box:nth-of-type(n+3) {
+        width: calc((33%) - (8px));
+        flex-direction: column;
+        height: 260px;
+    }
+
+
+
+
 
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------

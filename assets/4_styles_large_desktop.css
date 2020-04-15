@@ -11,7 +11,7 @@
     }
 
     /*
-    ---------------------------------- INPUT FORM and FIRST OUTPUT ----------------------------------------
+    ---------------------------------- INPUT FORM ----------------------------------------
     */
 
     .short-input  {
@@ -43,15 +43,28 @@
         width: 50%;
     }
 
-    .mini-box:not(:last-of-type)  {
-        margin-right: 12px;
+    /*
+    ---------------------------------- MINI-BOX ----------------------------------------
+    */
+
+    /*.mini-box:not(:last-of-type)  {*/
+    /*    margin-right: 12px;*/
+    /*}*/
+
+    /*.mini-box {*/
+    /*    flex-direction: column;*/
+    /*    height: 260px;*/
+    /*    width:calc((25%) - (9px));*/
+    /*}*/
+
+
+    .mini-box:nth-of-type(n+3) {
+        height: 240px;
     }
 
-    .mini-box {
-        flex-direction: column;
-        height: 260px;
-        width:calc((25%) - (9px));
-    }
+    /*
+    ---------------------------------- FIRST OUTPUT ----------------------------------------
+    */
 
     .pie-graph {
         margin-top: 100px;
