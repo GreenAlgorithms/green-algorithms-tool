@@ -11,7 +11,7 @@
     }
 
     /*
-    ---------------------------------- INPUT FORM and FIRST OUTPUT ----------------------------------------
+    ---------------------------------- INPUT FORM ----------------------------------------
     */
 
     .input-form {
@@ -19,11 +19,11 @@
         width: calc((33.3%) - (6px));
     }
 
-    .first-output {
-        width:calc((66.6%) - (6px));
-    }
+    /*
+    ---------------------------------- MINI-BOX ----------------------------------------
+    */
 
-    .mini-box:nth-of-type(2n+1) {
+    .mini-box:nth-of-type(2n) {
         margin-right: 12px;
     }
 
@@ -32,9 +32,22 @@
         width:calc((50%) - (6px));
     }
 
+    .mini-box:first-of-type {
+        margin-right: 0;
+        width: 100%;
+    }
+
     .caption-icons p:first-of-type {
         font-size: 22px;
         font-size: 2.2rem;
+    }
+
+    /*
+    ---------------------------------- FIRST OUTPUT ----------------------------------------
+    */
+
+    .first-output {
+        width:calc((66.6%) - (6px));
     }
 
     .two-graphs-box {
