@@ -600,11 +600,11 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = "{:,.0f} g CO2e".format(round(data['carbonEmissions'], 2))
-    text_energy = "{:,.0f} kWh".format(round(data['energy_needed'], 2))
-    text_ty = "{:,} tree-months".format(round(data['n_treeMonths'],2))
-    text_car = "{:,} km".format(round(data['nkm_drivingUS'], 2))
-    text_fly = "{:.0f} %".format(round(data['flying_context']*100, 0))
+    text_CE = "{:,.0f} g CO2e".format(data['carbonEmissions'])
+    text_energy = "{:,.0f} kWh".format(data['energy_needed'])
+    text_ty = "{:,.2f} tree-months".format(data['n_treeMonths'])
+    text_car = "{:,.2f} km".format(data['nkm_drivingUS'])
+    text_fly = "{:.0f} %".format(data['flying_context']*100)
 
     return text_CE, text_energy, text_ty, text_car, text_fly
 
