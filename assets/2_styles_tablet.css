@@ -65,13 +65,18 @@
     ---------------------------------- MINI-BOX ----------------------------------------
     */
 
-    .mini-box:nth-of-type(2n+1) {
+    .mini-box:nth-of-type(2n) {
         margin-right: 12px;
     }
 
     .mini-box {
         height: 180px;
         width:calc((50%) - (6px));
+    }
+
+    .mini-box:first-of-type {
+        margin-right: 0;
+        width: 100%;
     }
 
     /*
