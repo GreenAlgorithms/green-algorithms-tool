@@ -253,6 +253,34 @@ def create_appLayout(platformType_options,
                             html.Div(
                                 [
                                     html.Img(
+                                        src=os.path.join(image_dir, 'logo_power_1.svg'),
+                                        id="logo_power",
+                                        className="style-icon",
+                                        style={
+                                            'margin':'0px',
+                                            'padding':'15px'
+                                        },
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.P(
+                                                id="energy_text",
+                                            ),
+
+                                            html.P(
+                                                "Energy needed",
+                                            )
+                                        ],
+                                        className='caption-icons'
+                                    )
+                                ],
+                                className="container mini-box"
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Img(
                                         src=os.path.join(image_dir, 'logo_tree_1.svg'),
                                         id="logo_tree",
                                         className="style-icon",

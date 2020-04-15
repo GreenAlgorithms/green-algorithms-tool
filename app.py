@@ -513,6 +513,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['nkm_drivingUS'] = 0
         output['nkm_drivingEU'] = 0
         output['nkm_train'] = 0
+        output['energy_needed'] = 0
         output['power_needed'] = 0
         output['flying_text'] = None
 
@@ -533,14 +534,20 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         else:
             corePower = cores_dict[coreType][coreModel]
 
-        # dividing by 1000 converts to kW
-        powerNeeded = runTime * PUE_used * (
-                n_cores * corePower + memory * refValues_dict['memoryPower']) / 1000
-        # carbonIntensity is in g per kWh, so results in gCO2
-        carbonEmissions = powerNeeded * carbonIntensity
+        # Power needed, in Watt
+        powerNeeded_core = PUE_used * (n_cores * corePower)
+        powerNeeded_memory = PUE_used * (memory * refValues_dict['memoryPower'])
+        powerNeeded = powerNeeded_core + powerNeeded_memory
 
-        CE_core = runTime * PUE_used * (n_cores * corePower) * carbonIntensity / 1000
-        CE_memory = runTime * PUE_used * (memory * refValues_dict['memoryPower']) * carbonIntensity / 1000
+        # Energy needed, in kWh (so dividing by 1000 to convert to kW)
+        energyNeeded_core = runTime * powerNeeded_core / 1000
+        eneregyNeeded_memory = runTime * powerNeeded_memory / 1000
+        energyNeeded = runTime * powerNeeded / 1000
+
+        # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
+        CE_core = energyNeeded_core * carbonIntensity
+        CE_memory  = eneregyNeeded_memory * carbonIntensity
+        carbonEmissions = energyNeeded * carbonIntensity
 
         output['coreType'] = coreType
         output['coreModel'] = coreModel
@@ -557,6 +564,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['carbonEmissions'] = carbonEmissions
         output['CE_core'] = CE_core
         output['CE_memory'] = CE_memory
+        output['energy_needed'] = energyNeeded
         output['power_needed'] = powerNeeded
 
         ### CONTEXT
@@ -584,6 +592,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 @app.callback(
     [
         Output("carbonEmissions_text", "children"),
+        Output("energy_text", "children"),
         Output("treeMonths_text", "children"),
         Output("driving_text", "children"),
         Output("flying_text", "children"),
@@ -592,11 +601,12 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 )
 def update_text(data):
     text_CE = "{:,.0f} g CO2e".format(round(data['carbonEmissions'], 2))
+    text_energy = "{:,.0f} kWh".format(round(data['energy_needed'], 2))
     text_ty = "{:,} tree-months".format(round(data['n_treeMonths'],2))
     text_car = "{:,} km".format(round(data['nkm_drivingUS'], 2))
     text_fly = "{:.0f} %".format(round(data['flying_context']*100, 0))
 
-    return text_CE, text_ty, text_car, text_fly
+    return text_CE, text_energy, text_ty, text_car, text_fly
 
 @app.callback(
     Output("flying_label", "children"),
@@ -687,7 +697,7 @@ def create_bar_chart(aggData):
 
     # calculate carbon emissions for each location
     for countryCode in loc_ref.keys():
-        loc_ref[countryCode]['carbonEmissions'] = aggData['power_needed'] * CI_df.loc[CI_df.location == countryCode, "carbonIntensity"].values[0]
+        loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * CI_df.loc[CI_df.location == countryCode, "carbonIntensity"].values[0]
         loc_ref[countryCode]['opacity'] = 0.2
 
     loc_ref['You'] = dict(
