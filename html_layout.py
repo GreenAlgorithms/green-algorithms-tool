@@ -525,6 +525,7 @@ def create_appLayout(platformType_options,
                     to operate the datacentre (cooling, lighting etc.).
 
                     The Carbon Intensity depends on the location and the technologies used to produce electricity.
+                    But note that the "energy needed" indicated at the top of this page is independent of the location.
                     ''')
                 ],
                 className='container formula'
