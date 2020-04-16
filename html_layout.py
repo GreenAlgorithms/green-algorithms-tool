@@ -623,11 +623,11 @@ def create_appLayout(platformType_options,
                     dcc.Markdown('''
                     These coloured stripes in the background represent the change in world temperatures
                     from 1850 to 2018.
-                    This striking design has been made by Ed Hawkins from the University of Reading.
+                    This striking design was made by Ed Hawkins from the University of Reading.
 
                     More on [ShowYourStipes.info](https://showyourstripes.info)
                     
-                    Additional credits can be found on the [github](https://github.com/green-algorithms/project).
+                    Additional credits for the app can be found on the [github](https://github.com/green-algorithms/project).
                     ''')
                 ],
                 className='container show-stripes footer'
