@@ -67,3 +67,5 @@ Xeon E5-4620,95,8,11.9,https://ark.intel.com/content/www/us/en/ark/products/6460
 Xeon E5-2690 v2,130,10,13.0,https://ark.intel.com/content/www/us/en/ark/products/75279/intel-xeon-processor-e5-2690-v2-25m-cache-3-00-ghz.html
 Xeon Phi 5110P,225,60,3.8,https://ark.intel.com/content/www/us/en/ark/products/71992/intel-xeon-phi-coprocessor-5110p-8gb-1-053-ghz-60-core.html
 Xeon E5-4610 v4,105,10,10.5,https://ark.intel.com/content/www/us/en/ark/products/93812/intel-xeon-processor-e5-4610-v4-25m-cache-1-80-ghz.html
+Xeon E5-2695 v4,120,18,6.7,https://ark.intel.com/content/www/us/en/ark/products/91316/intel-xeon-processor-e5-2695-v4-45m-cache-2-10-ghz.html
+Xeon E5-2697 v4,145,18,8.1,https://ark.intel.com/content/www/us/en/ark/products/91755/intel-xeon-processor-e5-2697-v4-45m-cache-2-30-ghz.html
