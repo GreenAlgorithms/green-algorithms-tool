@@ -600,11 +600,33 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = "{:,.0f} g CO2e".format(data['carbonEmissions'])
-    text_energy = "{:,.2f} kWh".format(data['energy_needed'])
-    text_ty = "{:,.2f} tree-months".format(data['n_treeMonths'])
+    carbonEmissions_value = data['carbonEmissions'] # in g CO2e
+    carbonEmissions_unit = "g"
+    if carbonEmissions_value >= 1e6:
+        carbonEmissions_value /= 1e6
+        carbonEmissions_unit = "T"
+    elif carbonEmissions_value >= 1e3:
+        carbonEmissions_value /= 1e3
+        carbonEmissions_unit = "kg"
+    text_CE = "{:,.2f} {} CO2e".format(carbonEmissions_value,
+                                       carbonEmissions_unit)
+
+    energyNeeded_value = data['energy_needed'] # in kWh
+    energyNeeded_unit = "kWh"
+    if energyNeeded_value >= 1e3:
+        energyNeeded_value /= 1e3
+        energyNeeded_unit = "MWh"
+    text_energy = "{:,.2f} {}".format(energyNeeded_value, energyNeeded_unit)
+
+    treeTime_value = data['n_treeMonths'] # in tree-months
+    treeTime_unit = "tree-months"
+    if treeTime_value >= 24:
+        treeTime_value /= 24
+        treeTime_unit = "tree-years"
+    text_ty = "{:,.2f} {}".format(treeTime_value, treeTime_unit)
+
     text_car = "{:,.2f} km".format(data['nkm_drivingUS'])
-    text_fly = "{:.0f} %".format(data['flying_context']*100)
+    text_fly = "{:,.0f} %".format(data['flying_context']*100)
 
     return text_CE, text_energy, text_ty, text_car, text_fly
 
