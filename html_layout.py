@@ -9,6 +9,7 @@ import os
 def create_appLayout(platformType_options,
                      yesNo_options,
                      PUE_default,
+                     usage_default,
                      image_dir,
                      mapCI):
 
@@ -184,6 +185,31 @@ def create_appLayout(platformType_options,
                         className='form-row'
                     ),
 
+                    ## Core usage
+                    html.Div(
+                        [
+                            html.Label("Do you know the real usage factor of your processing core?"),
+
+                            dcc.RadioItems(
+                                id='usage_radio',
+                                options=yesNo_options,
+                                value='No',
+                                className="radio-input"
+                                # labelStyle={"display": "inline-block"},
+                            ),
+
+                            dcc.Input(
+                                min=0,
+                                max=1,
+                                type='number',
+                                id="usage_input",
+                                value=usage_default,
+                                style=dict(display='none'),
+                            ),
+                        ],
+                        className='form-row radio-and-field',
+                    ),
+
                     ## PUE
                     html.Div(
                         [
@@ -205,8 +231,6 @@ def create_appLayout(platformType_options,
                                 value=PUE_default,
                                 style=dict(display='none'),
                             ),
-
-
                         ],
                         className='form-row radio-and-field',
                         id='PUEquestion_div',

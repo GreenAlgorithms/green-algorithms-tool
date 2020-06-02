@@ -239,6 +239,7 @@ app.layout = create_appLayout(
     platformType_options=platformType_options,
     yesNo_options=yesNo_options,
     PUE_default=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
+    usage_default=1,
     image_dir=image_dir,
     mapCI=mapCI,
 )
@@ -417,6 +418,18 @@ def display_countryRegion(selected_continent):
     else: # selected_continent == 'World
         return {'display': 'none'}, {'display': 'none'}, 'Any', 'WORLD'
 
+### Usage ###
+
+# This asks for Usage input if necessary
+@app.callback(
+    Output('usage_input','style'),
+    [Input('usage_radio', 'value')]
+)
+def display_usage_input(answer_usage):
+    if answer_usage == 'No':
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
 
 ### PUE ###
 
@@ -462,6 +475,7 @@ def display_pue_input(answer_pue):
         Input("runTime_hour_input", "value"),
         Input("runTime_min_input", "value"),
         Input("location_region_dropdown", "value"),
+        Input("usage_input", "value"),
         Input("PUE_input", "value"),
         Input('platformType_dropdown', 'value'),
         Input('provider_dropdown', 'value')
@@ -470,7 +484,7 @@ def display_pue_input(answer_pue):
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, PUE, selected_platform, selected_provider, existing_state):
+def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, usage, PUE, selected_platform, selected_provider, existing_state):
     output = dict()
 
     test_runTime = 0
@@ -489,7 +503,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(PUE is None)|(selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
+    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(usage is None)|(PUE is None)|(selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
         print('Not enough information to display the results')
 
         output['coreType'] = None
@@ -502,6 +516,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['runTime'] = None
         output['location'] = None
         output['carbonIntensity'] = None
+        output['usage'] = None
         output['PUE'] = None
         output['selected_platform'] = None
         output['carbonEmissions'] = 0
@@ -535,7 +550,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
             corePower = cores_dict[coreType][coreModel]
 
         # Power needed, in Watt
-        powerNeeded_core = PUE_used * (n_cores * corePower)
+        powerNeeded_core = PUE_used * (n_cores * corePower) * usage
         powerNeeded_memory = PUE_used * (memory * refValues_dict['memoryPower'])
         powerNeeded = powerNeeded_core + powerNeeded_memory
 
