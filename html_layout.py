@@ -542,10 +542,11 @@ def create_appLayout(platformType_options,
 
                     Where the energy needed is: 
                     
-                    `time * (power draw for computing cores + power draw for memory) * PUE`
+                    `time * (power draw for cores * usage + power draw for memory) * PUE`
 
                     The power draw for the computing cores depends on the CPU model and number of cores, 
-                    while the memory power draw only depends on the size of memory requested.
+                    while the memory power draw only depends on the size of memory requested. 
+                    The usage factor corrects for the real core usage (default is 1, i.e. full usage).
                     The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
                     to operate the datacentre (cooling, lighting etc.).
 
