@@ -163,4 +163,8 @@
         order: 2;
         width: calc((33.3%) - (8px));
     }
+
+    .citation {
+        order: 3;
+    }
 }

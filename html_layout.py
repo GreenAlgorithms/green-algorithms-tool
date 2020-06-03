@@ -572,7 +572,12 @@ def create_appLayout(platformType_options,
                     Here is an example you can include in your paper:
                     '''),
 
-                    dcc.Markdown(id='report_markdown')
+                    dcc.Markdown(id='report_markdown'),
+
+                    dcc.Markdown(
+                        '\[1\] see citation below',
+                        className='footnote'
+                    )
                 ],
                 className='container report'
             ),
@@ -640,6 +645,29 @@ def create_appLayout(platformType_options,
                 className='container about-us footer'
             ),
 
+            #### HOW TO CITE ####
+
+            html.Div(
+                [
+                    html.H2("How to cite this work"),
+
+                    dcc.Markdown('''
+                    > L. Lannelongue\*, J. Grealey\* and M. Inouye, 
+                    “Green Algorithms: A simple method and tool for 
+                    quantifying the carbon emissions of computation”
+                    (in preparation), 
+                    www.green-algorithms.org (2020)
+                    '''),
+
+                    dcc.Markdown('''
+                    \* shared first authors
+                    ''',
+                    className='footnote'
+                    )
+                ],
+                className='container citation footer'
+            ),
+
             #### SHOW YOUR STRIPES ####
 
             html.Div(
@@ -647,14 +675,14 @@ def create_appLayout(platformType_options,
                     html.H2("#ShowYourStripes"),
 
                     dcc.Markdown('''
-                    These coloured stripes in the background represent the change in world temperatures
-                    from 1850 to 2018.
-                    This striking design was made by Ed Hawkins from the University of Reading.
+                        These coloured stripes in the background represent the change in world temperatures
+                        from 1850 to 2018.
+                        This striking design was made by Ed Hawkins from the University of Reading.
 
-                    More on [ShowYourStipes.info](https://showyourstripes.info)
-                    
-                    Additional credits for the app can be found on the [github](https://github.com/green-algorithms/project).
-                    ''')
+                        More on [ShowYourStipes.info](https://showyourstripes.info)
+
+                        Additional credits for the app can be found on the [github](https://github.com/green-algorithms/project).
+                        ''')
                 ],
                 className='container show-stripes footer'
             ),

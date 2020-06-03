@@ -161,3 +161,14 @@ blockquote {
 .show-stripes p:last-of-type {
     margin-top: 3rem
 }
+
+/*
+---------------------------------- Footer ----------------------------------------
+*/
+
+.footnote-authorship p {
+    font-size: 15px;
+    font-size: 1.5rem;
+    margin-top: 1rem;
+}
+

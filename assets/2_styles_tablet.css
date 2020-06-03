@@ -145,4 +145,8 @@
     .show-stripes {
         width: calc((45%) - (6px));
     }
+
+    .citation {
+        order: 1;
+    }
 }

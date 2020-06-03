@@ -204,10 +204,15 @@ blockquote {
   text-align:left;
 }
 
+
 /*
 ---------------------------------- FOOTER ----------------------------------------
 */
 
 .footer {
     background-color: rgba(249, 249, 249,0.6);
+}
+
+.footnote {
+    align-self: flex-start;
 }
