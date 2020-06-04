@@ -63,7 +63,7 @@ hardware_df.drop(['source'], axis=1, inplace=True)
 ### CARBON INTENSITY BY LOCATION ###
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                      sep=',', skiprows=1)
-CI_df.drop(['source'], axis=1, inplace=True)
+CI_df.drop(['source','Type'], axis=1, inplace=True)
 CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
 
 def iso2_to_iso3(x):
