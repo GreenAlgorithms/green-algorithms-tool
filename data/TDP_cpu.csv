@@ -69,3 +69,4 @@ Xeon Phi 5110P,225,60,3.8,https://ark.intel.com/content/www/us/en/ark/products/7
 Xeon E5-4610 v4,105,10,10.5,https://ark.intel.com/content/www/us/en/ark/products/93812/intel-xeon-processor-e5-4610-v4-25m-cache-1-80-ghz.html
 Xeon E5-2695 v4,120,18,6.7,https://ark.intel.com/content/www/us/en/ark/products/91316/intel-xeon-processor-e5-2695-v4-45m-cache-2-10-ghz.html
 Xeon E5-2697 v4,145,18,8.1,https://ark.intel.com/content/www/us/en/ark/products/91755/intel-xeon-processor-e5-2697-v4-45m-cache-2-30-ghz.html
+AMD EPYC 7251,120,8,15.0,https://www.amd.com/en/products/cpu/amd-epyc-7251
