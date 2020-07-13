@@ -4,9 +4,9 @@
 
 ***How green are your computations?***
 
----
+www.green-algorithms.org
 
-You can access the Green Algorithms tool here: www.green-algorithms.org
+---
 
 <img src="assets/images/screenshot_app.png" width="500">
 
