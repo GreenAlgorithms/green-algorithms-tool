@@ -1,6 +1,9 @@
 # Green Algorithms 
 
+<img src="assets/images/screenshot_app.png" width="500">
+
 You can access the Green Algorithms tool here: www.green-algorithms.org
+
 
 ## Methods and data
 
