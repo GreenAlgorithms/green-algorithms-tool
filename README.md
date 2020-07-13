@@ -2,9 +2,7 @@
   
 # Green Algorithms 
 
-***How green are your computations?***
-
-www.green-algorithms.org
+**www.green-algorithms.org**
 
 ---
 
