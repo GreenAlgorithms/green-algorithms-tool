@@ -1,12 +1,11 @@
 # Green Algorithms 
-_How green are your computations_
 
-You can access the Green Algorithms tool here: green-algorithms.org
+You can access the Green Algorithms tool here: www.green-algorithms.org
 
 ## Methods and data
 
 The methodology behind the Green Algorithms project is described in our pre-print:
-[_Coming soon_]
+_Coming soon_
 
 All the data used for the calculator are in the `data` directory above. 
 
@@ -18,11 +17,11 @@ https://github.com/GreenAlgorithms/green-algorithms-tool/issues
 You can also contact us at: green.algorithms@gmail.com
 
 ## How to cite this work
-L. Lannelongue\*, J. Grealey\* and M. Inouye, 
+> L. Lannelongue\*, J. Grealey\* and M. Inouye, 
 “Green Algorithms: A simple method and tool for quantifying the carbon emissions of computation” (in preparation), 
 www.green-algorithms.org (2020)
 
-_\* shared first authors_
+_\* Contributed equally to this work_
 
 ## About us 
 The Green Algorithms project was jointly developed by
