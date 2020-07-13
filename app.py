@@ -640,7 +640,7 @@ def update_text(data):
         treeTime_unit = "tree-years"
     text_ty = "{:,.2f} {}".format(treeTime_value, treeTime_unit)
 
-    text_car = "{:,.2f} km".format(data['nkm_drivingUS'])
+    text_car = "{:,.2f} km".format(data['nkm_drivingEU'])
     text_fly = "{:,.0f} %".format(data['flying_context']*100)
 
     return text_CE, text_energy, text_ty, text_car, text_fly
