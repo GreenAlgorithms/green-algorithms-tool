@@ -4,14 +4,13 @@
 
 ***How green are your computations?***
 
-</div>
-
 ---
 
 You can access the Green Algorithms tool here: www.green-algorithms.org
 
 <img src="assets/images/screenshot_app.png" width="500">
 
+</div>
 
 ## Methods and data
 
