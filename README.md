@@ -1,8 +1,16 @@
+<div align="center">
+  
 # Green Algorithms 
 
-<img src="assets/images/screenshot_app.png" width="500">
+***How green are your computations?***
+
+</div>
+
+---
 
 You can access the Green Algorithms tool here: www.green-algorithms.org
+
+<img src="assets/images/screenshot_app.png" width="500">
 
 
 ## Methods and data
@@ -25,14 +33,6 @@ You can also contact us at: green.algorithms@gmail.com
 www.green-algorithms.org (2020)
 
 _\* Contributed equally to this work_
-
-## About us 
-The Green Algorithms project was jointly developed by
-Loïc Lannelongue¹, Jason Grealey², and Michael Inouye³. More info [here](http://www.inouyelab.org/).
-
-(1) University of Cambridge <br>
-(2) Baker Heart and Diabetes Institute and La Trobe University <br>
-(3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
 
 ## Credits 
 
