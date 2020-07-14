@@ -15,7 +15,7 @@
 The methodology behind the Green Algorithms project is described in our pre-print:
 _Coming soon_
 
-All the data used for the calculator are in the `data` directory above. 
+All the data used for the calculator are in the `/data` directory above. 
 
 ## Questions, issues, suggestions? Want to contribute?
 
