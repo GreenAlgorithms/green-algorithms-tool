@@ -237,12 +237,14 @@ server = app.server
 
 usageFactor_default = 1
 PUE_default = pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0]
+PSF_default = 1
 
 app.layout = create_appLayout(
     platformType_options=platformType_options,
     yesNo_options=yesNo_options,
     PUE_default=PUE_default,
     usage_default=usageFactor_default,
+    PSF_default=PSF_default,
     image_dir=image_dir,
     mapCI=mapCI,
 )
@@ -472,6 +474,22 @@ def display_pue_input(answer_pue):
     else:
         return {'display': 'block'}, PUE_default
 
+### PSF ###
+
+# This asks for PSF input if necessary
+@app.callback(
+    [
+        Output('PSF_input','style'),
+        Output('PSF_input','value')
+    ],
+    [Input('PSF_radio', 'value')]
+)
+def display_PSF_input(answer_PSF):
+    if answer_PSF == 'No':
+        return {'display': 'none'}, PSF_default
+    else:
+        return {'display': 'block'}, PSF_default
+
 ### STORE ###
 @app.callback(
     Output("aggregate_data", "data"),
@@ -486,6 +504,7 @@ def display_pue_input(answer_pue):
         Input("location_region_dropdown", "value"),
         Input("usage_input", "value"),
         Input("PUE_input", "value"),
+        Input("PSF_input", "value"),
         Input('platformType_dropdown', 'value'),
         Input('provider_dropdown', 'value')
     ],
@@ -493,7 +512,8 @@ def display_pue_input(answer_pue):
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location, usage, PUE, selected_platform, selected_provider, existing_state):
+def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_hours, runTime_min, location,
+                           usage, PUE, PSF, selected_platform, selected_provider, existing_state):
     output = dict()
 
     test_runTime = 0
@@ -512,7 +532,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
 
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(usage is None)|(PUE is None)|(selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
+    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|(test_runTime == 2)|(location is None)|(usage is None)|(PUE is None)|(PSF is None)|(selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
         print('Not enough information to display the results')
 
         output['coreType'] = None
@@ -527,6 +547,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['carbonIntensity'] = None
         output['usage'] = None
         output['PUE'] = None
+        output['PSF'] = None
         output['selected_platform'] = None
         output['carbonEmissions'] = 0
         output['CE_core'] = 0
@@ -564,9 +585,9 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         powerNeeded = powerNeeded_core + powerNeeded_memory
 
         # Energy needed, in kWh (so dividing by 1000 to convert to kW)
-        energyNeeded_core = runTime * powerNeeded_core / 1000
-        eneregyNeeded_memory = runTime * powerNeeded_memory / 1000
-        energyNeeded = runTime * powerNeeded / 1000
+        energyNeeded_core = runTime * powerNeeded_core * PSF / 1000
+        eneregyNeeded_memory = runTime * powerNeeded_memory * PSF / 1000
+        energyNeeded = runTime * powerNeeded * PSF / 1000
 
         # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
         CE_core = energyNeeded_core * carbonIntensity
@@ -584,6 +605,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, memory, runTime_ho
         output['location'] = location
         output['carbonIntensity'] = carbonIntensity
         output['PUE'] = PUE_used
+        output['PSF'] = PSF
         output['selected_platform'] = selected_platform
         output['carbonEmissions'] = carbonEmissions
         output['CE_core'] = CE_core
@@ -943,16 +965,22 @@ def fillin_report_text(aggData):
         else:
             prefixCountry = ''
 
+        if aggData['PSF'] > 1:
+            textPSF = ' and ran {} times in total,'.format(aggData['PSF'])
+        else:
+            textPSF = ''
+
         myText = '''
         > This algorithm runs in {} on {} {}{} {},
         > which draws {:,.2f} kWh. 
-        > Based in {}{}{}, this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
+        > Based in {}{}{},{} this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
         (calculated using green-algorithms.org v1.0 \[1\]).
         '''.format(
             textRuntime,
             aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
             aggData['energy_needed'],
             prefixCountry, country, textRegion,
+            textPSF,
             aggData['carbonEmissions'], aggData['n_treeMonths']
         )
 

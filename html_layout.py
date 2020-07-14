@@ -10,6 +10,7 @@ def create_appLayout(platformType_options,
                      yesNo_options,
                      PUE_default,
                      usage_default,
+                     PSF_default,
                      image_dir,
                      mapCI):
 
@@ -236,6 +237,29 @@ def create_appLayout(platformType_options,
                         className='form-row radio-and-field',
                         id='PUEquestion_div',
                         style=dict(display='none'),
+                    ),
+
+                    ## PSF
+                    html.Div(
+                        [
+                            html.Label("Do you want to use a Pragmatic Scaling Factor?"),
+
+                            dcc.RadioItems(
+                                id='PSF_radio',
+                                options=yesNo_options,
+                                value='No',
+                                className="radio-input"
+                            ),
+
+                            dcc.Input(
+                                min=1,
+                                type='number',
+                                id="PSF_input",
+                                value=PSF_default,
+                                style=dict(display='none'),
+                            ),
+                        ],
+                        className='form-row radio-and-field',
                     ),
                 ],
                 className='container input-form'
@@ -542,13 +566,15 @@ def create_appLayout(platformType_options,
 
                     Where the energy needed is: 
                     
-                    `time * (power draw for cores * usage + power draw for memory) * PUE`
+                    `time * (power draw for cores * usage + power draw for memory) * PUE * PSF`
 
                     The power draw for the computing cores depends on the CPU model and number of cores, 
                     while the memory power draw only depends on the size of memory requested. 
                     The usage factor corrects for the real core usage (default is 1, i.e. full usage).
                     The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                    to operate the datacentre (cooling, lighting etc.).
+                    to operate the datacentre (cooling, lighting etc.). 
+                    The PSF (Pragmatic Scaling Factor) is used to take into account multiple identical runs 
+                    (e.g. for testing or optimisation).
 
                     The Carbon Intensity depends on the location and the technologies used to produce electricity.
                     But note that __the "energy needed" indicated at the top of this page is independent of the location.__
@@ -611,7 +637,7 @@ def create_appLayout(platformType_options,
                             dcc.Markdown('''
                             If you have questions or suggestions about the tool,
                             you can [open an issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues)
-                            on thee GitHub
+                            on the GitHub
                             or [email us](mailto:green.algorithms@gmail.com). 
                             ''')
                         ],
@@ -630,7 +656,7 @@ def create_appLayout(platformType_options,
                     dcc.Markdown('''
                     The Green Algorithms project was jointly developed by
 
-                    Loïc Lannelongue¹, Jason Grealey², and Michael Inouye³
+                    Loïc Lannelongue\*¹, Jason Grealey\*², and Michael Inouye³
                     ''',
                      className='authors'
                      ),
@@ -641,6 +667,8 @@ def create_appLayout(platformType_options,
                     (2) Baker Heart and Diabetes Institute and La Trobe University
 
                     (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
+                    
+                    \* Contributed equally to this work
                     ''',
                     className='affiliations'
                     ),
@@ -659,18 +687,12 @@ def create_appLayout(platformType_options,
                     html.H2("How to cite this work"),
 
                     dcc.Markdown('''
-                    > L. Lannelongue\*, J. Grealey\* and M. Inouye, 
+                    > L. Lannelongue, J. Grealey and M. Inouye, 
                     “Green Algorithms: A simple method and tool for 
                     quantifying the carbon emissions of computation”
                     (in preparation), 
                     www.green-algorithms.org (2020)
                     '''),
-
-                    dcc.Markdown('''
-                    \* shared first authors
-                    ''',
-                    className='footnote'
-                    )
                 ],
                 className='container citation footer'
             ),
