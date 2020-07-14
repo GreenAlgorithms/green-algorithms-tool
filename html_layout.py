@@ -592,7 +592,9 @@ def create_appLayout(platformType_options,
 
                             dcc.Markdown('''
                             All the data and code used to run this calculator can be found 
-                            on [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool).
+                            on [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool): 
+                            
+                            `GreenAlgorithms/green-algorithms-tool`
                              '''),
                         ],
                         className='container footer'
@@ -603,9 +605,10 @@ def create_appLayout(platformType_options,
                             html.H2('Questions / Suggestions?'),
 
                             dcc.Markdown('''
-                            You can open an issue on the [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool/issues)
-    
-                            or reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
+                            If you have questions or suggestions about the tool,
+                            you can [open an issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues)
+                            on thee GitHub
+                            or [email us](mailto:green.algorithms@gmail.com). 
                             ''')
                         ],
                         className='container footer'
