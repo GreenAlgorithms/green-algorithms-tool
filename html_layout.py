@@ -201,7 +201,7 @@ def create_appLayout(platformType_options,
                             dcc.Input(
                                 min=0,
                                 max=1,
-                                step=0.1,
+                                # step=0.1,
                                 type='number',
                                 id="usage_input",
                                 value=usage_default,
