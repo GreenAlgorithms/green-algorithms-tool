@@ -235,11 +235,14 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
+usageFactor_default = 1
+PUE_default = pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0]
+
 app.layout = create_appLayout(
     platformType_options=platformType_options,
     yesNo_options=yesNo_options,
-    PUE_default=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
-    usage_default=1,
+    PUE_default=PUE_default,
+    usage_default=usageFactor_default,
     image_dir=image_dir,
     mapCI=mapCI,
 )
@@ -422,14 +425,17 @@ def display_countryRegion(selected_continent):
 
 # This asks for Usage input if necessary
 @app.callback(
-    Output('usage_input','style'),
+    [
+        Output('usage_input','style'),
+        Output('usage_input','value')
+    ],
     [Input('usage_radio', 'value')]
 )
 def display_usage_input(answer_usage):
     if answer_usage == 'No':
-        return {'display': 'none'}
+        return {'display': 'none'}, usageFactor_default
     else:
-        return {'display': 'block'}
+        return {'display': 'block'}, usageFactor_default
 
 ### PUE ###
 
@@ -454,14 +460,17 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
 
 # And then asks for PUE input if necessary
 @app.callback(
-    Output('PUE_input','style'),
+    [
+        Output('PUE_input','style'),
+        Output('PUE_input','value'),
+    ],
     [Input('pue_radio', 'value')]
 )
 def display_pue_input(answer_pue):
     if answer_pue == 'No':
-        return {'display': 'none'}
+        return {'display': 'none'}, PUE_default
     else:
-        return {'display': 'block'}
+        return {'display': 'block'}, PUE_default
 
 ### STORE ###
 @app.callback(
