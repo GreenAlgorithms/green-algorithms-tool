@@ -636,7 +636,7 @@ def update_text(data):
     treeTime_value = data['n_treeMonths'] # in tree-months
     treeTime_unit = "tree-months"
     if treeTime_value >= 24:
-        treeTime_value /= 24
+        treeTime_value /= 12
         treeTime_unit = "tree-years"
     text_ty = "{:,.2f} {}".format(treeTime_value, treeTime_unit)
 
@@ -938,7 +938,7 @@ def fillin_report_text(aggData):
         > This algorithm runs in {} on {} {}{} {},
         > which draws {:,.2f} kWh. 
         > Based in {}{}{}, this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
-        (calculated using green-algorithms.org v1.0.0 \[1\]).
+        (calculated using green-algorithms.org v1.0 \[1\]).
         '''.format(
             textRuntime,
             aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
