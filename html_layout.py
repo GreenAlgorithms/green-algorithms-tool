@@ -551,7 +551,7 @@ def create_appLayout(platformType_options,
                     to operate the datacentre (cooling, lighting etc.).
 
                     The Carbon Intensity depends on the location and the technologies used to produce electricity.
-                    But note that the "energy needed" indicated at the top of this page is independent of the location.
+                    But note that __the "energy needed" indicated at the top of this page is independent of the location.__
                     ''')
                 ],
                 className='container formula'
@@ -588,11 +588,11 @@ def create_appLayout(platformType_options,
                 [
                     html.Div(
                         [
-                            html.H2("The data"),
+                            html.H2("Data and code"),
 
                             dcc.Markdown('''
-                            All the data used to run this calculator can be found 
-                            on [github](https://github.com/green-algorithms/project).
+                            All the data and code used to run this calculator can be found 
+                            on [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool).
                              '''),
                         ],
                         className='container footer'
@@ -603,9 +603,9 @@ def create_appLayout(platformType_options,
                             html.H2('Questions / Suggestions?'),
 
                             dcc.Markdown('''
-                            The app is still under development and new data and features are coming soon.
+                            You can open an issue on the [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool/issues)
     
-                            You can reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
+                            or reach out to us here: [green.algorithms@gmail.com](mailto:green.algorithms@gmail.com) 
                             ''')
                         ],
                         className='container footer'
@@ -681,7 +681,7 @@ def create_appLayout(platformType_options,
 
                         More on [ShowYourStipes.info](https://showyourstripes.info)
 
-                        Additional credits for the app can be found on the [github](https://github.com/green-algorithms/project).
+                        Additional credits for the app can be found on the [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool).
                         ''')
                 ],
                 className='container show-stripes footer'
