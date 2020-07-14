@@ -598,9 +598,7 @@ def create_appLayout(platformType_options,
 
                             dcc.Markdown('''
                             All the data and code used to run this calculator can be found 
-                            on [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool): 
-                            
-                            `GreenAlgorithms/green-algorithms-tool`
+                            on [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool).
                              '''),
                         ],
                         className='container footer'

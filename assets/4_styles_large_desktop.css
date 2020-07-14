@@ -69,4 +69,13 @@
     .pie-graph {
         margin-top: 100px;
     }
+
+    /*
+    ---------------------------------- FOOTER ----------------------------------------
+    */
+
+    .data-questions .container {
+        flex-grow:1;
+    }
+
 }
