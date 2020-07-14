@@ -577,7 +577,13 @@ def create_appLayout(platformType_options,
                     dcc.Markdown(
                         '\[1\] see citation below',
                         className='footnote'
+                    ),
+
+                    dcc.Markdown(
+                        '_Including the version of the tool is useful to keep track of the version of the data used._',
+                        className='footnote-authorship'
                     )
+
                 ],
                 className='container report'
             ),
