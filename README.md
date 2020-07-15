@@ -51,7 +51,7 @@ Yes, simply use the "Energy needed" (in W) displayed next to the carbon emission
 
 > How do I find the usage factor of my processors?
 
-It depends on your system. If you're using SLURM for example, you can find this information with the command ... 
+It depends on your system. For example if you're using SLURM, `seff <job_id>` will give you the "CPU Efficiency". Similar commands exist for the different systems, and if you can't find it, you can just leave the default value of 1. 
 
 > How do I estimate my PSF (Pragmatic Scaling Factor)?
 
