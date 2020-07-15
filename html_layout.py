@@ -384,6 +384,7 @@ def create_appLayout(platformType_options,
 
                             html.Div(
                                 [
+                                    # TODO include hyperlink to flight carbon calculator
                                     html.Img(
                                         src=os.path.join(image_dir, 'logo_plane_1.svg'),
                                         id="logo_plane",
