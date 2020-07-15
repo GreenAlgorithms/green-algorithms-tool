@@ -39,11 +39,11 @@ For CPUs, the number of cores (CPUs usually have 4-12 cores per processor). For 
 
 > What if my processor is not in the list? 
 
-You can find the TDP (Thermal Design Power) value on the manufacturer's website, and email us so we can add it for next time! 
+You can find the TDP (Thermal Design Power) value on the manufacturer's website, and add a comment on [this issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues/1) so that we can add it to the list! 
 
 > What if my country is not in the list? 
 
-Email us so we can add it to the list (some countries are more secretive than others about their energy mix). You can use the world average, or a close proxy, for your estimations.
+Add a comment on [this issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues/2) so that we can add it to the list!  (some countries are more secretive than others about their energy mix). You can use the world average, or a close proxy, for your estimations.
 
 > Can I compare algorithms impact independantly of the location?
 
