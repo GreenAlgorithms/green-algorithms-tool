@@ -31,6 +31,36 @@ www.green-algorithms.org (2020)
 
 _\* Contributed equally to this work_
 
+## FAQ
+
+> Should I include the number of processors, number of cores, or number of threads used?
+
+For CPUs, the number of cores (CPUs usually have 4-12 cores per processor). For GPUs, the number of GPUs. If using multi-threading on CPUs (i.e. using more threads than cores), still input the number of cores, but be aware that yourr emissions might be underestimated. 
+
+> What if my processor is not in the list? 
+
+You can find the TDP (Thermal Design Power) value on the manufacturer's website, and email us so we can add it for next time! 
+
+> What if my country is not in the list? 
+
+Email us so we can add it to the list (some countries are more secretive than others about their energy mix). You can use the world average, or a close proxy, for your estimations.
+
+> Can I compare algorithms impact independantly of the location?
+
+Yes, simply use the "Energy needed" (in W) displayed next to the carbon emissions. 
+
+> How do I find the usage factor of my processors?
+
+It depends on your system. If you're using SLURM for example, you can find this information with the command ... 
+
+> How do I estimate my PSF (Pragmatic Scaling Factor)?
+
+Try to estimate how many times you need to run your full analysis to get results you're happy with. It can be trials and errors, parameters optimisations, memory issues etc. 
+
+> What if I found a bug in the tool?
+
+[Open an issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues) on the GitHub so that we can look at it. 
+
 ## Credits 
 
 - the app was designed using [Plotly Dash](https://plot.ly/dash/)
