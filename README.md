@@ -25,11 +25,7 @@ https://github.com/GreenAlgorithms/green-algorithms-tool/issues
 You can also contact us at: green.algorithms@gmail.com
 
 ## How to cite this work
-> L. Lannelongue\*, J. Grealey\* and M. Inouye, 
-“Green Algorithms: A simple method and tool for quantifying the carbon emissions of computation” (in preparation), 
-www.green-algorithms.org (2020)
-
-_\* Contributed equally to this work_
+> Lannelongue, L., Grealey, J. & Inouye, M. Green Algorithms: Quantifying the carbon emissions of computation. arXiv:2007.07610 [cs] (2020).
 
 ## FAQ
 
