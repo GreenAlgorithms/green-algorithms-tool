@@ -702,9 +702,9 @@ def create_appLayout(platformType_options,
                     html.H2("How to cite this work"),
 
                     dcc.Markdown('''
-                    > Lannelongue, L., Grealey, J. & Inouye, M. 
-                    Green Algorithms: Quantifying the carbon emissions of computation. 
-                    arXiv:2007.07610 [cs] (2020).
+                    _Lannelongue, L., Grealey, J. & Inouye, M., 
+                    __Green Algorithms: Quantifying the carbon emissions of computation__. 
+                    [arXiv:2007.07610](https://arxiv.org/abs/2007.07610) (2020)._
                     '''),
                 ],
                 className='container citation footer'
