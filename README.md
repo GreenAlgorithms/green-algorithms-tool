@@ -13,7 +13,7 @@
 ## Methods and data
 
 The methodology behind the Green Algorithms project is described in our pre-print:
-_Coming soon_
+https://arxiv.org/pdf/2007.07610.pdf
 
 All the data used for the calculator are in the `/data` directory above. 
 
