@@ -36,8 +36,10 @@ def create_appLayout(platformType_options,
                         "Details about your algorithm"
                     ),
 
-                    html.P("To understand how each parameter impacts your carbon emissions, "
-                           "check out the formula below."),
+                    dcc.Markdown('''
+                    To understand how each parameter impacts your carbon emissions,
+                    check out the formula below and our [pre-print](https://arxiv.org/pdf/2007.07610.pdf).
+                    '''),
 
                     ## RUN TIME
                     html.Div(
@@ -412,6 +414,7 @@ def create_appLayout(platformType_options,
                         ],
                         className='super-section mini-boxes'
                     ),
+                    # TODO include context in terms of train, streaming, google etc.
 
                     html.Div(
                         [
@@ -450,6 +453,17 @@ def create_appLayout(platformType_options,
                     ),
                 ],
                 className='super-section first-output'
+            ),
+
+            #### PRE-PRINT ####
+
+            html.Div(
+                [
+                    dcc.Markdown('''
+                        More details about the methodology in our [pre-print](https://arxiv.org/pdf/2007.07610.pdf).
+                        '''),
+                ],
+                className='container footer preprint'
             ),
 
             #### MAP ####
@@ -695,6 +709,7 @@ def create_appLayout(platformType_options,
                 ],
                 className='container citation footer'
             ),
+            # TODO include bibtex
 
             #### SHOW YOUR STRIPES ####
 

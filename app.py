@@ -56,11 +56,13 @@ hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
 hardware_df.drop(['source'], axis=1, inplace=True)
 
 ### OFFSET ###
+# TODO include offset of cloud providers
 # offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
 #                         sep=',', skiprows=1)
 # offset_df.drop(['source'], axis=1, inplace=True)
 
 ### CARBON INTENSITY BY LOCATION ###
+# TODO Use live electricitymap API for evaluation
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                      sep=',', skiprows=1)
 CI_df.drop(['source','Type'], axis=1, inplace=True)
@@ -76,6 +78,7 @@ def iso2_to_iso3(x):
 CI_df['ISO3'] = CI_df.location.apply(iso2_to_iso3)
 
 ### CLOUD DATACENTERS ###
+# TODO update cloud datacenters
 cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
                                   sep=',', skiprows=1)
 
@@ -217,6 +220,8 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 ##############
 # CREATE APP #
 ##############
+
+# TODO better favicon?
 
 external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",

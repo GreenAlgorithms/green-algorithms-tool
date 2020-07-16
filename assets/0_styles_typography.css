@@ -172,3 +172,7 @@ blockquote {
     margin-top: 1rem;
 }
 
+.preprint {
+    font-style: italic;
+    background-color: rgba(249, 249, 249,0.9);
+}

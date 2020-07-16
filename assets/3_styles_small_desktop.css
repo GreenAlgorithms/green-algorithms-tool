@@ -86,6 +86,8 @@
         margin-bottom: 0;
     }
 
+    /*FIXME small desktop layout needs fixing (large empty space*/
+
     .pie-graph {
         margin-top: 70px;
     }
