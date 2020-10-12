@@ -2,124 +2,131 @@ index,,,,in gCO2e/kWh,,"Country, Region or World"
 location,continentName,countryName,regionName,carbonIntensity,source,Type
 GM-BJL,Africa,"Gambia, The",Banjul,700,Energy mix (https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2013/RRA_Gambia.pdf) and GHG of HFO power plants (https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=13&cad=rja&uact=8&ved=2ahUKEwiP46WT_qjnAhXGOcAKHXnSB1AQFjAMegQIBRAB&url=https%3A%2F%2Fidbinvest.org%2Fen%2Fdownload%2F6253&usg=AOvVaw3_YnEh1UVtiuHlNyCvO4G2),Region
 WORLD,World,Any,Any,475,https://www.iea.org/reports/global-energy-co2-status-report-2019/emissions,World
-ZA,Africa,South Africa,Any,960.6,carbonfootprint and Climate Transparency (2018 Report),Country
-CN,Asia,China,Any,623.6,carbonfootprint and Climate Transparency (2018 Report),Country
-CN-HK,Asia,China,Hong Kong,770,carbonfootprint and Hong Kong Electric Company (2018) and CLP Group (2018),Region
-IN,Asia,India,Any,742.9,carbonfootprint and Climate Transparency (2018 Report),Country
-ID,Asia,Indonesia,Any,755.1,carbonfootprint and Climate Transparency (2018 Report),Country
-JP,Asia,Japan,Any,491.6,carbonfootprint and Climate Transparency (2018 Report),Country
-KR,Asia,Korea,Any,517,carbonfootprint and Climate Transparency (2018 Report),Country
-AU,Oceania,Australia,Any,900,carbonfootprint and Australian Government,Country
+TW,Asia,China,Taiwan,509,https://energypedia.info/wiki/Energy_Transition_in_Taiwan,Region
+IL,Asia,Israel,Any,580,https://www.electricitymap.org (06/10/2020),Country
+ZA,Africa,South Africa,Any,928,carbonfootprint and Climate Transparency (2019 Report),Country
+CN,Asia,China,Any,555,carbonfootprint and Climate Transparency (2019 Report),Country
+CN-HK,Asia,China,Hong Kong,810,carbonfootprint and Hong Kong Electric Company (2019) and CLP Group (2019),Region
+IN,Asia,India,Any,708,carbonfootprint and Climate Transparency (2019 Report),Country
+ID,Asia,Indonesia,Any,761,carbonfootprint and Climate Transparency (2019 Report),Country
+JP,Asia,Japan,Any,506,carbonfootprint and Climate Transparency (2019 Report),Country
+KR,Asia,Korea,Any,500,carbonfootprint and Climate Transparency (2019 Report),Country
+SG,Asia,Singapore,Any,418.8,carbonfootprint and Singapore Energy Market Authority (EMA),Country
+TH,Asia,Thailand,Any,497,carbonfootprint and Energy Policy and Planning Office (EPPO) Thai Government Ministry of Energy,Country
+AU,Oceania,Australia,Any,880,carbonfootprint and Australian Government,Country
 NZ,Oceania,New Zealand,Any,105.1,carbonfootprint and Ministry for the Environment https://www.mfe.govt.nz/node/18670/,Country
-SA,Asia,Saudi Arabia,Any,717.6,carbonfootprint and Climate Transparency (2018 Report),Country
-TR,Asia,Turkey,Any,543.4,carbonfootprint and Climate Transparency (2018 Report),Country
-AE,Asia,United Arab Emirates,Any,433.3,carbonfootprint and Dubai Electricity & Water Authority (sustainability report 2017),Country
-CA,North America,Canada,Any,140,carbonfootprint and UN Framework Convention on Climate Change,Country
-MX,North America,Mexico,Any,464,carbonfootprint and Climate Transparency (2018 Report),Country
-US,North America,United States of America,Any,475.9,carbonfootprint and US Env Protection Agency (EPA) eGrid,Country
-AR,South America,Argentina,Any,358.3,carbonfootprint and Climate Transparency (2018 Report),Country
-BR,South America,Brazil,Any,92.7,carbonfootprint and Climate Transparency (2018 Report),Country
-AT,Europe,Austria,Any,142,carbonfootprint and Association of Issuing Bodies (AIB),Country
-BE,Europe,Belgium,Any,167,carbonfootprint and Association of Issuing Bodies (AIB),Country
-BG,Europe,Bulgaria,Any,470,carbonfootprint and Association of Issuing Bodies (AIB),Country
-HR,Europe,Croatia,Any,417,carbonfootprint and Association of Issuing Bodies (AIB),Country
-CY,Europe,Cyprus,Any,639,carbonfootprint and Association of Issuing Bodies (AIB),Country
-CZ,Europe,Czech Republic,Any,576,carbonfootprint and Association of Issuing Bodies (AIB),Country
-DK,Europe,Denmark,Any,209,carbonfootprint and Association of Issuing Bodies (AIB),Country
-EE,Europe,Estonia,Any,875,carbonfootprint and Association of Issuing Bodies (AIB),Country
-FI,Europe,Finland,Any,143,carbonfootprint and Association of Issuing Bodies (AIB),Country
-FR,Europe,France,Any,47,carbonfootprint and Association of Issuing Bodies (AIB),Country
-DE,Europe,Germany,Any,469,carbonfootprint and Association of Issuing Bodies (AIB),Country
-GR,Europe,Greece,Any,567,carbonfootprint and Association of Issuing Bodies (AIB),Country
-HU,Europe,Hungary,Any,314,carbonfootprint and Association of Issuing Bodies (AIB),Country
-IS,Europe,Iceland,Any,0,carbonfootprint and Association of Issuing Bodies (AIB),Country
-IE,Europe,Ireland,Any,393,carbonfootprint and Association of Issuing Bodies (AIB),Country
-IT,Europe,Italy,Any,327,carbonfootprint and Association of Issuing Bodies (AIB),Country
-LV,Europe,Latvia,Any,313,carbonfootprint and Association of Issuing Bodies (AIB),Country
-LT,Europe,Lithuania,Any,362,carbonfootprint and Association of Issuing Bodies (AIB),Country
-LU,Europe,Luxembourg,Any,201,carbonfootprint and Association of Issuing Bodies (AIB),Country
-MT,Europe,Malta,Any,761,carbonfootprint and Association of Issuing Bodies (AIB),Country
-NL,Europe,Netherlands,Any,457,carbonfootprint and Association of Issuing Bodies (AIB),Country
-NO,Europe,Norway,Any,11,carbonfootprint and Association of Issuing Bodies (AIB),Country
-PL,Europe,Poland,Any,846,carbonfootprint and Association of Issuing Bodies (AIB),Country
-PT,Europe,Portugal,Any,307,carbonfootprint and Association of Issuing Bodies (AIB),Country
-RO,Europe,Romania,Any,401,carbonfootprint and Association of Issuing Bodies (AIB),Country
-RU,Europe,Russian Federation,Any,330.2,carbonfootprint and Climate Transparency (2018 Report),Country
-SK,Europe,Slovakia,Any,169,carbonfootprint and Association of Issuing Bodies (AIB),Country
-SI,Europe,Slovenia,Any,335,carbonfootprint and Association of Issuing Bodies (AIB),Country
-ES,Europe,Spain,Any,288,carbonfootprint and Association of Issuing Bodies (AIB),Country
-SE,Europe,Sweden,Any,12,carbonfootprint and Association of Issuing Bodies (AIB),Country
-CH,Europe,Switzerland,Any,14,carbonfootprint and Association of Issuing Bodies (AIB) https://www.carbonfootprint.com/docs/2019_06_emissions_factors_sources_for_2019_electricity.pdf ,Country
-GB,Europe,United Kingdom,Any,277.3,carbonfootprint and UK Govt – Defra/BEIS,Country
-US-AK,North America,United States of America,Alaska,445.2,carbonfootprint,Region
-US-AL,North America,United States of America,Alabama,435.8,carbonfootprint,Region
-US-AR,North America,United States of America,Arkansas,533.1,carbonfootprint,Region
-US-AZ,North America,United States of America,Arizona,443.8,carbonfootprint,Region
-US-CA,North America,United States of America,California,215.1,carbonfootprint,Region
-US-CO,North America,United States of America,Colorado,700,carbonfootprint,Region
-US-CT,North America,United States of America,Connecticut,238.5,carbonfootprint,Region
-US-DC,North America,United States of America,Washington DC,229.4,carbonfootprint,Region
-US-DE,North America,United States of America,Delaware,422.4,carbonfootprint,Region
-US-FL,North America,United States of America,Florida,488.6,carbonfootprint,Region
-US-GA,North America,United States of America,Georgia,478.5,carbonfootprint,Region
-US-HI,North America,United States of America,Hawaii,734.6,carbonfootprint,Region
-US-IA,North America,United States of America,Iowa,476.7,carbonfootprint,Region
-US-ID,North America,United States of America,Idaho,89.7,carbonfootprint,Region
-US-IL,North America,United States of America,Illinois,387.5,carbonfootprint,Region
-US-IN,North America,United States of America,Indiana,866.7,carbonfootprint,Region
-US-KS,North America,United States of America,Kansas,571.9,carbonfootprint,Region
-US-KY,North America,United States of America,Kentucky,934.6,carbonfootprint,Region
-US-LA,North America,United States of America,Louisiana,418.9,carbonfootprint,Region
-US-MA,North America,United States of America,Massachusetts,393,carbonfootprint,Region
-US-MD,North America,United States of America,Maryland,484.1,carbonfootprint,Region
-US-ME,North America,United States of America,Maine,165.1,carbonfootprint,Region
-US-MI,North America,United States of America,Michigan,525.3,carbonfootprint,Region
-US-MN,North America,United States of America,Minnesota,484.5,carbonfootprint,Region
-US-MO,North America,United States of America,Missouri,806.8,carbonfootprint,Region
-US-MS,North America,United States of America,Mississip,447.9,carbonfootprint,Region
-US-MT,North America,United States of America,Montana,596.9,carbonfootprint,Region
-US-NC,North America,United States of America,North Carolina,414.4,carbonfootprint,Region
-US-ND,North America,United States of America,North Dakota,795.4,carbonfootprint,Region
-US-NE,North America,United States of America,Nebraska,613,carbonfootprint,Region
-US-NH,North America,United States of America,New Hampshire,150.5,carbonfootprint,Region
-US-NJ,North America,United States of America,New Jersey,265.8,carbonfootprint,Region
-US-NM,North America,United States of America,New Mexico,749.6,carbonfootprint,Region
-US-NV,North America,United States of America,Nevada,365.5,carbonfootprint,Region
-US-NY,North America,United States of America,New York,221.2,carbonfootprint,Region
-US-OH,North America,United States of America,Ohio,700.6,carbonfootprint,Region
-US-OK,North America,United States of America,Oklahoma,497.8,carbonfootprint,Region
-US-OR,North America,United States of America,Oregon,145.5,carbonfootprint,Region
-US-PA,North America,United States of America,Pennsylvania,408.4,carbonfootprint,Region
-US-RI,North America,United States of America,Rhode Island,414,carbonfootprint,Region
-US-SC,North America,United States of America,South Carolina,300.5,carbonfootprint,Region
-US-SD,North America,United States of America,South Dakota,245.3,carbonfootprint,Region
-US-TN,North America,United States of America,Tennessee,474.2,carbonfootprint,Region
-US-TX,North America,United States of America,Texas,503,carbonfootprint,Region
-US-UT,North America,United States of America,Utah,776.1,carbonfootprint,Region
-US-VA,North America,United States of America,Virginia,389,carbonfootprint,Region
-US-VT,North America,United States of America,Vermont,31.7,carbonfootprint,Region
-US-WA,North America,United States of America,Washington,89,carbonfootprint,Region
-US-WI,North America,United States of America,Wisconsin,663.2,carbonfootprint,Region
-US-WV,North America,United States of America,West Virginia,945.3,carbonfootprint,Region
-US-WY,North America,United States of America,Wyoming,966.7,carbonfootprint,Region
-CA-AB,North America,Canada,Alberta,800,carbonfootprint,Region
-CA-BC,North America,Canada,British Columbia,9.7,carbonfootprint,Region
-CA-MT,North America,Canada,Manitoba,2.1,carbonfootprint,Region
-CA-NB,North America,Canada,New Brunswick,330,carbonfootprint,Region
-CA-NL,North America,Canada,Newfoundland and Labrador,40,carbonfootprint,Region
-CA-NS,North America,Canada,Nova Scotia,720,carbonfootprint,Region
-CA-NT,North America,Canada,Northwest Territories,180,carbonfootprint,Region
-CA-NU,North America,Canada,Nunavut,790,carbonfootprint,Region
-CA-ON,North America,Canada,Ontario,20,carbonfootprint,Region
-CA-PE,North America,Canada,Prince Edward Island,34,carbonfootprint,Region
-CA-QC,North America,Canada,Quebec,1.5,carbonfootprint,Region
+SA,Asia,Saudi Arabia,Any,732,carbonfootprint and Climate Transparency (2019 Report),Country
+TR,Asia,Turkey,Any,481,carbonfootprint and Climate Transparency (2019 Report),Country
+AE,Asia,United Arab Emirates,Any,425.8,carbonfootprint and Dubai Electricity & Water Authority (sustainability report 2018),Country
+CA,North America,Canada,Any,130,carbonfootprint and UN Framework Convention on Climate Change,Country
+MX,North America,Mexico,Any,449,carbonfootprint and Climate Transparency (2019 Report),Country
+US,North America,United States of America,Any,453.22,carbonfootprint and US Env Protection Agency (EPA) eGrid,Country
+AR,South America,Argentina,Any,313,carbonfootprint and Climate Transparency (2019 Report),Country
+BR,South America,Brazil,Any,74,carbonfootprint and Climate Transparency (2019 Report),Country
+AT,Europe,Austria,Any,132.86,carbonfootprint and Association of Issuing Bodies (AIB),Country
+BE,Europe,Belgium,Any,187.67,carbonfootprint and Association of Issuing Bodies (AIB),Country
+BG,Europe,Bulgaria,Any,437.37,carbonfootprint and Association of Issuing Bodies (AIB),Country
+HR,Europe,Croatia,Any,514.15,carbonfootprint and Association of Issuing Bodies (AIB),Country
+CY,Europe,Cyprus,Any,675.56,carbonfootprint and Association of Issuing Bodies (AIB),Country
+CZ,Europe,Czech Republic,Any,595.11,carbonfootprint and Association of Issuing Bodies (AIB),Country
+DK,Europe,Denmark,Any,465.21,carbonfootprint and Association of Issuing Bodies (AIB),Country
+EE,Europe,Estonia,Any,757.71,carbonfootprint and Association of Issuing Bodies (AIB),Country
+FI,Europe,Finland,Any,310.13,carbonfootprint and Association of Issuing Bodies (AIB),Country
+FR,Europe,France,Any,43.19,carbonfootprint and Association of Issuing Bodies (AIB),Country
+DE,Europe,Germany,Any,609.37,carbonfootprint and Association of Issuing Bodies (AIB),Country
+GR,Europe,Greece,Any,577.44,carbonfootprint and Association of Issuing Bodies (AIB),Country
+HU,Europe,Hungary,Any,285.74,carbonfootprint and Association of Issuing Bodies (AIB),Country
+IS,Europe,Iceland,Any,393.67,carbonfootprint and Association of Issuing Bodies (AIB),Country
+IE,Europe,Ireland,Any,495.15,carbonfootprint and Association of Issuing Bodies (AIB),Country
+IT,Europe,Italy,Any,465.89,carbonfootprint and Association of Issuing Bodies (AIB),Country
+LV,Europe,Latvia,Any,315.24,carbonfootprint and Association of Issuing Bodies (AIB),Country
+LT,Europe,Lithuania,Any,351.93,carbonfootprint and Association of Issuing Bodies (AIB),Country
+LU,Europe,Luxembourg,Any,449.33,carbonfootprint and Association of Issuing Bodies (AIB),Country
+MT,Europe,Malta,Any,378.35,carbonfootprint and Association of Issuing Bodies (AIB),Country
+NL,Europe,Netherlands,Any,555.21,carbonfootprint and Association of Issuing Bodies (AIB),Country
+NO,Europe,Norway,Any,396.27,carbonfootprint and Association of Issuing Bodies (AIB),Country
+PL,Europe,Poland,Any,810.97,carbonfootprint and Association of Issuing Bodies (AIB),Country
+PT,Europe,Portugal,Any,256.03,carbonfootprint and Association of Issuing Bodies (AIB),Country
+RO,Europe,Romania,Any,310.68,carbonfootprint and Association of Issuing Bodies (AIB),Country
+RU,Europe,Russian Federation,Any,325,carbonfootprint and Climate Transparency (2019 Report),Country
+RS,Europe,Serbia,Any,765.75,carbonfootprint and Association of Issuing Bodies (AIB),Country
+SK,Europe,Slovakia,Any,198.59,carbonfootprint and Association of Issuing Bodies (AIB),Country
+SI,Europe,Slovenia,Any,364.12,carbonfootprint and Association of Issuing Bodies (AIB),Country
+ES,Europe,Spain,Any,342.69,carbonfootprint and Association of Issuing Bodies (AIB),Country
+SE,Europe,Sweden,Any,50.22,carbonfootprint and Association of Issuing Bodies (AIB),Country
+CH,Europe,Switzerland,Any,18.53,carbonfootprint and Association of Issuing Bodies (AIB) ,Country
+GB,Europe,United Kingdom,Any,347.5,carbonfootprint and Association of Issuing Bodies (AIB) ,Country
+US-AK,North America,United States of America,Alaska,435.97,carbonfootprint,Region
+US-AL,North America,United States of America,Alabama,414.05,carbonfootprint,Region
+US-AR,North America,United States of America,Arkansas,581.39,carbonfootprint,Region
+US-AZ,North America,United States of America,Arizona,463.3,carbonfootprint,Region
+US-CA,North America,United States of America,California,201.13,carbonfootprint,Region
+US-CO,North America,United States of America,Colorado,653.44,carbonfootprint,Region
+US-CT,North America,United States of America,Connecticut,243,carbonfootprint,Region
+US-DC,North America,United States of America,Washington DC,209.81,carbonfootprint,Region
+US-DE,North America,United States of America,Delaware,429.41,carbonfootprint,Region
+US-FL,North America,United States of America,Florida,451.98,carbonfootprint,Region
+US-GA,North America,United States of America,Georgia,444.38,carbonfootprint,Region
+US-HI,North America,United States of America,Hawaii,729.13,carbonfootprint,Region
+US-IA,North America,United States of America,Iowa,513.78,carbonfootprint,Region
+US-ID,North America,United States of America,Idaho,76.59,carbonfootprint,Region
+US-IL,North America,United States of America,Illinois,390.38,carbonfootprint,Region
+US-IN,North America,United States of America,Indiana,833.82,carbonfootprint,Region
+US-KS,North America,United States of America,Kansas,475.25,carbonfootprint,Region
+US-KY,North America,United States of America,Kentucky,875.34,carbonfootprint,Region
+US-LA,North America,United States of America,Louisiana,400.26,carbonfootprint,Region
+US-MA,North America,United States of America,Massachusetts,349.97,carbonfootprint,Region
+US-MD,North America,United States of America,Maryland,401.15,carbonfootprint,Region
+US-ME,North America,United States of America,Maine,127.86,carbonfootprint,Region
+US-MI,North America,United States of America,Michigan,532.1,carbonfootprint,Region
+US-MN,North America,United States of America,Minnesota,478.4,carbonfootprint,Region
+US-MO,North America,United States of America,Missouri,816.85,carbonfootprint,Region
+US-MS,North America,United States of America,Mississip,438.49,carbonfootprint,Region
+US-MT,North America,United States of America,Montana,555.56,carbonfootprint,Region
+US-NC,North America,United States of America,North Carolina,383.42,carbonfootprint,Region
+US-ND,North America,United States of America,North Dakota,723.33,carbonfootprint,Region
+US-NE,North America,United States of America,Nebraska,675.98,carbonfootprint,Region
+US-NH,North America,United States of America,New Hampshire,145.82,carbonfootprint,Region
+US-NJ,North America,United States of America,New Jersey,239.47,carbonfootprint,Region
+US-NM,North America,United States of America,New Mexico,638.7,carbonfootprint,Region
+US-NV,North America,United States of America,Nevada,355.76,carbonfootprint,Region
+US-NY,North America,United States of America,New York,199.61,carbonfootprint,Region
+US-OH,North America,United States of America,Ohio,634.21,carbonfootprint,Region
+US-OK,North America,United States of America,Oklahoma,426.03,carbonfootprint,Region
+US-OR,North America,United States of America,Oregon,149.7,carbonfootprint,Region
+US-PA,North America,United States of America,Pennsylvania,376.21,carbonfootprint,Region
+US-RI,North America,United States of America,Rhode Island,414.27,carbonfootprint,Region
+US-SC,North America,United States of America,South Carolina,302.63,carbonfootprint,Region
+US-SD,North America,United States of America,South Dakota,247.96,carbonfootprint,Region
+US-TN,North America,United States of America,Tennessee,356.85,carbonfootprint,Region
+US-TX,North America,United States of America,Texas,468.98,carbonfootprint,Region
+US-UT,North America,United States of America,Utah,766.79,carbonfootprint,Region
+US-VA,North America,United States of America,Virginia,354.25,carbonfootprint,Region
+US-VT,North America,United States of America,Vermont,27.38,carbonfootprint,Region
+US-WA,North America,United States of America,Washington,95.34,carbonfootprint,Region
+US-WI,North America,United States of America,Wisconsin,665.83,carbonfootprint,Region
+US-WV,North America,United States of America,West Virginia,935.4,carbonfootprint,Region
+US-WY,North America,United States of America,Wyoming,983.3,carbonfootprint,Region
+CA-AB,North America,Canada,Alberta,680,carbonfootprint,Region
+CA-BC,North America,Canada,British Columbia,12.8,carbonfootprint,Region
+CA-MT,North America,Canada,Manitoba,1.4,carbonfootprint,Region
+CA-NB,North America,Canada,New Brunswick,400,carbonfootprint,Region
+CA-NL,North America,Canada,Newfoundland and Labrador,27,carbonfootprint,Region
+CA-NS,North America,Canada,Nova Scotia,760,carbonfootprint,Region
+CA-NT,North America,Canada,Northwest Territories,160,carbonfootprint,Region
+CA-NU,North America,Canada,Nunavut,890,carbonfootprint,Region
+CA-ON,North America,Canada,Ontario,30,carbonfootprint,Region
+CA-PE,North America,Canada,Prince Edward Island,14,carbonfootprint,Region
+CA-QC,North America,Canada,Quebec,1.7,carbonfootprint,Region
 CA-SK,North America,Canada,Saskatchewan,710,carbonfootprint,Region
-CA-YT,North America,Canada,Yukon Territory,57,carbonfootprint,Region
-AU-ACT,Oceania,Australia,Australian Capital Territory,920,carbonfootprint,Region
-AU-NSW,Oceania,Australia,New South Wales,920,carbonfootprint,Region
-AU-NT,Oceania,Australia,Northern Territory,730,carbonfootprint,Region
+CA-YT,North America,Canada,Yukon Territory,79,carbonfootprint,Region
+AU-ACT,Oceania,Australia,Australian Capital Territory,900,carbonfootprint,Region
+AU-NSW,Oceania,Australia,New South Wales,900,carbonfootprint,Region
+AU-NT,Oceania,Australia,Northern Territory,710,carbonfootprint,Region
+AU-NT2,Oceania,Australia,Northern Territory (Darwin Katherine Interconnected System),550,carbonfootprint,Region
 AU-QLD,Oceania,Australia,Queensland,930,carbonfootprint,Region
-AU-SA,Oceania,Australia,South Australia,610,carbonfootprint,Region
-AU-TAS,Oceania,Australia,Tasmania,220,carbonfootprint,Region
-AU-VIC,Oceania,Australia,Victoria,1170,carbonfootprint,Region
-AU-WA,Oceania,Australia,Western Australia,750,carbonfootprint,Region
+AU-SA,Oceania,Australia,South Australia,540,carbonfootprint,Region
+AU-TAS,Oceania,Australia,Tasmania,170,carbonfootprint,Region
+AU-VIC,Oceania,Australia,Victoria,1120,carbonfootprint,Region
+AU-WA1,Oceania,Australia,Western Australia (North Western Interconnected System),590,carbonfootprint,Region
+AU-WA2,Oceania,Australia,Western Australia (South West Interconnected System),730,carbonfootprint,Region

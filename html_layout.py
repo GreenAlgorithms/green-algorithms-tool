@@ -6,13 +6,16 @@ import plotly.graph_objects as go
 
 import os
 
-def create_appLayout(platformType_options,
-                     yesNo_options,
-                     PUE_default,
-                     usage_default,
-                     PSF_default,
-                     image_dir,
-                     mapCI):
+def create_appLayout(
+        platformType_options,
+        yesNo_options,
+        PUE_default,
+        usage_default,
+        PSF_default,
+        image_dir,
+        mapCI,
+        location_continentsList
+):
 
     appLayout = html.Div(
         [
@@ -105,12 +108,18 @@ def create_appLayout(platformType_options,
                                         id="platformType_dropdown",
                                         options=platformType_options,
                                         value='localServer',
+                                        clearable=False,
                                     ),
 
-                                    dcc.Dropdown(
-                                        id="provider_dropdown",
-                                        style=dict(display='none'),
-                                        className='bottom-dropdown'
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id="provider_dropdown",
+                                                clearable=False,
+                                                className='bottom-dropdown'
+                                            )
+                                        ],
+                                        id = "provider_dropdown_div"
                                     )
                                 ],
                                 className="box-fields"
@@ -129,11 +138,13 @@ def create_appLayout(platformType_options,
                                     dcc.Dropdown(
                                         id="coreType_dropdown",
                                         value='CPU',
+                                        clearable=False,
                                     ),
 
                                     dcc.Dropdown(
                                         id="coreModel_dropdown",
-                                        className='bottom-dropdown'
+                                        className='bottom-dropdown',
+                                        clearable=False,
                                     ),
                                 ],
                                 className="box-fields"
@@ -167,25 +178,67 @@ def create_appLayout(platformType_options,
                                 [
                                     dcc.Dropdown(
                                         id="location_continent_dropdown",
-                                        value='North America',
+                                        options=location_continentsList,
+                                        value='Europe',
+                                        clearable=False,
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id="location_country_dropdown",
+                                                value="United Kingdom",
+                                                className='bottom-dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        id="location_country_dropdown_div"
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id="location_region_dropdown",
+                                                className='bottom-dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        id="location_region_dropdown_div"
+                                    ),
+
+                                ],
+                                className="box-fields"
+                            )
+                        ],
+                        id='location_div',
+                        className='form-row',
+                        style={'display': 'flex'}
+                    ),
+
+                    ## SERVER (for cloud computing)
+                    html.Div(
+                        [
+                            html.Label("Select server"),
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="server_continent_dropdown",
+                                        clearable=False,
                                     ),
 
                                     dcc.Dropdown(
-                                        id="location_country_dropdown",
-                                        value="United States of America",
-                                        className='bottom-dropdown'
-                                    ),
-
-                                    dcc.Dropdown(
-                                        id="location_region_dropdown",
-                                        value="US",
-                                        className='bottom-dropdown'
+                                        id="server_dropdown",
+                                        className='bottom-dropdown',
+                                        clearable=False,
                                     ),
                                 ],
                                 className="box-fields"
                             )
                         ],
-                        className='form-row'
+                        id='server_div',
+                        className='form-row',
+                        style={'display': 'none'}
                     ),
 
                     ## Core usage
