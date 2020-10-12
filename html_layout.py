@@ -320,6 +320,8 @@ def create_appLayout(
                 className='container input-form'
             ),
 
+            # TODO: option for custom Carbon Intensity
+
             #### FIRST OUTPUTS ####
 
             html.Div(

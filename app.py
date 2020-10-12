@@ -614,14 +614,14 @@ def set_countries_options(selected_continent):
         Input('location_country_dropdown', 'value')
     ]
 )
-def set_cities_options(selected_continent, selected_country):
+def set_regions_options(selected_continent, selected_country):
     '''
     List of options and default value for regions.
     Hides region dropdown if only one possible region (or continent=World)
     '''
     availableOptions = CI_df.loc[(CI_df.continentName == selected_continent) &
                                  (CI_df.countryName == selected_country)]
-    availableOptions = availableOptions.sort_values(by=['regionName'])
+    availableOptions = availableOptions.sort_values(by=['regionName']) # TODO: move "Any" to the first or last row
 
     listOptions = [{'label': k, 'value': v} for k,v in zip(availableOptions.regionName, availableOptions.location)]
 
@@ -672,6 +672,8 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     providers_knownPUE = list(set(pue_df.provider))
 
     if selected_platform == 'localServer':
+        return {'display': 'flex'}
+    elif (selected_platform == 'cloudComputing')&(selected_provider == 'other'):
         return {'display': 'flex'}
     else:
         return {'display': 'none'}
@@ -814,13 +816,16 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
                 PUE_used = PUE_default
             else:
                 # Cloud
-                foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values[0]
-
-                if pd.isnull(foo):
-                    # if we don't know the PUE of this specific data centre, we use the provider's default
-                    PUE_used = pue_df.loc[pue_df.provider == selected_provider, "PUE"].values[0]
+                if selected_provider == 'other':
+                    PUE_used = PUE_default
                 else:
-                    PUE_used = foo
+                    foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values[0]
+
+                    if pd.isnull(foo):
+                        # if we don't know the PUE of this specific data centre, we use the provider's default
+                        PUE_used = pue_df.loc[pue_df.provider == selected_provider, "PUE"].values[0]
+                    else:
+                        PUE_used = foo
 
         if tdpStyle['display'] != 'none':
             # we asked the question about TDP
