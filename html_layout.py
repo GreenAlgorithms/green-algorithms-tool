@@ -276,6 +276,7 @@ def create_appLayout(platformType_options,
                             html.Div(
                                 [
                                     html.Img(
+                                        # TODO: make icon GHG not CO2 only
                                         src=os.path.join(image_dir, 'logo_co2.svg'),
                                         id="logo_co2",
                                         className="style-icon",
@@ -292,7 +293,7 @@ def create_appLayout(platformType_options,
                                             ),
 
                                             html.P(
-                                                "Carbon emissions",
+                                                "Carbon footprint",
                                             )
                                         ],
                                         className='caption-icons'
@@ -497,7 +498,7 @@ def create_appLayout(platformType_options,
                             "Carbon dioxide equivalent" (CO2e) measures 
                             the global warming potential of a mixture of greenhouse gases.
                             __It represents the quantity of CO2 that would have 
-                            the same impact on the environment__ as the mix of interest
+                            the same impact on global warming__ as the mix of interest
                             and is used as a standardised unit to assess 
                             the environmental impact of human activities.
                             ''')
@@ -513,7 +514,7 @@ def create_appLayout(platformType_options,
                             It's the amount of CO2 sequestered by a tree in a month.
                             __We use it to measure how long it would take to a mature tree
                             to absorb the CO2 emitted by an algorithm.__
-                            We use the value of 11.4 kg CO2/year, which is roughly 1kg CO2/month.
+                            We use the value of 11 kg CO2/year, which is roughly 1kg CO2/month.
                             '''),
                         ],
                         className='container'
@@ -548,7 +549,7 @@ def create_appLayout(platformType_options,
 
                     dcc.Markdown('''
                     The main factor impacting your footprint is the location of your servers:
-                    the same algorithm will emit __64 times more__ CO2e
+                    the same algorithm will emit __74 times more__ CO2e
                     if ran in Australia compared to Switzerland. 
                     Although it's not always the case, 
                     many cloud providers offer the option to select a datacentre.
@@ -703,7 +704,7 @@ def create_appLayout(platformType_options,
 
                     dcc.Markdown('''
                     _Lannelongue, L., Grealey, J. & Inouye, M., 
-                    __Green Algorithms: Quantifying the carbon emissions of computation__. 
+                    __Green Algorithms: Quantifying the carbon footprint of computation__. 
                     [arXiv:2007.07610](https://arxiv.org/abs/2007.07610) (2020)._
                     '''),
                 ],

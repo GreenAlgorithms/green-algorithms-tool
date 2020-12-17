@@ -979,7 +979,7 @@ def fillin_report_text(aggData):
         > This algorithm runs in {} on {} {}{} {},
         > which draws {:,.2f} kWh. 
         > Based in {}{}{},{} this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
-        (calculated using green-algorithms.org v1.0 \[1\]).
+        (calculated using green-algorithms.org v1.1 \[1\]).
         '''.format(
             textRuntime,
             aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
