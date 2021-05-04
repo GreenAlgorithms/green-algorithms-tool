@@ -38,7 +38,7 @@ def create_appLayout(platformType_options,
 
                     dcc.Markdown('''
                     To understand how each parameter impacts your carbon emissions,
-                    check out the formula below and our [pre-print](https://arxiv.org/pdf/2007.07610.pdf).
+                    check out the formula below and the [methods article](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
                     '''),
 
                     ## RUN TIME
@@ -461,7 +461,7 @@ def create_appLayout(platformType_options,
             html.Div(
                 [
                     dcc.Markdown('''
-                        More details about the methodology in our [pre-print](https://arxiv.org/pdf/2007.07610.pdf).
+                        More details about the methodology in the [methods paper](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
                         '''),
                 ],
                 className='container footer preprint'
@@ -703,9 +703,9 @@ def create_appLayout(platformType_options,
                     html.H2("How to cite this work"),
 
                     dcc.Markdown('''
-                    _Lannelongue, L., Grealey, J. & Inouye, M., 
-                    __Green Algorithms: Quantifying the carbon footprint of computation__. 
-                    [arXiv:2007.07610](https://arxiv.org/abs/2007.07610) (2020)._
+                    Lannelongue, L., Grealey, J., Inouye, M., 
+                    Green Algorithms: Quantifying the Carbon Footprint of Computation. 
+                    Adv. Sci. 2021, 2100707. https://doi.org/10.1002/advs.202100707
                     '''),
                 ],
                 className='container citation footer'
