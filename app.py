@@ -834,12 +834,18 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
                         PUE_used = foo[0]
 
 
+        print(tdpStyle['display'])
+        print(coreModel)
+        print(tdp)
+        print('----')
         if tdpStyle['display'] != 'none':
             # we asked the question about TDP
             corePower = tdp
         else:
-            # FIXME this doesn't work when "other" is selected as a CPU...but we shouldn't get into this "else"
-            corePower = cores_dict[coreType][coreModel]
+            if coreModel == 'other':
+                corePower = tdp
+            else:
+                corePower = cores_dict[coreType][coreModel]
 
         # Power needed, in Watt
         powerNeeded_core = PUE_used * (n_cores * corePower) * usage
