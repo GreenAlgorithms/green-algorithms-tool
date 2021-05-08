@@ -51,6 +51,7 @@ pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
 pue_df.drop(['source'], axis=1, inplace=True)
 
 ### HARDWARE ###
+# TODO restrict harware choice to cloud providers options
 hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
                           sep=',', skiprows=1)
 hardware_df.drop(['source'], axis=1, inplace=True)
@@ -88,8 +89,12 @@ cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacen
 #                                   sep=',', skiprows=1)
 # datacenters_df = pd.concat([cloudDatacenters_df, localDatacenters_df], axis = 1)
 
+# Create final datacentre DF
 datacenters_df = cloudDatacenters_df
+# Remove datacentres with unknown CI
 datacenters_df.dropna(subset=['location'], inplace=True)
+# TODO: add data centres from AWS
+providers_withoutDC = ['aws']
 # datacenters_dict = dict()
 # for col in datacenters_df.columns:
 #     datacenters_dict[col] = list(datacenters_df[col].dropna().values)
@@ -166,11 +171,8 @@ map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
 layout_map = copy.deepcopy(layout_plots)
-
 layout_map['height'] = 250
-
 layout_map['margin']['t'] = 30
-
 layout_map['geo'] = dict(
     projection=dict(
         type='natural earth',
@@ -273,7 +275,7 @@ app.layout = create_appLayout(
 )
 def set_providers(selected_platform):
     '''
-    Shows or hide the "providers" box
+    Shows or hide the "providers" box, based on the platform selected
     '''
     if selected_platform in ['cloudComputing']:
         # Only Cloud Computing need the providers box
@@ -350,7 +352,7 @@ def set_providers(selected_platform):
      Input('platformType_dropdown', 'value')])
 def set_coreType_options(selected_provider, selected_platform):
     '''
-    List of options for coreType (CPU or GPU)
+    List of options for coreType (CPU or GPU), based on the platform/provider selected
     '''
     # TODO: Add custom hardware for cloud providers
     availableOptions = cores_dict.keys()
@@ -370,7 +372,7 @@ def set_coreType_options(selected_provider, selected_platform):
 )
 def set_defaultCoreModel(selected_coreType):
     '''
-    Default value for the core model
+    Default value for the core model, based on core type
     '''
     # TODO: Adjust the default value to the platform/provider
     if selected_coreType == 'CPU':
@@ -406,8 +408,9 @@ def set_defaultCoreModel(selected_coreType):
 )
 def set_coreModels(selected_coreType,selected_provider,selected_platform):
     '''
-    List of options for core model
+    Set the list of options for core model, based on core type and provider
     '''
+    # TODO: Add custom hardware for cloud providers (here too)
     availableOptions = sorted(list(cores_dict[selected_coreType].keys()))
     # else:
     #     availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
@@ -418,12 +421,7 @@ def set_coreModels(selected_coreType,selected_provider,selected_platform):
                                              [("Other","other")]
     ]
 
-    if selected_coreType == 'CPU':
-        defaultValue = 'Xeon E5-2683 v4'
-    else:
-        defaultValue = 'Tesla V100'
-
-    return listOptions #, defaultValue
+    return listOptions
 
 @app.callback(
     [
@@ -469,7 +467,7 @@ def display_TDP(selected_platform, selected_provider):
     Shows either LOCATION or SERVER depending on the platform
     '''
     if selected_platform == 'cloudComputing':
-        if selected_provider in ['aws', 'other']:
+        if selected_provider in ['other'] + providers_withoutDC:
             return {'display': 'flex'}, {'display': 'none'}
         else:
             return {'display': 'none'},{'display': 'flex'}
@@ -492,7 +490,7 @@ def availableLocations_continent(selected_provider):
 )
 def set_serverContinents_options(selected_provider):
     '''
-    Default value for server's continent (depending on the provider)
+    Default value for server's continent, depending on the provider
     '''
     availableOptions = availableLocations_continent(selected_provider)
 
@@ -512,7 +510,7 @@ def set_serverContinents_options(selected_provider):
 )
 def set_serverContinents_options(selected_provider):
     '''
-    List of options and default value for server's continent (depending on the provider)
+    List of options and default value for server's continent, based on the provider
     '''
     availableOptions = availableLocations_continent(selected_provider)
 
@@ -541,7 +539,7 @@ def availableOptions_servers(selected_provider,selected_continent):
 )
 def set_server_options(selected_provider,selected_continent):
     '''
-    List of options and default value for servers
+    Default value for servers, based on provider and continent
     '''
 
     availableOptions = availableOptions_servers(selected_provider,selected_continent)
@@ -562,11 +560,12 @@ def set_server_options(selected_provider,selected_continent):
 )
 def set_server_options(selected_provider,selected_continent):
     '''
-    List of options and default value for servers
+    List of options for servers, based on provider and continent
     '''
 
     availableOptions = availableOptions_servers(selected_provider,selected_continent)
 
+    # TODO: add option "other" for cloud server
     # listOptions = [{'label': k, 'value': v} for k, v in zip(availableOptions.Name, availableOptions.location)]
     listOptions = [{'label': k, 'value': k} for k in availableOptions.Name]
 
@@ -646,7 +645,7 @@ def set_regions_options(selected_continent, selected_country):
 )
 def display_usage_input(answer_usage):
     '''
-    Show or hide the usage factor input box
+    Show or hide the usage factor input box, based on Yes/No input
     :param answer_usage:
     :return:
     '''
@@ -819,18 +818,27 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
                 if selected_provider == 'other':
                     PUE_used = PUE_default
                 else:
-                    foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values[0]
+                    foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values
 
-                    if pd.isnull(foo):
-                        # if we don't know the PUE of this specific data centre, we use the provider's default
+                    if len(foo) == 0:
+                        take_default = True
+                    elif pd.isnull(foo[0]):
+                        take_default = True
+                    else:
+                        take_default = False
+                    if take_default:
+                        # if we don't know the PUE of this specific data centre, or if we don't know the data centre,
+                        # we use the provider's default
                         PUE_used = pue_df.loc[pue_df.provider == selected_provider, "PUE"].values[0]
                     else:
-                        PUE_used = foo
+                        PUE_used = foo[0]
+
 
         if tdpStyle['display'] != 'none':
             # we asked the question about TDP
             corePower = tdp
         else:
+            # FIXME this doesn't work when "other" is selected as a CPU...but we shouldn't get into this "else"
             corePower = cores_dict[coreType][coreModel]
 
         # Power needed, in Watt

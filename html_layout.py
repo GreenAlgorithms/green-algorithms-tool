@@ -41,7 +41,7 @@ def create_appLayout(
 
                     dcc.Markdown('''
                     To understand how each parameter impacts your carbon emissions,
-                    check out the formula below and the [methods article](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
+                    check out the formula below and our [publication](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
                     '''),
 
                     ## RUN TIME
