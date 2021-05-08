@@ -70,6 +70,13 @@ def create_appLayout(
                         className='form-row short-input'
                     ),
 
+                    html.Div(
+                        [
+                            html.Hr(),
+                        ],
+                        className='Hr_div'
+                    ),
+
                     ## TYPE OF CORES
                     html.Div(
                         [
@@ -220,21 +227,12 @@ def create_appLayout(
                         id="GPU_div"
                     ),
 
-
-
-                    ## NUMBER OF CORES
-                    # html.Div(
-                    #     [
-                    #         html.Label("Number of cores"),
-                    #
-                    #         dcc.Input(
-                    #             type='number',
-                    #             id="numberCores_input",
-                    #             value=12,
-                    #         ),
-                    #     ],
-                    #     className='form-row short-input'
-                    # ),
+                    html.Div(
+                        [
+                            html.Hr(),
+                        ],
+                        className='Hr_div'
+                    ),
 
                     ## MEMORY
                     html.Div(
@@ -249,6 +247,13 @@ def create_appLayout(
                         ],
                         className='form-row short-input',
                         id='div_memory'
+                    ),
+
+                    html.Div(
+                        [
+                            html.Hr(),
+                        ],
+                        className='Hr_div'
                     ),
 
                     ## SELECT COMPUTING PLATFORM

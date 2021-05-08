@@ -66,6 +66,21 @@ body {
     text-align:left;
 }
 
+.Hr_div {
+    width:100%;
+}
+
+hr {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 2px;
+    background-color:rgb(220, 220, 220);
+    border: 0 none;
+    margin-top:0;
+    margin-bottom:20px
+}
+
 .form-row {
     margin-bottom: 20px;
     display: flex;
