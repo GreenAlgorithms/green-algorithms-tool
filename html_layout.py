@@ -86,7 +86,7 @@ def create_appLayout(
                     ## MEMORY
                     html.Div(
                         [
-                            html.Label("Memory requested (in GB)"),
+                            html.Label("Memory available (in GB)"),
 
                             dcc.Input(
                                 type='number',
