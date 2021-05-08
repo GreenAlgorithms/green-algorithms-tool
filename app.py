@@ -51,7 +51,6 @@ pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
 pue_df.drop(['source'], axis=1, inplace=True)
 
 ### HARDWARE ###
-# TODO restrict harware choice to cloud providers options
 hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
                           sep=',', skiprows=1)
 hardware_df.drop(['source'], axis=1, inplace=True)
@@ -63,9 +62,15 @@ hardware_df.drop(['source'], axis=1, inplace=True)
 # offset_df.drop(['source'], axis=1, inplace=True)
 
 ### CARBON INTENSITY BY LOCATION ###
+def check_CIcountries(df):
+    foo = df.groupby(['continentName', 'countryName'])['regionName'].apply(','.join)
+    for x in foo:
+        assert 'Any' in x.split(','), f"{x} does't have an 'Any' column"
+
 # TODO Use live electricitymap API for evaluation
 CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                      sep=',', skiprows=1)
+check_CIcountries(CI_df)
 CI_df.drop(['source','Type'], axis=1, inplace=True)
 CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
 
@@ -79,7 +84,7 @@ def iso2_to_iso3(x):
 CI_df['ISO3'] = CI_df.location.apply(iso2_to_iso3)
 
 ### CLOUD DATACENTERS ###
-# TODO update cloud datacenters
+# TODO update all cloud datacenters
 cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
                                   sep=',', skiprows=1)
 
@@ -459,20 +464,25 @@ def display_TDP(selected_coreModel,selected_coreType):
     ],
     [
         Input('platformType_dropdown', 'value'),
-        Input('provider_dropdown', 'value')
+        Input('provider_dropdown', 'value'),
+        Input('server_dropdown','value')
     ]
 )
-def display_TDP(selected_platform, selected_provider):
+def display_TDP(selected_platform, selected_provider, selected_server):
     '''
     Shows either LOCATION or SERVER depending on the platform
     '''
+    show = {'display': 'flex'}
+    hide = {'display': 'none'}
     if selected_platform == 'cloudComputing':
         if selected_provider in ['other'] + providers_withoutDC:
-            return {'display': 'flex'}, {'display': 'none'}
+            return show, hide
+        elif selected_server == 'other':
+            return show, show
         else:
-            return {'display': 'none'},{'display': 'flex'}
+            return hide, show
     else:
-        return {'display': 'flex'},{'display': 'none'}
+        return show, hide
 
 ## SERVER (only for Cloud computing for now)
 
@@ -514,7 +524,7 @@ def set_serverContinents_options(selected_provider):
     '''
     availableOptions = availableLocations_continent(selected_provider)
 
-    listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)]
+    listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
 
     return listOptions
 
@@ -531,25 +541,44 @@ def availableOptions_servers(selected_provider,selected_continent):
     return availableOptions
 
 @app.callback(
+    Output('server_dropdown','style'),
+    [
+        Input('server_continent_dropdown', 'value')
+    ]
+)
+def set_server_style(selected_continent):
+    '''
+    Show or not the choice of servers, don't if continent is on "Other"
+    '''
+    if selected_continent == 'other':
+        return {'display': 'none'}
+
+    else:
+        return {'display': 'block'}
+
+@app.callback(
     Output('server_dropdown','value'),
     [
         Input('provider_dropdown', 'value'),
         Input('server_continent_dropdown', 'value')
     ]
 )
-def set_server_options(selected_provider,selected_continent):
+def set_server_value(selected_provider,selected_continent):
     '''
     Default value for servers, based on provider and continent
     '''
+    if selected_continent == 'other':
+        return 'other'
 
-    availableOptions = availableOptions_servers(selected_provider,selected_continent)
+    else:
+        availableOptions = availableOptions_servers(selected_provider,selected_continent)
 
-    try:
-        defaultValue = availableOptions.Name.values[0]
-    except:
-        defaultValue = None
+        try:
+            defaultValue = availableOptions.Name.values[0]
+        except:
+            defaultValue = None
 
-    return defaultValue
+        return defaultValue
 
 @app.callback(
     Output('server_dropdown','options'),
@@ -564,14 +593,26 @@ def set_server_options(selected_provider,selected_continent):
     '''
 
     availableOptions = availableOptions_servers(selected_provider,selected_continent)
-
-    # TODO: add option "other" for cloud server
     # listOptions = [{'label': k, 'value': v} for k, v in zip(availableOptions.Name, availableOptions.location)]
-    listOptions = [{'label': k, 'value': k} for k in availableOptions.Name]
+    listOptions = [{'label': k, 'value': k} for k in list(availableOptions.Name)+[("other")]]
 
     return listOptions
 
-## LOCATION (only for local server and personal device)
+## LOCATION (only for local server, personal device or "other" cloud server)
+@app.callback(
+    Output('location_continent_dropdown', 'value'),
+    [
+        Input('server_continent_dropdown','value'),
+        Input('server_div', 'style')
+    ]
+)
+def set_continent_value(selected_serverContinent, display_server):
+    if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
+        # the server div is shown, so we pull the continent from there
+        return selected_serverContinent
+    else:
+        return 'Europe'
+
 
 @app.callback(
     [
@@ -722,7 +763,7 @@ def display_PSF_input(answer_PSF):
         Input("runTime_min_input", "value"),
         Input("location_region_dropdown", "value"),
         Input("server_dropdown", "value"),
-        Input('server_div', 'style'),
+        Input('location_div', 'style'),
         Input("usage_input", "value"),
         Input("PUE_input", "value"),
         Input('PUE_input','style'),
@@ -735,7 +776,7 @@ def display_PSF_input(answer_PSF):
     ]
 )
 def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, runTime_hours, runTime_min, location, server,
-                           serverStyle, usage, PUE, PUEstyle, PSF, selected_platform, selected_provider, existing_state):
+                           locationStyle, usage, PUE, PUEstyle, PSF, selected_platform, selected_provider, existing_state):
     output = dict()
 
     test_runTime = 0
@@ -754,9 +795,11 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
 
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    if serverStyle['display'] == 'none':
-        # this means the "server" input is hidden, so we look at location
+    if locationStyle['display'] != 'none':
+        # this means the "location" input is shown, so we use location instead of server
         locationVar = location
+    elif (server is None)|(server == 'other'):
+        locationVar = None
     else:
         locationVar = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'location'].values[0]
 
@@ -802,6 +845,7 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
         return output
 
     else:
+        print(locationVar)
         carbonIntensity = CI_df.loc[CI_df.location == locationVar, "carbonIntensity"].values[0]
 
         if PUEstyle['display'] != 'none':
@@ -833,11 +877,6 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
                     else:
                         PUE_used = foo[0]
 
-
-        print(tdpStyle['display'])
-        print(coreModel)
-        print(tdp)
-        print('----')
         if tdpStyle['display'] != 'none':
             # we asked the question about TDP
             corePower = tdp

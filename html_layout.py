@@ -169,6 +169,32 @@ def create_appLayout(
                         style=dict(display='none')
                     ),
 
+                    ## SERVER (for cloud computing)
+                    html.Div(
+                        [
+                            html.Label("Select server"),
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="server_continent_dropdown",
+                                        clearable=False,
+                                    ),
+
+                                    dcc.Dropdown(
+                                        id="server_dropdown",
+                                        className='bottom-dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields"
+                            )
+                        ],
+                        id='server_div',
+                        className='form-row',
+                        style={'display': 'none'}
+                    ),
+
                     ## LOCATION
                     html.Div(
                         [
@@ -213,32 +239,6 @@ def create_appLayout(
                         id='location_div',
                         className='form-row',
                         style={'display': 'flex'}
-                    ),
-
-                    ## SERVER (for cloud computing)
-                    html.Div(
-                        [
-                            html.Label("Select server"),
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id="server_continent_dropdown",
-                                        clearable=False,
-                                    ),
-
-                                    dcc.Dropdown(
-                                        id="server_dropdown",
-                                        className='bottom-dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className="box-fields"
-                            )
-                        ],
-                        id='server_div',
-                        className='form-row',
-                        style={'display': 'none'}
                     ),
 
                     ## Core usage
