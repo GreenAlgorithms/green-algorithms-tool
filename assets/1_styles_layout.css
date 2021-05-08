@@ -78,6 +78,13 @@ body {
     margin-bottom: 0;
 }
 
+.group-of-rows {
+    margin-bottom: 20px;
+}
+/*.group-of-rows > .form-row {*/
+/*    margin-bottom: 0;*/
+/*}*/
+
 .form-row > label {
     margin-bottom: 7px;
 }

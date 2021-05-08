@@ -128,6 +128,14 @@ platformType_options = [
                             [('Local server', 'localServer')]
 ]
 
+coreModels_options = dict()
+for coreType in ['CPU','GPU']:
+    availableOptions = sorted(list(cores_dict[coreType].keys()))
+    coreModels_options[coreType] = [
+        {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
+                                             [("Other","other")]
+    ]
+
 yesNo_options = [
     {'label': 'Yes', 'value': 'Yes'},
     {'label': 'No', 'value': 'No'}
@@ -140,7 +148,7 @@ myColors = {
     'fontColor':'rgb(60, 60, 60)',
     'boxesColor': "#F9F9F9",
     'backgroundColor': '#f2f2f2',
-    'pieChart': ['#E8A09A','#9BBFE0'],
+    'pieChart': ['#E8A09A','#9BBFE0','#cfabd3'],
     'plotGrid':'#e6e6e6',
     'map':['#78E7A2','#86D987','#93CB70','#9EBC5C',
            '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
@@ -260,6 +268,7 @@ PSF_default = 1
 
 app.layout = create_appLayout(
     platformType_options=platformType_options,
+    coreModels_options=coreModels_options,
     yesNo_options=yesNo_options,
     PUE_default=PUE_default,
     usage_default=usageFactor_default,
@@ -367,27 +376,87 @@ def set_coreType_options(selected_provider, selected_platform):
     # else:
     #     availableOptions = list(set(hardware_df.loc[hardware_df.provider == selected_provider, 'type']))
 
-    listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)]
+    listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
 
     return listOptions
 
 @app.callback(
-    Output('coreModel_dropdown', 'value'),
+    [
+        Output('CPU_div', 'style'),
+        Output('title_CPU', 'style'),
+        Output('usageCPU_div', 'style'),
+        Output('GPU_div', 'style'),
+        Output('title_GPU', 'style'),
+        Output('usageGPU_div', 'style'),
+    ],
     [
         Input('coreType_dropdown', 'value')
     ]
 )
-def set_defaultCoreModel(selected_coreType):
+def show_CPUGPUdiv(selected_coreType):
     '''
-    Default value for the core model, based on core type
+    Show or hide the CPU/GPU input blocks (and the titles) based on the selected core type
     '''
-    # TODO: Adjust the default value to the platform/provider
+    show = {'display': 'block'}
+    showFlex = {'display': 'flex'}
+    hide = {'display': 'none'}
     if selected_coreType == 'CPU':
-        defaultValue = 'Xeon E5-2683 v4'
+        return show, hide, showFlex, hide, hide, hide
+    elif selected_coreType == 'GPU':
+        return hide, hide, hide, show, hide, showFlex
     else:
-        defaultValue = 'Tesla V100'
+        return show, show, showFlex, show, show, showFlex
 
-    return defaultValue
+@app.callback(
+    Output('tdpCPU_div', 'style'),
+    [
+        Input('CPUmodel_dropdown', 'value'),
+    ]
+)
+def display_TDP4CPU(selected_coreModel):
+    '''
+    Shows or hide the CPU TDP input box
+    '''
+    if selected_coreModel == "other":
+        return {'display': 'flex'}
+    else:
+        return {'display': 'none'}
+
+@app.callback(
+    Output('tdpGPU_div', 'style'),
+    [
+        Input('GPUmodel_dropdown', 'value'),
+    ]
+)
+def display_TDP4GPU(selected_coreModel):
+    '''
+    Shows or hide the GPU TDP input box
+    '''
+    if selected_coreModel == "other":
+        return {'display': 'flex'}
+    else:
+        return {'display': 'none'}
+
+
+#-----
+
+# @app.callback(
+#     Output('coreModel_dropdown', 'value'),
+#     [
+#         Input('coreType_dropdown', 'value')
+#     ]
+# )
+# def set_defaultCoreModel(selected_coreType):
+#     '''
+#     Default value for the core model, based on core type
+#     '''
+#     # TODO: Adjust the default value to the platform/provider
+#     if selected_coreType == 'CPU':
+#         defaultValue = 'Xeon E5-2683 v4'
+#     else:
+#         defaultValue = 'Tesla V100'
+#
+#     return defaultValue
 
 # @app.callback(
 #     Output('coreModel_dropdown', 'value'),
@@ -405,56 +474,56 @@ def set_defaultCoreModel(selected_coreType):
 #         return sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
 #                 hardware_df.provider == selected_provider), 'model'].tolist())[0]
 
-@app.callback(
-    Output('coreModel_dropdown', 'options'),
-    [
-        Input('coreType_dropdown', 'value'),
-        Input('provider_dropdown','value'),
-        Input('platformType_dropdown', 'value')
-    ]
-)
-def set_coreModels(selected_coreType,selected_provider,selected_platform):
-    '''
-    Set the list of options for core model, based on core type and provider
-    '''
-    # TODO: Add custom hardware for cloud providers (here too)
-    availableOptions = sorted(list(cores_dict[selected_coreType].keys()))
-    # else:
-    #     availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
-    #             hardware_df.provider == selected_provider), 'model'].tolist())
+# @app.callback(
+#     Output('coreModel_dropdown', 'options'),
+#     [
+#         Input('coreType_dropdown', 'value'),
+#         Input('provider_dropdown','value'),
+#         Input('platformType_dropdown', 'value')
+#     ]
+# )
+# def set_coreModels(selected_coreType,selected_provider,selected_platform):
+#     '''
+#     Set the list of options for core model, based on core type and provider
+#     '''
+#     # TODO: Add custom hardware for cloud providers (here too)
+#     availableOptions = sorted(list(cores_dict[selected_coreType].keys()))
+#     # else:
+#     #     availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
+#     #             hardware_df.provider == selected_provider), 'model'].tolist())
+#
+#     listOptions = [
+#         {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
+#                                              [("Other","other")]
+#     ]
+#
+#     return listOptions
 
-    listOptions = [
-        {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                             [("Other","other")]
-    ]
-
-    return listOptions
-
-@app.callback(
-    [
-        Output('tdp_div', 'style'),
-        Output('tdp_input','value'),
-    ],
-    [
-        Input('coreModel_dropdown', 'value'),
-        Input('coreType_dropdown', 'value')
-    ]
-)
-def display_TDP(selected_coreModel,selected_coreType):
-    '''
-    Shows or hide the TDP input box, and giv it a default value
-    '''
-    if selected_coreModel == "other":
-        outStyle = {'display': 'flex'}
-    else:
-        outStyle = {'display': 'none'}
-
-    if selected_coreType == 'GPU':
-        defaultValue = 200
-    else:
-        defaultValue = 12
-
-    return outStyle, defaultValue
+# @app.callback(
+#     [
+#         Output('tdp_div', 'style'),
+#         Output('tdp_input','value'),
+#     ],
+#     [
+#         Input('coreModel_dropdown', 'value'),
+#         Input('coreType_dropdown', 'value')
+#     ]
+# )
+# def display_TDP(selected_coreModel,selected_coreType):
+#     '''
+#     Shows or hide the TDP input box, and giv it a default value
+#     '''
+#     if selected_coreModel == "other":
+#         outStyle = {'display': 'flex'}
+#     else:
+#         outStyle = {'display': 'none'}
+#
+#     if selected_coreType == 'GPU':
+#         defaultValue = 200
+#     else:
+#         defaultValue = 12
+#
+#     return outStyle, defaultValue
 
 
 ### LOCATION AND SERVER ###
@@ -683,14 +752,25 @@ def set_regions_options(selected_continent, selected_country):
 ### Usage factor ###
 
 @app.callback(
-    Output('usage_input','style'),
-    [Input('usage_radio', 'value')]
+    Output('usageCPU_input','style'),
+    [Input('usageCPU_radio', 'value')]
 )
 def display_usage_input(answer_usage):
     '''
     Show or hide the usage factor input box, based on Yes/No input
-    :param answer_usage:
-    :return:
+    '''
+    if answer_usage == 'No':
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
+
+@app.callback(
+    Output('usageGPU_input','style'),
+    [Input('usageGPU_radio', 'value')]
+)
+def display_usage_input(answer_usage):
+    '''
+    Show or hide the usage factor input box, based on Yes/No input
     '''
     if answer_usage == 'No':
         return {'display': 'none'}
@@ -756,17 +836,22 @@ def display_PSF_input(answer_PSF):
     Output("aggregate_data", "data"),
     [
         Input("coreType_dropdown", "value"),
-        Input("coreModel_dropdown", "value"),
-        Input("numberCores_input", "value"),
-        Input("tdp_input", "value"),
-        Input('tdp_div', 'style'),
+        Input("numberCPUs_input", "value"),
+        Input("CPUmodel_dropdown", "value"),
+        Input("tdpCPU_div", "style"),
+        Input("tdpCPU_input", "value"),
+        Input("numberGPUs_input", "value"),
+        Input("GPUmodel_dropdown", "value"),
+        Input("tdpGPU_div", "style"),
+        Input("tdpGPU_input", "value"),
         Input("memory_input", "value"),
         Input("runTime_hour_input", "value"),
         Input("runTime_min_input", "value"),
         Input("location_region_dropdown", "value"),
         Input("server_dropdown", "value"),
         Input('location_div', 'style'),
-        Input("usage_input", "value"),
+        Input("usageCPU_input", "value"),
+        Input("usageGPU_input", "value"),
         Input("PUE_input", "value"),
         Input('PUE_input','style'),
         Input("PSF_input", "value"),
@@ -777,8 +862,8 @@ def display_PSF_input(answer_PSF):
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, runTime_hours, runTime_min, location, server,
-                           locationStyle, usage, PUE, PUEstyle, PSF, selected_platform, selected_provider, existing_state):
+def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU, memory, runTime_hours, runTime_min, location, server,
+                           locationStyle, usageCPU, usageGPU, PUE, PUEstyle, PSF, selected_platform, selected_provider, existing_state):
     output = dict()
 
     test_runTime = 0
@@ -805,33 +890,45 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
     else:
         locationVar = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'location'].values[0]
 
-    if (coreType is None)|(coreModel is None)|(n_cores is None)|(tdp is None)|(memory is None)|\
-            (test_runTime == 2)|(locationVar is None)|(usage is None)|(PUE is None)|(PSF is None)|\
+    notReady = False
+
+    if coreType is None:
+        notReady = True
+    elif (coreType in ['CPU','Both'])&((n_CPUcores is None)|(CPUmodel is None)):
+        notReady = True
+    elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
+        notReady = True
+
+    if (tdpCPU is None)|(tdpGPU is None)|(memory is None)|\
+            (test_runTime == 2)|(locationVar is None)|(usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None)|\
             (selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
         notReady = True
-    # elif:
 
-    else:
-        notReady = False
 
     if notReady:
         print('Not enough information to display the results')
 
         output['coreType'] = None
-        output['coreModel'] = None
-        output['n_cores'] = None
-        output['corePower'] = None
+        output['CPUmodel'] = None
+        output['n_CPUcores'] = None
+        output['GPUmodel'] = None
+        output['n_GPUs'] = None
+        output['CPUpower'] = None
+        output['GPUpower'] = None
         output['memory'] = None
         output['runTime_hours'] = None
         output['runTime_min'] = None
         output['runTime'] = None
         output['location'] = None
         output['carbonIntensity'] = None
-        output['usage'] = None
+        output['usageCPU'] = None
+        output['usageGPU'] = None
         output['PUE'] = None
         output['PSF'] = None
         output['selected_platform'] = None
         output['carbonEmissions'] = 0
+        output['CE_CPU'] = 0
+        output['CE_GPU'] = 0
         output['CE_core'] = 0
         output['CE_memory'] = 0
         output['n_treeMonths'] = 0
@@ -847,7 +944,6 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
         return output
 
     else:
-        print(locationVar)
         carbonIntensity = CI_df.loc[CI_df.location == locationVar, "carbonIntensity"].values[0]
 
         if PUEstyle['display'] != 'none':
@@ -879,34 +975,61 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
                     else:
                         PUE_used = foo[0]
 
-        if tdpStyle['display'] != 'none':
-            # we asked the question about TDP
-            corePower = tdp
-        else:
-            if coreModel == 'other':
-                corePower = tdp
+        if coreType in ['CPU','Both']:
+            if tdpCPUstyle['display'] != 'none':
+                # we asked the question about TDP
+                CPUpower = tdp
             else:
-                corePower = cores_dict[coreType][coreModel]
+                if CPUmodel == 'other':
+                    CPUpower = tdp
+                else:
+                    CPUpower = cores_dict['CPU'][CPUmodel]
+
+            powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU
+        else:
+            powerNeeded_CPU = 0
+            CPUpower = 0
+
+        if coreType in ['GPU','Both']:
+            if tdpGPUstyle['display'] != 'none':
+                GPUpower = tdp
+            else:
+                if GPUmodel == 'other':
+                    GPUpower = tdp
+                else:
+                    GPUpower = cores_dict['GPU'][GPUmodel]
+
+            powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU
+        else:
+            powerNeeded_GPU = 0
+            GPUpower = 0
 
         # Power needed, in Watt
-        powerNeeded_core = PUE_used * (n_cores * corePower) * usage
+        powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
         powerNeeded_memory = PUE_used * (memory * refValues_dict['memoryPower'])
         powerNeeded = powerNeeded_core + powerNeeded_memory
 
         # Energy needed, in kWh (so dividing by 1000 to convert to kW)
+        energyNeeded_CPU = runTime * powerNeeded_CPU * PSF / 1000
+        energyNeeded_GPU = runTime * powerNeeded_GPU * PSF / 1000
         energyNeeded_core = runTime * powerNeeded_core * PSF / 1000
         eneregyNeeded_memory = runTime * powerNeeded_memory * PSF / 1000
         energyNeeded = runTime * powerNeeded * PSF / 1000
 
         # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
+        CE_CPU = energyNeeded_CPU * carbonIntensity
+        CE_GPU = energyNeeded_GPU * carbonIntensity
         CE_core = energyNeeded_core * carbonIntensity
         CE_memory  = eneregyNeeded_memory * carbonIntensity
         carbonEmissions = energyNeeded * carbonIntensity
 
         output['coreType'] = coreType
-        output['coreModel'] = coreModel
-        output['n_cores'] = n_cores
-        output['corePower'] = corePower
+        output['CPUmodel'] = CPUmodel
+        output['n_CPUcores'] = n_CPUcores
+        output['CPUpower'] = CPUpower
+        output['GPUmodel'] = GPUmodel
+        output['n_GPUs'] = n_GPUs
+        output['GPUpower'] = GPUpower
         output['memory'] = memory
         output['runTime_hours'] = runTime_hours
         output['runTime_min'] = runTime_min
@@ -917,6 +1040,8 @@ def aggregate_input_values(coreType, coreModel, n_cores, tdp, tdpStyle, memory, 
         output['PSF'] = PSF
         output['selected_platform'] = selected_platform
         output['carbonEmissions'] = carbonEmissions
+        output['CE_CPU'] = CE_CPU
+        output['CE_GPU'] = CE_GPU
         output['CE_core'] = CE_core
         output['CE_memory'] = CE_memory
         output['energy_needed'] = energyNeeded
@@ -1000,16 +1125,28 @@ def update_text(data):
 )
 def create_pie_graph(aggData):
     layout_pie = copy.deepcopy(layout_plots)
+    layout_pie['margin'] = dict(l=0, r=0, b=0, t=60)
+    if aggData['coreType'] == 'Both':
+        layout_pie['height'] = 400
+    else:
+        layout_pie['height'] = 400
 
-    layout_pie['margin'] = dict(l=0, r=0, b=0, t=20)
+    labels = ['Memory']
+    values = [aggData['CE_memory']]
 
-    layout_pie['height'] = 300
+    if aggData['coreType'] in ['CPU', 'Both']:
+        labels.append('CPU')
+        values.append(aggData['CE_CPU'])
+
+    if aggData['coreType'] in ['GPU', 'Both']:
+        labels.append('GPU')
+        values.append(aggData['CE_GPU'])
 
     fig = go.Figure(
         data=[
             go.Pie(
-                labels=['Computing <br> cores', 'Memory'],
-                values=[aggData['CE_core'], aggData['CE_memory']],
+                labels=labels,
+                values=values,
                 hole=0.4,
                 insidetextorientation='horizontal',
                 showlegend=False,
@@ -1142,24 +1279,26 @@ def create_bar_chart_cores(aggData):
         return go.Figure()
 
     else:
-
-        if aggData['coreType'] == 'GPU':
+        if aggData['coreType'] in ['GPU','Both']:
             layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
 
             list_cores = [
-                'Jetson AGX Xavier',
-                'Tesla T4',
-                'GTX 1080',
-                'TPU3',
-                'RTX 2080 Ti',
-                'GTX TITAN X',
-                'Tesla P100 PCIe',
-                'Tesla V100'
+                'NVIDIA Jetson AGX Xavier',
+                'NVIDIA Tesla T4',
+                'NVIDIA GTX 1080',
+                'TPU v3',
+                'NVIDIA RTX 2080 Ti',
+                'NVIDIA GTX TITAN X',
+                'NVIDIA Tesla P100 PCIe',
+                'NVIDIA Tesla V100'
             ]
+
+            coreModel = aggData['GPUmodel']
 
         else:
             layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
 
+            # TODO clean CPU core names
             list_cores = [
                 'Ryzen 5 3500U',
                 'Xeon Platinum 9282',
@@ -1175,33 +1314,33 @@ def create_bar_chart_cores(aggData):
                 'Xeon X3430'
             ]
 
-        if aggData['coreModel'] not in list_cores:
-            list_cores.append(aggData['coreModel'])
+            coreModel = aggData['CPUmodel']
+
+        if coreModel not in list_cores:
+            list_cores.append(coreModel)
 
         power_list = []
 
-        # calculate carbon emissions for each location
-        if aggData['coreType'] == 'GPU':
+        # calculate carbon emissions for each core
+        if aggData['coreType'] in ['GPU','Both']:
             for gpu in list_cores:
                 if gpu == 'other':
-                    power_list.append(aggData['corePower'])
+                    power_list.append(aggData['GPUpower'])
                 else:
                     power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
         else:
             for cpu in list_cores:
                 if cpu == 'other':
-                    power_list.append(aggData['corePower'])
+                    power_list.append(aggData['CPUpower'])
                 else:
                     power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
 
         power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
-
         power_df.sort_values(by=['corePower'], inplace=True)
-
         power_df.set_index('coreModel', inplace=True)
 
         lines_thickness = [0] * len(power_df)
-        lines_thickness[power_df.index.get_loc(aggData['coreModel'])] = 4
+        lines_thickness[power_df.index.get_loc(coreModel)] = 4
 
         fig = go.Figure(
             data = [
@@ -1239,14 +1378,14 @@ def create_bar_chart_cores(aggData):
 )
 def fillin_report_text(aggData):
 
-    if aggData['n_cores'] is None:
+    if (aggData['n_CPUcores'] is None)&(aggData['n_GPUs'] is None):
         return('')
 
     else:
 
+        # Test runtime
         minutes = aggData['runTime_min']
         hours = aggData['runTime_hours']
-
         if (minutes > 0)&(hours>0):
             textRuntime = "{}h and {}min".format(hours, minutes)
         elif (hours > 0):
@@ -1254,12 +1393,22 @@ def fillin_report_text(aggData):
         else:
             textRuntime = "{}min".format(minutes)
 
-
-        if aggData['n_cores'] > 1:
-            suffixProcessor = 's'
-
-        else:
-            suffixProcessor = ''
+        # text cores
+        textCores = ""
+        if aggData['coreType'] in ['GPU','Both']:
+            if aggData['n_GPUs'] > 1:
+                suffixProcessor = 's'
+            else:
+                suffixProcessor = ''
+            textCores += f"{aggData['n_GPUs']} GPU{suffixProcessor} {aggData['GPUmodel']}"
+        if aggData['coreType'] == 'Both':
+            textCores += " and "
+        if aggData['coreType'] in ['CPU','Both']:
+            if aggData['n_CPUcores'] > 1:
+                suffixProcessor = 's'
+            else:
+                suffixProcessor = ''
+            textCores += f"{aggData['n_CPUcores']} CPU{suffixProcessor} {aggData['CPUmodel']}"
 
         country = CI_df.loc[CI_df.location == aggData['location'], 'countryName'].values[0]
         region = CI_df.loc[CI_df.location == aggData['location'], 'regionName'].values[0]
@@ -1279,19 +1428,12 @@ def fillin_report_text(aggData):
         else:
             textPSF = ''
 
-        myText = '''
-        > This algorithm runs in {} on {} {}{} {},
-        > which draws {:,.2f} kWh. 
-        > Based in {}{}{},{} this produces {:,.0f} g of CO2e, which is equivalent to {:.2f} tree-months
+        myText = f'''
+        > This algorithm runs in {textRuntime} on {textCores},
+        > which draws {aggData['energy_needed']:,.2f} kWh. 
+        > Based in {prefixCountry}{country}{textRegion},{textPSF} this produces {aggData['carbonEmissions']:,.0f} g of CO2e, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
         (calculated using green-algorithms.org v2.0 \[1\]).
-        '''.format(
-            textRuntime,
-            aggData['n_cores'], aggData['coreType'], suffixProcessor, aggData['coreModel'],
-            aggData['energy_needed'],
-            prefixCountry, country, textRegion,
-            textPSF,
-            aggData['carbonEmissions'], aggData['n_treeMonths']
-        )
+        '''
 
         return myText
 

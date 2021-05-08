@@ -8,6 +8,7 @@ import os
 
 def create_appLayout(
         platformType_options,
+        coreModels_options,
         yesNo_options,
         PUE_default,
         usage_default,
@@ -69,19 +70,171 @@ def create_appLayout(
                         className='form-row short-input'
                     ),
 
-                    ## NUMBER OF CORES
+                    ## TYPE OF CORES
                     html.Div(
                         [
-                            html.Label("Number of cores"),
+                            html.Label("Type of cores"),
 
-                            dcc.Input(
-                                type='number',
-                                id="numberCores_input",
-                                value=12,
-                            ),
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="coreType_dropdown",
+                                        value='CPU',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields"
+                            )
+
+                            # dcc.Input(
+                            #     type='number',
+                            #     value=12,
+                            # ),
                         ],
                         className='form-row short-input'
                     ),
+
+                    ## CPUs
+                    html.Div(
+                        [
+                            html.H3(
+                                "CPUs",
+                                id='title_CPU'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Number of cores"),
+
+                                    dcc.Input(
+                                        type='number',
+                                        id="numberCPUs_input",
+                                        value=12,
+                                    ),
+                                ],
+                                className='form-row short-input'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Model"),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id="CPUmodel_dropdown",
+                                                value='Xeon E5-2683 v4',
+                                                options=coreModels_options['CPU'],
+                                                className='bottom-dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className="box-fields"
+                                    )
+                                ],
+                                className='form-row short-input'
+                            ),
+
+                            # CPU TDP
+                            html.Div(
+                                [
+                                    html.Label(
+                                        'What is the Thermal Design Power (TDP) value per core of your CPU? '
+                                        'This can easily be found online (usually 10-15W per core)'),
+
+                                    dcc.Input(
+                                        type='number',
+                                        value=12,
+                                        id="tdpCPU_input",
+                                    )
+                                ],
+                                className='form-row',
+                                id='tdpCPU_div',
+                                style=dict(display='none')
+                            ),
+                        ],
+                        className="group-of-rows",
+                        id="CPU_div"
+                    ),
+
+                    ## GPUs
+                    html.Div(
+                        [
+                            html.H3(
+                                "GPUs",
+                                id='title_GPU'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Number of GPUs"),
+
+                                    dcc.Input(
+                                        type='number',
+                                        id="numberGPUs_input",
+                                        value=1,
+                                    ),
+                                ],
+                                className='form-row short-input'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("Model"),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id="GPUmodel_dropdown",
+                                                value='NVIDIA Tesla V100',
+                                                options=coreModels_options['GPU'],
+                                                className='bottom-dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className="box-fields"
+                                    )
+                                ],
+                                className='form-row short-input'
+                            ),
+
+                            # GPU TDP
+                            html.Div(
+                                [
+                                    html.Label(
+                                        'What is the Thermal Design Power (TDP) value per core of your GPU? '
+                                        'This can easily be found online (usually around 200W)'),
+
+                                    dcc.Input(
+                                        type='number',
+                                        id="tdpGPU_input",
+                                        value=200,
+                                    )
+                                ],
+                                className='form-row',
+                                id='tdpGPU_div',
+                                style=dict(display='none')
+                            ),
+                        ],
+                        className="group-of-rows",
+                        id="GPU_div"
+                    ),
+
+
+
+                    ## NUMBER OF CORES
+                    # html.Div(
+                    #     [
+                    #         html.Label("Number of cores"),
+                    #
+                    #         dcc.Input(
+                    #             type='number',
+                    #             id="numberCores_input",
+                    #             value=12,
+                    #         ),
+                    #     ],
+                    #     className='form-row short-input'
+                    # ),
 
                     ## MEMORY
                     html.Div(
@@ -129,46 +282,46 @@ def create_appLayout(
                         className='form-row'
                     ),
 
-                    ## COMPUTING CORES
-                    html.Div(
-                        [
-                            html.Label("What type of core are you using"),
+                    # ## COMPUTING CORES
+                    # html.Div(
+                    #     [
+                    #         html.Label("What type of core are you using"),
+                    #
+                    #         html.Div(
+                    #             [
+                    #                 # dcc.Dropdown(
+                    #                 #     id="coreType_dropdown",
+                    #                 #     value='CPU',
+                    #                 #     clearable=False,
+                    #                 # ),
+                    #
+                    #                 dcc.Dropdown(
+                    #                     id="coreModel_dropdown",
+                    #                     className='bottom-dropdown',
+                    #                     clearable=False,
+                    #                 ),
+                    #             ],
+                    #             className="box-fields"
+                    #         )
+                    #     ],
+                    #     className='form-row'
+                    # ),
 
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id="coreType_dropdown",
-                                        value='CPU',
-                                        clearable=False,
-                                    ),
-
-                                    dcc.Dropdown(
-                                        id="coreModel_dropdown",
-                                        className='bottom-dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className="box-fields"
-                            )
-                        ],
-                        className='form-row'
-                    ),
-
-                    ## TDP
-                    html.Div(
-                        [
-                            html.Label('What is the Thermal Design Power (TDP) value per core of your processor? '
-                                       'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)'),
-
-                            dcc.Input(
-                                type='number',
-                                id="tdp_input",
-                            )
-                        ],
-                        className='form-row',
-                        id='tdp_div',
-                        style=dict(display='none')
-                    ),
+                    # ## TDP
+                    # html.Div(
+                    #     [
+                    #         html.Label('What is the Thermal Design Power (TDP) value per core of your processor? '
+                    #                    'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)'),
+                    #
+                    #         dcc.Input(
+                    #             type='number',
+                    #             id="tdp_input",
+                    #         )
+                    #     ],
+                    #     className='form-row',
+                    #     id='tdp_div',
+                    #     style=dict(display='none')
+                    # ),
 
                     ## SERVER (for cloud computing)
                     html.Div(
@@ -242,13 +395,13 @@ def create_appLayout(
                         style={'display': 'flex'}
                     ),
 
-                    ## Core usage
+                    ## Core usage (CPU and GPU)
                     html.Div(
                         [
-                            html.Label("Do you know the real usage factor of your processing core?"),
+                            html.Label("Do you know the real usage factor of your CPU?"),
 
                             dcc.RadioItems(
-                                id='usage_radio',
+                                id='usageCPU_radio',
                                 options=yesNo_options,
                                 value='No',
                                 className="radio-input"
@@ -260,12 +413,39 @@ def create_appLayout(
                                 max=1,
                                 # step=0.1,
                                 type='number',
-                                id="usage_input",
+                                id="usageCPU_input",
                                 value=usage_default,
                                 style=dict(display='none'),
                             ),
                         ],
                         className='form-row radio-and-field',
+                        id='usageCPU_div'
+                    ),
+
+                    html.Div(
+                        [
+                            html.Label("Do you know the real usage factor of your GPU?"),
+
+                            dcc.RadioItems(
+                                id='usageGPU_radio',
+                                options=yesNo_options,
+                                value='No',
+                                className="radio-input"
+                                # labelStyle={"display": "inline-block"},
+                            ),
+
+                            dcc.Input(
+                                min=0,
+                                max=1,
+                                # step=0.1,
+                                type='number',
+                                id="usageGPU_input",
+                                value=usage_default,
+                                style=dict(display='none'),
+                            ),
+                        ],
+                        className='form-row radio-and-field',
+                        id='usageGPU_div'
                     ),
 
                     ## PUE

@@ -36,6 +36,13 @@ h2 {
     margin-bottom: 11px;
 }
 
+h3 {
+    font-size: 20px;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: rgb(100, 100, 100);
+}
+
 p:not(:last-of-type) {
     margin-bottom: 1rem;
 }

@@ -1,4 +1,4 @@
-/* Small desktop Styles */
+/* Large desktop Styles */
 @media only screen and (min-width: 1281px) {
 
     body {
@@ -39,7 +39,8 @@
         margin-left:0;
     }
 
-    .short-input > input[type='number'] {
+    .short-input > input[type='number'],
+    .short-input .box-fields {
         width: 50%;
     }
 
