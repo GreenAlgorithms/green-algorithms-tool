@@ -47,7 +47,7 @@ def create_appLayout(
                     ## RUN TIME
                     html.Div(
                         [
-                            html.Label("Runtime (hours and minutes)"),
+                            html.Label("Runtime (HH:MM)"),
 
                             html.Div(
                                 [
@@ -94,7 +94,8 @@ def create_appLayout(
                                 value=64,
                             ),
                         ],
-                        className='form-row short-input'
+                        className='form-row short-input',
+                        id='div_memory'
                     ),
 
                     ## SELECT COMPUTING PLATFORM
