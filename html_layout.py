@@ -10,17 +10,16 @@ def create_appLayout(
         platformType_options,
         coreModels_options,
         yesNo_options,
-        PUE_default,
-        usage_default,
-        PSF_default,
         image_dir,
         mapCI,
-        location_continentsList
+        location_continentsList,
+        default_values,
 ):
 
     appLayout = html.Div(
         [
             dcc.Store(id="aggregate_data"),
+            dcc.Location(id='url', refresh=False),
 
             #### HEADER ####
 
@@ -55,13 +54,13 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="runTime_hour_input",
-                                        value=12,
+                                        value=default_values['runTime_hour'],
                                     ),
 
                                     dcc.Input(
                                         type='number',
                                         id="runTime_min_input",
-                                        value=0,
+                                        value=default_values['runTime_min'],
                                     )
                                 ],
                                 className="box-runtime box-fields"
@@ -86,7 +85,7 @@ def create_appLayout(
                                 [
                                     dcc.Dropdown(
                                         id="coreType_dropdown",
-                                        value='CPU',
+                                        value=default_values['coreType'],
                                         clearable=False,
                                     ),
                                 ],
@@ -116,7 +115,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="numberCPUs_input",
-                                        value=12,
+                                        value=default_values['numberCPUs'],
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -130,7 +129,7 @@ def create_appLayout(
                                         [
                                             dcc.Dropdown(
                                                 id="CPUmodel_dropdown",
-                                                value='Xeon E5-2683 v4',
+                                                value=default_values['CPUmodel'],
                                                 options=coreModels_options['CPU'],
                                                 className='bottom-dropdown',
                                                 clearable=False,
@@ -151,7 +150,7 @@ def create_appLayout(
 
                                     dcc.Input(
                                         type='number',
-                                        value=12,
+                                        value=default_values['tdpCPU'],
                                         id="tdpCPU_input",
                                     )
                                 ],
@@ -179,7 +178,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="numberGPUs_input",
-                                        value=1,
+                                        value=default_values['numberGPUs'],
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -193,7 +192,7 @@ def create_appLayout(
                                         [
                                             dcc.Dropdown(
                                                 id="GPUmodel_dropdown",
-                                                value='NVIDIA Tesla V100',
+                                                value=default_values['GPUmodel'],
                                                 options=coreModels_options['GPU'],
                                                 className='bottom-dropdown',
                                                 clearable=False,
@@ -215,7 +214,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="tdpGPU_input",
-                                        value=200,
+                                        value=default_values['tdpGPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -242,7 +241,7 @@ def create_appLayout(
                             dcc.Input(
                                 type='number',
                                 id="memory_input",
-                                value=64,
+                                value=default_values['memory'],
                             ),
                         ],
                         className='form-row short-input',
@@ -266,7 +265,7 @@ def create_appLayout(
                                     dcc.Dropdown(
                                         id="platformType_dropdown",
                                         options=platformType_options,
-                                        value='localServer',
+                                        value=default_values['platformType'],
                                         clearable=False,
                                     ),
 
@@ -274,6 +273,7 @@ def create_appLayout(
                                         [
                                             dcc.Dropdown(
                                                 id="provider_dropdown",
+                                                value=default_values['provider'],
                                                 clearable=False,
                                                 className='bottom-dropdown'
                                             )
@@ -286,47 +286,6 @@ def create_appLayout(
                         ],
                         className='form-row'
                     ),
-
-                    # ## COMPUTING CORES
-                    # html.Div(
-                    #     [
-                    #         html.Label("What type of core are you using"),
-                    #
-                    #         html.Div(
-                    #             [
-                    #                 # dcc.Dropdown(
-                    #                 #     id="coreType_dropdown",
-                    #                 #     value='CPU',
-                    #                 #     clearable=False,
-                    #                 # ),
-                    #
-                    #                 dcc.Dropdown(
-                    #                     id="coreModel_dropdown",
-                    #                     className='bottom-dropdown',
-                    #                     clearable=False,
-                    #                 ),
-                    #             ],
-                    #             className="box-fields"
-                    #         )
-                    #     ],
-                    #     className='form-row'
-                    # ),
-
-                    # ## TDP
-                    # html.Div(
-                    #     [
-                    #         html.Label('What is the Thermal Design Power (TDP) value per core of your processor? '
-                    #                    'This can easily be found online (usually 10-15W for a CPU, 200W for a GPU)'),
-                    #
-                    #         dcc.Input(
-                    #             type='number',
-                    #             id="tdp_input",
-                    #         )
-                    #     ],
-                    #     className='form-row',
-                    #     id='tdp_div',
-                    #     style=dict(display='none')
-                    # ),
 
                     ## SERVER (for cloud computing)
                     html.Div(
@@ -364,7 +323,6 @@ def create_appLayout(
                                     dcc.Dropdown(
                                         id="location_continent_dropdown",
                                         options=location_continentsList,
-                                        value='Europe',
                                         clearable=False,
                                     ),
 
@@ -372,7 +330,6 @@ def create_appLayout(
                                         [
                                             dcc.Dropdown(
                                                 id="location_country_dropdown",
-                                                value="United Kingdom",
                                                 className='bottom-dropdown',
                                                 clearable=False,
                                             ),
@@ -419,7 +376,8 @@ def create_appLayout(
                                 # step=0.1,
                                 type='number',
                                 id="usageCPU_input",
-                                value=usage_default,
+                                # TODO remove all default_values here
+                                value=default_values['usageCPU'],
                                 style=dict(display='none'),
                             ),
                         ],
@@ -445,7 +403,7 @@ def create_appLayout(
                                 # step=0.1,
                                 type='number',
                                 id="usageGPU_input",
-                                value=usage_default,
+                                value=default_values['usageGPU'],
                                 style=dict(display='none'),
                             ),
                         ],
@@ -462,7 +420,7 @@ def create_appLayout(
                             dcc.RadioItems(
                                 id='pue_radio',
                                 options=yesNo_options,
-                                value='No',
+                                value=default_values['PUEradio'],
                                 className="radio-input"
                                 # labelStyle={"display": "inline-block"},
                             ),
@@ -471,7 +429,7 @@ def create_appLayout(
                                 min=1,
                                 type='number',
                                 id="PUE_input",
-                                value=PUE_default,
+                                value=default_values['PUE'],
                                 style=dict(display='none'),
                             ),
                         ],
@@ -488,7 +446,7 @@ def create_appLayout(
                             dcc.RadioItems(
                                 id='PSF_radio',
                                 options=yesNo_options,
-                                value='No',
+                                value=default_values['PSFradio'],
                                 className="radio-input"
                             ),
 
@@ -496,7 +454,7 @@ def create_appLayout(
                                 min=1,
                                 type='number',
                                 id="PSF_input",
-                                value=PSF_default,
+                                value=default_values['PSFradio'],
                                 style=dict(display='none'),
                             ),
                         ],

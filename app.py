@@ -6,12 +6,17 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
+from dash.exceptions import PreventUpdate
 
 import flask
 
 import pandas as pd
 import os
 import copy
+import numpy as np
+
+from collections import OrderedDict
+from urllib import parse
 
 import pycountry_convert as pc
 
@@ -21,6 +26,7 @@ from html_layout import create_appLayout
 # LOAD DATA #
 #############
 
+# TODO upadte README
 #TODO add some "any" options where needed
 
 data_dir = os.path.join(os.path.abspath(''),'data')
@@ -116,9 +122,9 @@ refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
 refValues_df.drop(['source'], axis=1, inplace=True)
 refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
 
-###########
-# OPTIONS #
-###########
+########################
+# OPTIONS FOR DROPDOWN #
+########################
 
 platformType_options = [
     {'label': k,
@@ -141,9 +147,44 @@ yesNo_options = [
     {'label': 'No', 'value': 'No'}
 ]
 
-continentsList = [{'label': k, 'value': k} for k in sorted(list(set(CI_df.continentName)))]
+continentsList = list(set(CI_df.continentName))
+continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
 
-## COLOURS
+def availableLocations_continent(selected_provider):
+    availableLocations = datacenters_df.loc[datacenters_df.provider == selected_provider, 'location'].to_list()
+    availableLocations = list(set(availableLocations))
+
+    availableOptions = list(set(CI_df.loc[CI_df.location.isin(availableLocations), 'continentName']))
+
+    return availableOptions
+
+def availableOptions_servers(selected_provider,selected_continent):
+    locationsINcontinent = CI_df.loc[CI_df.continentName == selected_continent, "location"].values
+
+    availableOptions = datacenters_df.loc[
+        (datacenters_df.provider == selected_provider) &
+        (datacenters_df.location.isin(locationsINcontinent))
+        ]
+
+    availableOptions = availableOptions.sort_values(by=['Name'])
+
+    return availableOptions
+
+def availableOptions_country(selected_continent):
+    availableOptions = list(set(CI_df.loc[(CI_df.continentName == selected_continent), 'countryName']))
+    availableOptions = sorted(availableOptions)
+    return availableOptions
+
+def availableOptions_region(selected_continent,selected_country):
+    availableOptions = CI_df.loc[(CI_df.continentName == selected_continent) &
+                                 (CI_df.countryName == selected_country)]
+    availableOptions = availableOptions.sort_values(by=['regionName']) # TODO: move "Any" to the first or last row
+    return availableOptions
+
+####################
+# GRAPHIC SETTINGS #
+####################
+
 myColors = {
     'fontColor':'rgb(60, 60, 60)',
     'boxesColor': "#F9F9F9",
@@ -238,6 +279,31 @@ mapCI = go.Figure(
 
 images_dir = os.path.join(os.path.abspath(''),'images')
 
+##################
+# DEFAULT VALUES #
+##################
+
+default_values = dict(
+    runTime_hour=12,
+    runTime_min=0,
+    coreType='CPU',
+    numberCPUs=12,
+    CPUmodel='Xeon E5-2683 v4',
+    tdpCPU=12,
+    numberGPUs=1,
+    GPUmodel='NVIDIA Tesla V100',
+    tdpGPU=200,
+    memory=64,
+    platformType='localServer',
+    provider='gcp',
+    usageCPU=1,
+    usageGPU=1,
+    PUEradio='No',
+    PUE=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
+    PSFradio='No',
+    PSF=1,
+)
+
 
 ##############
 # CREATE APP #
@@ -249,6 +315,8 @@ external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
          rel="stylesheet")
 ]
+
+print(f'Dash version: {dcc.__version__}')
 
 app = dash.Dash(
     __name__,
@@ -262,28 +330,145 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
-usageFactor_default = 1
-PUE_default = pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0]
-PSF_default = 1
-
 app.layout = create_appLayout(
     platformType_options=platformType_options,
     coreModels_options=coreModels_options,
     yesNo_options=yesNo_options,
-    PUE_default=PUE_default,
-    usage_default=usageFactor_default,
-    PSF_default=PSF_default,
     image_dir=image_dir,
     mapCI=mapCI,
-    location_continentsList=continentsList,
+    location_continentsList=continentsDict,
+    default_values=default_values,
 )
 
+##################
+# HELP FUNCTIONS #
+##################
 
-##############
+def unlist(x):
+    if isinstance(x, list):
+        assert len(x) == 1
+        return x[0]
+    else:
+        return x
+
+def validateInput(input_dict):
+    '''
+    Validate the input, either from a url or others
+    :param input_dict:
+    :return:
+    '''
+    new_dict = dict()
+    # print(providersNames_df.loc[providersNames_df.platformType == url_qs['platformType']].provider)
+    for key, value in input_dict.items():
+        new_value = unlist(value)
+
+        try:
+            if key in ['runTime_hour','runTime_min','numberCPUs','numberGPUs']:
+                new_value = int(new_value)
+                assert new_value >= 0
+            elif key in ['PSF']:
+                new_value = int(new_value)
+                assert new_value >= 1
+            elif key in ['tdpCPU','tdpGPU','memory']:
+                new_value = float(new_value)
+                assert new_value >= 0
+            elif key in ['usageCPU','usageGPU']:
+                new_value = float(new_value)
+                assert (new_value >= 0)&(new_value <= 1)
+            elif key in ['PUEradio','PSFradio']:
+                assert new_value in ['Yes','No']
+            elif key == 'coreType':
+                assert new_value in ['CPU','GPU','Both']
+            elif key in ['CPUmodel','GPUmodel']:
+                assert new_value in cores_dict[key[:3]].keys()
+            elif key == 'platformType':
+                assert new_value in [x['value'] for x in platformType_options]
+            elif key == 'provider':
+                assert new_value in providersNames_df.loc[providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other']
+            elif key == 'serverContinent':
+                assert new_value in availableLocations_continent(unlist(input_dict['provider'])) + ['other']
+            elif key == 'server':
+                assert new_value in availableOptions_servers(unlist(input_dict['provider']), unlist(input_dict['serverContinent'])).Name.tolist() + ["other"]
+            elif key == 'locationContinent':
+                assert new_value in continentsList
+            elif key == 'locationCountry':
+                assert new_value in availableOptions_country(unlist(input_dict['locationContinent']))
+            elif key == 'locationRegion':
+                assert new_value in availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])).regionName.tolist()
+            elif key == 'PUE':
+                new_value = float(new_value)
+                assert new_value >= 1
+            else:
+                assert False, 'Unknown key'
+
+        except:
+            print(f'Wrong input for {key}: {new_value}')
+            new_value = None
+
+        new_dict[key] = new_value
+
+    return new_dict
+
+def prepURLqs(url_search):
+    if (url_search is not None) & (url_search != ''):
+        url = validateInput(parse.parse_qs(url_search[1:]))
+    else:
+        url = dict()
+    return url
+
+
+#############
 # CALLBACKS #
-##############
+#############
 
-### PLATFORM AND PROVIDER ###
+### URL-BASED QUERY ###
+# If parameters are passed on the URL, these are inputs in the app
+@app.callback(
+    [
+        Output('runTime_hour_input','value'),
+        Output('runTime_min_input','value'),
+        Output('coreType_dropdown','value'),
+        Output('numberCPUs_input','value'),
+        Output('CPUmodel_dropdown', 'value'),
+        Output('tdpCPU_input','value'),
+        Output('numberGPUs_input','value'),
+        Output('GPUmodel_dropdown', 'value'),
+        Output('tdpGPU_input','value'),
+        Output('memory_input','value'),
+        Output('platformType_dropdown','value'),
+        Output('provider_dropdown','value'),
+        Output('usageCPU_input','value'),
+        Output('usageGPU_input','value'),
+        Output('pue_radio','value'),
+        Output('PUE_input','value'),
+        Output('PSF_radio', 'value'),
+        Output('PSF_input', 'value'),
+    ],
+    [
+        Input('url','search')
+    ]
+)
+def fillInFromURL(url_search):
+    '''
+    Only called once, when the page is loaded.
+    :param url_search: Format is "?key=value&key=value&..."
+    '''
+    global default_values
+    if (url_search is not None)&(url_search != ''):
+        url = parse.parse_qs(url_search[1:])
+        default_values.update((k, url[k]) for k in default_values.keys() & url.keys())
+        default_values = validateInput(default_values)
+        print(url)
+        print(tuple(default_values.values()))
+        print('---')
+
+    print(default_values)
+    print('-----')
+    return tuple(default_values.values())
+
+######
+## PLATFORM AND PROVIDER
+################
 
 @app.callback(
     Output('provider_dropdown_div', 'style'),
@@ -318,49 +503,9 @@ def set_providers(selected_platform):
 
     return listOptions
 
-@app.callback(
-    Output('provider_dropdown', 'value'),
-    [Input('platformType_dropdown', 'value')]
-)
-def set_providers(selected_platform):
-    '''
-    Default value for the "providers" dropdown
-    '''
-    if selected_platform in ['cloudComputing']:
-        defaultValue = 'gcp'
-    else:
-        defaultValue = None
-
-    return defaultValue
-
-# @app.callback(
-#     [
-#         Output('provider_dropdown_div', 'style'),
-#         Output('provider_dropdown', 'options'),
-#         Output('provider_dropdown', 'value')
-#     ],
-#     [Input('platformType_dropdown', 'value')]
-# )
-# def set_providers(selected_platform):
-#     if selected_platform in ['cloudComputing']:
-#         # Only Cloud Computing need the providers box
-#         outputStyle = {'display': 'block'}
-#         defaultValue = 'gcp'
-#     else:
-#         outputStyle = {'display': 'none'}
-#         defaultValue = None
-#
-#     availableOptions = providersNames_df.loc[providersNames_df.platformType == selected_platform]
-#
-#     listOptions = [
-#         {'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider)) +
-#                                             [("Other","other")]
-#     ]
-#
-#     return outputStyle, listOptions, defaultValue
-
-
-### COMPUTING CORES ###
+######
+## COMPUTING CORES
+################
 
 @app.callback(
     Output('coreType_dropdown', 'options'),
@@ -437,96 +582,9 @@ def display_TDP4GPU(selected_coreModel):
     else:
         return {'display': 'none'}
 
-
-#-----
-
-# @app.callback(
-#     Output('coreModel_dropdown', 'value'),
-#     [
-#         Input('coreType_dropdown', 'value')
-#     ]
-# )
-# def set_defaultCoreModel(selected_coreType):
-#     '''
-#     Default value for the core model, based on core type
-#     '''
-#     # TODO: Adjust the default value to the platform/provider
-#     if selected_coreType == 'CPU':
-#         defaultValue = 'Xeon E5-2683 v4'
-#     else:
-#         defaultValue = 'Tesla V100'
-#
-#     return defaultValue
-
-# @app.callback(
-#     Output('coreModel_dropdown', 'value'),
-#     [Input('coreType_dropdown', 'value'),
-#      Input('provider_dropdown','value'),
-#      Input('platformType_dropdown', 'value')])
-#
-# def set_coreModels_value(selected_coreType,selected_provider,selected_platform):
-#     if (selected_provider == 'other') | (selected_platform in ['personalComputer', 'cloudComputing', 'localServer']):
-#         if selected_coreType == 'CPU':
-#             return 'Xeon E5-2683 v4'
-#         else:
-#             return 'Tesla V100'
-#     else:
-#         return sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
-#                 hardware_df.provider == selected_provider), 'model'].tolist())[0]
-
-# @app.callback(
-#     Output('coreModel_dropdown', 'options'),
-#     [
-#         Input('coreType_dropdown', 'value'),
-#         Input('provider_dropdown','value'),
-#         Input('platformType_dropdown', 'value')
-#     ]
-# )
-# def set_coreModels(selected_coreType,selected_provider,selected_platform):
-#     '''
-#     Set the list of options for core model, based on core type and provider
-#     '''
-#     # TODO: Add custom hardware for cloud providers (here too)
-#     availableOptions = sorted(list(cores_dict[selected_coreType].keys()))
-#     # else:
-#     #     availableOptions = sorted(hardware_df.loc[(hardware_df.type == selected_coreType)&(
-#     #             hardware_df.provider == selected_provider), 'model'].tolist())
-#
-#     listOptions = [
-#         {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-#                                              [("Other","other")]
-#     ]
-#
-#     return listOptions
-
-# @app.callback(
-#     [
-#         Output('tdp_div', 'style'),
-#         Output('tdp_input','value'),
-#     ],
-#     [
-#         Input('coreModel_dropdown', 'value'),
-#         Input('coreType_dropdown', 'value')
-#     ]
-# )
-# def display_TDP(selected_coreModel,selected_coreType):
-#     '''
-#     Shows or hide the TDP input box, and giv it a default value
-#     '''
-#     if selected_coreModel == "other":
-#         outStyle = {'display': 'flex'}
-#     else:
-#         outStyle = {'display': 'none'}
-#
-#     if selected_coreType == 'GPU':
-#         defaultValue = 200
-#     else:
-#         defaultValue = 12
-#
-#     return outStyle, defaultValue
-
-
-### LOCATION AND SERVER ###
+######
+## LOCATION AND SERVER
+################
 
 @app.callback(
     [
@@ -557,31 +615,31 @@ def display_TDP(selected_platform, selected_provider, selected_server):
 
 ## SERVER (only for Cloud computing for now)
 
-def availableLocations_continent(selected_provider):
-    availableLocations = datacenters_df.loc[datacenters_df.provider == selected_provider, 'location'].to_list()
-    availableLocations = list(set(availableLocations))
-
-    availableOptions = list(set(CI_df.loc[CI_df.location.isin(availableLocations), 'continentName']))
-
-    return availableOptions
-
 @app.callback(
     Output('server_continent_dropdown','value'),
-    [Input('provider_dropdown', 'value')]
+    [
+        Input('provider_dropdown', 'value'),
+        Input('url','search')
+    ]
 )
-def set_serverContinents_options(selected_provider):
+def set_serverContinents_options(selected_provider, url_search):
     '''
     Default value for server's continent, depending on the provider
     '''
     availableOptions = availableLocations_continent(selected_provider)
+    url = prepURLqs(url_search)
 
-    if 'Europe' in availableOptions:
-        defaultValue = 'Europe'
+    if 'serverContinent' in url.keys():
+        # FIXME (or not) this is fine for the init, but it doesn't work for the next input...
+        defaultValue = url['serverContinent']
     else:
-        try:
-            defaultValue = availableOptions[0]
-        except:
-            defaultValue = None
+        if 'Europe' in availableOptions:
+            defaultValue = 'Europe'
+        else:
+            try:
+                defaultValue = availableOptions[0]
+            except:
+                defaultValue = None
 
     return defaultValue
 
@@ -598,18 +656,6 @@ def set_serverContinents_options(selected_provider):
     listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
 
     return listOptions
-
-def availableOptions_servers(selected_provider,selected_continent):
-    locationsINcontinent = CI_df.loc[CI_df.continentName == selected_continent, "location"].values
-
-    availableOptions = datacenters_df.loc[
-        (datacenters_df.provider == selected_provider) &
-        (datacenters_df.location.isin(locationsINcontinent))
-        ]
-
-    availableOptions = availableOptions.sort_values(by=['Name'])
-
-    return availableOptions
 
 @app.callback(
     Output('server_dropdown','style'),
@@ -631,31 +677,37 @@ def set_server_style(selected_continent):
     Output('server_dropdown','value'),
     [
         Input('provider_dropdown', 'value'),
-        Input('server_continent_dropdown', 'value')
+        Input('server_continent_dropdown', 'value'),
+        Input('url','search')
     ]
 )
-def set_server_value(selected_provider,selected_continent):
+def set_server_value(selected_provider,selected_continent, url_search):
     '''
     Default value for servers, based on provider and continent
     '''
-    if selected_continent == 'other':
-        return 'other'
+    url = prepURLqs(url_search)
 
+    if 'server' in url.keys():
+        return url['server']
     else:
-        availableOptions = availableOptions_servers(selected_provider,selected_continent)
+        if selected_continent == 'other':
+            return 'other'
 
-        try:
-            defaultValue = availableOptions.Name.values[0]
-        except:
-            defaultValue = None
+        else:
+            availableOptions = availableOptions_servers(selected_provider,selected_continent)
 
-        return defaultValue
+            try:
+                defaultValue = availableOptions.Name.values[0]
+            except:
+                defaultValue = None
+
+            return defaultValue
 
 @app.callback(
     Output('server_dropdown','options'),
     [
         Input('provider_dropdown', 'value'),
-        Input('server_continent_dropdown', 'value')
+        Input('server_continent_dropdown', 'value'),
     ]
 )
 def set_server_options(selected_provider,selected_continent):
@@ -669,20 +721,43 @@ def set_server_options(selected_provider,selected_continent):
 
     return listOptions
 
+@app.callback(
+    [
+        Output('server_continent_dropdown','disabled'),
+        Output('server_dropdown','disabled'),
+    ],
+    [
+        Input('server_continent_dropdown','value'),
+        Input('server_dropdown','value')
+    ]
+)
+def disable_server_inputs(continent, server):
+    if (continent=='other')|(server=='other'):
+        return True,True
+    else:
+        return False,False
+
 ## LOCATION (only for local server, personal device or "other" cloud server)
+
 @app.callback(
     Output('location_continent_dropdown', 'value'),
     [
         Input('server_continent_dropdown','value'),
-        Input('server_div', 'style')
+        Input('server_div', 'style'),
+        Input('url','search')
     ]
 )
-def set_continent_value(selected_serverContinent, display_server):
-    if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
-        # the server div is shown, so we pull the continent from there
-        return selected_serverContinent
+def set_continent_value(selected_serverContinent, display_server, url_search):
+    url = prepURLqs(url_search)
+
+    if 'locationContinent' in url.keys():
+        return url['locationContinent']
     else:
-        return 'Europe'
+        if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
+            # the server div is shown, so we pull the continent from there
+            return selected_serverContinent
+        else:
+            return 'Europe'
 
 
 @app.callback(
@@ -691,21 +766,30 @@ def set_continent_value(selected_serverContinent, display_server):
         Output('location_country_dropdown', 'value'),
         Output('location_country_dropdown_div', 'style')
     ],
-    [Input('location_continent_dropdown', 'value')]
+    [
+        Input('location_continent_dropdown', 'value'),
+        Input('url','search')
+    ]
 )
-def set_countries_options(selected_continent):
+def set_countries_options(selected_continent, url_search):
     '''
     List of options and default value for countries.
     Hides country dropdown if continent=World is selected
     '''
-    availableOptions = list(set(CI_df.loc[(CI_df.continentName == selected_continent), 'countryName']))
-    availableOptions = sorted(availableOptions)
+    url = prepURLqs(url_search)
+    # TODO add "other" country which prompts for carbon intensity
+    # TODO add custom carbon intensity
+
+    availableOptions = availableOptions_country(selected_continent)
     listOptions = [{'label': k, 'value': k} for k in availableOptions]
 
-    try:
-        defaultValue = availableOptions[0]
-    except:
-        defaultValue = None
+    if 'locationCountry' in url.keys():
+        defaultValue =  url['locationCountry']
+    else:
+        try:
+            defaultValue = availableOptions[0]
+        except:
+            defaultValue = None
 
     if selected_continent == 'World':
         country_style = {'display': 'none'}
@@ -722,24 +806,27 @@ def set_countries_options(selected_continent):
     ],
     [
         Input('location_continent_dropdown', 'value'),
-        Input('location_country_dropdown', 'value')
+        Input('location_country_dropdown', 'value'),
+        Input('url','search')
     ]
 )
-def set_regions_options(selected_continent, selected_country):
+def set_regions_options(selected_continent, selected_country, url_search):
     '''
     List of options and default value for regions.
     Hides region dropdown if only one possible region (or continent=World)
     '''
-    availableOptions = CI_df.loc[(CI_df.continentName == selected_continent) &
-                                 (CI_df.countryName == selected_country)]
-    availableOptions = availableOptions.sort_values(by=['regionName']) # TODO: move "Any" to the first or last row
-
+    availableOptions = availableOptions_region(selected_continent, selected_country)
     listOptions = [{'label': k, 'value': v} for k,v in zip(availableOptions.regionName, availableOptions.location)]
 
-    try:
-        defaultValue = availableOptions.loc[availableOptions.regionName == 'Any', 'location'].values[0]
-    except:
-        defaultValue = None
+    url = prepURLqs(url_search)
+
+    if 'locationCountry' in url.keys():
+        defaultValue =  url['locationCountry']
+    else:
+        try:
+            defaultValue = availableOptions.loc[availableOptions.regionName == 'Any', 'location'].values[0]
+        except:
+            defaultValue = None
 
     if (selected_continent == 'World')|(len(availableOptions) == 1):
         region_style = {'display': 'none'}
@@ -784,10 +871,11 @@ def display_usage_input(answer_usage):
     [
         Input('location_region_dropdown','value'),
         Input('platformType_dropdown', 'value'),
-        Input('provider_dropdown', 'value')
+        Input('provider_dropdown', 'value'),
+        Input('server_dropdown', 'value')
     ]
 )
-def display_pue_question(selected_datacenter, selected_platform, selected_provider):
+def display_pue_question(selected_datacenter, selected_platform, selected_provider, selected_server):
     '''
     Shows or hides the PUE question depending on the platform
     '''
@@ -795,7 +883,7 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
 
     if selected_platform == 'localServer':
         return {'display': 'flex'}
-    elif (selected_platform == 'cloudComputing')&(selected_provider == 'other'):
+    elif (selected_platform == 'cloudComputing')&((selected_provider == 'other')|(selected_server == 'other')):
         return {'display': 'flex'}
     else:
         return {'display': 'none'}
@@ -899,9 +987,14 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
         notReady = True
 
+    if selected_platform is None:
+        notReady = True
+    elif (selected_platform == 'cloudComputing')&(selected_provider is None):
+        notReady = True
+
     if (tdpCPU is None)|(tdpGPU is None)|(memory is None)|\
             (test_runTime == 2)|(locationVar is None)|(usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None)|\
-            (selected_platform is None)|(runTime_hours is None)|(runTime_min is None):
+            (runTime_hours is None)|(runTime_min is None):
         notReady = True
 
 
@@ -944,6 +1037,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         return output
 
     else:
+        print('Updating results')
         carbonIntensity = CI_df.loc[CI_df.location == locationVar, "carbonIntensity"].values[0]
 
         if PUEstyle['display'] != 'none':
@@ -954,11 +1048,11 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             if selected_platform == 'personalComputer':
                 PUE_used = 1
             elif selected_platform == 'localServer':
-                PUE_used = PUE_default
+                PUE_used = default_values['PUE']
             else:
                 # Cloud
                 if selected_provider == 'other':
-                    PUE_used = PUE_default
+                    PUE_used = default_values['PUE']
                 else:
                     foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values
 
