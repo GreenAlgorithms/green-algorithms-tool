@@ -27,6 +27,7 @@ from html_layout import create_appLayout
 #############
 
 # TODO upadte README
+# TODO try to speed up code
 
 data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
@@ -314,14 +315,12 @@ default_values = dict(
     platformType='localServer',
     provider='gcp',
     usageCPUradio='No',
-    usageCPU=1,
     usageGPUradio='No',
-    usageGPU=1,
     PUEradio='No',
-    PUE=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
     PSFradio='No',
-    PSF=1,
 )
+
+defaultPUE = pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0]
 
 
 ##############
@@ -457,13 +456,9 @@ def prepURLqs(url_search):
         Output('platformType_dropdown','value'),
         Output('provider_dropdown','value'),
         Output('usageCPU_radio','value'),
-        Output('usageCPU_input','value'),
         Output('usageGPU_radio','value'),
-        Output('usageGPU_input','value'),
         Output('pue_radio','value'),
-        Output('PUE_input','value'),
         Output('PSF_radio', 'value'),
-        Output('PSF_input', 'value'),
     ],
     [
         Input('url','search')
@@ -870,6 +865,23 @@ def display_usage_input(answer_usage):
         return {'display': 'block'}
 
 @app.callback(
+    Output('usageCPU_input','value'),
+    [
+        Input('usageCPU_radio', 'value'),
+        Input('url','search')
+    ]
+)
+def reset_usage_input(radio, url_search):
+    if radio == 'No':
+        return 1
+    else:
+        url = prepURLqs(url_search)
+        if 'usageCPU' in url.keys():
+            return url['usageCPU']
+        else:
+            return 1
+
+@app.callback(
     Output('usageGPU_input','style'),
     [Input('usageGPU_radio', 'value')]
 )
@@ -881,6 +893,23 @@ def display_usage_input(answer_usage):
         return {'display': 'none'}
     else:
         return {'display': 'block'}
+
+@app.callback(
+    Output('usageGPU_input','value'),
+    [
+        Input('usageGPU_radio', 'value'),
+        Input('url','search')
+    ]
+)
+def reset_usage_input(radio, url_search):
+    if radio == 'No':
+        return 1
+    else:
+        url = prepURLqs(url_search)
+        if 'usageGPU' in url.keys():
+            return url['usageGPU']
+        else:
+            return 1
 
 ### PUE ###
 
@@ -919,6 +948,23 @@ def display_pue_input(answer_pue):
     else:
         return {'display': 'block'}
 
+@app.callback(
+    Output('PUE_input','value'),
+    [
+        Input('pue_radio', 'value'),
+        Input('url','search')
+    ]
+)
+def reset_PUE_input(radio, url_search):
+    if radio == 'No':
+        return defaultPUE
+    else:
+        url = prepURLqs(url_search)
+        if 'PUE' in url.keys():
+            return url['PUE']
+        else:
+            return defaultPUE
+
 ### PSF ###
 
 @app.callback(
@@ -933,6 +979,23 @@ def display_PSF_input(answer_PSF):
         return {'display': 'none'}
     else:
         return {'display': 'block'}
+
+@app.callback(
+    Output('PSF_input','value'),
+    [
+        Input('PSF_radio', 'value'),
+        Input('url','search')
+    ]
+)
+def reset_PSF_input(radio, url_search):
+    if radio == 'No':
+        return 1
+    else:
+        url = prepURLqs(url_search)
+        if 'PSF' in url.keys():
+            return url['PSF']
+        else:
+            return 1
 
 #################
 # PROCESS INPUT #
@@ -1092,11 +1155,11 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             if selected_platform == 'personalComputer':
                 PUE_used = 1
             elif selected_platform == 'localServer':
-                PUE_used = default_values['PUE']
+                PUE_used = defaultPUE
             else:
                 # Cloud
                 if selected_provider == 'other':
-                    PUE_used = default_values['PUE']
+                    PUE_used = defaultPUE
                 else:
                     foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values
 

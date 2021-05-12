@@ -440,6 +440,7 @@ def create_appLayout(
                         ],
                         className='form-row radio-and-field',
                     ),
+                    # TODO add reset link to www.green-algorithms.org
                 ],
                 className='container input-form'
             ),
