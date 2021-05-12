@@ -375,7 +375,6 @@ def validateInput(input_dict):
     :return:
     '''
     new_dict = dict()
-    # print(providersNames_df.loc[providersNames_df.platformType == url_qs['platformType']].provider)
     for key, value in input_dict.items():
         new_value = unlist(value)
 
@@ -1054,7 +1053,6 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
 
     ### Preprocess
     #######
-    print(locationContinent, locationCountry, location)
 
     notReady = False
 
