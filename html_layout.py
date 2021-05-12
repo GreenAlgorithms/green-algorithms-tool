@@ -583,6 +583,13 @@ def create_appLayout(
                                 ],
                                 className="container mini-box"
                             ),
+
+                            html.Div(
+                                [
+                                    dcc.Markdown(id='share_permalink'),
+                                ],
+                                className='container footer permalink'
+                            ),
                         ],
                         className='super-section mini-boxes'
                     ),
@@ -627,7 +634,7 @@ def create_appLayout(
                 className='super-section first-output'
             ),
 
-            #### PRE-PRINT ####
+            #### PUBLICATION ####
 
             html.Div(
                 [

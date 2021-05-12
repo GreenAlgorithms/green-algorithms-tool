@@ -385,7 +385,8 @@ def validateInput(input_dict):
             elif key == 'platformType':
                 assert new_value in [x['value'] for x in platformType_options]
             elif key == 'provider':
-                assert new_value in providersNames_df.loc[providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other']
+                if unlist(input_dict['platformType']) == 'cloudComputing':
+                    assert new_value in providersNames_df.loc[providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other']
             elif key == 'serverContinent':
                 assert new_value in availableLocations_continent(unlist(input_dict['provider'])) + ['other']
             elif key == 'server':
@@ -395,13 +396,6 @@ def validateInput(input_dict):
             elif key == 'locationCountry':
                 assert new_value in availableOptions_country(unlist(input_dict['locationContinent']))
             elif key == 'locationRegion':
-                print('==')
-                print(value)
-                print(input_dict['locationContinent'])
-                print(input_dict['locationCountry'])
-                print('--')
-                print(availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])))
-                print('==')
                 assert new_value in availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])).location.tolist()
             elif key == 'PUE':
                 new_value = float(new_value)
@@ -463,18 +457,22 @@ def fillInFromURL(url_search):
     Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
     '''
-    global default_values
+    validateInput(default_values) # TODO comment this out when not debugging
+
+    defaults2 = copy.deepcopy(default_values)
+
     if (url_search is not None)&(url_search != ''):
         url = parse.parse_qs(url_search[1:])
-        default_values.update((k, url[k]) for k in default_values.keys() & url.keys())
-        default_values = validateInput(default_values)
+        defaults2.update((k, url[k]) for k in defaults2.keys() & url.keys())
+        defaults2 = validateInput(defaults2)
         print(url)
+        print(tuple(defaults2.values()))
         print(tuple(default_values.values()))
         print('---')
 
-    print(default_values)
+    print(defaults2)
     print('-----')
-    return tuple(default_values.values())
+    return tuple(defaults2.values())
 
 ######
 ## PLATFORM AND PROVIDER
@@ -979,7 +977,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                            existing_state):
     output = dict()
 
-    permalink = f'http://127.0.0.1:8050/?' # TODO change for www.green-algorithms.org
+    permalink = f'http://127.0.0.1:8050/' # TODO change for www.green-algorithms.org
     permalink_temp = ''
 
     ### Preprocess
@@ -1000,7 +998,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         test_runTime += 1
     else:
         actual_runTime_min = runTime_min
-    permalink_temp += f'runTime_hour={actual_runTime_hours}&runTime_min={actual_runTime_min}'
+    permalink_temp += f'?runTime_hour={actual_runTime_hours}&runTime_min={actual_runTime_min}'
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
     ## Core type
@@ -1223,7 +1221,8 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
             output['flying_text'] = "NYC-Melbourne"
 
-    print(permalink.replace(' ','%20'))
+    output['permalink'] = permalink.replace(' ','%20')
+
     return output
 
 ### UPDATE TOP TEXT ###
@@ -1277,6 +1276,15 @@ def update_text(data):
     return "of a flight {}".format(data['flying_text'])
     # return ["of a flight", html.Br(), "{}".format(data['flying_text'])]
 
+### UPDATE PERMALINK ###
+
+@app.callback(
+    Output('share_permalink', 'children'),
+    [Input("aggregate_data", "data")],
+)
+def share_permalink(aggData):
+    return f"__Share your results__ with [this link]({aggData['permalink']})!"
+
 ### UPDATE PIE GRAPH ###
 @app.callback(
     Output("pie_graph", "figure"),
@@ -1288,7 +1296,8 @@ def create_pie_graph(aggData):
     if aggData['coreType'] == 'Both':
         layout_pie['height'] = 400
     else:
-        layout_pie['height'] = 400
+        layout_pie['height'] = 350
+        layout_pie['margin']['t'] = 40
 
     labels = ['Memory']
     values = [aggData['CE_memory']]

@@ -182,8 +182,8 @@ hr {
 .style-icon {
     height: 100px;
     width: 100px;
-    margin-top:0px;
-    margin-bottom:0px
+    margin-top:0;
+    margin-bottom:0;
 }
 
 .caption-icons {
