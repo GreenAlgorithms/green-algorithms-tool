@@ -296,7 +296,9 @@ default_values = dict(
     memory=64,
     platformType='localServer',
     provider='gcp',
+    usageCPUradio='No',
     usageCPU=1,
+    usageGPUradio='No',
     usageGPU=1,
     PUEradio='No',
     PUE=pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0],
@@ -337,7 +339,6 @@ app.layout = create_appLayout(
     image_dir=image_dir,
     mapCI=mapCI,
     location_continentsList=continentsDict,
-    default_values=default_values,
 )
 
 ##################
@@ -375,7 +376,7 @@ def validateInput(input_dict):
             elif key in ['usageCPU','usageGPU']:
                 new_value = float(new_value)
                 assert (new_value >= 0)&(new_value <= 1)
-            elif key in ['PUEradio','PSFradio']:
+            elif key in ['usageCPUradio','usageGPUradio','PUEradio','PSFradio']:
                 assert new_value in ['Yes','No']
             elif key == 'coreType':
                 assert new_value in ['CPU','GPU','Both']
@@ -394,7 +395,14 @@ def validateInput(input_dict):
             elif key == 'locationCountry':
                 assert new_value in availableOptions_country(unlist(input_dict['locationContinent']))
             elif key == 'locationRegion':
-                assert new_value in availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])).regionName.tolist()
+                print('==')
+                print(value)
+                print(input_dict['locationContinent'])
+                print(input_dict['locationCountry'])
+                print('--')
+                print(availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])))
+                print('==')
+                assert new_value in availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])).location.tolist()
             elif key == 'PUE':
                 new_value = float(new_value)
                 assert new_value >= 1
@@ -437,7 +445,9 @@ def prepURLqs(url_search):
         Output('memory_input','value'),
         Output('platformType_dropdown','value'),
         Output('provider_dropdown','value'),
+        Output('usageCPU_radio','value'),
         Output('usageCPU_input','value'),
+        Output('usageGPU_radio','value'),
         Output('usageGPU_input','value'),
         Output('pue_radio','value'),
         Output('PUE_input','value'),
@@ -597,7 +607,7 @@ def display_TDP4GPU(selected_coreModel):
         Input('server_dropdown','value')
     ]
 )
-def display_TDP(selected_platform, selected_provider, selected_server):
+def display_location(selected_platform, selected_provider, selected_server):
     '''
     Shows either LOCATION or SERVER depending on the platform
     '''
@@ -820,8 +830,8 @@ def set_regions_options(selected_continent, selected_country, url_search):
 
     url = prepURLqs(url_search)
 
-    if 'locationCountry' in url.keys():
-        defaultValue =  url['locationCountry']
+    if 'locationRegion' in url.keys():
+        defaultValue =  url['locationRegion']
     else:
         try:
             defaultValue = availableOptions.loc[availableOptions.regionName == 'Any', 'location'].values[0]
@@ -919,6 +929,10 @@ def display_PSF_input(answer_PSF):
 #################
 # PROCESS INPUT #
 #################
+# TODO check that we take the right values (and not hidden ones)
+
+def showing(style):
+    return style['display'] != 'none'
 
 @app.callback(
     Output("aggregate_data", "data"),
@@ -935,27 +949,46 @@ def display_PSF_input(answer_PSF):
         Input("memory_input", "value"),
         Input("runTime_hour_input", "value"),
         Input("runTime_min_input", "value"),
+        Input("location_continent_dropdown", "value"),
+        Input("location_country_dropdown", "value"),
         Input("location_region_dropdown", "value"),
+        Input("server_continent_dropdown", "value"),
         Input("server_dropdown", "value"),
         Input('location_div', 'style'),
+        Input('server_div','style'),
+        Input("usageCPU_radio", "value"),
         Input("usageCPU_input", "value"),
+        Input("usageGPU_radio", "value"),
         Input("usageGPU_input", "value"),
+        Input("pue_radio", "value"),
         Input("PUE_input", "value"),
-        Input('PUE_input','style'),
+        Input("PSF_radio", "value"),
         Input("PSF_input", "value"),
         Input('platformType_dropdown', 'value'),
-        Input('provider_dropdown', 'value')
+        Input('provider_dropdown', 'value'),
+        Input('provider_dropdown_div', 'style')
     ],
     [
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU, memory, runTime_hours, runTime_min, location, server,
-                           locationStyle, usageCPU, usageGPU, PUE, PUEstyle, PSF, selected_platform, selected_provider, existing_state):
+def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
+                           memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
+                           serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
+                           PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle,
+                           existing_state):
     output = dict()
 
-    test_runTime = 0
+    permalink = f'http://127.0.0.1:8050/?' # TODO change for www.green-algorithms.org
+    permalink_temp = ''
 
+    ### Preprocess
+    #######
+
+    notReady = False
+
+    ## Runtime
+    test_runTime = 0
     if runTime_hours is None:
         actual_runTime_hours = 0
         test_runTime += 1
@@ -967,19 +1000,10 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         test_runTime += 1
     else:
         actual_runTime_min = runTime_min
-
+    permalink_temp += f'runTime_hour={actual_runTime_hours}&runTime_min={actual_runTime_min}'
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    if locationStyle['display'] != 'none':
-        # this means the "location" input is shown, so we use location instead of server
-        locationVar = location
-    elif (server is None)|(server == 'other'):
-        locationVar = None
-    else:
-        locationVar = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'location'].values[0]
-
-    notReady = False
-
+    ## Core type
     if coreType is None:
         notReady = True
     elif (coreType in ['CPU','Both'])&((n_CPUcores is None)|(CPUmodel is None)):
@@ -987,14 +1011,27 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
         notReady = True
 
+    ## Location
+    if showing(locationStyle):
+        # this means the "location" input is shown, so we use location instead of server
+        locationVar = location
+        permalink_temp += f'&locationContinent={locationContinent}&locationCountry={locationCountry}&locationRegion={location}'
+    elif (server is None)|(server == 'other'):
+        locationVar = None
+    else:
+        locationVar = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'location'].values[0]
+    if showing(serverStyle):
+        permalink_temp += f'&serverContinent={serverContinent}&server={server}'
+
+    ## Platform
     if selected_platform is None:
         notReady = True
     elif (selected_platform == 'cloudComputing')&(selected_provider is None):
         notReady = True
 
-    if (tdpCPU is None)|(tdpGPU is None)|(memory is None)|\
-            (test_runTime == 2)|(locationVar is None)|(usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None)|\
-            (runTime_hours is None)|(runTime_min is None):
+    ## The rest
+    if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)|\
+            (usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None):
         notReady = True
 
 
@@ -1034,15 +1071,13 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         output['power_needed'] = 0
         output['flying_text'] = None
 
-        return output
-
     else:
         print('Updating results')
-        carbonIntensity = CI_df.loc[CI_df.location == locationVar, "carbonIntensity"].values[0]
-
-        if PUEstyle['display'] != 'none':
-            # PUE question is asked
+        permalink += permalink_temp
+        ### PUE
+        if PUEradio == 'Yes':
             PUE_used = PUE
+            permalink += f'&PUEradio={PUEradio}&PUE={PUE}'
         else:
             # PUE question not asked
             if selected_platform == 'personalComputer':
@@ -1069,34 +1104,63 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                     else:
                         PUE_used = foo[0]
 
-        if coreType in ['CPU','Both']:
-            if tdpCPUstyle['display'] != 'none':
+        ### CORES
+
+        permalink += f'&coreType={coreType}'
+        if coreType in ['CPU', 'Both']:
+            permalink += f'&numberCPUs={n_CPUcores}&CPUmodel={CPUmodel}'
+            if showing(tdpCPUstyle):
                 # we asked the question about TDP
-                CPUpower = tdp
+                permalink += f'&tdpCPU={tdpCPU}'
+                CPUpower = tdpCPU
             else:
                 if CPUmodel == 'other':
-                    CPUpower = tdp
+                    CPUpower = tdpCPU
                 else:
                     CPUpower = cores_dict['CPU'][CPUmodel]
+
+            if usageCPUradio == 'Yes':
+                permalink += f'&usageCPUradio=Yes&usageCPU={usageCPU}'
 
             powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU
         else:
             powerNeeded_CPU = 0
             CPUpower = 0
 
-        if coreType in ['GPU','Both']:
-            if tdpGPUstyle['display'] != 'none':
-                GPUpower = tdp
+        if coreType in ['GPU', 'Both']:
+            permalink += f'&numberGPUs={n_GPUs}&GPUmodel={GPUmodel}'
+            if showing(tdpGPUstyle):
+                permalink += f'&tdpGPU={tdpGPU}'
+                GPUpower = tdpGPU
             else:
                 if GPUmodel == 'other':
-                    GPUpower = tdp
+                    GPUpower = tdpGPU
                 else:
                     GPUpower = cores_dict['GPU'][GPUmodel]
+
+            if usageGPUradio == 'Yes':
+                permalink += f'&usageGPUradio=Yes&usageGPU={usageGPU}'
 
             powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU
         else:
             powerNeeded_GPU = 0
             GPUpower = 0
+
+        ### MEMORY
+        permalink += f'&memory={memory}'
+
+        ### PLATFORM
+        permalink += f'&platformType={selected_platform}'
+        if showing(providerStyle):
+            permalink += f'&provider={selected_provider}'
+
+        # SERVER/LOCATION
+        carbonIntensity = CI_df.loc[CI_df.location == locationVar, "carbonIntensity"].values[0]
+
+        # PSF
+
+        if PSFradio == 'Yes':
+            permalink += f'&PSFradio=Yes&PSF={PSF}'
 
         # Power needed, in Watt
         powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
@@ -1125,8 +1189,8 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         output['n_GPUs'] = n_GPUs
         output['GPUpower'] = GPUpower
         output['memory'] = memory
-        output['runTime_hours'] = runTime_hours
-        output['runTime_min'] = runTime_min
+        output['runTime_hours'] = actual_runTime_hours
+        output['runTime_min'] = actual_runTime_min
         output['runTime'] = runTime
         output['location'] = locationVar
         output['carbonIntensity'] = carbonIntensity
@@ -1159,7 +1223,8 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
             output['flying_text'] = "NYC-Melbourne"
 
-        return output
+    print(permalink.replace(' ','%20'))
+    return output
 
 ### UPDATE TOP TEXT ###
 
