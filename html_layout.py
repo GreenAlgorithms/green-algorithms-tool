@@ -53,11 +53,14 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="runTime_hour_input",
+                                        min=0,
                                     ),
 
                                     dcc.Input(
                                         type='number',
                                         id="runTime_min_input",
+                                        min=0,
+                                        max=59,
                                     )
                                 ],
                                 className="box-runtime box-fields"
@@ -106,6 +109,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="numberCPUs_input",
+                                        min=0,
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -140,6 +144,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="tdpCPU_input",
+                                        min=0,
                                     )
                                 ],
                                 className='form-row',
@@ -166,6 +171,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="numberGPUs_input",
+                                        min=0,
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -200,6 +206,7 @@ def create_appLayout(
                                     dcc.Input(
                                         type='number',
                                         id="tdpGPU_input",
+                                        min=0,
                                     )
                                 ],
                                 className='form-row',
@@ -226,6 +233,7 @@ def create_appLayout(
                             dcc.Input(
                                 type='number',
                                 id="memory_input",
+                                min=0,
                             ),
                         ],
                         className='form-row short-input',
