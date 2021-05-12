@@ -1068,6 +1068,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         output['energy_needed'] = 0
         output['power_needed'] = 0
         output['flying_text'] = None
+        output['text_CE'] = '... g CO2e'
 
     else:
         print('Updating results')
@@ -1221,6 +1222,17 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
             output['flying_text'] = "NYC-Melbourne"
 
+        ### text carbon emissions
+        carbonEmissions_value = carbonEmissions  # in g CO2e
+        carbonEmissions_unit = "g"
+        if carbonEmissions_value >= 1e6:
+            carbonEmissions_value /= 1e6
+            carbonEmissions_unit = "T"
+        elif carbonEmissions_value >= 1e3:
+            carbonEmissions_value /= 1e3
+            carbonEmissions_unit = "kg"
+        output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
+
     output['permalink'] = permalink.replace(' ','%20')
 
     return output
@@ -1238,16 +1250,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    carbonEmissions_value = data['carbonEmissions'] # in g CO2e
-    carbonEmissions_unit = "g"
-    if carbonEmissions_value >= 1e6:
-        carbonEmissions_value /= 1e6
-        carbonEmissions_unit = "T"
-    elif carbonEmissions_value >= 1e3:
-        carbonEmissions_value /= 1e3
-        carbonEmissions_unit = "kg"
-    text_CE = "{:,.2f} {} CO2e".format(carbonEmissions_value,
-                                       carbonEmissions_unit)
+    text_CE = data['text_CE']
 
     energyNeeded_value = data['energy_needed'] # in kWh
     energyNeeded_unit = "kWh"
@@ -1551,7 +1554,7 @@ def fillin_report_text(aggData):
 
     else:
 
-        # Test runtime
+        # Text runtime
         minutes = aggData['runTime_min']
         hours = aggData['runTime_hours']
         if (minutes > 0)&(hours>0):
@@ -1599,7 +1602,7 @@ def fillin_report_text(aggData):
         myText = f'''
         > This algorithm runs in {textRuntime} on {textCores},
         > which draws {aggData['energy_needed']:,.2f} kWh. 
-        > Based in {prefixCountry}{country}{textRegion},{textPSF} this produces {aggData['carbonEmissions']:,.0f} g of CO2e, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
+        > Based in {prefixCountry}{country}{textRegion},{textPSF} this produces {aggData['text_CE']}, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
         (calculated using green-algorithms.org v2.0 \[1\]).
         '''
 
