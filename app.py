@@ -27,7 +27,6 @@ from html_layout import create_appLayout
 #############
 
 # TODO upadte README
-#TODO add some "any" options where needed
 
 data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
@@ -126,6 +125,16 @@ refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable
 # OPTIONS FOR DROPDOWN #
 ########################
 
+def put_value_first(L, value):
+    n = len(L)
+    if value in L:
+        L.remove(value)
+        return [value] + L
+        assert len(L)+1 == n
+    else:
+        print(f'{value} not in list')
+        return L
+
 platformType_options = [
     {'label': k,
      'value': v} for k,v in list(providersNames_df.loc[:,['platformName',
@@ -134,13 +143,17 @@ platformType_options = [
                             [('Local server', 'localServer')]
 ]
 
-coreModels_options = dict()
-for coreType in ['CPU','GPU']:
-    availableOptions = sorted(list(cores_dict[coreType].keys()))
-    coreModels_options[coreType] = [
-        {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                             [("Other","other")]
-    ]
+def build_coreModels_options():
+    coreModels_options = dict()
+    for coreType in ['CPU','GPU']:
+        availableOptions = sorted(list(cores_dict[coreType].keys()))
+        availableOptions = put_value_first(availableOptions, 'Any')
+        coreModels_options[coreType] = [
+            {'label': v, 'value': v} for k, v in list(zip(availableOptions,availableOptions)) +
+                                                 [("Other","other")]
+        ]
+    return coreModels_options
+coreModels_options = build_coreModels_options()
 
 yesNo_options = [
     {'label': 'Yes', 'value': 'Yes'},
@@ -178,7 +191,11 @@ def availableOptions_country(selected_continent):
 def availableOptions_region(selected_continent,selected_country):
     availableOptions = CI_df.loc[(CI_df.continentName == selected_continent) &
                                  (CI_df.countryName == selected_country)]
-    availableOptions = availableOptions.sort_values(by=['regionName']) # TODO: move "Any" to the first or last row
+    availableOptions = availableOptions.sort_values(by=['regionName'])
+    # Move Any to the first row:
+    availableOptions["new"] = range(1, len(availableOptions) + 1)
+    availableOptions.loc[availableOptions.regionName == 'Any', 'new'] = 0
+    availableOptions = availableOptions.sort_values("new").reset_index(drop='True').drop('new', axis=1)
     return availableOptions
 
 ####################
@@ -465,13 +482,7 @@ def fillInFromURL(url_search):
         url = parse.parse_qs(url_search[1:])
         defaults2.update((k, url[k]) for k in defaults2.keys() & url.keys())
         defaults2 = validateInput(defaults2)
-        print(url)
-        print(tuple(defaults2.values()))
-        print(tuple(default_values.values()))
-        print('---')
 
-    print(defaults2)
-    print('-----')
     return tuple(defaults2.values())
 
 ######
@@ -638,7 +649,6 @@ def set_serverContinents_options(selected_provider, url_search):
     url = prepURLqs(url_search)
 
     if 'serverContinent' in url.keys():
-        # FIXME (or not) this is fine for the init, but it doesn't work for the next input...
         defaultValue = url['serverContinent']
     else:
         if 'Europe' in availableOptions:
@@ -927,7 +937,6 @@ def display_PSF_input(answer_PSF):
 #################
 # PROCESS INPUT #
 #################
-# TODO check that we take the right values (and not hidden ones)
 
 def showing(style):
     return style['display'] != 'none'
@@ -982,6 +991,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
 
     ### Preprocess
     #######
+    print(locationContinent, locationCountry, location)
 
     notReady = False
 
