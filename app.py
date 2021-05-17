@@ -1427,6 +1427,10 @@ def create_pie_graph(aggData):
 )
 def create_bar_chart(aggData):
     layout_bar = copy.deepcopy(layout_plots)
+    # if aggData['coreType'] == 'Both':
+    #     layout_bar['height'] = 400
+    # else:
+    #     layout_bar['height'] = 350
 
     layout_bar['xaxis'] = dict(
         color=myColors['fontColor'],
