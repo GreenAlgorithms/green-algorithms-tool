@@ -150,10 +150,11 @@ def build_coreModels_options():
         availableOptions = sorted(list(cores_dict[coreType].keys()))
         availableOptions = put_value_first(availableOptions, 'Any')
         coreModels_options[coreType] = [
-            {'label': v, 'value': v} for k, v in list(zip(availableOptions,availableOptions)) +
+            {'label': k, 'value': v} for k, v in list(zip(availableOptions,availableOptions)) +
                                                  [("Other","other")]
         ]
     return coreModels_options
+
 coreModels_options = build_coreModels_options()
 
 yesNo_options = [
@@ -396,7 +397,7 @@ def validateInput(input_dict):
             elif key == 'coreType':
                 assert new_value in ['CPU','GPU','Both']
             elif key in ['CPUmodel','GPUmodel']:
-                assert new_value in cores_dict[key[:3]].keys()
+                assert new_value in [x['value'] for x in coreModels_options[key[:3]]]
             elif key == 'platformType':
                 assert new_value in [x['value'] for x in platformType_options]
             elif key == 'provider':
@@ -420,6 +421,9 @@ def validateInput(input_dict):
 
         except:
             print(f'Wrong input for {key}: {new_value}')
+            print('--- ', key)
+            print(cores_dict[key[:3]].keys())
+            print('----')
             new_value = None
 
         new_dict[key] = new_value
