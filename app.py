@@ -26,7 +26,6 @@ from html_layout import create_appLayout
 # LOAD DATA #
 #############
 
-# TODO upadte README
 # TODO try to speed up code
 
 data_dir = os.path.join(os.path.abspath(''),'data')
@@ -472,7 +471,7 @@ def fillInFromURL(url_search):
     Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
     '''
-    validateInput(default_values) # TODO comment this out when not debugging
+    # validateInput(default_values) # TODO comment this out when not debugging
 
     defaults2 = copy.deepcopy(default_values)
 
@@ -1052,7 +1051,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                            existing_state):
     output = dict()
 
-    permalink = f'http://127.0.0.1:8050/' # TODO change for www.green-algorithms.org
+    permalink = f'https://green-algorithms.org//'
     permalink_temp = ''
 
     ### Preprocess
