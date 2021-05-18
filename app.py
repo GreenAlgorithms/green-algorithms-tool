@@ -999,6 +999,29 @@ def reset_PSF_input(radio, url_search):
         else:
             return 1
 
+## RESET ###
+
+@app.callback(
+    Output('confirm_reset','displayed'),
+    [
+        Input('reset_link','n_clicks')
+    ]
+)
+def display_confirm(clicks):
+    print('--',clicks)
+    if clicks is not None:
+        return True
+    return False
+
+app.clientside_callback(
+    clientside_function = ClientsideFunction(
+        namespace='clientside',
+        function_name='reset_function'
+    ),
+    output = Output('placeholder', 'children'),
+    inputs = [Input('confirm_reset', 'submit_n_clicks')]
+)
+
 #################
 # PROCESS INPUT #
 #################

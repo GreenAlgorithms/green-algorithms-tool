@@ -89,6 +89,24 @@ input, select, .Select, textarea {
     text-align: center;
 }
 
+.reset-button a:link,
+.reset-button a:visited {
+    color: rgb(120, 120, 120);
+}
+
+.reset-button a:hover {
+    color: rgb(80, 80, 80);
+}
+
+.reset-button p {
+    color: rgb(120, 120, 120);
+    text-decoration: underline;
+}
+
+.reset-button p:hover {
+    color: rgb(80, 80, 80);
+}
+
 /*
 .Select,
 #platformType_dropdown .Select-value-label,

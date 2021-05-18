@@ -440,7 +440,36 @@ def create_appLayout(
                         ],
                         className='form-row radio-and-field',
                     ),
-                    # TODO add reset link to www.green-algorithms.org
+
+                    dcc.ConfirmDialog(
+                        id='confirm_reset',
+                        message='This will reset all the values you have entered so far! Are you sure you want to continue?',
+                    ),
+
+                    html.Div(
+                        [
+                            html.P("Reset", id='reset_link'),
+                        ],
+                        className='reset-button'
+                    ),
+
+                    html.P(
+                        id="placeholder",
+                        style = {"display":"none"}
+                    )
+
+                    # html.P(
+                    #     [
+                    #         html.A(
+                    #             ["Reset"],
+                    #             href="",
+                    #             # onclick="return false;",
+                    #             id='reset_link',
+                    #         )
+                    #     ],
+                    #     className='reset-button'
+                    # ),
+
                 ],
                 className='container input-form'
             ),
