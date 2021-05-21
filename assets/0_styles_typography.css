@@ -196,6 +196,12 @@ blockquote {
 ---------------------------------- Footer ----------------------------------------
 */
 
+.citation-report p {
+    font-size: 15px;
+    font-size: 1.5rem;
+    text-align: left;
+}
+
 .footnote-authorship p {
     font-size: 15px;
     font-size: 1.5rem;

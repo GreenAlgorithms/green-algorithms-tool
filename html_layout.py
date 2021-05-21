@@ -39,8 +39,8 @@ def create_appLayout(
                     ),
 
                     dcc.Markdown('''
-                    To understand how each parameter impacts your carbon emissions,
-                    check out the formula below and the [publication](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
+                    To understand how each parameter impacts your carbon footprint,
+                    check out the formula below and the [methods article](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
                     '''),
 
                     ## RUN TIME
@@ -398,7 +398,7 @@ def create_appLayout(
                     ## PUE
                     html.Div(
                         [
-                            html.Label("Do you know the Power Usage Efficiency (PUE) of your local datacentre?"),
+                            html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
 
 
                             dcc.RadioItems(
@@ -768,12 +768,12 @@ def create_appLayout(
                     the same algorithm will emit __74 times more__ CO2e
                     if ran in Australia compared to Switzerland. 
                     Although it's not always the case, 
-                    many cloud providers offer the option to select a datacentre.
+                    many cloud providers offer the option to select a data centre.
                     
-                    Memory power draw is a huge source of waste: 
-                    because __the energy consumption depends on the memory requested, 
+                    Memory power draw is a huge source of waste, 
+                    because __the energy consumption depends on the memory available, 
                     not the actual usage__, only requesting the needed memory 
-                    is a painless way to reduce emissions.  
+                    is a painless way to reduce greenhouse gas emissions.  
                     
                     Generally, taking the time to write optimised code that runs faster with fewer 
                     resources saves both money and the planet.
@@ -791,20 +791,20 @@ def create_appLayout(
                     html.H2("The formula"),
 
                     dcc.Markdown('''
-                    The carbon emissions are calculated by estimating the energy draw of the algorithm
+                    The carbon footprint is calculated by estimating the energy draw of the algorithm
                     and the carbon intensity of producing this energy at a given location:
 
-                    `carbon emissions = energy needed * carbon intensity`
+                    `carbon footprint = energy needed * carbon intensity`
 
                     Where the energy needed is: 
                     
-                    `time * (power draw for cores * usage + power draw for memory) * PUE * PSF`
+                    `runtime * (power draw for cores * usage + power draw for memory) * PUE * PSF`
 
-                    The power draw for the computing cores depends on the CPU model and number of cores, 
-                    while the memory power draw only depends on the size of memory requested. 
+                    The power draw for the computing cores depends on the model and number of cores, 
+                    while the memory power draw only depends on the size of memory available. 
                     The usage factor corrects for the real core usage (default is 1, i.e. full usage).
                     The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                    to operate the datacentre (cooling, lighting etc.). 
+                    to operate the data centre (cooling, lighting etc.). 
                     The PSF (Pragmatic Scaling Factor) is used to take into account multiple identical runs 
                     (e.g. for testing or optimisation).
 
@@ -824,17 +824,18 @@ def create_appLayout(
                     dcc.Markdown('''
                     It's important to track the impact 
                     of computational research on climate change in order to stimulate greener algorithms.
-                    For that, __we believe that the carbon footprint of a project should be reported on articles
+                    For that, __we believe that the carbon footprint of a project should be reported on publications
                     alongside other performance metrics__. 
                     
-                    Here is an example you can include in your paper:
+                    Here is a text you can include in your paper:
                     '''),
 
                     dcc.Markdown(id='report_markdown'),
 
                     dcc.Markdown(
-                        '\[1\] see citation below',
-                        className='footnote'
+                        # '\[1\] see citation below',
+                        '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
+                        className='footnote citation-report'
                     ),
 
                     dcc.Markdown(

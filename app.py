@@ -420,9 +420,6 @@ def validateInput(input_dict):
 
         except:
             print(f'Wrong input for {key}: {new_value}')
-            print('--- ', key)
-            print(cores_dict[key[:3]].keys())
-            print('----')
             new_value = None
 
         new_dict[key] = new_value
@@ -1008,7 +1005,6 @@ def reset_PSF_input(radio, url_search):
     ]
 )
 def display_confirm(clicks):
-    print('--',clicks)
     if clicks is not None:
         return True
     return False
@@ -1702,8 +1698,8 @@ def fillin_report_text(aggData):
 
         myText = f'''
         > This algorithm runs in {textRuntime} on {textCores},
-        > which draws {aggData['energy_needed']:,.2f} kWh. 
-        > Based in {prefixCountry}{country}{textRegion},{textPSF} this produces {aggData['text_CE']}, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
+        > and draws {aggData['energy_needed']:,.2f} kWh. 
+        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
         (calculated using green-algorithms.org v2.0 \[1\]).
         '''
 
