@@ -9,6 +9,6 @@ treeYear,11000,in gCO2/tree/year from http://www.sciencedirect.com/science/artic
 flight_NY-SF,570000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 flight_PAR-LON,50000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 flight_NYC-MEL,2310000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
-streaming_netflix_perhour,86,gCO2 from https://www.carbonbrief.org/factcheck-what-is-the-carbon-footprint-of-streaming-video-on-netflix
+streaming_netflix_perhour,36,gCO2 from https://www.carbonbrief.org/factcheck-what-is-the-carbon-footprint-of-streaming-video-on-netflix (update)
 google_search,10,gCO2 from http://www.janavirgin.com/CO2/CO2GLE_about.html
 tree_month,917,gCO2 same source as treeYear
