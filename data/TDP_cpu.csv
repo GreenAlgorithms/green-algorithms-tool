@@ -65,6 +65,7 @@ Xeon E5-4650L,115,8,14.4,https://ark.intel.com/content/www/us/en/ark/products/64
 Xeon E7-8867 v3,165,16,10.3,https://ark.intel.com/content/www/us/en/ark/products/84681/intel-xeon-processor-e7-8867-v3-45m-cache-2-50-ghz.html
 Xeon Gold 6142,150,16,9.4,https://ark.intel.com/content/www/us/en/ark/products/120487/intel-xeon-gold-6142-processor-22m-cache-2-60-ghz.html
 Xeon Gold 6148,150,20,7.5,https://ark.intel.com/content/www/us/en/ark/products/120489/intel-xeon-gold-6148-processor-27-5m-cache-2-40-ghz.html
+Xeon Gold 6248,150,20,7.5,https://ark.intel.com/content/www/us/en/ark/products/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz.html
 Xeon L5640 ,60,6,10.0,https://ark.intel.com/content/www/us/en/ark/products/47926/intel-xeon-processor-l5640-12m-cache-2-26-ghz-5-86-gt-s-intel-qpi.html
 Xeon Phi 5110P,225,60,3.8,https://ark.intel.com/content/www/us/en/ark/products/71992/intel-xeon-phi-coprocessor-5110p-8gb-1-053-ghz-60-core.html
 Xeon Platinum 9282,400,56,7.1,https://www.techpowerup.com/cpu-specs/
@@ -75,3 +76,5 @@ Xeon E5-2699 v4,145,22,6.6,https://ark.intel.com/content/www/us/en/ark/products/
 Xeon E5-2699 v3,145,18,8.1,https://ark.intel.com/content/www/us/en/ark/products/81061/intel-xeon-processor-e5-2699-v3-45m-cache-2-30-ghz.html
 Xeon E5-2670 v2,115,10,11.5,https://ark.intel.com/content/www/us/en/ark/products/75275/intel-xeon-processor-e5-2670-v2-25m-cache-2-50-ghz.html
 Xeon E5-2670,115,8,14.4,https://ark.intel.com/content/www/us/en/ark/products/64595/intel-xeon-processor-e5-2670-20m-cache-2-60-ghz-8-00-gt-s-intel-qpi.html
+Xeon E5-2660 v3,105,10,10.5,https://ark.intel.com/content/www/us/en/ark/products/81706/intel-xeon-processor-e5-2660-v3-25m-cache-2-60-ghz.html
+AMD 7552,200,48,4.2,https://www.amd.com/system/files/documents/AMD-EPYC-7002-Series-Datasheet.pdf

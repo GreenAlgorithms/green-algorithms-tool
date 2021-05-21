@@ -66,6 +66,21 @@ body {
     text-align:left;
 }
 
+.Hr_div {
+    width:100%;
+}
+
+hr {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 2px;
+    background-color:rgb(220, 220, 220);
+    border: 0 none;
+    margin-top:0;
+    margin-bottom:20px
+}
+
 .form-row {
     margin-bottom: 20px;
     display: flex;
@@ -77,6 +92,13 @@ body {
 .form-row:last-of-type {
     margin-bottom: 0;
 }
+
+.group-of-rows {
+    margin-bottom: 20px;
+}
+/*.group-of-rows > .form-row {*/
+/*    margin-bottom: 0;*/
+/*}*/
 
 .form-row > label {
     margin-bottom: 7px;
@@ -144,6 +166,11 @@ body {
     width: 40%;
 }
 
+.reset-button {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
 /*
 ---------------------------------- MINI-BOX ----------------------------------------
 */
@@ -160,8 +187,8 @@ body {
 .style-icon {
     height: 100px;
     width: 100px;
-    margin-top:0px;
-    margin-bottom:0px
+    margin-top:0;
+    margin-bottom:0;
 }
 
 .caption-icons {

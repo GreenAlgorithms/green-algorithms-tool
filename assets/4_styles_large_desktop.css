@@ -1,4 +1,4 @@
-/* Small desktop Styles */
+/* Large desktop Styles */
 @media only screen and (min-width: 1281px) {
 
     body {
@@ -39,8 +39,14 @@
         margin-left:0;
     }
 
-    .short-input > input[type='number'] {
+    .short-input > input[type='number'],
+    .short-input .box-fields {
         width: 50%;
+    }
+
+    #div_memory label{
+        width: 47%;
+        margin-right: 3%;
     }
 
     /*
@@ -65,6 +71,25 @@
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------
     */
+
+    /*.two-graphs-box {*/
+    /*    flex-grow: 1;*/
+    /*}*/
+
+    .one-of-two-graphs {
+        width: calc((50%) - (10px));
+    }
+
+    .one-of-two-graphs:first-of-type {
+        margin-right: 20px;
+        margin-bottom: 0;
+    }
+
+    .one-of-two-graphs:last-of-type {
+        padding-right: 0;
+        padding-left: 0;
+        /*margin-bottom: 0;*/
+    }
 
     .pie-graph {
         margin-top: 100px;

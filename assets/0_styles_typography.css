@@ -36,6 +36,13 @@ h2 {
     margin-bottom: 11px;
 }
 
+h3 {
+    font-size: 20px;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: rgb(100, 100, 100);
+}
+
 p:not(:last-of-type) {
     margin-bottom: 1rem;
 }
@@ -82,6 +89,24 @@ input, select, .Select, textarea {
     text-align: center;
 }
 
+.reset-button a:link,
+.reset-button a:visited {
+    color: rgb(120, 120, 120);
+}
+
+.reset-button a:hover {
+    color: rgb(80, 80, 80);
+}
+
+.reset-button p {
+    color: rgb(120, 120, 120);
+    text-decoration: underline;
+}
+
+.reset-button p:hover {
+    color: rgb(80, 80, 80);
+}
+
 /*
 .Select,
 #platformType_dropdown .Select-value-label,
@@ -117,6 +142,11 @@ input, select, .Select, textarea {
     /*font-style: italic;
     font-size: 20px;
     font-size: 2rem;*/
+}
+
+.permalink {
+    font-size: 22px;
+    font-size: 2.2rem;
 }
 
 /*
@@ -165,6 +195,12 @@ blockquote {
 /*
 ---------------------------------- Footer ----------------------------------------
 */
+
+.citation-report p {
+    font-size: 15px;
+    font-size: 1.5rem;
+    text-align: left;
+}
 
 .footnote-authorship p {
     font-size: 15px;
