@@ -33,7 +33,7 @@ pandas==0.25.3
 plotly==4.5.0
 pluggy==0.13.1
 pprintpp==0.4.0
-py==1.8.1
+py==1.10.0
 pycountry==19.8.18
 pycountry-convert==0.7.2
 Pygments==2.7.4
