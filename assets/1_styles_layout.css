@@ -1,10 +1,10 @@
 body {
-  background-color: #f2f2f2;
-  background-image: url("stripes_sym3.png");
-  background-attachment: scroll;
-  background-repeat: no-repeat;
-  background-size: 100% 100%; /*700px;*/
-  /*margin: 5%;*/
+    background-color: #f2f2f2;
+    background-image: url("stripes_sym3.png");
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /*700px;*/
+    /*margin: 5%;*/
 }
 
 * {
@@ -169,6 +169,7 @@ hr {
 .reset-button {
     margin-bottom: 10px;
     margin-top: 10px;
+    cursor: pointer;
 }
 
 /*
@@ -226,9 +227,9 @@ hr {
 */
 
 blockquote {
-  border-left: 4px lightgrey solid;
-  padding-left: 1rem;
-  text-align:left;
+    border-left: 4px lightgrey solid;
+    padding-left: 1rem;
+    text-align:left;
 }
 
 

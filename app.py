@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
 
-import flask
+from flask import send_file # Integrating Loader IO
 
 import pandas as pd
 import os
@@ -460,10 +460,11 @@ def prepURLqs(url_search):
         Output('PSF_radio', 'value'),
     ],
     [
-        Input('url','search')
+        Input('url','search'),
+        Input('confirm_reset','submit_n_clicks'),
     ]
 )
-def fillInFromURL(url_search):
+def fillInFromURL(url_search, reset_click):
     '''
     Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
@@ -472,11 +473,14 @@ def fillInFromURL(url_search):
 
     defaults2 = copy.deepcopy(default_values)
 
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'confirm_reset' in changed_id:
+        return tuple(default_values.values())
+
     if (url_search is not None)&(url_search != ''):
         url = parse.parse_qs(url_search[1:])
         defaults2.update((k, url[k]) for k in defaults2.keys() & url.keys())
         defaults2 = validateInput(defaults2)
-
     return tuple(defaults2.values())
 
 ######
@@ -501,7 +505,7 @@ def set_providers(selected_platform):
 
 @app.callback(
     Output('provider_dropdown', 'options'),
-    [Input('platformType_dropdown', 'value')]
+    [Input('platformType_dropdown', 'value')],
 )
 def set_providers(selected_platform):
     '''
@@ -602,7 +606,7 @@ def display_TDP4GPU(selected_coreModel):
 @app.callback(
     [
         Output('location_div', 'style'),
-        Output('server_div', 'style')
+        Output('server_div', 'style'),
     ],
     [
         Input('platformType_dropdown', 'value'),
@@ -625,6 +629,7 @@ def display_location(selected_platform, selected_provider, selected_server):
             return hide, show
     else:
         return show, hide
+
 
 ## SERVER (only for Cloud computing for now)
 
@@ -756,15 +761,23 @@ def disable_server_inputs(continent, server):
     [
         Input('server_continent_dropdown','value'),
         Input('server_div', 'style'),
-        Input('url','search')
+        Input('url','search'),
+        Input('confirm_reset', 'submit_n_clicks')
+    ],
+    [
+        State('location_continent_dropdown', 'value')
     ]
 )
-def set_continent_value(selected_serverContinent, display_server, url_search):
+def set_continent_value(selected_serverContinent, display_server, url_search,reset, prev_selectedContinent):
     url = prepURLqs(url_search)
-
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'locationContinent' in url.keys():
         return url['locationContinent']
     else:
+        if ('confirm_reset' in changed_id):
+            return 'Europe'
+        if (prev_selectedContinent is not None):
+            return prev_selectedContinent
         if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
             # the server div is shown, so we pull the continent from there
             return selected_serverContinent
@@ -780,10 +793,13 @@ def set_continent_value(selected_serverContinent, display_server, url_search):
     ],
     [
         Input('location_continent_dropdown', 'value'),
-        Input('url','search')
+        Input('url','search'),
+    ],
+    [
+        State('location_country_dropdown', 'value')
     ]
 )
-def set_countries_options(selected_continent, url_search):
+def set_countries_options(selected_continent, url_search, prev_selectedCountry):
     '''
     List of options and default value for countries.
     Hides country dropdown if continent=World is selected
@@ -800,8 +816,11 @@ def set_countries_options(selected_continent, url_search):
     else:
         try:
             defaultValue = availableOptions[0]
+
         except:
             defaultValue = None
+    if (prev_selectedCountry is not None) and (prev_selectedCountry in availableOptions):
+        defaultValue = prev_selectedCountry
 
     if selected_continent == 'World':
         country_style = {'display': 'none'}
@@ -820,9 +839,13 @@ def set_countries_options(selected_continent, url_search):
         Input('location_continent_dropdown', 'value'),
         Input('location_country_dropdown', 'value'),
         Input('url','search')
+    ],
+    [
+        State('location_region_dropdown', 'value'),
     ]
+
 )
-def set_regions_options(selected_continent, selected_country, url_search):
+def set_regions_options(selected_continent, selected_country, url_search, prev_selectedRegion):
     '''
     List of options and default value for regions.
     Hides region dropdown if only one possible region (or continent=World)
@@ -836,7 +859,10 @@ def set_regions_options(selected_continent, selected_country, url_search):
         defaultValue =  url['locationRegion']
     else:
         try:
-            defaultValue = availableOptions.loc[availableOptions.regionName == 'Any', 'location'].values[0]
+            if (prev_selectedRegion is not None) and (prev_selectedRegion in availableOptions['location'].values):
+                defaultValue = prev_selectedRegion
+            else:
+                defaultValue = availableOptions.loc[availableOptions.regionName == 'Any', 'location'].values[0]
         except:
             defaultValue = None
 
@@ -1009,14 +1035,14 @@ def display_confirm(clicks):
         return True
     return False
 
-app.clientside_callback(
-    clientside_function = ClientsideFunction(
-        namespace='clientside',
-        function_name='reset_function'
-    ),
-    output = Output('placeholder', 'children'),
-    inputs = [Input('confirm_reset', 'submit_n_clicks')]
-)
+# app.clientside_callback(
+#     clientside_function = ClientsideFunction(
+#         namespace='clientside',
+#         function_name='reset_function'
+#     ),
+#     output = Output('placeholder', 'children'),
+#     inputs = [Input('confirm_reset', 'submit_n_clicks')]
+# )
 
 #################
 # PROCESS INPUT #
@@ -1121,7 +1147,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         notReady = True
 
     ## The rest
-    if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)|\
+    if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)| \
             (usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None):
         notReady = True
 
@@ -1324,7 +1350,11 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         elif carbonEmissions_value >= 1e3:
             carbonEmissions_value /= 1e3
             carbonEmissions_unit = "kg"
-        output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
+
+        if carbonEmissions_value >= 1e9:
+            output['text_CE'] = f"{carbonEmissions_value:,.2e} {carbonEmissions_unit} CO2e"
+        else:
+            output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
 
     output['permalink'] = permalink.replace(' ','%20')
 
@@ -1350,17 +1380,31 @@ def update_text(data):
     if energyNeeded_value >= 1e3:
         energyNeeded_value /= 1e3
         energyNeeded_unit = "MWh"
-    text_energy = "{:,.2f} {}".format(energyNeeded_value, energyNeeded_unit)
+    if energyNeeded_value >= 1e6:
+        text_energy = "{:,.2e} {}".format(energyNeeded_value, energyNeeded_unit)
+    else:
+        text_energy = "{:,.2f} {}".format(energyNeeded_value, energyNeeded_unit)
 
     treeTime_value = data['n_treeMonths'] # in tree-months
     treeTime_unit = "tree-months"
     if treeTime_value >= 24:
         treeTime_value /= 12
         treeTime_unit = "tree-years"
-    text_ty = "{:,.2f} {}".format(treeTime_value, treeTime_unit)
 
-    text_car = "{:,.2f} km".format(data['nkm_drivingEU'])
-    text_fly = "{:,.0f} %".format(data['flying_context']*100)
+    if treeTime_value >=1e6:
+        text_ty = "{:,.2e} {}".format(treeTime_value, treeTime_unit)
+    else:
+        text_ty = "{:,.2f} {}".format(treeTime_value, treeTime_unit)
+
+    if data['nkm_drivingEU'] >=1e6:
+        text_car = "{:,.2e} km".format(data['nkm_drivingEU'])
+    else:
+        text_car = "{:,.2f} km".format(data['nkm_drivingEU'])
+
+    if (data['flying_context']*100) >=1e6:
+        text_fly = "{:,.0e} %".format(data['flying_context']*100)
+    else:
+        text_fly = "{:,.0f} %".format(data['flying_context']*100)
 
     return text_CE, text_energy, text_ty, text_car, text_fly
 
@@ -1375,11 +1419,11 @@ def update_text(data):
 ### UPDATE PERMALINK ###
 
 @app.callback(
-    Output('share_permalink', 'children'),
+    Output('share_permalink', 'href'),
     [Input("aggregate_data", "data")],
 )
 def share_permalink(aggData):
-    return f"__Share your results__ with [this link]({aggData['permalink']})!"
+    return f"{aggData['permalink']}"
 
 ### UPDATE PIE GRAPH ###
 @app.callback(
@@ -1700,10 +1744,18 @@ def fillin_report_text(aggData):
         > This algorithm runs in {textRuntime} on {textCores},
         > and draws {aggData['energy_needed']:,.2f} kWh. 
         > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
-        (calculated using green-algorithms.org v2.0 \[1\]).
+        (calculated using green-algorithms.org v2.1 \[1\]).
         '''
 
         return myText
+
+# Loader IO
+@app.server.route('/loaderio-1360e50f4009cc7a15a00c7087429524/')
+def download_loader():
+    return send_file('assets/loaderio-1360e50f4009cc7a15a00c7087429524.txt',
+                     mimetype='text/plain',
+                     attachment_filename='loaderio-1360e50f4009cc7a15a00c7087429524.txt',
+                     as_attachment=True)
 
 if __name__ == '__main__':
     # allows app to update when code is changed!

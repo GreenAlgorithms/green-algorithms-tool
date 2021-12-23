@@ -6,6 +6,36 @@ import plotly.graph_objects as go
 
 import os
 
+
+def loading_wrapper(component):
+    return dcc.Loading(component, type='circle', color='#96BA6E')
+
+
+blank_figure = {
+    "layout": {
+        "xaxis": {
+            "visible": False
+        },
+        "yaxis": {
+            "visible": False
+        },
+        "plot_bgcolor": "#f9f9f9",
+        "paper_bgcolor": "#f9f9f9",
+        "annotations": [
+            {
+                "text": "",
+                "xref": "paper",
+                "yref": "paper",
+                "showarrow": False,
+                "font": {
+                    "size": 28
+                }
+            }
+        ]
+    }
+}
+
+
 def create_appLayout(
         platformType_options,
         coreModels_options,
@@ -37,11 +67,14 @@ def create_appLayout(
                     html.H2(
                         "Details about your algorithm"
                     ),
-
-                    dcc.Markdown('''
-                    To understand how each parameter impacts your carbon footprint,
-                    check out the formula below and the [methods article](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
-                    '''),
+                    html.Center(
+                        html.P(["To understand how each parameter impacts your carbon footprint, "
+                                "check out the formula below and the ",
+                                html.A("methods article",
+                                       href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
+                                       target='_blank')
+                                ]),
+                    ),
 
                     ## RUN TIME
                     html.Div(
@@ -268,7 +301,7 @@ def create_appLayout(
                                                 className='bottom-dropdown'
                                             )
                                         ],
-                                        id = "provider_dropdown_div"
+                                        id="provider_dropdown_div"
                                     )
                                 ],
                                 className="box-fields"
@@ -400,7 +433,6 @@ def create_appLayout(
                         [
                             html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
 
-
                             dcc.RadioItems(
                                 id='pue_radio',
                                 options=yesNo_options,
@@ -455,7 +487,7 @@ def create_appLayout(
 
                     html.P(
                         id="placeholder",
-                        style = {"display":"none"}
+                        style={"display": "none"}
                     )
 
                     # html.P(
@@ -497,9 +529,9 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            html.P(
+                                            loading_wrapper(html.P(
                                                 id="carbonEmissions_text",
-                                            ),
+                                            )),
 
                                             html.P(
                                                 "Carbon footprint",
@@ -518,16 +550,16 @@ def create_appLayout(
                                         id="logo_power",
                                         className="style-icon",
                                         style={
-                                            'margin':'0px',
-                                            'padding':'15px'
+                                            'margin': '0px',
+                                            'padding': '15px'
                                         },
                                     ),
 
                                     html.Div(
                                         [
-                                            html.P(
+                                            loading_wrapper(html.P(
                                                 id="energy_text",
-                                            ),
+                                            )),
 
                                             html.P(
                                                 "Energy needed",
@@ -552,9 +584,9 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            html.P(
+                                            loading_wrapper(html.P(
                                                 id="treeMonths_text",
-                                            ),
+                                            )),
 
                                             html.P(
                                                 "Carbon sequestration",
@@ -580,9 +612,9 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            html.P(
+                                            loading_wrapper(html.P(
                                                 id="driving_text",
-                                            ),
+                                            )),
 
                                             html.P(
                                                 "in a passenger car",
@@ -608,9 +640,9 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            html.P(
+                                            loading_wrapper(html.P(
                                                 id="flying_text",
-                                            ),
+                                            )),
 
                                             html.P(
                                                 id="flying_label",
@@ -624,7 +656,12 @@ def create_appLayout(
 
                             html.Div(
                                 [
-                                    dcc.Markdown(id='share_permalink'),
+                                    html.P([
+                                        html.B("Share your results "),
+                                        "with ",
+                                        html.A("this link", target='_blank', id='share_permalink'),
+                                        "!"
+                                    ]),
                                 ],
                                 className='container footer permalink'
                             ),
@@ -640,11 +677,15 @@ def create_appLayout(
                                     html.H2(
                                         "Computing cores VS Memory"
                                     ),
+                                    loading_wrapper(
+                                        dcc.Graph(
+                                            id="pie_graph",
+                                            className='graph-container pie-graph',
+                                            config={'displaylogo': False},
+                                            figure=blank_figure,
+                                        )
+                                    ),
 
-                                    dcc.Graph(
-                                        id="pie_graph",
-                                        className='graph-container pie-graph',
-                                    )
                                 ],
                                 className='one-of-two-graphs'
                             ),
@@ -655,13 +696,18 @@ def create_appLayout(
                                         "How the location impacts your footprint"
                                     ),
 
-                                    dcc.Graph(
-                                        id="barPlotComparison",
-                                        className='graph-container',
-                                        style={
-                                            'margin-top':'20px'
-                                        }
-                                    )
+                                    loading_wrapper(
+                                        dcc.Graph(
+                                            id="barPlotComparison",
+                                            className='graph-container',
+                                            config={'displaylogo': False},
+                                            figure=blank_figure,
+                                            style={
+                                                'margin-top': '20px'
+                                            }
+                                        ),
+                                    ),
+
                                 ],
                                 className='one-of-two-graphs'
                             )
@@ -676,9 +722,13 @@ def create_appLayout(
 
             html.Div(
                 [
-                    dcc.Markdown('''
-                        More details about the methodology in the [methods paper](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707).
-                        '''),
+                    html.Center(
+                        html.P(["More details about the methodology in the ",
+                                html.A("methods paper",
+                                       href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
+                                       target='_blank')
+                                ]),
+                    ),
                 ],
                 className='container footer preprint'
             ),
@@ -690,10 +740,13 @@ def create_appLayout(
                     html.H2("Carbon Intensity across the world"),
                     html.Div(
                         [
-                            dcc.Graph(
-                                figure=mapCI,
-                                className='graph',
-                            )
+                            loading_wrapper(
+                                dcc.Graph(
+                                    figure=mapCI,
+                                    className='graph',
+                                    config={'displaylogo': False},
+                                ),
+                            ),
                         ],
                         className='graph-container'
                     )
@@ -747,8 +800,12 @@ def create_appLayout(
 
                     html.Div(
                         [
-                            dcc.Graph(
-                                id="barPlotComparison_cores"
+                            loading_wrapper(
+                                dcc.Graph(
+                                    id="barPlotComparison_cores",
+                                    config={'displaylogo': False},
+                                    figure=blank_figure,
+                                ),
                             ),
                         ],
                         className='graph-container'
@@ -769,15 +826,15 @@ def create_appLayout(
                     if ran in Australia compared to Switzerland. 
                     Although it's not always the case, 
                     many cloud providers offer the option to select a data centre.
-                    
+
                     Memory power draw is a huge source of waste, 
                     because __the energy consumption depends on the memory available, 
                     not the actual usage__, only requesting the needed memory 
                     is a painless way to reduce greenhouse gas emissions.  
-                    
+
                     Generally, taking the time to write optimised code that runs faster with fewer 
                     resources saves both money and the planet.
-                    
+
                     And above all, __only run jobs that you need!__
                     ''')
                 ],
@@ -797,7 +854,7 @@ def create_appLayout(
                     `carbon footprint = energy needed * carbon intensity`
 
                     Where the energy needed is: 
-                    
+
                     `runtime * (power draw for cores * usage + power draw for memory) * PUE * PSF`
 
                     The power draw for the computing cores depends on the model and number of cores, 
@@ -819,14 +876,14 @@ def create_appLayout(
 
             html.Div(
                 [
-                    html.H2( "How to report it?"),
+                    html.H2("How to report it?"),
 
                     dcc.Markdown('''
                     It's important to track the impact 
                     of computational research on climate change in order to stimulate greener algorithms.
                     For that, __we believe that the carbon footprint of a project should be reported on publications
                     alongside other performance metrics__. 
-                    
+
                     Here is a text you can include in your paper:
                     '''),
 
@@ -855,10 +912,13 @@ def create_appLayout(
                         [
                             html.H2("Data and code"),
 
-                            dcc.Markdown('''
-                            All the data and code used to run this calculator can be found 
-                            on [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool).
-                             '''),
+                            html.Center(
+                                html.P(["All the data and code used to run this calculator can be found on ",
+                                        html.A("GitHub",
+                                               href='https://github.com/GreenAlgorithms/green-algorithms-tool',
+                                               target='_blank')
+                                        ]),
+                            ),
                         ],
                         className='container footer'
                     ),
@@ -867,12 +927,16 @@ def create_appLayout(
                         [
                             html.H2('Questions / Suggestions?'),
 
-                            dcc.Markdown('''
-                            If you have questions or suggestions about the tool,
-                            you can [open an issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues)
-                            on the GitHub
-                            or [email us](mailto:green.algorithms@gmail.com). 
-                            ''')
+                            html.Center(
+                                html.P(["If you have questions or suggestions about the tool, you can ",
+                                        html.A("open an issue",
+                                               href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
+                                               target='_blank'),
+                                        " on the GitHub or ",
+                                        html.A("email us",
+                                               href='mailto:green.algorithms@gmail.com', ),
+                                        ]),
+                            ),
                         ],
                         className='container footer'
                     )
@@ -891,8 +955,8 @@ def create_appLayout(
 
                     Loïc Lannelongue\*¹, Jason Grealey\*², and Michael Inouye³
                     ''',
-                     className='authors'
-                     ),
+                                 className='authors'
+                                 ),
 
                     dcc.Markdown('''
                     (1) University of Cambridge
@@ -900,15 +964,19 @@ def create_appLayout(
                     (2) Baker Heart and Diabetes Institute and La Trobe University
 
                     (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
-                    
+
                     \* Contributed equally to this work
                     ''',
-                    className='affiliations'
-                    ),
+                                 className='affiliations'
+                                 ),
 
-                    dcc.Markdown('''
-                    More information [here](http://www.inouyelab.org/)
-                     ''')
+                    html.Center(
+                        html.P(["More information ",
+                                html.A("here",
+                                       href='http://www.inouyelab.org/',
+                                       target='_blank')
+                                ]),
+                    ),
                 ],
                 className='container about-us footer'
             ),
@@ -919,11 +987,15 @@ def create_appLayout(
                 [
                     html.H2("How to cite this work"),
 
-                    dcc.Markdown('''
-                    Lannelongue, L., Grealey, J., Inouye, M., 
-                    Green Algorithms: Quantifying the Carbon Footprint of Computation. 
-                    Adv. Sci. 2021, 2100707. https://doi.org/10.1002/advs.202100707
-                    '''),
+                    html.Center(
+                        html.P([
+                                   "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
+                                   "Adv. Sci. 2021, 2100707. ",
+                                   html.A("https://doi.org/10.1002/advs.202100707",
+                                          href='https://doi.org/10.1002/advs.202100707',
+                                          target='_blank')
+                                   ]),
+                    ),
                 ],
                 className='container citation footer'
             ),
@@ -935,15 +1007,21 @@ def create_appLayout(
                 [
                     html.H2("#ShowYourStripes"),
 
-                    dcc.Markdown('''
-                        These coloured stripes in the background represent the change in world temperatures
-                        from 1850 to 2018.
-                        This striking design was made by Ed Hawkins from the University of Reading.
-
-                        More on [ShowYourStipes.info](https://showyourstripes.info)
-
-                        Additional credits for the app can be found on the [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool).
-                        ''')
+                    html.Center(
+                        html.P([html.P(
+                            "These coloured stripes in the background represent the change in world temperatures "
+                            "from 1850 to 2018. "
+                            "This striking design was made by Ed Hawkins from the University of Reading. "),
+                            html.P(["More on ",
+                                    html.A("ShowYourStipes.info",
+                                           href='https://showyourstripes.info',
+                                           target='_blank')]),
+                            html.P(["Additional credits for the app can be found on the ",
+                                    html.A("GitHub",
+                                           href='https://github.com/GreenAlgorithms/green-algorithms-tool',
+                                           target='_blank'), ])
+                        ]),
+                    ),
                 ],
                 className='container show-stripes footer'
             ),
