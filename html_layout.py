@@ -8,7 +8,7 @@ import os
 
 
 def loading_wrapper(component):
-    return dcc.Loading(component, type='circle', color='#96BA6E')
+    return html.P(dcc.Loading(component, type='circle', color='#96BA6E'))
 
 
 blank_figure = {
@@ -529,7 +529,7 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            loading_wrapper(html.P(
+                                            loading_wrapper(html.Div(
                                                 id="carbonEmissions_text",
                                             )),
 
@@ -557,7 +557,7 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            loading_wrapper(html.P(
+                                            loading_wrapper(html.Div(
                                                 id="energy_text",
                                             )),
 
@@ -584,12 +584,12 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            loading_wrapper(html.P(
+                                            loading_wrapper(html.Div(
                                                 id="treeMonths_text",
                                             )),
 
                                             html.P(
-                                                "Carbon sequestration",
+                                                "Carbon sequestration"
                                             )
                                         ],
                                         className='caption-icons'
@@ -612,7 +612,7 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            loading_wrapper(html.P(
+                                            loading_wrapper(html.Div(
                                                 id="driving_text",
                                             )),
 
@@ -640,7 +640,7 @@ def create_appLayout(
 
                                     html.Div(
                                         [
-                                            loading_wrapper(html.P(
+                                            loading_wrapper(html.Div(
                                                 id="flying_text",
                                             )),
 

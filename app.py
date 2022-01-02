@@ -1450,6 +1450,19 @@ def create_pie_graph(aggData):
         labels.append('GPU')
         values.append(aggData['CE_GPU'])
 
+    annotations = []
+    percentages = [x/sum(values) for x in values]
+    to_del = []
+    for i,j in enumerate(percentages):
+        if j < 1e-8:
+            text = '{} makes up < 1e-6% ({:.0f} gCO2e)'.format(labels[i],values[i])
+            annotations.append(text)
+            to_del.append(i)
+    for idx in sorted(to_del, reverse=True):
+        del values[idx]
+        del labels[idx]
+    annotation = '<br>'.join(annotations)
+
     fig = go.Figure(
         data=[
             go.Pie(
@@ -1477,6 +1490,17 @@ def create_pie_graph(aggData):
             )
         ],
         layout=layout_pie
+    )
+    fig.update_layout(
+        # Add annotations of trace (<1e-6%) variables
+        title = {
+            'text':annotation,
+            'font':{'size':12},
+            'x': 1,
+            'xanchor': 'right',
+            'y': 0.97,
+            'yanchor': 'top',
+        }
     )
 
     return fig
