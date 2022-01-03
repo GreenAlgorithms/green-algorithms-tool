@@ -1,7 +1,7 @@
 # Green Algorithms 
 **www.green-algorithms.org**
 
-[![Generic badge](https://img.shields.io/badge/Version-v2.0-blue.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Version-v2.1-blue.svg)](https://shields.io/)
   
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/purple?icon=github)](https://github.com/Naereen/badges/)
