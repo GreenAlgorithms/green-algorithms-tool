@@ -1350,11 +1350,41 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         elif carbonEmissions_value >= 1e3:
             carbonEmissions_value /= 1e3
             carbonEmissions_unit = "kg"
+        elif carbonEmissions_value < 1:
+            carbonEmissions_value *= 1e3
+            carbonEmissions_unit = "mg"
 
-        if carbonEmissions_value >= 1e9:
+        if (carbonEmissions_value != 0)&((carbonEmissions_value >= 1e3)|(carbonEmissions_value < 1)):
             output['text_CE'] = f"{carbonEmissions_value:,.2e} {carbonEmissions_unit} CO2e"
         else:
             output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
+
+        ### text energy
+        energyNeeded_value = energyNeeded  # in kWh
+        energyNeeded_unit = "kWh"
+        if energyNeeded_value >= 1e3:
+            energyNeeded_value /= 1e3
+            energyNeeded_unit = "MWh"
+        elif energyNeeded_value < 1:
+            energyNeeded_value *= 1e3
+            energyNeeded_unit = "Wh"
+
+        if (energyNeeded_value != 0) & ((energyNeeded_value >= 1e3) | (energyNeeded_value < 1)):
+            output['text_energyNeeded'] = f"{energyNeeded_value:,.2e} {energyNeeded_unit}"
+        else:
+            output['text_energyNeeded'] = f"{energyNeeded_value:,.2f} {energyNeeded_unit}"
+
+        ### Text tree-months
+        treeTime_value = output['n_treeMonths']  # in tree-months
+        treeTime_unit = "tree-months"
+        if treeTime_value >= 24:
+            treeTime_value /= 12
+            treeTime_unit = "tree-years"
+
+        if (treeTime_value != 0) & ((treeTime_value >= 1e3) | (treeTime_value < 0.1)):
+            output['text_treeYear'] = f"{treeTime_value:,.2e} {treeTime_unit}"
+        else:
+            output['text_treeYear'] = f"{treeTime_value:,.2f} {treeTime_unit}"
 
     output['permalink'] = permalink.replace(' ','%20')
 
@@ -1374,37 +1404,26 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
 )
 def update_text(data):
     text_CE = data['text_CE']
+    text_energy = data['text_energyNeeded']
+    text_ty = data['text_treeYear']
 
-    energyNeeded_value = data['energy_needed'] # in kWh
-    energyNeeded_unit = "kWh"
-    if energyNeeded_value >= 1e3:
-        energyNeeded_value /= 1e3
-        energyNeeded_unit = "MWh"
-    if energyNeeded_value >= 1e6:
-        text_energy = "{:,.2e} {}".format(energyNeeded_value, energyNeeded_unit)
+    if (data['nkm_drivingEU'] != 0) & ((data['nkm_drivingEU'] >= 1e3) | (data['nkm_drivingEU'] < 0.1)):
+        text_car = f"{data['nkm_drivingEU']:,.2e} km"
     else:
-        text_energy = "{:,.2f} {}".format(energyNeeded_value, energyNeeded_unit)
+        text_car = f"{data['nkm_drivingEU']:,.2f} km"
 
-    treeTime_value = data['n_treeMonths'] # in tree-months
-    treeTime_unit = "tree-months"
-    if treeTime_value >= 24:
-        treeTime_value /= 12
-        treeTime_unit = "tree-years"
-
-    if treeTime_value >=1e6:
-        text_ty = "{:,.2e} {}".format(treeTime_value, treeTime_unit)
+    if data['flying_context'] == 0:
+        text_fly = "0"
+    elif data['flying_context'] > 1e6:
+        text_fly = f"{data['flying_context']:,.0e}"
+    elif data['flying_context'] >= 1:
+        text_fly = f"{data['flying_context']:,.1f}"
+    elif data['flying_context'] >= 0.01:
+        text_fly = f"{data['flying_context']:,.0%}"
+    elif data['flying_context'] >= 1e-4:
+        text_fly = f"{data['flying_context']:,.2%}"
     else:
-        text_ty = "{:,.2f} {}".format(treeTime_value, treeTime_unit)
-
-    if data['nkm_drivingEU'] >=1e6:
-        text_car = "{:,.2e} km".format(data['nkm_drivingEU'])
-    else:
-        text_car = "{:,.2f} km".format(data['nkm_drivingEU'])
-
-    if (data['flying_context']*100) >=1e6:
-        text_fly = "{:,.0e} %".format(data['flying_context']*100)
-    else:
-        text_fly = "{:,.0f} %".format(data['flying_context']*100)
+        text_fly = f"{data['flying_context']*100:,.0e} %"
 
     return text_CE, text_energy, text_ty, text_car, text_fly
 
@@ -1413,7 +1432,11 @@ def update_text(data):
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    return "of a flight {}".format(data['flying_text'])
+    if (data['flying_context'] >= 1)|(data['flying_context'] == 0):
+        foo = f"flights {data['flying_text']}"
+    else:
+        foo = f"of a flight {data['flying_text']}"
+    return foo
     # return ["of a flight", html.Br(), "{}".format(data['flying_text'])]
 
 ### UPDATE PERMALINK ###
@@ -1451,7 +1474,7 @@ def create_pie_graph(aggData):
         values.append(aggData['CE_GPU'])
 
     annotations = []
-    percentages = [x/sum(values) for x in values]
+    percentages = [x/sum(values) if sum(values)!=0 else 0 for x in values]
     to_del = []
     for i,j in enumerate(percentages):
         if j < 1e-8:
@@ -1507,6 +1530,7 @@ def create_pie_graph(aggData):
 
 
 ### UPDATE BAR CHART COMPARISON
+# FIXME: looks weird with 0 emissions
 @app.callback(
     Output("barPlotComparison", "figure"),
     [Input("aggregate_data", "data")],
@@ -1766,9 +1790,9 @@ def fillin_report_text(aggData):
 
         myText = f'''
         > This algorithm runs in {textRuntime} on {textCores},
-        > and draws {aggData['energy_needed']:,.2f} kWh. 
-        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['n_treeMonths']:.2f} tree-months
-        (calculated using green-algorithms.org v2.1 \[1\]).
+        > and draws {aggData['text_energyNeeded']}. 
+        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['text_treeYear']}
+        (calculated using green-algorithms.org v2.2 \[1\]).
         '''
 
         return myText
