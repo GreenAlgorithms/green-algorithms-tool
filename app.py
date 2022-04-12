@@ -26,8 +26,6 @@ from html_layout import create_appLayout
 # LOAD DATA #
 #############
 
-# TODO try to speed up code
-
 data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
@@ -36,50 +34,11 @@ static_image_route = '/static/'
 # We ignore the first row, as it contains metadata
 # All these correspond to tabs of the spreadsheet on the Google Drive
 
-### CPU ###
-cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
-                     sep=',', skiprows=1)
-cpu_df.drop(['source'], axis=1, inplace=True)
-
-### GPU ###
-gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
-                     sep=',', skiprows=1)
-gpu_df.drop(['source'], axis=1, inplace=True)
-
-# Dict of dict with all the possible models
-# e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
-cores_dict = dict()
-cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
-cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
-
-### PUE ###
-pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
-                     sep=',', skiprows=1)
-pue_df.drop(['source'], axis=1, inplace=True)
-
-### HARDWARE ###
-hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
-                          sep=',', skiprows=1)
-hardware_df.drop(['source'], axis=1, inplace=True)
-
-### OFFSET ###
-# TODO include offset of cloud providers
-# offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
-#                         sep=',', skiprows=1)
-# offset_df.drop(['source'], axis=1, inplace=True)
-
-### CARBON INTENSITY BY LOCATION ###
+# Helpers functions
 def check_CIcountries(df):
     foo = df.groupby(['continentName', 'countryName'])['regionName'].apply(','.join)
     for x in foo:
         assert 'Any' in x.split(','), f"{x} does't have an 'Any' column"
-
-# TODO Use live electricitymap API for evaluation
-CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
-                     sep=',', skiprows=1)
-check_CIcountries(CI_df)
-CI_df.drop(['source','Type'], axis=1, inplace=True)
-CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
 
 def iso2_to_iso3(x):
     try:
@@ -88,38 +47,88 @@ def iso2_to_iso3(x):
     except:
         output = ''
     return output
-CI_df['ISO3'] = CI_df.location.apply(iso2_to_iso3)
 
-### CLOUD DATACENTERS ###
-# TODO update all cloud datacenters
-cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
-                                  sep=',', skiprows=1)
+def load_data(data_dir):
 
-### LOCAL DATACENTERS ###
-# TODO: include local datacentres
-# localDatacenters_df = pd.read_csv(os.path.join(data_dir, "localProviders_datacenters.csv"),
-#                                   sep=',', skiprows=1)
-# datacenters_df = pd.concat([cloudDatacenters_df, localDatacenters_df], axis = 1)
+    ### CPU ###
+    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
+                         sep=',', skiprows=1)
+    cpu_df.drop(['source'], axis=1, inplace=True)
 
-# Create final datacentre DF
-datacenters_df = cloudDatacenters_df
-# Remove datacentres with unknown CI
-datacenters_df.dropna(subset=['location'], inplace=True)
-# TODO: add data centres from AWS
-providers_withoutDC = ['aws']
-# datacenters_dict = dict()
-# for col in datacenters_df.columns:
-#     datacenters_dict[col] = list(datacenters_df[col].dropna().values)
+    ### GPU ###
+    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
+                         sep=',', skiprows=1)
+    gpu_df.drop(['source'], axis=1, inplace=True)
 
-### PROVIDERS CODES AND NAMES ###
-providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
-                                sep=',', skiprows=1)
+    # Dict of dict with all the possible models
+    # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
+    cores_dict = dict()
+    cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
+    cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
 
-### REFERENCE VALUES
-refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
-                           sep=',', skiprows=1)
-refValues_df.drop(['source'], axis=1, inplace=True)
-refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
+    ### PUE ###
+    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
+                         sep=',', skiprows=1)
+    pue_df.drop(['source'], axis=1, inplace=True)
+
+    ### HARDWARE ###
+    hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
+                              sep=',', skiprows=1)
+    hardware_df.drop(['source'], axis=1, inplace=True)
+
+    ### OFFSET ###
+    # TODO include offset of cloud providers
+    # offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
+    #                         sep=',', skiprows=1)
+    # offset_df.drop(['source'], axis=1, inplace=True)
+
+    ### CARBON INTENSITY BY LOCATION ###
+
+    # TODO Use live electricitymap API for evaluation
+    CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
+                         sep=',', skiprows=1)
+    check_CIcountries(CI_df)
+    CI_df.drop(['source','Type'], axis=1, inplace=True)
+    # CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
+
+    CI_df['ISO3'] = CI_df.location.apply(iso2_to_iso3)
+
+    ### CLOUD DATACENTERS ###
+    # TODO update all cloud datacenters
+    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
+                                      sep=',', skiprows=1)
+
+    ### LOCAL DATACENTERS ###
+    # TODO: include local datacentres
+    # localDatacenters_df = pd.read_csv(os.path.join(data_dir, "localProviders_datacenters.csv"),
+    #                                   sep=',', skiprows=1)
+    # datacenters_df = pd.concat([cloudDatacenters_df, localDatacenters_df], axis = 1)
+
+    # Create final datacentre DF
+    datacenters_df = cloudDatacenters_df
+    # Remove datacentres with unknown CI
+    datacenters_df.dropna(subset=['location'], inplace=True)
+    # TODO: add data centres from AWS
+    providers_withoutDC = ['aws']
+    # datacenters_dict = dict()
+    # for col in datacenters_df.columns:
+    #     datacenters_dict[col] = list(datacenters_df[col].dropna().values)
+
+    ### PROVIDERS CODES AND NAMES ###
+    providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
+                                    sep=',', skiprows=1)
+
+    ### REFERENCE VALUES
+    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
+                               sep=',', skiprows=1)
+    refValues_df.drop(['source'], axis=1, inplace=True)
+    refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
+
+    return cpu_df, gpu_df, cores_dict, pue_df, hardware_df, CI_df, cloudDatacenters_df, datacenters_df, \
+           providers_withoutDC, providersNames_df, refValues_dict
+
+cpu_df, gpu_df, cores_dict, pue_df, hardware_df, CI_df, cloudDatacenters_df, datacenters_df, \
+providers_withoutDC, providersNames_df, refValues_dict = load_data(os.path.join(data_dir,'latest'))
 
 ########################
 # OPTIONS FOR DROPDOWN #
