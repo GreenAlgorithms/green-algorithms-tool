@@ -48,33 +48,41 @@ def iso2_to_iso3(x):
         output = ''
     return output
 
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
 def load_data(data_dir):
 
+    data_dict = dotdict()
+
     ### CPU ###
-    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
+    data_dict.cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
                          sep=',', skiprows=1)
-    cpu_df.drop(['source'], axis=1, inplace=True)
+    data_dict.cpu_df.drop(['source'], axis=1, inplace=True)
 
     ### GPU ###
-    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
+    data_dict.gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
                          sep=',', skiprows=1)
-    gpu_df.drop(['source'], axis=1, inplace=True)
+    data_dict.gpu_df.drop(['source'], axis=1, inplace=True)
 
     # Dict of dict with all the possible models
     # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
-    cores_dict = dict()
-    cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
-    cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
+    data_dict.cores_dict = dict()
+    data_dict.cores_dict['CPU'] = pd.Series(data_dict.cpu_df.TDP_per_core.values,index=data_dict.cpu_df.model).to_dict()
+    data_dict.cores_dict['GPU'] = pd.Series(data_dict.gpu_df.TDP_per_core.values,index=data_dict.gpu_df.model).to_dict()
 
     ### PUE ###
-    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
+    data_dict.pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
                          sep=',', skiprows=1)
-    pue_df.drop(['source'], axis=1, inplace=True)
+    data_dict.pue_df.drop(['source'], axis=1, inplace=True)
 
     ### HARDWARE ###
-    hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
+    data_dict.hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
                               sep=',', skiprows=1)
-    hardware_df.drop(['source'], axis=1, inplace=True)
+    data_dict.hardware_df.drop(['source'], axis=1, inplace=True)
 
     ### OFFSET ###
     # TODO include offset of cloud providers
@@ -85,50 +93,57 @@ def load_data(data_dir):
     ### CARBON INTENSITY BY LOCATION ###
 
     # TODO Use live electricitymap API for evaluation
-    CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
+    data_dict.CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                          sep=',', skiprows=1)
-    check_CIcountries(CI_df)
-    CI_df.drop(['source','Type'], axis=1, inplace=True)
-    # CI_dict = pd.Series(CI_df.carbonIntensity.values,index=CI_df.location).to_dict()
+    check_CIcountries(data_dict.CI_df)
+    data_dict.CI_df.drop(['source','Type'], axis=1, inplace=True)
+    # CI_dict = pd.Series(data_dict.CI_df.carbonIntensity.values,index=data_dict.CI_df.location).to_dict()
 
-    CI_df['ISO3'] = CI_df.location.apply(iso2_to_iso3)
+    data_dict.CI_df['ISO3'] = data_dict.CI_df.location.apply(iso2_to_iso3)
 
     ### CLOUD DATACENTERS ###
     # TODO update all cloud datacenters
-    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
+    data_dict.cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
                                       sep=',', skiprows=1)
 
     ### LOCAL DATACENTERS ###
     # TODO: include local datacentres
     # localDatacenters_df = pd.read_csv(os.path.join(data_dir, "localProviders_datacenters.csv"),
     #                                   sep=',', skiprows=1)
-    # datacenters_df = pd.concat([cloudDatacenters_df, localDatacenters_df], axis = 1)
+    # datacenters_df = pd.concat([data_dict.cloudDatacenters_df, localDatacenters_df], axis = 1)
 
     # Create final datacentre DF
-    datacenters_df = cloudDatacenters_df
+    data_dict.datacenters_df = data_dict.cloudDatacenters_df
     # Remove datacentres with unknown CI
-    datacenters_df.dropna(subset=['location'], inplace=True)
+    data_dict.datacenters_df.dropna(subset=['location'], inplace=True)
     # TODO: add data centres from AWS
-    providers_withoutDC = ['aws']
+    data_dict.providers_withoutDC = ['aws']
     # datacenters_dict = dict()
-    # for col in datacenters_df.columns:
-    #     datacenters_dict[col] = list(datacenters_df[col].dropna().values)
+    # for col in data_dict.datacenters_df.columns:
+    #     datacenters_dict[col] = list(data_dict.datacenters_df[col].dropna().values)
 
     ### PROVIDERS CODES AND NAMES ###
-    providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
+    data_dict.providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
                                     sep=',', skiprows=1)
 
     ### REFERENCE VALUES
-    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
+    data_dict.refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
                                sep=',', skiprows=1)
-    refValues_df.drop(['source'], axis=1, inplace=True)
-    refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
+    data_dict.refValues_df.drop(['source'], axis=1, inplace=True)
+    data_dict.refValues_dict = pd.Series(data_dict.refValues_df.value.values,index=data_dict.refValues_df.variable).to_dict()
 
-    return cpu_df, gpu_df, cores_dict, pue_df, hardware_df, CI_df, cloudDatacenters_df, datacenters_df, \
-           providers_withoutDC, providersNames_df, refValues_dict
+    # return data_dict.cpu_df, data_dict.gpu_df, data_dict.cores_dict, data_dict.pue_df, data_dict.hardware_df, \
+    #        data_dict.CI_df, data_dict.cloudDatacenters_df, data_dict.datacenters_df, \
+    #        data_dict.providers_withoutDC, data_dict.providersNames_df, data_dict.refValues_dict # FIXME: TO REMOVE
 
-cpu_df, gpu_df, cores_dict, pue_df, hardware_df, CI_df, cloudDatacenters_df, datacenters_df, \
-providers_withoutDC, providersNames_df, refValues_dict = load_data(os.path.join(data_dir,'latest'))
+    return data_dict
+
+# I'm here
+
+# cpu_df, gpu_df, cores_dict, pue_df, hardware_df, CI_df, cloudDatacenters_df, datacenters_df, \
+# providers_withoutDC, providersNames_df, refValues_dict = load_data(os.path.join(data_dir,'latest')) # FIXME: TO REMOVE
+
+data_dict = load_data(os.path.join(data_dir,'latest'))
 
 ########################
 # OPTIONS FOR DROPDOWN #
@@ -146,7 +161,7 @@ def put_value_first(L, value):
 
 platformType_options = [
     {'label': k,
-     'value': v} for k,v in list(providersNames_df.loc[:,['platformName',
+     'value': v} for k,v in list(data_dict.providersNames_df.loc[:,['platformName',
                                                           'platformType']].drop_duplicates().apply(tuple, axis=1)) +
                             [('Personal computer', 'personalComputer')] +
                             [('Local server', 'localServer')]
@@ -155,7 +170,7 @@ platformType_options = [
 def build_coreModels_options():
     coreModels_options = dict()
     for coreType in ['CPU','GPU']:
-        availableOptions = sorted(list(cores_dict[coreType].keys()))
+        availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
         availableOptions = put_value_first(availableOptions, 'Any')
         coreModels_options[coreType] = [
             {'label': k, 'value': v} for k, v in list(zip(availableOptions,availableOptions)) +
@@ -170,23 +185,23 @@ yesNo_options = [
     {'label': 'No', 'value': 'No'}
 ]
 
-continentsList = list(set(CI_df.continentName))
+continentsList = list(set(data_dict.CI_df.continentName))
 continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
 
 def availableLocations_continent(selected_provider):
-    availableLocations = datacenters_df.loc[datacenters_df.provider == selected_provider, 'location'].to_list()
+    availableLocations = data_dict.datacenters_df.loc[data_dict.datacenters_df.provider == selected_provider, 'location'].to_list()
     availableLocations = list(set(availableLocations))
 
-    availableOptions = list(set(CI_df.loc[CI_df.location.isin(availableLocations), 'continentName']))
+    availableOptions = list(set(data_dict.CI_df.loc[data_dict.CI_df.location.isin(availableLocations), 'continentName']))
 
     return availableOptions
 
 def availableOptions_servers(selected_provider,selected_continent):
-    locationsINcontinent = CI_df.loc[CI_df.continentName == selected_continent, "location"].values
+    locationsINcontinent = data_dict.CI_df.loc[data_dict.CI_df.continentName == selected_continent, "location"].values
 
-    availableOptions = datacenters_df.loc[
-        (datacenters_df.provider == selected_provider) &
-        (datacenters_df.location.isin(locationsINcontinent))
+    availableOptions = data_dict.datacenters_df.loc[
+        (data_dict.datacenters_df.provider == selected_provider) &
+        (data_dict.datacenters_df.location.isin(locationsINcontinent))
         ]
 
     availableOptions = availableOptions.sort_values(by=['Name'])
@@ -194,13 +209,13 @@ def availableOptions_servers(selected_provider,selected_continent):
     return availableOptions
 
 def availableOptions_country(selected_continent):
-    availableOptions = list(set(CI_df.loc[(CI_df.continentName == selected_continent), 'countryName']))
+    availableOptions = list(set(data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent), 'countryName']))
     availableOptions = sorted(availableOptions)
     return availableOptions
 
 def availableOptions_region(selected_continent,selected_country):
-    availableOptions = CI_df.loc[(CI_df.continentName == selected_continent) &
-                                 (CI_df.countryName == selected_country)]
+    availableOptions = data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent) &
+                                 (data_dict.CI_df.countryName == selected_country)]
     availableOptions = availableOptions.sort_values(by=['regionName'])
     # Move Any to the first row:
     availableOptions["new"] = range(1, len(availableOptions) + 1)
@@ -250,7 +265,7 @@ layout_plots = dict(
 
 ## make map
 
-map_df = CI_df.loc[CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
+map_df = data_dict.CI_df.loc[data_dict.CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
 layout_map = copy.deepcopy(layout_plots)
@@ -329,7 +344,7 @@ default_values = dict(
     PSFradio='No',
 )
 
-defaultPUE = pue_df.loc[pue_df.provider == 'Unknown', 'PUE'][0]
+defaultPUE = data_dict.pue_df.loc[data_dict.pue_df.provider == 'Unknown', 'PUE'][0]
 
 
 ##############
@@ -410,7 +425,7 @@ def validateInput(input_dict):
                 assert new_value in [x['value'] for x in platformType_options]
             elif key == 'provider':
                 if unlist(input_dict['platformType']) == 'cloudComputing':
-                    assert new_value in providersNames_df.loc[providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other']
+                    assert new_value in data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other']
             elif key == 'serverContinent':
                 assert new_value in availableLocations_continent(unlist(input_dict['provider'])) + ['other']
             elif key == 'server':
@@ -520,7 +535,7 @@ def set_providers(selected_platform):
     '''
     List options for the "provider" box
     '''
-    availableOptions = providersNames_df.loc[providersNames_df.platformType == selected_platform]
+    availableOptions = data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == selected_platform]
 
     listOptions = [
         {'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider)) +
@@ -542,10 +557,10 @@ def set_coreType_options(selected_provider, selected_platform):
     List of options for coreType (CPU or GPU), based on the platform/provider selected
     '''
     # TODO: Add custom hardware for cloud providers
-    availableOptions = cores_dict.keys()
+    availableOptions = data_dict.cores_dict.keys()
 
     # else:
-    #     availableOptions = list(set(hardware_df.loc[hardware_df.provider == selected_provider, 'type']))
+    #     availableOptions = list(set(data_dict.hardware_df.loc[data_dict.hardware_df.provider == selected_provider, 'type']))
 
     listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
 
@@ -630,7 +645,7 @@ def display_location(selected_platform, selected_provider, selected_server):
     show = {'display': 'flex'}
     hide = {'display': 'none'}
     if selected_platform == 'cloudComputing':
-        if selected_provider in ['other'] + providers_withoutDC:
+        if selected_provider in ['other'] + data_dict.providers_withoutDC:
             return show, hide
         elif selected_server == 'other':
             return show, show
@@ -960,7 +975,7 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     '''
     Shows or hides the PUE question depending on the platform
     '''
-    providers_knownPUE = list(set(pue_df.provider))
+    providers_knownPUE = list(set(data_dict.pue_df.provider))
 
     if selected_platform == 'localServer':
         return {'display': 'flex'}
@@ -1145,7 +1160,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     elif (server is None)|(server == 'other'):
         locationVar = None
     else:
-        locationVar = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'location'].values[0]
+        locationVar = data_dict.cloudDatacenters_df.loc[data_dict.cloudDatacenters_df.Name == server, 'location'].values[0]
     if showing(serverStyle):
         permalink_temp += f'&serverContinent={serverContinent}&server={server}'
 
@@ -1216,7 +1231,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                 if selected_provider == 'other':
                     PUE_used = defaultPUE
                 else:
-                    foo = cloudDatacenters_df.loc[cloudDatacenters_df.Name == server, 'PUE'].values
+                    foo = data_dict.cloudDatacenters_df.loc[data_dict.cloudDatacenters_df.Name == server, 'PUE'].values
 
                     if len(foo) == 0:
                         take_default = True
@@ -1227,7 +1242,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                     if take_default:
                         # if we don't know the PUE of this specific data centre, or if we don't know the data centre,
                         # we use the provider's default
-                        PUE_used = pue_df.loc[pue_df.provider == selected_provider, "PUE"].values[0]
+                        PUE_used = data_dict.pue_df.loc[data_dict.pue_df.provider == selected_provider, "PUE"].values[0]
                     else:
                         PUE_used = foo[0]
 
@@ -1244,7 +1259,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                 if CPUmodel == 'other':
                     CPUpower = tdpCPU
                 else:
-                    CPUpower = cores_dict['CPU'][CPUmodel]
+                    CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
 
             if usageCPUradio == 'Yes':
                 permalink += f'&usageCPUradio=Yes&usageCPU={usageCPU}'
@@ -1263,7 +1278,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                 if GPUmodel == 'other':
                     GPUpower = tdpGPU
                 else:
-                    GPUpower = cores_dict['GPU'][GPUmodel]
+                    GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
 
             if usageGPUradio == 'Yes':
                 permalink += f'&usageGPUradio=Yes&usageGPU={usageGPU}'
@@ -1282,7 +1297,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             permalink += f'&provider={selected_provider}'
 
         # SERVER/LOCATION
-        carbonIntensity = CI_df.loc[CI_df.location == locationVar, "carbonIntensity"].values[0]
+        carbonIntensity = data_dict.CI_df.loc[data_dict.CI_df.location == locationVar, "carbonIntensity"].values[0]
 
         # PSF
 
@@ -1291,7 +1306,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
 
         # Power needed, in Watt
         powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
-        powerNeeded_memory = PUE_used * (memory * refValues_dict['memoryPower'])
+        powerNeeded_memory = PUE_used * (memory * data_dict.refValues_dict['memoryPower'])
         powerNeeded = powerNeeded_core + powerNeeded_memory
 
         # Energy needed, in kWh (so dividing by 1000 to convert to kW)
@@ -1334,20 +1349,20 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
 
         ### CONTEXT
 
-        output['n_treeMonths'] = carbonEmissions / refValues_dict['treeYear'] * 12
+        output['n_treeMonths'] = carbonEmissions / data_dict.refValues_dict['treeYear'] * 12
 
-        output['nkm_drivingUS'] = carbonEmissions / refValues_dict['passengerCar_US_perkm']
-        output['nkm_drivingEU'] = carbonEmissions / refValues_dict['passengerCar_EU_perkm']
-        output['nkm_train'] = carbonEmissions / refValues_dict['train_perkm']
+        output['nkm_drivingUS'] = carbonEmissions / data_dict.refValues_dict['passengerCar_US_perkm']
+        output['nkm_drivingEU'] = carbonEmissions / data_dict.refValues_dict['passengerCar_EU_perkm']
+        output['nkm_train'] = carbonEmissions / data_dict.refValues_dict['train_perkm']
 
-        if carbonEmissions < 0.5 * refValues_dict['flight_NY-SF']:
-            output['flying_context'] = carbonEmissions / refValues_dict['flight_PAR-LON']
+        if carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NY-SF']:
+            output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_PAR-LON']
             output['flying_text'] = "Paris-London"
-        elif carbonEmissions < 0.5 * refValues_dict['flight_NYC-MEL']:
-            output['flying_context'] = carbonEmissions / refValues_dict['flight_NY-SF']
+        elif carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NYC-MEL']:
+            output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NY-SF']
             output['flying_text'] = "NYC-San Francisco"
         else:
-            output['flying_context'] = carbonEmissions / refValues_dict['flight_NYC-MEL']
+            output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NYC-MEL']
             output['flying_text'] = "NYC-Melbourne"
 
         ### text carbon emissions
@@ -1580,7 +1595,7 @@ def create_bar_chart(aggData):
 
     # calculate carbon emissions for each location
     for countryCode in loc_ref.keys():
-        loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * CI_df.loc[CI_df.location == countryCode, "carbonIntensity"].values[0]
+        loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * data_dict.CI_df.loc[data_dict.CI_df.location == countryCode, "carbonIntensity"].values[0]
         loc_ref[countryCode]['opacity'] = 0.2
 
     loc_ref['You'] = dict(
@@ -1696,13 +1711,13 @@ def create_bar_chart_cores(aggData):
                 if gpu == 'other':
                     power_list.append(aggData['GPUpower'])
                 else:
-                    power_list.append(gpu_df.loc[gpu_df.model == gpu, 'TDP_per_core'].values[0])
+                    power_list.append(data_dict.gpu_df.loc[data_dict.gpu_df.model == gpu, 'TDP_per_core'].values[0])
         else:
             for cpu in list_cores:
                 if cpu == 'other':
                     power_list.append(aggData['CPUpower'])
                 else:
-                    power_list.append(cpu_df.loc[cpu_df.model == cpu, 'TDP_per_core'].values[0])
+                    power_list.append(data_dict.cpu_df.loc[data_dict.cpu_df.model == cpu, 'TDP_per_core'].values[0])
 
         power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
         power_df.sort_values(by=['corePower'], inplace=True)
@@ -1779,8 +1794,8 @@ def fillin_report_text(aggData):
                 suffixProcessor = ''
             textCores += f"{aggData['n_CPUcores']} CPU{suffixProcessor} {aggData['CPUmodel']}"
 
-        country = CI_df.loc[CI_df.location == aggData['location'], 'countryName'].values[0]
-        region = CI_df.loc[CI_df.location == aggData['location'], 'regionName'].values[0]
+        country = data_dict.CI_df.loc[data_dict.CI_df.location == aggData['location'], 'countryName'].values[0]
+        region = data_dict.CI_df.loc[data_dict.CI_df.location == aggData['location'], 'regionName'].values[0]
 
         if region == 'Any':
             textRegion = ''
