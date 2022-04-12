@@ -1,0 +1,132 @@
+index,,,,in gCO2e/kWh,,"Country, Region or World",
+location,continentName,countryName,regionName,carbonIntensity,Type,source,comments
+ZA,Africa,South Africa,Any,928,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+CN,Asia,China,Any,555,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+CN-HK,Asia,China,Hong Kong,755,Region,carbonfootprint (June 2020 v1.4) and Hong Kong Electric Company (2019) and CLP Group (2019),Combined generation and T&D factor
+IN,Asia,India,Any,708,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+ID,Asia,Indonesia,Any,761,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+JP,Asia,Japan,Any,506,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+KR,Asia,Korea,Any,500,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+SG,Asia,Singapore,Any,418.8,Country,carbonfootprint (June 2020 v1.4) and Singapore Energy Market Authority (EMA),Combined generation and T&D factor
+TH,Asia,Thailand,Any,497,Country,carbonfootprint (June 2020 v1.4) and Energy Policy and Planning Office (EPPO) Thai Government Ministry of Energy,Combined generation and T&D factor
+AU,Oceania,Australia,Any,880,Country,carbonfootprint (June 2020 v1.4) and Australian Government,Combined generation and T&D factor
+NZ,Oceania,New Zealand,Any,105.1,Country,carbonfootprint (June 2020 v1.4) and Ministry for the Environment https://www.mfe.govt.nz/node/18670/,"Emission factors published in 2019, based on 2018 national inventory which is based on 2016 data."
+SA,Asia,Saudi Arabia,Any,732,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+TR,Asia,Turkey,Any,481,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+AE,Asia,United Arab Emirates,Any,425.8,Country,carbonfootprint (June 2020 v1.4) and Dubai Electricity & Water Authority (sustainability report 2018),Generation factor only
+CA,North America,Canada,Any,130,Country,carbonfootprint (June 2020 v1.4) and UN Framework Convention on Climate Change,Combined generation and T&D factor
+MX,North America,Mexico,Any,449,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+US,North America,United States of America,Any,453.22,Country,carbonfootprint (June 2020 v1.4) and US Env Protection Agency (EPA) eGrid,Combined generation and T&D factor
+AR,South America,Argentina,Any,313,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+BR,South America,Brazil,Any,74,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+AT,Europe,Austria,Any,132.86,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+BE,Europe,Belgium,Any,153.13,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+BG,Europe,Bulgaria,Any,437.37,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+HR,Europe,Croatia,Any,273.15,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+CY,Europe,Cyprus,Any,677.29,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+CZ,Europe,Czech Republic,Any,544.65,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+DK,Europe,Denmark,Any,154.44,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+EE,Europe,Estonia,Any,723.28,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+FI,Europe,Finland,Any,136.22,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+FR,Europe,France,Any,38.95,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+DE,Europe,Germany,Any,378.62,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+GR,Europe,Greece,Any,549.01,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+HU,Europe,Hungary,Any,252.98,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+IS,Europe,Iceland,Any,0.11,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+IE,Europe,Ireland,Any,348.04,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+IT,Europe,Italy,Any,338.54,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+LV,Europe,Latvia,Any,303.33,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+LT,Europe,Lithuania,Any,149.13,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+LU,Europe,Luxembourg,Any,139.39,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+MT,Europe,Malta,Any,370.6,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+NL,Europe,Netherlands,Any,452.07,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+NO,Europe,Norway,Any,11.18,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+PL,Europe,Poland,Any,791.07,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+PT,Europe,Portugal,Any,252.55,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+RO,Europe,Romania,Any,310.11,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+RU,Europe,Russian Federation,Any,325,Country,carbonfootprint (June 2020 v1.4) and Climate Transparency (2019 Report),Emissions intensity of the power sector
+RS,Europe,Serbia,Any,762.53,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+SK,Europe,Slovakia,Any,151.1,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+SI,Europe,Slovenia,Any,243.85,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+ES,Europe,Spain,Any,220.26,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+SE,Europe,Sweden,Any,11.89,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB),Production mix factor
+CH,Europe,Switzerland,Any,11.82,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB) ,Production mix factor
+GB,Europe,United Kingdom,Any,253.19,Country,carbonfootprint (June 2020 v1.4) and Association of Issuing Bodies (AIB) ,Generation & transmission & distribution factors
+US-AK,North America,United States of America,Alaska,435.97,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-AL,North America,United States of America,Alabama,414.05,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-AR,North America,United States of America,Arkansas,581.39,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-AZ,North America,United States of America,Arizona,463.3,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-CA,North America,United States of America,California,201.13,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-CO,North America,United States of America,Colorado,653.44,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-CT,North America,United States of America,Connecticut,243,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-DC,North America,United States of America,Washington DC,209.81,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-DE,North America,United States of America,Delaware,429.41,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-FL,North America,United States of America,Florida,451.98,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-GA,North America,United States of America,Georgia,444.38,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-HI,North America,United States of America,Hawaii,729.13,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-IA,North America,United States of America,Iowa,513.78,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-ID,North America,United States of America,Idaho,76.59,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-IL,North America,United States of America,Illinois,390.38,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-IN,North America,United States of America,Indiana,833.82,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-KS,North America,United States of America,Kansas,475.25,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-KY,North America,United States of America,Kentucky,875.34,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-LA,North America,United States of America,Louisiana,400.26,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MA,North America,United States of America,Massachusetts,349.97,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MD,North America,United States of America,Maryland,401.15,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-ME,North America,United States of America,Maine,127.86,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MI,North America,United States of America,Michigan,532.1,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MN,North America,United States of America,Minnesota,478.4,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MO,North America,United States of America,Missouri,816.85,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MS,North America,United States of America,Mississip,438.49,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-MT,North America,United States of America,Montana,555.56,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NC,North America,United States of America,North Carolina,383.42,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-ND,North America,United States of America,North Dakota,723.33,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NE,North America,United States of America,Nebraska,675.98,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NH,North America,United States of America,New Hampshire,145.82,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NJ,North America,United States of America,New Jersey,239.47,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NM,North America,United States of America,New Mexico,638.7,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NV,North America,United States of America,Nevada,355.76,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-NY,North America,United States of America,New York,199.61,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-OH,North America,United States of America,Ohio,634.21,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-OK,North America,United States of America,Oklahoma,426.03,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-OR,North America,United States of America,Oregon,149.7,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-PA,North America,United States of America,Pennsylvania,376.21,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-RI,North America,United States of America,Rhode Island,414.27,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-SC,North America,United States of America,South Carolina,302.63,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-SD,North America,United States of America,South Dakota,247.96,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-TN,North America,United States of America,Tennessee,356.85,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-TX,North America,United States of America,Texas,468.98,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-UT,North America,United States of America,Utah,766.79,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-VA,North America,United States of America,Virginia,354.25,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-VT,North America,United States of America,Vermont,27.38,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-WA,North America,United States of America,Washington,95.34,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-WI,North America,United States of America,Wisconsin,665.83,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-WV,North America,United States of America,West Virginia,935.4,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+US-WY,North America,United States of America,Wyoming,983.3,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-AB,North America,Canada,Alberta,680,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-BC,North America,Canada,British Columbia,12.8,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-MT,North America,Canada,Manitoba,1.4,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-NB,North America,Canada,New Brunswick,400,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-NL,North America,Canada,Newfoundland and Labrador,27,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-NS,North America,Canada,Nova Scotia,760,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-NT,North America,Canada,Northwest Territories,160,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-NU,North America,Canada,Nunavut,890,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-ON,North America,Canada,Ontario,30,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-PE,North America,Canada,Prince Edward Island,14,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-QC,North America,Canada,Quebec,1.7,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-SK,North America,Canada,Saskatchewan,710,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+CA-YT,North America,Canada,Yukon Territory,79,Region,carbonfootprint (June 2020 v1.4),Figures from 2018 (published in 2020)
+AU-ACT,Oceania,Australia,Australian Capital Territory,900,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-NSW,Oceania,Australia,New South Wales,900,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-NT,Oceania,Australia,Northern Territory,710,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-NT2,Oceania,Australia,Northern Territory (Darwin Katherine Interconnected System),550,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-QLD,Oceania,Australia,Queensland,930,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-SA,Oceania,Australia,South Australia,540,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-TAS,Oceania,Australia,Tasmania,170,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-VIC,Oceania,Australia,Victoria,1120,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-WA1,Oceania,Australia,Western Australia (North Western Interconnected System),590,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+AU-WA2,Oceania,Australia,Western Australia (South West Interconnected System),730,Region,carbonfootprint (June 2020 v1.4),Figures from 2017/18 (published in 2019)
+GM-BJL,Africa,"Gambia, The",Any,700,Region,"For Banjul region, Energy mix (https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2013/RRA_Gambia.pdf) and GHG of HFO power plants (https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=13&cad=rja&uact=8&ved=2ahUKEwiP46WT_qjnAhXGOcAKHXnSB1AQFjAMegQIBRAB&url=https%3A%2F%2Fidbinvest.org%2Fen%2Fdownload%2F6253&usg=AOvVaw3_YnEh1UVtiuHlNyCvO4G2)",
+WORLD,World,Any,Any,475,World,https://www.iea.org/reports/global-energy-co2-status-report-2019/emissions,
+TW,Asia,China,Taiwan,509,Region,https://energypedia.info/wiki/Energy_Transition_in_Taiwan,
+IL,Asia,Israel,Any,580,Country,https://www.electricitymap.org (06/10/2020),

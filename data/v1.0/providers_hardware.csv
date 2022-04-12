@@ -1,0 +1,2 @@
+index,CPU/GPU/TPU,"Must match the models in ""TDP_cpu"" or ""TDP_gpu""",
+provider,type,model,source
