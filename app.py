@@ -22,6 +22,8 @@ import pycountry_convert as pc
 
 from html_layout import create_appLayout
 
+current_version = 'v2.2'
+
 #############
 # LOAD DATA #
 #############
@@ -132,16 +134,7 @@ def load_data(data_dir):
     data_dict.refValues_df.drop(['source'], axis=1, inplace=True)
     data_dict.refValues_dict = pd.Series(data_dict.refValues_df.value.values,index=data_dict.refValues_df.variable).to_dict()
 
-    # return data_dict.cpu_df, data_dict.gpu_df, data_dict.cores_dict, data_dict.pue_df, data_dict.hardware_df, \
-    #        data_dict.CI_df, data_dict.cloudDatacenters_df, data_dict.datacenters_df, \
-    #        data_dict.providers_withoutDC, data_dict.providersNames_df, data_dict.refValues_dict # FIXME: TO REMOVE
-
     return data_dict
-
-# I'm here
-
-# cpu_df, gpu_df, cores_dict, pue_df, hardware_df, CI_df, cloudDatacenters_df, datacenters_df, \
-# providers_withoutDC, providersNames_df, refValues_dict = load_data(os.path.join(data_dir,'latest')) # FIXME: TO REMOVE
 
 data_dict = load_data(os.path.join(data_dir,'latest'))
 
@@ -165,9 +158,9 @@ platformType_options = [
                                                           'platformType']].drop_duplicates().apply(tuple, axis=1)) +
                             [('Personal computer', 'personalComputer')] +
                             [('Local server', 'localServer')]
-]
+] # TODO: [old_versions]
 
-def build_coreModels_options():
+def build_coreModels_options(): # TODO: [old_versions]
     coreModels_options = dict()
     for coreType in ['CPU','GPU']:
         availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
@@ -178,17 +171,17 @@ def build_coreModels_options():
         ]
     return coreModels_options
 
-coreModels_options = build_coreModels_options()
+coreModels_options = build_coreModels_options() # TODO: [old_versions]
 
 yesNo_options = [
     {'label': 'Yes', 'value': 'Yes'},
     {'label': 'No', 'value': 'No'}
 ]
 
-continentsList = list(set(data_dict.CI_df.continentName))
+continentsList = list(set(data_dict.CI_df.continentName)) # TODO: [old_versions]
 continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
 
-def availableLocations_continent(selected_provider):
+def availableLocations_continent(selected_provider): # TODO: [old_versions]
     availableLocations = data_dict.datacenters_df.loc[data_dict.datacenters_df.provider == selected_provider, 'location'].to_list()
     availableLocations = list(set(availableLocations))
 
@@ -196,7 +189,7 @@ def availableLocations_continent(selected_provider):
 
     return availableOptions
 
-def availableOptions_servers(selected_provider,selected_continent):
+def availableOptions_servers(selected_provider,selected_continent): # TODO: [old_versions]
     locationsINcontinent = data_dict.CI_df.loc[data_dict.CI_df.continentName == selected_continent, "location"].values
 
     availableOptions = data_dict.datacenters_df.loc[
@@ -208,12 +201,12 @@ def availableOptions_servers(selected_provider,selected_continent):
 
     return availableOptions
 
-def availableOptions_country(selected_continent):
+def availableOptions_country(selected_continent): # TODO: [old_versions]
     availableOptions = list(set(data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent), 'countryName']))
     availableOptions = sorted(availableOptions)
     return availableOptions
 
-def availableOptions_region(selected_continent,selected_country):
+def availableOptions_region(selected_continent,selected_country): # TODO: [old_versions]
     availableOptions = data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent) &
                                  (data_dict.CI_df.countryName == selected_country)]
     availableOptions = availableOptions.sort_values(by=['regionName'])
@@ -264,7 +257,7 @@ layout_plots = dict(
 )
 
 ## make map
-
+# TODO: [old_versions] Probably not worth changing the map?
 map_df = data_dict.CI_df.loc[data_dict.CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
@@ -342,9 +335,10 @@ default_values = dict(
     usageGPUradio='No',
     PUEradio='No',
     PSFradio='No',
+    appVersion=current_version,
 )
 
-defaultPUE = data_dict.pue_df.loc[data_dict.pue_df.provider == 'Unknown', 'PUE'][0]
+defaultPUE = data_dict.pue_df.loc[data_dict.pue_df.provider == 'Unknown', 'PUE'][0] # TODO: [old_versions]
 
 
 ##############
@@ -372,6 +366,10 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
+appVersions_options_list = [x for x in os.listdir(data_dir) if x[0]=='v']
+appVersions_options_list.sort(reverse=True)
+appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
+
 app.layout = create_appLayout(
     platformType_options=platformType_options,
     coreModels_options=coreModels_options,
@@ -379,6 +377,7 @@ app.layout = create_appLayout(
     image_dir=image_dir,
     mapCI=mapCI,
     location_continentsList=continentsDict,
+    appVersions_options=appVersions_options,
 )
 
 ##################
@@ -392,7 +391,7 @@ def unlist(x):
     else:
         return x
 
-def validateInput(input_dict):
+def validateInput(input_dict): # TODO: [old_versions]
     '''
     Validate the input, either from a url or others
     :param input_dict:
@@ -425,7 +424,7 @@ def validateInput(input_dict):
                 assert new_value in [x['value'] for x in platformType_options]
             elif key == 'provider':
                 if unlist(input_dict['platformType']) == 'cloudComputing':
-                    assert new_value in data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other']
+                    assert new_value in data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other'] # TODO: [old_versions]
             elif key == 'serverContinent':
                 assert new_value in availableLocations_continent(unlist(input_dict['provider'])) + ['other']
             elif key == 'server':
@@ -439,6 +438,8 @@ def validateInput(input_dict):
             elif key == 'PUE':
                 new_value = float(new_value)
                 assert new_value >= 1
+            elif key == 'appVersion':
+                assert new_value in (appVersions_options_list+[current_version])
             else:
                 assert False, 'Unknown key'
 
@@ -482,6 +483,7 @@ def prepURLqs(url_search):
         Output('usageGPU_radio','value'),
         Output('pue_radio','value'),
         Output('PSF_radio', 'value'),
+        Output('appVersions_dropdown','value'),
     ],
     [
         Input('url','search'),
@@ -531,7 +533,7 @@ def set_providers(selected_platform):
     Output('provider_dropdown', 'options'),
     [Input('platformType_dropdown', 'value')],
 )
-def set_providers(selected_platform):
+def set_providers(selected_platform): # TODO: [old_versions]
     '''
     List options for the "provider" box
     '''
@@ -1058,6 +1060,27 @@ def display_confirm(clicks):
     if clicks is not None:
         return True
     return False
+
+## CHANGE APP VERSION ##
+
+@app.callback(
+    Output('oldVersions_div','style'),
+    [
+        Input('oldVersion_link','n_clicks'),
+        Input('appVersions_dropdown','value')
+    ],
+    [
+        State('oldVersions_div', 'style')
+    ]
+)
+def display_oldVersion(clicks, version, oldStyle):
+    if (clicks is not None)|((version is not None)&(version != current_version)):
+        print(clicks, version)
+        print('Hey')
+        return {'display':'flex'}
+    else:
+        print(oldStyle)
+        return oldStyle
 
 # app.clientside_callback(
 #     clientside_function = ClientsideFunction(
@@ -1816,7 +1839,7 @@ def fillin_report_text(aggData):
         > This algorithm runs in {textRuntime} on {textCores},
         > and draws {aggData['text_energyNeeded']}. 
         > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['text_treeYear']}
-        (calculated using green-algorithms.org v2.2 \[1\]).
+        (calculated using green-algorithms.org {current_version} \[1\]).
         '''
 
         return myText

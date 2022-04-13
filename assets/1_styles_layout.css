@@ -170,6 +170,14 @@ hr {
     margin-bottom: 10px;
     margin-top: 10px;
     cursor: pointer;
+    width: 50%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.two-buttons {
+    display: flex;
 }
 
 /*

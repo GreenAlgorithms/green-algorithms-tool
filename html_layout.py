@@ -43,6 +43,7 @@ def create_appLayout(
         image_dir,
         mapCI,
         location_continentsList,
+        appVersions_options
 ):
     # TODO include all non-dynamic options here directly
     appLayout = html.Div(
@@ -480,9 +481,41 @@ def create_appLayout(
 
                     html.Div(
                         [
-                            html.P("Reset", id='reset_link'),
+                            html.Div(
+                                [
+                                    html.P("Reset", id='reset_link'),
+                                ],
+                                className='reset-button'
+                            ),
+                            html.Div(
+                                [
+                                    html.P("Change app version", id='oldVersion_link'),
+                                ],
+                                className='reset-button'
+                            ),
                         ],
-                        className='reset-button'
+                        className='two-buttons'
+                    ),
+
+                    html.Div(
+                        [
+                            html.Label("App version"),
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="appVersions_dropdown",
+                                        options=appVersions_options,
+                                        className='bottom-dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields"
+                            )
+                        ],
+                        className='form-row short-input',
+                        id='oldVersions_div',
+                        style=dict(display='none'),
                     ),
 
                     html.P(
