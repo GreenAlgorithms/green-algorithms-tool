@@ -56,87 +56,121 @@ class dotdict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-def load_data(data_dir):
+def load_data(data_dir, **kwargs):
 
     data_dict = dotdict()
 
+    for k,v in kwargs.items():
+        data_dict[k] = v
+
     ### CPU ###
-    data_dict.cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
+    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
                          sep=',', skiprows=1)
-    data_dict.cpu_df.drop(['source'], axis=1, inplace=True)
+    cpu_df.drop(['source'], axis=1, inplace=True)
 
     ### GPU ###
-    data_dict.gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
+    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
                          sep=',', skiprows=1)
-    data_dict.gpu_df.drop(['source'], axis=1, inplace=True)
+    gpu_df.drop(['source'], axis=1, inplace=True)
 
     # Dict of dict with all the possible models
     # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
     data_dict.cores_dict = dict()
-    data_dict.cores_dict['CPU'] = pd.Series(data_dict.cpu_df.TDP_per_core.values,index=data_dict.cpu_df.model).to_dict()
-    data_dict.cores_dict['GPU'] = pd.Series(data_dict.gpu_df.TDP_per_core.values,index=data_dict.gpu_df.model).to_dict()
+    data_dict.cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
+    data_dict.cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
 
     ### PUE ###
-    data_dict.pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
+    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
                          sep=',', skiprows=1)
-    data_dict.pue_df.drop(['source'], axis=1, inplace=True)
+    pue_df.drop(['source'], axis=1, inplace=True)
+
+    data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
 
     ### HARDWARE ###
-    data_dict.hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
-                              sep=',', skiprows=1)
-    data_dict.hardware_df.drop(['source'], axis=1, inplace=True)
+    # hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
+    #                           sep=',', skiprows=1)
+    # hardware_df.drop(['source'], axis=1, inplace=True)
 
     ### OFFSET ###
-    # TODO include offset of cloud providers
     # offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
     #                         sep=',', skiprows=1)
     # offset_df.drop(['source'], axis=1, inplace=True)
 
     ### CARBON INTENSITY BY LOCATION ###
-
-    # TODO Use live electricitymap API for evaluation
-    data_dict.CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
+    CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                          sep=',', skiprows=1)
-    check_CIcountries(data_dict.CI_df)
-    data_dict.CI_df.drop(['source','Type'], axis=1, inplace=True)
-    # CI_dict = pd.Series(data_dict.CI_df.carbonIntensity.values,index=data_dict.CI_df.location).to_dict()
+    check_CIcountries(CI_df)
+    assert len(set(CI_df.location)) == len(CI_df.location)
 
-    data_dict.CI_df['ISO3'] = data_dict.CI_df.location.apply(iso2_to_iso3)
+    data_dict.CI_dict_byLoc = dict()
+    for location in CI_df.location:
+        foo = dict()
+        for col in ['continentName','countryName','regionName','carbonIntensity']:
+            foo[col] = CI_df.loc[CI_df.location == location,col].values[0]
+        data_dict.CI_dict_byLoc[location] = foo
+
+    data_dict.CI_dict_byName = dict()
+    for continent in set(CI_df.continentName):
+        foo = CI_df.loc[CI_df.continentName == continent]
+        data_dict.CI_dict_byName[continent] = dict()
+        for country in set(foo.countryName):
+            bar = foo.loc[foo.countryName == country]
+            data_dict.CI_dict_byName[continent][country] = dict()
+            for region in set(bar.regionName):
+                baar = bar.loc[bar.regionName == region]
+                data_dict.CI_dict_byName[continent][country][region] = dict()
+                data_dict.CI_dict_byName[continent][country][region]['location'] = baar.location.values[0]
+                data_dict.CI_dict_byName[continent][country][region]['carbonIntensity'] = baar.carbonIntensity.values[0]
 
     ### CLOUD DATACENTERS ###
-    # TODO update all cloud datacenters
-    data_dict.cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
+    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
                                       sep=',', skiprows=1)
+    data_dict.providers_withoutDC = ['aws']
 
     ### LOCAL DATACENTERS ###
-    # TODO: include local datacentres
     # localDatacenters_df = pd.read_csv(os.path.join(data_dir, "localProviders_datacenters.csv"),
     #                                   sep=',', skiprows=1)
     # datacenters_df = pd.concat([data_dict.cloudDatacenters_df, localDatacenters_df], axis = 1)
 
-    # Create final datacentre DF
-    data_dict.datacenters_df = data_dict.cloudDatacenters_df
+    datacenters_df = cloudDatacenters_df
+
     # Remove datacentres with unknown CI
-    data_dict.datacenters_df.dropna(subset=['location'], inplace=True)
-    # TODO: add data centres from AWS
-    data_dict.providers_withoutDC = ['aws']
-    # datacenters_dict = dict()
-    # for col in data_dict.datacenters_df.columns:
-    #     datacenters_dict[col] = list(data_dict.datacenters_df[col].dropna().values)
+    datacenters_df.dropna(subset=['location'], inplace=True)
+
+    # Create unique names (in case some names are shared between providers)
+    for x in set(datacenters_df.provider):
+        foo = datacenters_df.loc[datacenters_df.provider == x]
+        assert len(foo.Name) == len(set(foo.Name))
+
+    datacenters_df['name_unique'] = datacenters_df.provider + ' / ' + datacenters_df.Name
+
+    assert len(datacenters_df.name_unique) == len(set(datacenters_df.name_unique))
+
+    data_dict.datacenters_dict_byProvider = datacenters_df.groupby('provider')[['Name','name_unique','location','PUE']].apply(lambda x:x.set_index('Name', drop=False).to_dict(orient='index')).to_dict()
+    data_dict.datacenters_dict_byName = datacenters_df[['provider','Name','name_unique','location','PUE']].set_index('name_unique', drop=False).to_dict(orient='index')
 
     ### PROVIDERS CODES AND NAMES ###
-    data_dict.providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
+    providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
                                     sep=',', skiprows=1)
 
+    data_dict.providersTypes = pd.Series(providersNames_df.platformName.values, index=providersNames_df.platformType).to_dict()
+
+    data_dict.platformName_byType = dict()
+    for platformType in set(providersNames_df.platformType):
+        foo = providersNames_df.loc[providersNames_df.platformType == platformType]
+        data_dict.platformName_byType[platformType] = pd.Series(providersNames_df.providerName.values, index=providersNames_df.provider).to_dict()
+
     ### REFERENCE VALUES
-    data_dict.refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
+    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
                                sep=',', skiprows=1)
-    data_dict.refValues_df.drop(['source'], axis=1, inplace=True)
-    data_dict.refValues_dict = pd.Series(data_dict.refValues_df.value.values,index=data_dict.refValues_df.variable).to_dict()
+    refValues_df.drop(['source'], axis=1, inplace=True)
+    data_dict.refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
 
     return data_dict
 
-data_dict = load_data(os.path.join(data_dir,'latest'))
+# data_dict = load_data(os.path.join(data_dir,'latest'))
+data_dict = load_data(os.path.join(data_dir,'v2.1'), version = 'v2.1') # TODO: Just for debugging, to change before release
+print()
 
 ########################
 # OPTIONS FOR DROPDOWN #
@@ -154,11 +188,10 @@ def put_value_first(L, value):
 
 platformType_options = [
     {'label': k,
-     'value': v} for k,v in list(data_dict.providersNames_df.loc[:,['platformName',
-                                                          'platformType']].drop_duplicates().apply(tuple, axis=1)) +
-                            [('Personal computer', 'personalComputer')] +
-                            [('Local server', 'localServer')]
-] # TODO: [old_versions]
+     'value': v} for v,k in list(data_dict.providersTypes.items()) +
+                            [('personalComputer', 'Personal computer')] +
+                            [('localServer', 'Local server')]
+]
 
 def build_coreModels_options(): # TODO: [old_versions]
     coreModels_options = dict()
@@ -178,43 +211,80 @@ yesNo_options = [
     {'label': 'No', 'value': 'No'}
 ]
 
-continentsList = list(set(data_dict.CI_df.continentName)) # TODO: [old_versions]
+continentsList = list(data_dict.CI_dict_byName.keys()) # TODO: [old_versions]
 continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
 
 def availableLocations_continent(selected_provider): # TODO: [old_versions]
-    availableLocations = data_dict.datacenters_df.loc[data_dict.datacenters_df.provider == selected_provider, 'location'].to_list()
-    availableLocations = list(set(availableLocations))
+    foo = data_dict.datacenters_dict_byProvider.get(selected_provider)
+    if foo is not None:
+        availableLocations = [x['location'] for x in foo.values()]
+        availableLocations = list(set(availableLocations))
 
-    availableOptions = list(set(data_dict.CI_df.loc[data_dict.CI_df.location.isin(availableLocations), 'continentName']))
+        availableOptions = list(set([data_dict.CI_dict_byLoc[x]['continentName'] for x in availableLocations]))
 
-    return availableOptions
+        return availableOptions
+    else:
+        return []
 
 def availableOptions_servers(selected_provider,selected_continent): # TODO: [old_versions]
-    locationsINcontinent = data_dict.CI_df.loc[data_dict.CI_df.continentName == selected_continent, "location"].values
+    foo = data_dict.CI_dict_byName.get(selected_continent)
+    if foo is not None:
+        locationsINcontinent = [region['location'] for country in foo.values() for region in country.values()]
+    else:
+        locationsINcontinent = []
 
-    availableOptions = data_dict.datacenters_df.loc[
-        (data_dict.datacenters_df.provider == selected_provider) &
-        (data_dict.datacenters_df.location.isin(locationsINcontinent))
-        ]
+    bar = data_dict.datacenters_dict_byProvider.get(selected_provider)
+    if bar is not None:
+        availableOptions_Names = [server['Name'] for server in bar.values() if server['location'] in locationsINcontinent]
+        availableOptions_Names.sort()
 
-    availableOptions = availableOptions.sort_values(by=['Name'])
+        availableOptions = [bar[name] for name in availableOptions_Names]
 
-    return availableOptions
+        return availableOptions
+    else:
+        return []
+
 
 def availableOptions_country(selected_continent): # TODO: [old_versions]
-    availableOptions = list(set(data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent), 'countryName']))
-    availableOptions = sorted(availableOptions)
-    return availableOptions
+    foo = data_dict.CI_dict_byName.get(selected_continent)
+    if foo is not None:
+        availableOptions = [country for country in foo]
+        availableOptions = sorted(availableOptions)
+        return availableOptions
+    else:
+        return None
 
 def availableOptions_region(selected_continent,selected_country): # TODO: [old_versions]
-    availableOptions = data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent) &
-                                 (data_dict.CI_df.countryName == selected_country)]
-    availableOptions = availableOptions.sort_values(by=['regionName'])
-    # Move Any to the first row:
-    availableOptions["new"] = range(1, len(availableOptions) + 1)
-    availableOptions.loc[availableOptions.regionName == 'Any', 'new'] = 0
-    availableOptions = availableOptions.sort_values("new").reset_index(drop='True').drop('new', axis=1)
-    return availableOptions
+    foo = data_dict.CI_dict_byName.get(selected_continent)
+    availableOptions_data = foo.get(selected_country)
+
+    if availableOptions_data is not None:
+        availableOptions_names = list(availableOptions_data.keys())
+        availableOptions_names.sort()
+        # Move Any to the first row:
+        availableOptions_names.remove('Any')
+        availableOptions_names = ['Any'] + availableOptions_names
+
+        availableOptions_loc = [availableOptions_data[x]['location'] for x in availableOptions_names]
+
+    else:
+        availableOptions_loc = []
+
+    # availableOptions = [region for region in data_dict.CI_dict_byName[selected_continent][selected_country]] # TODO: remove
+    # availableOptions.sort()
+    # # Move Any to the first row:
+    # availableOptions.remove('Any')
+    # availableOptions = ['Any'] + availableOptions
+    #
+    # availableOptions = data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent) &
+    #                              (data_dict.CI_df.countryName == selected_country)]
+    # availableOptions = availableOptions.sort_values(by=['regionName'])
+    # # Move Any to the first row:
+    # availableOptions["new"] = range(1, len(availableOptions) + 1)
+    # availableOptions.loc[availableOptions.regionName == 'Any', 'new'] = 0
+    # availableOptions = availableOptions.sort_values("new").reset_index(drop='True').drop('new', axis=1)
+
+    return availableOptions_loc
 
 ####################
 # GRAPHIC SETTINGS #
@@ -258,7 +328,10 @@ layout_plots = dict(
 
 ## make map
 # TODO: [old_versions] Probably not worth changing the map?
-map_df = data_dict.CI_df.loc[data_dict.CI_df.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
+CI_4map = pd.read_csv(os.path.join(data_dir, 'latest', "CI_aggregated.csv"), sep=',', skiprows=1)
+CI_4map['ISO3'] = CI_4map.location.apply(iso2_to_iso3)
+
+map_df = CI_4map.loc[CI_4map.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
 map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
 
 layout_map = copy.deepcopy(layout_plots)
@@ -338,7 +411,7 @@ default_values = dict(
     appVersion=current_version,
 )
 
-defaultPUE = data_dict.pue_df.loc[data_dict.pue_df.provider == 'Unknown', 'PUE'][0] # TODO: [old_versions]
+defaultPUE = data_dict.pueDefault_dict['Unknown'] # TODO: [old_versions]
 
 
 ##############
@@ -423,18 +496,20 @@ def validateInput(input_dict): # TODO: [old_versions]
             elif key == 'platformType':
                 assert new_value in [x['value'] for x in platformType_options]
             elif key == 'provider':
-                if unlist(input_dict['platformType']) == 'cloudComputing':
-                    assert new_value in data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == unlist(input_dict['platformType'])].provider.tolist() + ['other'] # TODO: [old_versions]
+                if unlist(input_dict['platformType']) == 'cloudComputing': # TODO: I don't think this if is necessary?
+                    assert (new_value in platformName_byType['cloudComputing'])|(new_value == 'other')
             elif key == 'serverContinent':
                 assert new_value in availableLocations_continent(unlist(input_dict['provider'])) + ['other']
             elif key == 'server':
-                assert new_value in availableOptions_servers(unlist(input_dict['provider']), unlist(input_dict['serverContinent'])).Name.tolist() + ["other"]
+                list_servers = availableOptions_servers(unlist(input_dict['provider']), unlist(input_dict['serverContinent']))
+                assert new_value in [x['Name'] for x in list_servers] + ["other"]
             elif key == 'locationContinent':
                 assert new_value in continentsList
             elif key == 'locationCountry':
                 assert new_value in availableOptions_country(unlist(input_dict['locationContinent']))
             elif key == 'locationRegion':
-                assert new_value in availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry'])).location.tolist()
+                list_loc = availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry']))
+                assert new_value in list_loc
             elif key == 'PUE':
                 new_value = float(new_value)
                 assert new_value >= 1
@@ -537,11 +612,20 @@ def set_providers(selected_platform): # TODO: [old_versions]
     '''
     List options for the "provider" box
     '''
-    availableOptions = data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == selected_platform]
+    # availableOptions = data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == selected_platform]
+    # listOptions = [
+    #     {'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider)) +
+    #                                         [("Other","other")]
+    # ] # TODO: remove
+
+    foo = data_dict.platformName_byType.get(selected_platform)
+    if foo is not None:
+        availableOptions = list(foo.items())
+    else:
+        availableOptions = []
 
     listOptions = [
-        {'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider)) +
-                                            [("Other","other")]
+        {'label': v, 'value': k} for k, v in availableOptions + [("other","Other")]
     ]
 
     return listOptions
@@ -558,7 +642,6 @@ def set_coreType_options(selected_provider, selected_platform):
     '''
     List of options for coreType (CPU or GPU), based on the platform/provider selected
     '''
-    # TODO: Add custom hardware for cloud providers
     availableOptions = data_dict.cores_dict.keys()
 
     # else:
@@ -740,7 +823,7 @@ def set_server_value(selected_provider,selected_continent, url_search):
             availableOptions = availableOptions_servers(selected_provider,selected_continent)
 
             try:
-                defaultValue = availableOptions.Name.values[0]
+                defaultValue = availableOptions[0]['name_unique']
             except:
                 defaultValue = None
 
@@ -760,7 +843,7 @@ def set_server_options(selected_provider,selected_continent):
 
     availableOptions = availableOptions_servers(selected_provider,selected_continent)
     # listOptions = [{'label': k, 'value': v} for k, v in zip(availableOptions.Name, availableOptions.location)]
-    listOptions = [{'label': k, 'value': k} for k in list(availableOptions.Name)+[("other")]]
+    listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
 
     return listOptions
 
@@ -876,8 +959,8 @@ def set_regions_options(selected_continent, selected_country, url_search, prev_s
     List of options and default value for regions.
     Hides region dropdown if only one possible region (or continent=World)
     '''
-    availableOptions = availableOptions_region(selected_continent, selected_country)
-    listOptions = [{'label': k, 'value': v} for k,v in zip(availableOptions.regionName, availableOptions.location)]
+    locs = availableOptions_region(selected_continent, selected_country)
+    listOptions = [{'label': data_dict.CI_dict_byLoc[loc]['regionName'], 'value': loc} for loc in locs]
 
     url = prepURLqs(url_search)
 
@@ -885,14 +968,14 @@ def set_regions_options(selected_continent, selected_country, url_search, prev_s
         defaultValue =  url['locationRegion']
     else:
         try:
-            if (prev_selectedRegion is not None) and (prev_selectedRegion in availableOptions['location'].values):
+            if (prev_selectedRegion is not None) and (prev_selectedRegion in locs):
                 defaultValue = prev_selectedRegion
             else:
-                defaultValue = availableOptions.loc[availableOptions.regionName == 'Any', 'location'].values[0]
+                defaultValue = locs[0]
         except:
             defaultValue = None
 
-    if (selected_continent == 'World')|(len(availableOptions) == 1):
+    if (selected_continent == 'World')|(len(listOptions) == 1):
         region_style = {'display': 'none'}
     else:
         region_style = {'display': 'block'}
@@ -977,7 +1060,7 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     '''
     Shows or hides the PUE question depending on the platform
     '''
-    providers_knownPUE = list(set(data_dict.pue_df.provider))
+    # providers_knownPUE = list(set(data_dict.pue_df.provider)) # TODO: to delete
 
     if selected_platform == 'localServer':
         return {'display': 'flex'}
@@ -1075,12 +1158,54 @@ def display_confirm(clicks):
 )
 def display_oldVersion(clicks, version, oldStyle):
     if (clicks is not None)|((version is not None)&(version != current_version)):
-        print(clicks, version)
-        print('Hey')
         return {'display':'flex'}
     else:
-        print(oldStyle)
         return oldStyle
+
+@app.callback(
+    Output("versioned_data", "data"),
+    [
+        Input('appVersions_dropdown','value')
+    ],
+    [
+        State("versioned_data", "data")
+    ]
+)
+def loadDataFromVersion(newVersion, oldData):
+    ## I'm here
+    print('--', newVersion)
+    print('---', appVersions_options_list + [current_version])
+
+    if newVersion is not None:
+        assert newVersion in appVersions_options_list + [current_version]
+
+        if oldData is None:
+            loadData = True
+        else:
+            print(oldData.keys())
+            print(oldData['version'])
+            print(oldData.version)
+            if oldData.version == newVersion:  # To avoid unnecessary reloading of the data
+                loadData = False
+            else:
+                loadData = True
+
+        if loadData:
+            if newVersion == current_version:
+                newData = load_data(os.path.join(data_dir, 'latest'), version = current_version)
+                print('Loading latest data')
+            else:
+                newData = load_data(os.path.join(data_dir, newVersion), version=newVersion)
+                print(f'Loading {newVersion} data')
+            print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # TODO: comment (debuguing only)
+
+            return newData
+        else:
+            return oldData
+
+    else:
+        return oldData
+
 
 # app.clientside_callback(
 #     clientside_function = ClientsideFunction(
@@ -1183,7 +1308,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     elif (server is None)|(server == 'other'):
         locationVar = None
     else:
-        locationVar = data_dict.cloudDatacenters_df.loc[data_dict.cloudDatacenters_df.Name == server, 'location'].values[0]
+        locationVar = data_dict.datacenters_dict_byName[server]['location']
     if showing(serverStyle):
         permalink_temp += f'&serverContinent={serverContinent}&server={server}'
 
@@ -1200,7 +1325,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
 
 
     if notReady:
-        print('Not enough information to display the results')
+        # print('Not enough information to display the results') # TODO: remove when not debugging
 
         output['coreType'] = None
         output['CPUmodel'] = None
@@ -1237,7 +1362,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         output['text_CE'] = '... g CO2e'
 
     else:
-        print('Updating results')
+        # print('Updating results') # TODO: remove when not debugging
         permalink += permalink_temp
         ### PUE
         if PUEradio == 'Yes':
@@ -1254,20 +1379,17 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
                 if selected_provider == 'other':
                     PUE_used = defaultPUE
                 else:
-                    foo = data_dict.cloudDatacenters_df.loc[data_dict.cloudDatacenters_df.Name == server, 'PUE'].values
+                    foo = data_dict.datacenters_dict_byName.get(server)
 
-                    if len(foo) == 0:
-                        take_default = True
-                    elif pd.isnull(foo[0]):
-                        take_default = True
+                    if foo is not None:
+                        if pd.isnull(foo['PUE']):
+                            # if we don't know the PUE of this specific data centre, or if we don't know the data centre,
+                            # we use the provider's default
+                            PUE_used = data_dict.pueDefault_dict[selected_provider]
+                        else:
+                            PUE_used = foo['PUE']
                     else:
-                        take_default = False
-                    if take_default:
-                        # if we don't know the PUE of this specific data centre, or if we don't know the data centre,
-                        # we use the provider's default
-                        PUE_used = data_dict.pue_df.loc[data_dict.pue_df.provider == selected_provider, "PUE"].values[0]
-                    else:
-                        PUE_used = foo[0]
+                        PUE_used = data_dict.pueDefault_dict[selected_provider]
 
         ### CORES
 
@@ -1320,7 +1442,7 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             permalink += f'&provider={selected_provider}'
 
         # SERVER/LOCATION
-        carbonIntensity = data_dict.CI_df.loc[data_dict.CI_df.location == locationVar, "carbonIntensity"].values[0]
+        carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
         # PSF
 
@@ -1450,9 +1572,9 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     [Input("aggregate_data", "data")],
 )
 def update_text(data):
-    text_CE = data['text_CE']
-    text_energy = data['text_energyNeeded']
-    text_ty = data['text_treeYear']
+    text_CE = data.get('text_CE')
+    text_energy = data.get('text_energyNeeded')
+    text_ty = data.get('text_treeYear')
 
     if (data['nkm_drivingEU'] != 0) & ((data['nkm_drivingEU'] >= 1e3) | (data['nkm_drivingEU'] < 0.1)):
         text_car = f"{data['nkm_drivingEU']:,.2e} km"
@@ -1618,7 +1740,7 @@ def create_bar_chart(aggData):
 
     # calculate carbon emissions for each location
     for countryCode in loc_ref.keys():
-        loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * data_dict.CI_df.loc[data_dict.CI_df.location == countryCode, "carbonIntensity"].values[0]
+        loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * data_dict.CI_dict_byLoc[countryCode]['carbonIntensity']
         loc_ref[countryCode]['opacity'] = 0.2
 
     loc_ref['You'] = dict(
@@ -1734,13 +1856,13 @@ def create_bar_chart_cores(aggData):
                 if gpu == 'other':
                     power_list.append(aggData['GPUpower'])
                 else:
-                    power_list.append(data_dict.gpu_df.loc[data_dict.gpu_df.model == gpu, 'TDP_per_core'].values[0])
+                    power_list.append(data_dict.cores_dict['GPU'][gpu])
         else:
             for cpu in list_cores:
                 if cpu == 'other':
                     power_list.append(aggData['CPUpower'])
                 else:
-                    power_list.append(data_dict.cpu_df.loc[data_dict.cpu_df.model == cpu, 'TDP_per_core'].values[0])
+                    power_list.append(data_dict.cores_dict['CPU'][cpu])
 
         power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
         power_df.sort_values(by=['corePower'], inplace=True)
@@ -1817,8 +1939,8 @@ def fillin_report_text(aggData):
                 suffixProcessor = ''
             textCores += f"{aggData['n_CPUcores']} CPU{suffixProcessor} {aggData['CPUmodel']}"
 
-        country = data_dict.CI_df.loc[data_dict.CI_df.location == aggData['location'], 'countryName'].values[0]
-        region = data_dict.CI_df.loc[data_dict.CI_df.location == aggData['location'], 'regionName'].values[0]
+        country = data_dict.CI_dict_byLoc[aggData['location']]['countryName']
+        region = data_dict.CI_dict_byLoc[aggData['location']]['regionName']
 
         if region == 'Any':
             textRegion = ''

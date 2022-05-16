@@ -48,6 +48,7 @@ def create_appLayout(
     # TODO include all non-dynamic options here directly
     appLayout = html.Div(
         [
+            dcc.Store(id="versioned_data"),
             dcc.Store(id="aggregate_data"),
             dcc.Location(id='url', refresh=False),
 
