@@ -2,10 +2,10 @@
 #currently running on Python 3.7.4
 
 import dash
-# import dash_core_components as dcc # TODO remove
-# import dash_html_components as html # TODO remove
-from dash import dcc
-from dash import html
+import dash_core_components as dcc # TODO remove
+import dash_html_components as html # TODO remove
+# from dash import dcc
+# from dash import html
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
@@ -394,6 +394,10 @@ default_values = dict(
     appVersion=current_version,
 )
 
+# rest_of_default_values = dict(
+#     serverContinent='Europe',
+# )
+
 
 ##############
 # CREATE APP #
@@ -583,16 +587,21 @@ def prepURLqs(url_search, data, keysOfInterest):
         Output('pue_radio','value'),
         Output('PSF_radio', 'value'),
         Output('appVersions_dropdown','value'),
+        Output('invalid_input', 'displayed'),
+        Output('invalid_input', 'message'),
         # Output("modal", "is_open")
     ],
     [
         Input('url','search'),
         Input('confirm_reset','submit_n_clicks'),
-        Input("close", "n_clicks")
+        # Input("close", "n_clicks")
     ],
-    [State("modal", "is_open")]
+    # [State("modal", "is_open")]
 )
-def fillInFromURL(url_search, reset_click, close_modal, is_open):
+def fillInFromURL(
+        url_search, reset_click,
+        # close_modal, is_open
+):
     '''
     Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
@@ -605,6 +614,9 @@ def fillInFromURL(url_search, reset_click, close_modal, is_open):
         return tuple(default_values.values())
 
     defaults2 = copy.deepcopy(default_values)
+
+    show_popup = False
+    popup_message = ''
 
     if (url_search is not None)&(url_search != ''):
         url = parse.parse_qs(url_search[1:])
@@ -632,13 +644,18 @@ def fillInFromURL(url_search, reset_click, close_modal, is_open):
         defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
 
         if len(invalidInputs) > 0:
-            open_modal = True
+            show_popup = True
+            popup_message = f'There seems to be some typos in this URL, ' \
+                            f'using default values for '
+            # for k,v in invalidInputs.items():
+            #     popup_message += f"{k} (\"{defaults2[k]}\" instead of \"{v}\")"
+            popup_message += f"{', '.join(list(invalidInputs.keys()))}."
 
-    if close_modal:
-        open_modal = False
+    # if close_modal:
+    #     open_modal = False
 
-    # return tuple(defaults2.values()) + (open_modal,)
-    return tuple(defaults2.values())
+    return tuple(defaults2.values()) + (show_popup,popup_message)
+    # return tuple(defaults2.values())
 
 
 ######

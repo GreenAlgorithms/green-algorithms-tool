@@ -1,9 +1,9 @@
 import dash
-# import dash_core_components as dcc # TODO remove
-# import dash_html_components as html # TODO remove
-from dash import dcc
-from dash import html
-import dash_bootstrap_components as dbc # TODO rebuild requirement file
+import dash_core_components as dcc
+import dash_html_components as html
+# from dash import dcc
+# from dash import html
+# import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
@@ -54,23 +54,23 @@ def create_appLayout(
             #### POP UP FOR INVALID INPUTS ####
 
             dcc.ConfirmDialog(
-                id='invalid-input',
+                id='invalid_input',
                 message='There seems to be a typo in this url, using default value instead.',
             ),
 
-            dbc.Modal(
-                [
-                    dbc.ModalHeader(dbc.ModalTitle("Oops")),
-                    dbc.ModalBody("There seems to be a typo in this url, using default value instead."),
-                    dbc.ModalFooter(
-                        dbc.Button(
-                            "Close", id="close", className="ms-auto", n_clicks=0
-                        )
-                    ),
-                ],
-                id="modal",
-                is_open=False,
-            ),
+            # dbc.Modal(
+            #     [
+            #         dbc.ModalHeader(dbc.ModalTitle("Oops")),
+            #         dbc.ModalBody("There seems to be a typo in this url, using default value instead."),
+            #         dbc.ModalFooter(
+            #             dbc.Button(
+            #                 "Close", id="close", className="ms-auto", n_clicks=0
+            #             )
+            #         ),
+            #     ],
+            #     id="modal",
+            #     is_open=False,
+            # ),
 
             #### HEADER ####
 
