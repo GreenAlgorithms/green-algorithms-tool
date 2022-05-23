@@ -1,6 +1,5 @@
 index,,,,in gCO2e/kWh,,"Country, Region or World"
 location,continentName,countryName,regionName,carbonIntensity,source,Type
-GM-BJL,Africa,"Gambia, The",Banjul,700,Energy mix (https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2013/RRA_Gambia.pdf) and GHG of HFO power plants (https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=13&cad=rja&uact=8&ved=2ahUKEwiP46WT_qjnAhXGOcAKHXnSB1AQFjAMegQIBRAB&url=https%3A%2F%2Fidbinvest.org%2Fen%2Fdownload%2F6253&usg=AOvVaw3_YnEh1UVtiuHlNyCvO4G2),Region
 WORLD,World,Any,Any,475,https://www.iea.org/reports/global-energy-co2-status-report-2019/emissions,World
 ZA,Africa,South Africa,Any,960.6,carbonfootprint and Climate Transparency (2018 Report),Country
 CN,Asia,China,Any,623.6,carbonfootprint and Climate Transparency (2018 Report),Country

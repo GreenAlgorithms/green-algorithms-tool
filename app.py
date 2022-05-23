@@ -7,6 +7,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
+from types import SimpleNamespace
 
 from flask import send_file # Integrating Loader IO
 
@@ -58,10 +59,12 @@ class dotdict(dict):
 
 def load_data(data_dir, **kwargs):
 
-    data_dict = dotdict()
+    data_dict0 = dict() # dotdict()
 
     for k,v in kwargs.items():
-        data_dict[k] = v
+        data_dict0[k] = v
+
+    data_dict = SimpleNamespace(**data_dict0)
 
     ### CPU ###
     cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
@@ -166,11 +169,7 @@ def load_data(data_dir, **kwargs):
     refValues_df.drop(['source'], axis=1, inplace=True)
     data_dict.refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
 
-    return data_dict
-
-# data_dict = load_data(os.path.join(data_dir,'latest'))
-data_dict = load_data(os.path.join(data_dir,'v2.1'), version = 'v2.1') # TODO: Just for debugging, to change before release
-print()
+    return data_dict # This is a SimpleNamespace
 
 ########################
 # OPTIONS FOR DROPDOWN #
@@ -186,36 +185,18 @@ def put_value_first(L, value):
         print(f'{value} not in list')
         return L
 
-platformType_options = [
-    {'label': k,
-     'value': v} for v,k in list(data_dict.providersTypes.items()) +
-                            [('personalComputer', 'Personal computer')] +
-                            [('localServer', 'Local server')]
-]
-
-def build_coreModels_options(): # TODO: [old_versions]
-    coreModels_options = dict()
-    for coreType in ['CPU','GPU']:
-        availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-        availableOptions = put_value_first(availableOptions, 'Any')
-        coreModels_options[coreType] = [
-            {'label': k, 'value': v} for k, v in list(zip(availableOptions,availableOptions)) +
-                                                 [("Other","other")]
-        ]
-    return coreModels_options
-
-coreModels_options = build_coreModels_options() # TODO: [old_versions]
-
 yesNo_options = [
     {'label': 'Yes', 'value': 'Yes'},
     {'label': 'No', 'value': 'No'}
 ]
 
-continentsList = list(data_dict.CI_dict_byName.keys()) # TODO: [old_versions]
-continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
+def availableLocations_continent(selected_provider, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        foo = data_dict.datacenters_dict_byProvider.get(selected_provider)
+    else:
+        foo = None
 
-def availableLocations_continent(selected_provider): # TODO: [old_versions]
-    foo = data_dict.datacenters_dict_byProvider.get(selected_provider)
     if foo is not None:
         availableLocations = [x['location'] for x in foo.values()]
         availableLocations = list(set(availableLocations))
@@ -226,14 +207,19 @@ def availableLocations_continent(selected_provider): # TODO: [old_versions]
     else:
         return []
 
-def availableOptions_servers(selected_provider,selected_continent): # TODO: [old_versions]
-    foo = data_dict.CI_dict_byName.get(selected_continent)
+def availableOptions_servers(selected_provider,selected_continent, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        foo = data_dict.CI_dict_byName.get(selected_continent)
+        bar = data_dict.datacenters_dict_byProvider.get(selected_provider)
+    else:
+        foo, bar = None, None
+
     if foo is not None:
         locationsINcontinent = [region['location'] for country in foo.values() for region in country.values()]
     else:
         locationsINcontinent = []
 
-    bar = data_dict.datacenters_dict_byProvider.get(selected_provider)
     if bar is not None:
         availableOptions_Names = [server['Name'] for server in bar.values() if server['location'] in locationsINcontinent]
         availableOptions_Names.sort()
@@ -245,8 +231,13 @@ def availableOptions_servers(selected_provider,selected_continent): # TODO: [old
         return []
 
 
-def availableOptions_country(selected_continent): # TODO: [old_versions]
-    foo = data_dict.CI_dict_byName.get(selected_continent)
+def availableOptions_country(selected_continent, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        foo = data_dict.CI_dict_byName.get(selected_continent)
+    else:
+        foo = None
+
     if foo is not None:
         availableOptions = [country for country in foo]
         availableOptions = sorted(availableOptions)
@@ -254,9 +245,13 @@ def availableOptions_country(selected_continent): # TODO: [old_versions]
     else:
         return None
 
-def availableOptions_region(selected_continent,selected_country): # TODO: [old_versions]
-    foo = data_dict.CI_dict_byName.get(selected_continent)
-    availableOptions_data = foo.get(selected_country)
+def availableOptions_region(selected_continent,selected_country,data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        foo = data_dict.CI_dict_byName.get(selected_continent)
+        availableOptions_data = foo.get(selected_country)
+    else:
+        availableOptions_data = None
 
     if availableOptions_data is not None:
         availableOptions_names = list(availableOptions_data.keys())
@@ -269,20 +264,6 @@ def availableOptions_region(selected_continent,selected_country): # TODO: [old_v
 
     else:
         availableOptions_loc = []
-
-    # availableOptions = [region for region in data_dict.CI_dict_byName[selected_continent][selected_country]] # TODO: remove
-    # availableOptions.sort()
-    # # Move Any to the first row:
-    # availableOptions.remove('Any')
-    # availableOptions = ['Any'] + availableOptions
-    #
-    # availableOptions = data_dict.CI_df.loc[(data_dict.CI_df.continentName == selected_continent) &
-    #                              (data_dict.CI_df.countryName == selected_country)]
-    # availableOptions = availableOptions.sort_values(by=['regionName'])
-    # # Move Any to the first row:
-    # availableOptions["new"] = range(1, len(availableOptions) + 1)
-    # availableOptions.loc[availableOptions.regionName == 'Any', 'new'] = 0
-    # availableOptions = availableOptions.sort_values("new").reset_index(drop='True').drop('new', axis=1)
 
     return availableOptions_loc
 
@@ -327,7 +308,7 @@ layout_plots = dict(
 )
 
 ## make map
-# TODO: [old_versions] Probably not worth changing the map?
+# The map is not updated when changing versions, but it's probably not an isssue
 CI_4map = pd.read_csv(os.path.join(data_dir, 'latest', "CI_aggregated.csv"), sep=',', skiprows=1)
 CI_4map['ISO3'] = CI_4map.location.apply(iso2_to_iso3)
 
@@ -411,14 +392,10 @@ default_values = dict(
     appVersion=current_version,
 )
 
-defaultPUE = data_dict.pueDefault_dict['Unknown'] # TODO: [old_versions]
-
 
 ##############
 # CREATE APP #
 ##############
-
-# TODO better favicon?
 
 external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
@@ -444,12 +421,9 @@ appVersions_options_list.sort(reverse=True)
 appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
 
 app.layout = create_appLayout(
-    platformType_options=platformType_options,
-    coreModels_options=coreModels_options,
     yesNo_options=yesNo_options,
     image_dir=image_dir,
     mapCI=mapCI,
-    location_continentsList=continentsDict,
     appVersions_options=appVersions_options,
 )
 
@@ -464,71 +438,118 @@ def unlist(x):
     else:
         return x
 
-def validateInput(input_dict): # TODO: [old_versions]
+
+def validateInput(input_dict, data_dict, keysOfInterest):
     '''
     Validate the input, either from a url or others
-    :param input_dict:
-    :return:
     '''
+
+    def validateKey(key, value):
+        new_val = copy.copy(value)
+
+        if key in ['runTime_hour', 'runTime_min', 'numberCPUs', 'numberGPUs']:
+            new_val = int(new_val)
+            assert new_val >= 0
+        elif key in ['PSF']:
+            new_val = int(new_val)
+            assert new_val >= 1
+        elif key in ['tdpCPU', 'tdpGPU', 'memory']:
+            new_val = float(new_val)
+            assert new_val >= 0
+        elif key in ['usageCPU', 'usageGPU']:
+            new_val = float(new_val)
+            assert (new_val >= 0) & (new_val <= 1)
+        elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'PSFradio']:
+            assert new_val in ['Yes', 'No']
+        elif key == 'coreType':
+            assert new_val in ['CPU', 'GPU', 'Both']
+        elif key in ['CPUmodel', 'GPUmodel']:
+            assert new_val in [x['value'] for x in coreModels_options[key[:3]]]
+        elif key == 'platformType':
+            assert new_val in [x['value'] for x in platformType_options]
+        elif key == 'provider':
+            if unlist(input_dict['platformType']) == 'cloudComputing':  # TODO: I don't think this if is necessary?
+                assert (new_val in data_dict.platformName_byType['cloudComputing']) | (new_val == 'other')
+        elif key == 'serverContinent':
+            assert new_val in availableLocations_continent(unlist(input_dict['provider']), data=vars(data_dict)) + ['other']
+        elif key == 'server':
+            list_servers = availableOptions_servers(unlist(input_dict['provider']),
+                                                    unlist(input_dict['serverContinent']),
+                                                    data=vars(data_dict))
+            assert new_val in [x['Name'] for x in list_servers] + ["other"]
+        elif key == 'locationContinent':
+            assert new_val in list(data_dict.CI_dict_byName.keys())
+        elif key == 'locationCountry':
+            assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), data=vars(data_dict))
+        elif key == 'locationRegion':
+            list_loc = availableOptions_region(unlist(input_dict['locationContinent']),
+                                               unlist(input_dict['locationCountry']), data=vars(data_dict))
+            assert new_val in list_loc
+        elif key == 'PUE':
+            new_val = float(new_val)
+            assert new_val >= 1
+        elif key == 'appVersion':
+            assert new_val in (appVersions_options_list + [current_version])
+        else:
+            assert False, 'Unknown key'
+
+        return new_val
+
+    ## CREATE DICT OF OPTIONS
+    if set(['CPUmodel','GPUmodel']) & set(input_dict.keys()):
+        coreModels_options = dict()
+        for coreType in ['CPU', 'GPU']:
+            availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
+            availableOptions = put_value_first(availableOptions, 'Any')
+            coreModels_options[coreType] = [
+                {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
+                                                     [("Other", "other")]
+            ]
+    else:
+        coreModels_options = None
+
+
+    if 'platformType' in input_dict:
+        platformType_options = [
+            {'label': k,
+             'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                     [('personalComputer', 'Personal computer')] +
+                                     [('localServer', 'Local server')]
+        ]
+    else:
+        platformType_options = None
+
     new_dict = dict()
-    for key, value in input_dict.items():
-        new_value = unlist(value)
+    wrong_imputs = dict()
+    for key in keysOfInterest:
+        new_value = unlist(input_dict[key])
+        # validateKey(key, new_value) # DEBUGONLY
 
         try:
-            if key in ['runTime_hour','runTime_min','numberCPUs','numberGPUs']:
-                new_value = int(new_value)
-                assert new_value >= 0
-            elif key in ['PSF']:
-                new_value = int(new_value)
-                assert new_value >= 1
-            elif key in ['tdpCPU','tdpGPU','memory']:
-                new_value = float(new_value)
-                assert new_value >= 0
-            elif key in ['usageCPU','usageGPU']:
-                new_value = float(new_value)
-                assert (new_value >= 0)&(new_value <= 1)
-            elif key in ['usageCPUradio','usageGPUradio','PUEradio','PSFradio']:
-                assert new_value in ['Yes','No']
-            elif key == 'coreType':
-                assert new_value in ['CPU','GPU','Both']
-            elif key in ['CPUmodel','GPUmodel']:
-                assert new_value in [x['value'] for x in coreModels_options[key[:3]]]
-            elif key == 'platformType':
-                assert new_value in [x['value'] for x in platformType_options]
-            elif key == 'provider':
-                if unlist(input_dict['platformType']) == 'cloudComputing': # TODO: I don't think this if is necessary?
-                    assert (new_value in platformName_byType['cloudComputing'])|(new_value == 'other')
-            elif key == 'serverContinent':
-                assert new_value in availableLocations_continent(unlist(input_dict['provider'])) + ['other']
-            elif key == 'server':
-                list_servers = availableOptions_servers(unlist(input_dict['provider']), unlist(input_dict['serverContinent']))
-                assert new_value in [x['Name'] for x in list_servers] + ["other"]
-            elif key == 'locationContinent':
-                assert new_value in continentsList
-            elif key == 'locationCountry':
-                assert new_value in availableOptions_country(unlist(input_dict['locationContinent']))
-            elif key == 'locationRegion':
-                list_loc = availableOptions_region(unlist(input_dict['locationContinent']),unlist(input_dict['locationCountry']))
-                assert new_value in list_loc
-            elif key == 'PUE':
-                new_value = float(new_value)
-                assert new_value >= 1
-            elif key == 'appVersion':
-                assert new_value in (appVersions_options_list+[current_version])
-            else:
-                assert False, 'Unknown key'
+            new_dict[key] = validateKey(key, new_value)
 
         except:
-            print(f'Wrong input for {key}: {new_value}')
-            new_value = None
+            print(f'Wrong input for {key}: {new_value}') # DEBUGONLY
+            wrong_imputs[key] = new_value
+            # new_value = None
 
-        new_dict[key] = new_value
+        # new_dict[key] = new_value # I'm moving that in the try so that failed values are not added
 
-    return new_dict
+    return new_dict, wrong_imputs
 
-def prepURLqs(url_search):
-    if (url_search is not None) & (url_search != ''):
-        url = validateInput(parse.parse_qs(url_search[1:]))
+def prepURLqs(url_search, data, keysOfInterest):
+    if (url_search is not None) & (url_search != '') & (data is not None):
+        url0 = parse.parse_qs(url_search[1:])
+
+        # check whether the keysOfInterest are in the url
+        commonKeys = set(keysOfInterest)&set(url0.keys())
+
+        if len(commonKeys) > 0:
+            # url1 = {key: url0[key] for key in commonKeys}
+            data_dict = SimpleNamespace(**data)
+            url, _ = validateInput(input_dict=url0, data_dict=data_dict, keysOfInterest=keysOfInterest)
+        else:
+            url = dict()
     else:
         url = dict()
     return url
@@ -540,6 +561,7 @@ def prepURLqs(url_search):
 
 ### URL-BASED QUERY ###
 # If parameters are passed on the URL, these are inputs in the app
+# In this function, it's all the values that don't have their own callbacks further down
 @app.callback(
     [
         Output('runTime_hour_input','value'),
@@ -570,23 +592,64 @@ def fillInFromURL(url_search, reset_click):
     Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
     '''
-    # validateInput(default_values) # TODO comment this out when not debugging
-
-    defaults2 = copy.deepcopy(default_values)
+    # validateInput(default_values) # DEBUGONLY
+    # print("Running fillInFromURL") # DEBUGONLY
 
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'confirm_reset' in changed_id:
         return tuple(default_values.values())
 
+    defaults2 = copy.deepcopy(default_values)
+
     if (url_search is not None)&(url_search != ''):
         url = parse.parse_qs(url_search[1:])
-        defaults2.update((k, url[k]) for k in defaults2.keys() & url.keys())
-        defaults2 = validateInput(defaults2)
+        ##
+        # Load the right dataset to validate the URL inputs
+        if 'appVersion' in url:
+            new_version = unlist(url['appVersion'])
+            print(f"Validating URL with {new_version} data") # DEBUGONLY
+        else:
+            print(f"App version not provided in URL, using default ({default_values['appVersion']})") # DEBUGONLY
+            new_version = default_values['appVersion']
+        assert new_version in (appVersions_options_list + [current_version])
+        if new_version == current_version:
+            newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
+        else:
+            newData = load_data(os.path.join(data_dir, new_version), version=new_version)
+
+        # Validate URL
+        url2, invalidInputs = validateInput(
+            input_dict=url,
+            data_dict=newData,
+            keysOfInterest=list(url.keys())
+        )
+
+        defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
+
     return tuple(defaults2.values())
+
 
 ######
 ## PLATFORM AND PROVIDER
 ################
+
+@app.callback(
+    Output('platformType_dropdown', 'options'),
+    [Input('versioned_data','data')]
+)
+def set_platform(data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+
+        platformType_options = [
+            {'label': k,
+             'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                     [('personalComputer', 'Personal computer')] +
+                                     [('localServer', 'Local server')]
+        ]
+        return platformType_options
+    else:
+        return []
 
 @app.callback(
     Output('provider_dropdown_div', 'style'),
@@ -606,29 +669,31 @@ def set_providers(selected_platform):
 
 @app.callback(
     Output('provider_dropdown', 'options'),
-    [Input('platformType_dropdown', 'value')],
+    [
+        Input('platformType_dropdown', 'value'),
+        Input('versioned_data','data')
+    ],
 )
-def set_providers(selected_platform): # TODO: [old_versions]
+def set_providers(selected_platform, data):
     '''
     List options for the "provider" box
     '''
-    # availableOptions = data_dict.providersNames_df.loc[data_dict.providersNames_df.platformType == selected_platform]
-    # listOptions = [
-    #     {'label': k, 'value': v} for k,v in list(zip(availableOptions.providerName, availableOptions.provider)) +
-    #                                         [("Other","other")]
-    # ] # TODO: remove
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
 
-    foo = data_dict.platformName_byType.get(selected_platform)
-    if foo is not None:
-        availableOptions = list(foo.items())
+        foo = data_dict.platformName_byType.get(selected_platform)
+        if foo is not None:
+            availableOptions = list(foo.items())
+        else:
+            availableOptions = []
+
+        listOptions = [
+            {'label': v, 'value': k} for k, v in availableOptions + [("other","Other")]
+        ]
+
+        return listOptions
     else:
-        availableOptions = []
-
-    listOptions = [
-        {'label': v, 'value': k} for k, v in availableOptions + [("other","Other")]
-    ]
-
-    return listOptions
+        return []
 
 ######
 ## COMPUTING CORES
@@ -636,20 +701,53 @@ def set_providers(selected_platform): # TODO: [old_versions]
 
 @app.callback(
     Output('coreType_dropdown', 'options'),
-    [Input('provider_dropdown', 'value'),
-     Input('platformType_dropdown', 'value')])
-def set_coreType_options(selected_provider, selected_platform):
+    [
+        Input('provider_dropdown', 'value'),
+        Input('platformType_dropdown', 'value'),
+        Input('versioned_data','data')
+    ])
+def set_coreType_options(selected_provider, selected_platform, data):
     '''
     List of options for coreType (CPU or GPU), based on the platform/provider selected
     '''
-    availableOptions = data_dict.cores_dict.keys()
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
 
-    # else:
-    #     availableOptions = list(set(data_dict.hardware_df.loc[data_dict.hardware_df.provider == selected_provider, 'type']))
+        availableOptions = data_dict.cores_dict.keys()
+        listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
+        return listOptions
+    else:
+        return []
 
-    listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
 
-    return listOptions
+@app.callback(
+    [
+        Output('CPUmodel_dropdown', 'options'),
+        Output('GPUmodel_dropdown', 'options')
+    ],
+    [Input('versioned_data','data')]
+)
+def set_coreOptions(data):
+    '''
+    List of options for core models
+    '''
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+
+        coreModels_options = dict()
+        for coreType in ['CPU', 'GPU']:
+            availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
+            availableOptions = put_value_first(availableOptions, 'Any')
+            coreModels_options[coreType] = [
+                {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
+                                                     [("Other", "other")]
+            ]
+
+        return coreModels_options['CPU'], coreModels_options['GPU']
+
+    else:
+        return [],[]
+
 
 @app.callback(
     [
@@ -720,17 +818,24 @@ def display_TDP4GPU(selected_coreModel):
     [
         Input('platformType_dropdown', 'value'),
         Input('provider_dropdown', 'value'),
-        Input('server_dropdown','value')
+        Input('server_dropdown','value'),
+        Input('versioned_data','data')
     ]
 )
-def display_location(selected_platform, selected_provider, selected_server):
+def display_location(selected_platform, selected_provider, selected_server, data):
     '''
     Shows either LOCATION or SERVER depending on the platform
     '''
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        providers_withoutDC = data_dict.providers_withoutDC
+    else:
+        providers_withoutDC = []
+
     show = {'display': 'flex'}
     hide = {'display': 'none'}
     if selected_platform == 'cloudComputing':
-        if selected_provider in ['other'] + data_dict.providers_withoutDC:
+        if selected_provider in ['other'] + providers_withoutDC:
             return show, hide
         elif selected_server == 'other':
             return show, show
@@ -746,17 +851,18 @@ def display_location(selected_platform, selected_provider, selected_server):
     Output('server_continent_dropdown','value'),
     [
         Input('provider_dropdown', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ]
 )
-def set_serverContinents_options(selected_provider, url_search):
+def set_serverContinents_value(selected_provider, url_search, data):
     '''
     Default value for server's continent, depending on the provider
     '''
-    availableOptions = availableLocations_continent(selected_provider)
-    url = prepURLqs(url_search)
+    availableOptions = availableLocations_continent(selected_provider, data=data)
+    url = prepURLqs(url_search, data=data, keysOfInterest=['serverContinent'])
 
-    if 'serverContinent' in url.keys():
+    if len(url)>0: # that means that serverContinent is indeed in the url
         defaultValue = url['serverContinent']
     else:
         if 'Europe' in availableOptions:
@@ -769,19 +875,22 @@ def set_serverContinents_options(selected_provider, url_search):
 
     return defaultValue
 
+
 @app.callback(
     Output('server_continent_dropdown','options'),
-    [Input('provider_dropdown', 'value')]
+    [
+        Input('provider_dropdown', 'value'),
+        Input('versioned_data','data')
+    ]
 )
-def set_serverContinents_options(selected_provider):
+def set_serverContinents_options(selected_provider, data):
     '''
     List of options and default value for server's continent, based on the provider
     '''
-    availableOptions = availableLocations_continent(selected_provider)
-
+    availableOptions = availableLocations_continent(selected_provider, data=data)
     listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
-
     return listOptions
+
 
 @app.callback(
     Output('server_dropdown','style'),
@@ -804,23 +913,25 @@ def set_server_style(selected_continent):
     [
         Input('provider_dropdown', 'value'),
         Input('server_continent_dropdown', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ]
 )
-def set_server_value(selected_provider,selected_continent, url_search):
+def set_server_value(selected_provider,selected_continent, url_search, data):
     '''
     Default value for servers, based on provider and continent
     '''
-    url = prepURLqs(url_search)
 
-    if 'server' in url.keys():
+    url = prepURLqs(url_search, data=data, keysOfInterest=['server'])
+
+    if len(url)>0:
         return url['server']
     else:
         if selected_continent == 'other':
             return 'other'
 
         else:
-            availableOptions = availableOptions_servers(selected_provider,selected_continent)
+            availableOptions = availableOptions_servers(selected_provider,selected_continent, data=data)
 
             try:
                 defaultValue = availableOptions[0]['name_unique']
@@ -834,14 +945,14 @@ def set_server_value(selected_provider,selected_continent, url_search):
     [
         Input('provider_dropdown', 'value'),
         Input('server_continent_dropdown', 'value'),
+        Input('versioned_data','data')
     ]
 )
-def set_server_options(selected_provider,selected_continent):
+def set_server_options(selected_provider,selected_continent, data):
     '''
     List of options for servers, based on provider and continent
     '''
-
-    availableOptions = availableOptions_servers(selected_provider,selected_continent)
+    availableOptions = availableOptions_servers(selected_provider,selected_continent,data=data)
     # listOptions = [{'label': k, 'value': v} for k, v in zip(availableOptions.Name, availableOptions.location)]
     listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
 
@@ -866,32 +977,51 @@ def disable_server_inputs(continent, server):
 ## LOCATION (only for local server, personal device or "other" cloud server)
 
 @app.callback(
+    Output('location_continent_dropdown', 'options'),
+    [Input('versioned_data','data')]
+)
+def set_continentOptions(data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+
+        continentsList = list(data_dict.CI_dict_byName.keys())
+        continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
+
+        return continentsDict
+    else:
+        return []
+
+@app.callback(
     Output('location_continent_dropdown', 'value'),
     [
         Input('server_continent_dropdown','value'),
         Input('server_div', 'style'),
         Input('url','search'),
-        Input('confirm_reset', 'submit_n_clicks')
+        Input('confirm_reset', 'submit_n_clicks'),
+        Input('versioned_data','data')
     ],
     [
         State('location_continent_dropdown', 'value')
     ]
 )
-def set_continent_value(selected_serverContinent, display_server, url_search,reset, prev_selectedContinent):
-    url = prepURLqs(url_search)
+def set_continent_value(selected_serverContinent, display_server, url_search,reset, data, prev_selectedContinent):
+
+    url = prepURLqs(url_search, data=data, keysOfInterest=['locationContinent'])
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    if 'locationContinent' in url.keys():
+
+    if len(url)>0:
         return url['locationContinent']
     else:
         if ('confirm_reset' in changed_id):
             return 'Europe'
-        if (prev_selectedContinent is not None):
-            return prev_selectedContinent
-        if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
+        elif (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
             # the server div is shown, so we pull the continent from there
             return selected_serverContinent
+        elif (prev_selectedContinent is not None):
+            return prev_selectedContinent
         else:
             return 'Europe'
+
 
 
 @app.callback(
@@ -903,24 +1033,24 @@ def set_continent_value(selected_serverContinent, display_server, url_search,res
     [
         Input('location_continent_dropdown', 'value'),
         Input('url','search'),
+        Input('versioned_data','data')
     ],
     [
         State('location_country_dropdown', 'value')
     ]
 )
-def set_countries_options(selected_continent, url_search, prev_selectedCountry):
+def set_countries_options(selected_continent, url_search, data, prev_selectedCountry):
     '''
     List of options and default value for countries.
     Hides country dropdown if continent=World is selected
     '''
-    url = prepURLqs(url_search)
-    # TODO add "other" country which prompts for carbon intensity
-    # TODO add custom carbon intensity
 
-    availableOptions = availableOptions_country(selected_continent)
+    url = prepURLqs(url_search, data=data, keysOfInterest=['locationCountry'])
+
+    availableOptions = availableOptions_country(selected_continent, data=data)
     listOptions = [{'label': k, 'value': k} for k in availableOptions]
 
-    if 'locationCountry' in url.keys():
+    if len(url)>0:
         defaultValue =  url['locationCountry']
     else:
         try:
@@ -947,24 +1077,28 @@ def set_countries_options(selected_continent, url_search, prev_selectedCountry):
     [
         Input('location_continent_dropdown', 'value'),
         Input('location_country_dropdown', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ],
     [
         State('location_region_dropdown', 'value'),
     ]
 
 )
-def set_regions_options(selected_continent, selected_country, url_search, prev_selectedRegion):
+def set_regions_options(selected_continent, selected_country, url_search, data, prev_selectedRegion):
     '''
     List of options and default value for regions.
     Hides region dropdown if only one possible region (or continent=World)
     '''
-    locs = availableOptions_region(selected_continent, selected_country)
-    listOptions = [{'label': data_dict.CI_dict_byLoc[loc]['regionName'], 'value': loc} for loc in locs]
+    url = prepURLqs(url_search, data=data, keysOfInterest=['locationRegion'])
 
-    url = prepURLqs(url_search)
+    locs = availableOptions_region(selected_continent, selected_country, data=data)
+    if data is not None:
+        listOptions = [{'label': data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
+    else:
+        listOptions = []
 
-    if 'locationRegion' in url.keys():
+    if len(url)>0:
         defaultValue =  url['locationRegion']
     else:
         try:
@@ -1002,18 +1136,20 @@ def display_usage_input(answer_usage):
     Output('usageCPU_input','value'),
     [
         Input('usageCPU_radio', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ]
 )
-def reset_usage_input(radio, url_search):
+def reset_usage_input(radio, url_search, data):
     if radio == 'No':
         return 1
     else:
-        url = prepURLqs(url_search)
-        if 'usageCPU' in url.keys():
+        url = prepURLqs(url_search, data=data, keysOfInterest=['usageCPU'])
+        if len(url)>0:
             return url['usageCPU']
         else:
             return 1
+
 
 @app.callback(
     Output('usageGPU_input','style'),
@@ -1032,15 +1168,16 @@ def display_usage_input(answer_usage):
     Output('usageGPU_input','value'),
     [
         Input('usageGPU_radio', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ]
 )
-def reset_usage_input(radio, url_search):
+def reset_usage_input(radio, url_search, data):
     if radio == 'No':
         return 1
     else:
-        url = prepURLqs(url_search)
-        if 'usageGPU' in url.keys():
+        url = prepURLqs(url_search, data=data, keysOfInterest=['usageGPU'])
+        if len(url) > 0:
             return url['usageGPU']
         else:
             return 1
@@ -1060,7 +1197,6 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     '''
     Shows or hides the PUE question depending on the platform
     '''
-    # providers_knownPUE = list(set(data_dict.pue_df.provider)) # TODO: to delete
 
     if selected_platform == 'localServer':
         return {'display': 'flex'}
@@ -1086,15 +1222,22 @@ def display_pue_input(answer_pue):
     Output('PUE_input','value'),
     [
         Input('pue_radio', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ]
 )
-def reset_PUE_input(radio, url_search):
+def reset_PUE_input(radio, url_search, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        defaultPUE = data_dict.pueDefault_dict['Unknown']
+    else:
+        defaultPUE = 0
+
     if radio == 'No':
         return defaultPUE
     else:
-        url = prepURLqs(url_search)
-        if 'PUE' in url.keys():
+        url = prepURLqs(url_search, data=data, keysOfInterest=['PUE'])
+        if len(url)>0:
             return url['PUE']
         else:
             return defaultPUE
@@ -1118,15 +1261,16 @@ def display_PSF_input(answer_PSF):
     Output('PSF_input','value'),
     [
         Input('PSF_radio', 'value'),
-        Input('url','search')
+        Input('url','search'),
+        Input('versioned_data','data')
     ]
 )
-def reset_PSF_input(radio, url_search):
+def reset_PSF_input(radio, url_search, data):
     if radio == 'No':
         return 1
     else:
-        url = prepURLqs(url_search)
-        if 'PSF' in url.keys():
+        url = prepURLqs(url_search, data=data, keysOfInterest=['PSF'])
+        if len(url)>0:
             return url['PSF']
         else:
             return 1
@@ -1167,44 +1311,40 @@ def display_oldVersion(clicks, version, oldStyle):
     [
         Input('appVersions_dropdown','value')
     ],
-    [
-        State("versioned_data", "data")
-    ]
+    # [
+    #     State("versioned_data", "data")
+    # ]
 )
-def loadDataFromVersion(newVersion, oldData):
-    ## I'm here
-    print('--', newVersion)
-    print('---', appVersions_options_list + [current_version])
+def loadDataFromVersion(
+        newVersion,
+        # oldData
+):
+    print('-- version:', newVersion) # DEBUGONLY
+    # print('---', appVersions_options_list + [current_version])
 
-    if newVersion is not None:
-        assert newVersion in appVersions_options_list + [current_version]
+    if newVersion is None:
+        newVersion = current_version
 
-        if oldData is None:
-            loadData = True
-        else:
-            print(oldData.keys())
-            print(oldData['version'])
-            print(oldData.version)
-            if oldData.version == newVersion:  # To avoid unnecessary reloading of the data
-                loadData = False
-            else:
-                loadData = True
+    assert newVersion in appVersions_options_list + [current_version]
 
-        if loadData:
-            if newVersion == current_version:
-                newData = load_data(os.path.join(data_dir, 'latest'), version = current_version)
-                print('Loading latest data')
-            else:
-                newData = load_data(os.path.join(data_dir, newVersion), version=newVersion)
-                print(f'Loading {newVersion} data')
-            print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # TODO: comment (debuguing only)
+    # if oldData is None:
+    #     loadData = True
+    # else:
+    #     if oldData['version'] == newVersion:  # To avoid unnecessary reloading of the data
+    #         loadData = False
+    #     else:
+    #         loadData = True
 
-            return newData
-        else:
-            return oldData
-
+    if newVersion == current_version:
+        newData = load_data(os.path.join(data_dir, 'latest'), version = current_version)
+        print('Loading latest data') # DEBUGONLY
     else:
-        return oldData
+        newData = load_data(os.path.join(data_dir, newVersion), version=newVersion)
+        print(f'Loading {newVersion} data') # DEBUGONLY
+    # print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # DEBUGONLY
+
+    return vars(newData) # to turn the SimpleNamespace into a dict that can be json serialized
+
 
 
 # app.clientside_callback(
@@ -1226,6 +1366,7 @@ def showing(style):
 @app.callback(
     Output("aggregate_data", "data"),
     [
+        Input('versioned_data','data'),
         Input("coreType_dropdown", "value"),
         Input("numberCPUs_input", "value"),
         Input("CPUmodel_dropdown", "value"),
@@ -1261,14 +1402,16 @@ def showing(style):
         State("aggregate_data", "data")
     ]
 )
-def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
+def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                            PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle,
                            existing_state):
+
     output = dict()
 
     permalink = f'https://green-algorithms.org//'
+    permalink = 'http://127.0.0.1:8050/' # DEBUGONLY
     permalink_temp = ''
 
     ### Preprocess
@@ -1300,12 +1443,19 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
     elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
         notReady = True
 
+    ## Data
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        permalink_temp += f'&appVersion={data_dict.version}'
+    else:
+        notReady = True
+
     ## Location
     if showing(locationStyle):
         # this means the "location" input is shown, so we use location instead of server
         locationVar = location
         permalink_temp += f'&locationContinent={locationContinent}&locationCountry={locationCountry}&locationRegion={location}'
-    elif (server is None)|(server == 'other'):
+    elif (server is None)|(server == 'other')|(data is None):
         locationVar = None
     else:
         locationVar = data_dict.datacenters_dict_byName[server]['location']
@@ -1323,9 +1473,8 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
             (usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None):
         notReady = True
 
-
     if notReady:
-        # print('Not enough information to display the results') # TODO: remove when not debugging
+        # print('Not enough information to display the results') # DEBUGONLY
 
         output['coreType'] = None
         output['CPUmodel'] = None
@@ -1362,9 +1511,11 @@ def aggregate_input_values(coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, 
         output['text_CE'] = '... g CO2e'
 
     else:
-        # print('Updating results') # TODO: remove when not debugging
+        # print('Updating results') # DEBUGONLY
         permalink += permalink_temp
         ### PUE
+        defaultPUE = data_dict.pueDefault_dict['Unknown']
+
         if PUEradio == 'Yes':
             PUE_used = PUE
             permalink += f'&PUEradio={PUEradio}&PUE={PUE}'
@@ -1702,189 +1853,80 @@ def create_pie_graph(aggData):
 # FIXME: looks weird with 0 emissions
 @app.callback(
     Output("barPlotComparison", "figure"),
-    [Input("aggregate_data", "data")],
+    [
+        Input("aggregate_data", "data"),
+        Input('versioned_data','data')
+    ],
 )
-def create_bar_chart(aggData):
-    layout_bar = copy.deepcopy(layout_plots)
-    # if aggData['coreType'] == 'Both':
-    #     layout_bar['height'] = 400
-    # else:
-    #     layout_bar['height'] = 350
+def create_bar_chart(aggData, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
 
-    layout_bar['xaxis'] = dict(
-        color=myColors['fontColor'],
-    )
+        layout_bar = copy.deepcopy(layout_plots)
+        # if aggData['coreType'] == 'Both':
+        #     layout_bar['height'] = 400
+        # else:
+        #     layout_bar['height'] = 350
 
-    layout_bar['yaxis'] = dict(
-        color=myColors['fontColor'],
-        title=dict(
-            text='Emissions (gCO2e)',
-            standoff=100,
-        ),
-        showspikes=False,
-        showgrid=True,
-        gridcolor=myColors['plotGrid'],
-    )
+        layout_bar['xaxis'] = dict(
+            color=myColors['fontColor'],
+        )
 
-    loc_ref = {
-        'CH':{'name':'Switzerland'},
-        'SE':{'name':'Sweden'},
-        'FR':{'name':'France'},
-        'CA':{'name':'Canada'},
-        'GB':{'name':'United Kingdom'},
-        'US':{'name':'USA'},
-        'CN':{'name':'China'},
-        'IN':{'name':'India'},
-        'AU':{'name':'Australia'}
-    }
+        layout_bar['yaxis'] = dict(
+            color=myColors['fontColor'],
+            title=dict(
+                text='Emissions (gCO2e)',
+                standoff=100,
+            ),
+            showspikes=False,
+            showgrid=True,
+            gridcolor=myColors['plotGrid'],
+        )
 
-    # calculate carbon emissions for each location
-    for countryCode in loc_ref.keys():
-        loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * data_dict.CI_dict_byLoc[countryCode]['carbonIntensity']
-        loc_ref[countryCode]['opacity'] = 0.2
+        loc_ref = {
+            'CH':{'name':'Switzerland'},
+            'SE':{'name':'Sweden'},
+            'FR':{'name':'France'},
+            'CA':{'name':'Canada'},
+            'GB':{'name':'United Kingdom'},
+            'US':{'name':'USA'},
+            'CN':{'name':'China'},
+            'IN':{'name':'India'},
+            'AU':{'name':'Australia'}
+        }
 
-    loc_ref['You'] = dict(
-        name='Your algorithm',
-        carbonEmissions=aggData['carbonEmissions'],
-        opacity=1
-    )
+        # calculate carbon emissions for each location
+        for countryCode in loc_ref.keys():
+            loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * data_dict.CI_dict_byLoc[countryCode]['carbonIntensity']
+            loc_ref[countryCode]['opacity'] = 0.2
 
-    loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
+        loc_ref['You'] = dict(
+            name='Your algorithm',
+            carbonEmissions=aggData['carbonEmissions'],
+            opacity=1
+        )
 
-    loc_df.sort_values(by=['carbonEmissions'], inplace=True)
+        loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
 
-    lines_thickness = [0] * len(loc_df)
-    lines_thickness[loc_df.index.get_loc('You')] = 4
+        loc_df.sort_values(by=['carbonEmissions'], inplace=True)
 
-    fig = go.Figure(
-        data = [
-            go.Bar(
-                x=loc_df.name.values,
-                y=loc_df.carbonEmissions.values,
-                marker = dict(
-                    color=loc_df.carbonEmissions.values,
-                    colorscale=myColors['map'],
-                    line=dict(
-                        width=lines_thickness,
-                        color=myColors['fontColor'],
-                    )
-                ),
-                hovertemplate='%{y:.0f} gCO2e<extra></extra>',
-                hoverlabel=dict(
-                    font=dict(
-                        color=myColors['fontColor'],
-                    )
-                ),
-
-            )
-        ],
-        layout = layout_bar
-    )
-
-    return fig
-
-### UPDATE BAR CHARTCPU
-@app.callback(
-    Output("barPlotComparison_cores", "figure"),
-    [Input("aggregate_data", "data")],
-)
-def create_bar_chart_cores(aggData):
-    layout_bar = copy.deepcopy(layout_plots)
-
-    layout_bar['margin']['t'] = 60
-
-    layout_bar['xaxis'] = dict(
-        color=myColors['fontColor'],
-    )
-
-    layout_bar['yaxis'] = dict(
-        color=myColors['fontColor'],
-        showspikes=False,
-        showgrid=True,
-        gridcolor=myColors['plotGrid'],
-    )
-
-    if aggData['coreType'] is None:
-        return go.Figure()
-
-    else:
-        if aggData['coreType'] in ['GPU','Both']:
-            layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
-
-            list_cores = [
-                'NVIDIA Jetson AGX Xavier',
-                'NVIDIA Tesla T4',
-                'NVIDIA GTX 1080',
-                'TPU v3',
-                'NVIDIA RTX 2080 Ti',
-                'NVIDIA GTX TITAN X',
-                'NVIDIA Tesla P100 PCIe',
-                'NVIDIA Tesla V100'
-            ]
-
-            coreModel = aggData['GPUmodel']
-
-        else:
-            layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
-
-            # TODO clean CPU core names
-            list_cores = [
-                'Ryzen 5 3500U',
-                'Xeon Platinum 9282',
-                'Xeon E5-2683 v4',
-                'Core i7-10700',
-                'Xeon Gold 6142',
-                'Core i5-10600',
-                'Ryzen 5 3600',
-                'Core i9-10920XE',
-                'Core i5-10600K',
-                'Ryzen 5 3400G',
-                'Core i3-10320',
-                'Xeon X3430'
-            ]
-
-            coreModel = aggData['CPUmodel']
-
-        if coreModel not in list_cores:
-            list_cores.append(coreModel)
-
-        power_list = []
-
-        # calculate carbon emissions for each core
-        if aggData['coreType'] in ['GPU','Both']:
-            for gpu in list_cores:
-                if gpu == 'other':
-                    power_list.append(aggData['GPUpower'])
-                else:
-                    power_list.append(data_dict.cores_dict['GPU'][gpu])
-        else:
-            for cpu in list_cores:
-                if cpu == 'other':
-                    power_list.append(aggData['CPUpower'])
-                else:
-                    power_list.append(data_dict.cores_dict['CPU'][cpu])
-
-        power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
-        power_df.sort_values(by=['corePower'], inplace=True)
-        power_df.set_index('coreModel', inplace=True)
-
-        lines_thickness = [0] * len(power_df)
-        lines_thickness[power_df.index.get_loc(coreModel)] = 4
+        lines_thickness = [0] * len(loc_df)
+        lines_thickness[loc_df.index.get_loc('You')] = 4
 
         fig = go.Figure(
             data = [
                 go.Bar(
-                    x=list(power_df.index),
-                    y=power_df.corePower.values,
+                    x=loc_df.name.values,
+                    y=loc_df.carbonEmissions.values,
                     marker = dict(
-                        color=power_df.corePower.values,
-                        colorscale='OrRd',
+                        color=loc_df.carbonEmissions.values,
+                        colorscale=myColors['map'],
                         line=dict(
                             width=lines_thickness,
                             color=myColors['fontColor'],
                         )
                     ),
-                    hovertemplate='%{y:.1f} W<extra></extra>',
+                    hovertemplate='%{y:.0f} gCO2e<extra></extra>',
                     hoverlabel=dict(
                         font=dict(
                             color=myColors['fontColor'],
@@ -1897,20 +1939,149 @@ def create_bar_chart_cores(aggData):
         )
 
         return fig
+    else:
+        return None
+
+### UPDATE BAR CHARTCPU
+@app.callback(
+    Output("barPlotComparison_cores", "figure"),
+    [
+        Input("aggregate_data", "data"),
+        Input('versioned_data','data')
+    ],
+)
+def create_bar_chart_cores(aggData, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+
+        layout_bar = copy.deepcopy(layout_plots)
+
+        layout_bar['margin']['t'] = 60
+
+        layout_bar['xaxis'] = dict(
+            color=myColors['fontColor'],
+        )
+
+        layout_bar['yaxis'] = dict(
+            color=myColors['fontColor'],
+            showspikes=False,
+            showgrid=True,
+            gridcolor=myColors['plotGrid'],
+        )
+
+        if aggData['coreType'] is None:
+            return go.Figure()
+
+        else:
+            if aggData['coreType'] in ['GPU','Both']:
+                layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
+
+                list_cores = [
+                    'NVIDIA Jetson AGX Xavier',
+                    'NVIDIA Tesla T4',
+                    'NVIDIA GTX 1080',
+                    'TPU v3',
+                    'NVIDIA RTX 2080 Ti',
+                    'NVIDIA GTX TITAN X',
+                    'NVIDIA Tesla P100 PCIe',
+                    'NVIDIA Tesla V100'
+                ]
+
+                coreModel = aggData['GPUmodel']
+
+            else:
+                layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
+
+                list_cores = [
+                    'Ryzen 5 3500U',
+                    'Xeon Platinum 9282',
+                    'Xeon E5-2683 v4',
+                    'Core i7-10700',
+                    'Xeon Gold 6142',
+                    'Core i5-10600',
+                    'Ryzen 5 3600',
+                    'Core i9-10920XE',
+                    'Core i5-10600K',
+                    'Ryzen 5 3400G',
+                    'Core i3-10320',
+                    'Xeon X3430'
+                ]
+
+                coreModel = aggData['CPUmodel']
+
+            if coreModel not in list_cores:
+                list_cores.append(coreModel)
+
+            power_list = []
+
+            # calculate carbon emissions for each core
+            if aggData['coreType'] in ['GPU','Both']:
+                for gpu in list_cores:
+                    if gpu == 'other':
+                        power_list.append(aggData['GPUpower'])
+                    else:
+                        power_list.append(data_dict.cores_dict['GPU'][gpu])
+            else:
+                for cpu in list_cores:
+                    if cpu == 'other':
+                        power_list.append(aggData['CPUpower'])
+                    else:
+                        power_list.append(data_dict.cores_dict['CPU'][cpu])
+
+            power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
+            power_df.sort_values(by=['corePower'], inplace=True)
+            power_df.set_index('coreModel', inplace=True)
+
+            lines_thickness = [0] * len(power_df)
+            lines_thickness[power_df.index.get_loc(coreModel)] = 4
+
+            fig = go.Figure(
+                data = [
+                    go.Bar(
+                        x=list(power_df.index),
+                        y=power_df.corePower.values,
+                        marker = dict(
+                            color=power_df.corePower.values,
+                            colorscale='OrRd',
+                            line=dict(
+                                width=lines_thickness,
+                                color=myColors['fontColor'],
+                            )
+                        ),
+                        hovertemplate='%{y:.1f} W<extra></extra>',
+                        hoverlabel=dict(
+                            font=dict(
+                                color=myColors['fontColor'],
+                            )
+                        ),
+
+                    )
+                ],
+                layout = layout_bar
+            )
+
+            return fig
+    else:
+        return None
 
 
 ### UPDATE THE REPORT TEXT ###
 
 @app.callback(
     Output('report_markdown', 'children'),
-    [Input("aggregate_data", "data")],
+    [
+        Input("aggregate_data", "data"),
+        Input('versioned_data','data')
+    ],
 )
-def fillin_report_text(aggData):
+def fillin_report_text(aggData, data):
 
     if (aggData['n_CPUcores'] is None)&(aggData['n_GPUs'] is None):
         return('')
-
+    elif data is None:
+        return ('')
     else:
+        data_dict = SimpleNamespace(**data)
 
         # Text runtime
         minutes = aggData['runTime_min']

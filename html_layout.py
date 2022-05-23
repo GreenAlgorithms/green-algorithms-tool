@@ -37,15 +37,11 @@ blank_figure = {
 
 
 def create_appLayout(
-        platformType_options,
-        coreModels_options,
         yesNo_options,
         image_dir,
         mapCI,
-        location_continentsList,
         appVersions_options
 ):
-    # TODO include all non-dynamic options here directly
     appLayout = html.Div(
         [
             dcc.Store(id="versioned_data"),
@@ -158,7 +154,6 @@ def create_appLayout(
                                         [
                                             dcc.Dropdown(
                                                 id="CPUmodel_dropdown",
-                                                options=coreModels_options['CPU'],
                                                 className='bottom-dropdown',
                                                 clearable=False,
                                             ),
@@ -220,7 +215,6 @@ def create_appLayout(
                                         [
                                             dcc.Dropdown(
                                                 id="GPUmodel_dropdown",
-                                                options=coreModels_options['GPU'],
                                                 className='bottom-dropdown',
                                                 clearable=False,
                                             ),
@@ -291,7 +285,6 @@ def create_appLayout(
                                 [
                                     dcc.Dropdown(
                                         id="platformType_dropdown",
-                                        options=platformType_options,
                                         clearable=False,
                                     ),
 
@@ -347,7 +340,6 @@ def create_appLayout(
                                 [
                                     dcc.Dropdown(
                                         id="location_continent_dropdown",
-                                        options=location_continentsList,
                                         clearable=False,
                                     ),
 
@@ -540,8 +532,6 @@ def create_appLayout(
                 className='container input-form'
             ),
 
-            # TODO: option for custom Carbon Intensity
-
             #### FIRST OUTPUTS ####
 
             html.Div(
@@ -551,7 +541,6 @@ def create_appLayout(
                             html.Div(
                                 [
                                     html.Img(
-                                        # TODO: make icon GHG not CO2 only
                                         src=os.path.join(image_dir, 'logo_co2.svg'),
                                         id="logo_co2",
                                         className="style-icon",
@@ -662,7 +651,6 @@ def create_appLayout(
 
                             html.Div(
                                 [
-                                    # TODO include hyperlink to flight carbon calculator
                                     html.Img(
                                         src=os.path.join(image_dir, 'logo_plane_1.svg'),
                                         id="logo_plane",
@@ -702,7 +690,6 @@ def create_appLayout(
                         ],
                         className='super-section mini-boxes'
                     ),
-                    # TODO include context in terms of train, streaming, google etc.
 
                     html.Div(
                         [
@@ -1033,7 +1020,6 @@ def create_appLayout(
                 ],
                 className='container citation footer'
             ),
-            # TODO include bibtex
 
             #### SHOW YOUR STRIPES ####
 
