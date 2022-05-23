@@ -1,6 +1,9 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+# import dash_core_components as dcc # TODO remove
+# import dash_html_components as html # TODO remove
+from dash import dcc
+from dash import html
+import dash_bootstrap_components as dbc # TODO rebuild requirement file
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
@@ -47,6 +50,27 @@ def create_appLayout(
             dcc.Store(id="versioned_data"),
             dcc.Store(id="aggregate_data"),
             dcc.Location(id='url', refresh=False),
+
+            #### POP UP FOR INVALID INPUTS ####
+
+            dcc.ConfirmDialog(
+                id='invalid-input',
+                message='There seems to be a typo in this url, using default value instead.',
+            ),
+
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle("Oops")),
+                    dbc.ModalBody("There seems to be a typo in this url, using default value instead."),
+                    dbc.ModalFooter(
+                        dbc.Button(
+                            "Close", id="close", className="ms-auto", n_clicks=0
+                        )
+                    ),
+                ],
+                id="modal",
+                is_open=False,
+            ),
 
             #### HEADER ####
 
@@ -773,7 +797,7 @@ def create_appLayout(
                     )
 
                 ],
-                className="container map",
+                className="container maps",
             ),
 
             #### DEFINITIONS ####

@@ -95,17 +95,17 @@
     ---------------------------------- MAP AND DEFINITIONS ----------------------------------------
     */
 
-    .map {
+    .maps {
         margin-right: 12px;
         width: calc((50%) - (6px));
     }
 
-    .map .graph-container {
+    .maps .graph-container {
         margin-top: 30px;
     }
 
     /*
-    .map .graph-container {
+    .maps .graph-container {
         margin-top: auto;
         margin-bottom: auto;
     }

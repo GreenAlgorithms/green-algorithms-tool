@@ -2,8 +2,10 @@
 #currently running on Python 3.7.4
 
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+# import dash_core_components as dcc # TODO remove
+# import dash_html_components as html # TODO remove
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
@@ -277,7 +279,7 @@ myColors = {
     'backgroundColor': '#f2f2f2',
     'pieChart': ['#E8A09A','#9BBFE0','#cfabd3'],
     'plotGrid':'#e6e6e6',
-    'map':['#78E7A2','#86D987','#93CB70','#9EBC5C',
+    'map1':['#78E7A2','#86D987','#93CB70','#9EBC5C',
            '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
 
 }
@@ -337,7 +339,7 @@ mapCI = go.Figure(
         locations = map_df.ISO3,
         locationmode='geojson-id',
         z=map_df.carbonIntensity.astype(float),
-        colorscale=myColors['map'],
+        colorscale=myColors['map1'],
         colorbar=dict(
             title=dict(
                 # text="Carbon <br> intensity <br> (gCO2e/kWh)",
@@ -581,13 +583,16 @@ def prepURLqs(url_search, data, keysOfInterest):
         Output('pue_radio','value'),
         Output('PSF_radio', 'value'),
         Output('appVersions_dropdown','value'),
+        # Output("modal", "is_open")
     ],
     [
         Input('url','search'),
         Input('confirm_reset','submit_n_clicks'),
-    ]
+        Input("close", "n_clicks")
+    ],
+    [State("modal", "is_open")]
 )
-def fillInFromURL(url_search, reset_click):
+def fillInFromURL(url_search, reset_click, close_modal, is_open):
     '''
     Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
@@ -626,6 +631,13 @@ def fillInFromURL(url_search, reset_click):
 
         defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
 
+        if len(invalidInputs) > 0:
+            open_modal = True
+
+    if close_modal:
+        open_modal = False
+
+    # return tuple(defaults2.values()) + (open_modal,)
     return tuple(defaults2.values())
 
 
@@ -1920,7 +1932,7 @@ def create_bar_chart(aggData, data):
                     y=loc_df.carbonEmissions.values,
                     marker = dict(
                         color=loc_df.carbonEmissions.values,
-                        colorscale=myColors['map'],
+                        colorscale=myColors['map1'],
                         line=dict(
                             width=lines_thickness,
                             color=myColors['fontColor'],
