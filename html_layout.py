@@ -51,26 +51,12 @@ def create_appLayout(
             dcc.Store(id="aggregate_data"),
             dcc.Location(id='url', refresh=False),
 
-            #### POP UP FOR INVALID INPUTS ####
+            #### POP UP FOR URL + INVALID INPUTS ####
 
             dcc.ConfirmDialog(
-                id='invalid_input',
-                message='There seems to be a typo in this url, using default value instead.',
+                id='fillIn_from_url',
+                message='Filling in values from the URL. To edit, click reset.',
             ),
-
-            # dbc.Modal(
-            #     [
-            #         dbc.ModalHeader(dbc.ModalTitle("Oops")),
-            #         dbc.ModalBody("There seems to be a typo in this url, using default value instead."),
-            #         dbc.ModalFooter(
-            #             dbc.Button(
-            #                 "Close", id="close", className="ms-auto", n_clicks=0
-            #             )
-            #         ),
-            #     ],
-            #     id="modal",
-            #     is_open=False,
-            # ),
 
             #### HEADER ####
 
@@ -539,18 +525,6 @@ def create_appLayout(
                         id="placeholder",
                         style={"display": "none"}
                     )
-
-                    # html.P(
-                    #     [
-                    #         html.A(
-                    #             ["Reset"],
-                    #             href="",
-                    #             # onclick="return false;",
-                    #             id='reset_link',
-                    #         )
-                    #     ],
-                    #     className='reset-button'
-                    # ),
 
                 ],
                 className='container input-form'

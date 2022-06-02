@@ -2,8 +2,8 @@
 #currently running on Python 3.7.4
 
 import dash
-import dash_core_components as dcc # TODO remove
-import dash_html_components as html # TODO remove
+import dash_core_components as dcc
+import dash_html_components as html
 # from dash import dcc
 # from dash import html
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -184,7 +184,7 @@ def put_value_first(L, value):
         return [value] + L
         assert len(L)+1 == n
     else:
-        print(f'{value} not in list')
+        print(f'{value} not in list') # DEBUGONLY
         return L
 
 yesNo_options = [
@@ -245,13 +245,16 @@ def availableOptions_country(selected_continent, data):
         availableOptions = sorted(availableOptions)
         return availableOptions
     else:
-        return None
+        return []
 
 def availableOptions_region(selected_continent,selected_country,data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
         foo = data_dict.CI_dict_byName.get(selected_continent)
-        availableOptions_data = foo.get(selected_country)
+        if foo is not None:
+            availableOptions_data = foo.get(selected_country)
+        else:
+            availableOptions_data = None
     else:
         availableOptions_data = None
 
@@ -408,7 +411,7 @@ external_stylesheets = [
          rel="stylesheet")
 ]
 
-print(f'Dash version: {dcc.__version__}')
+print(f'Dash version: {dcc.__version__}') # DEBUGONLY
 
 app = dash.Dash(
     __name__,
@@ -551,7 +554,6 @@ def prepURLqs(url_search, data, keysOfInterest):
         commonKeys = set(keysOfInterest)&set(url0.keys())
 
         if len(commonKeys) > 0:
-            # url1 = {key: url0[key] for key in commonKeys}
             data_dict = SimpleNamespace(**data)
             url, _ = validateInput(input_dict=url0, data_dict=data_dict, keysOfInterest=keysOfInterest)
         else:
@@ -587,40 +589,30 @@ def prepURLqs(url_search, data, keysOfInterest):
         Output('pue_radio','value'),
         Output('PSF_radio', 'value'),
         Output('appVersions_dropdown','value'),
-        Output('invalid_input', 'displayed'),
-        Output('invalid_input', 'message'),
-        # Output("modal", "is_open")
+        Output('fillIn_from_url', 'displayed'),
+        Output('fillIn_from_url', 'message'),
     ],
     [
         Input('url','search'),
-        Input('confirm_reset','submit_n_clicks'),
-        # Input("close", "n_clicks")
     ],
-    # [State("modal", "is_open")]
 )
-def fillInFromURL(
-        url_search, reset_click,
-        # close_modal, is_open
-):
+def fillInFromURL(url_search):
     '''
-    Only called once, when the page is loaded.
     :param url_search: Format is "?key=value&key=value&..."
     '''
     # validateInput(default_values) # DEBUGONLY
     # print("Running fillInFromURL") # DEBUGONLY
 
-    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    if 'confirm_reset' in changed_id:
-        return tuple(default_values.values())
+    show_popup = False
+    popup_message = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
 
     defaults2 = copy.deepcopy(default_values)
 
-    show_popup = False
-    popup_message = ''
-
     if (url_search is not None)&(url_search != ''):
+        show_popup = True
+
         url = parse.parse_qs(url_search[1:])
-        ##
+
         # Load the right dataset to validate the URL inputs
         if 'appVersion' in url:
             new_version = unlist(url['appVersion'])
@@ -644,19 +636,87 @@ def fillInFromURL(
         defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
 
         if len(invalidInputs) > 0:
-            show_popup = True
-            popup_message = f'There seems to be some typos in this URL, ' \
+            popup_message += f'\n\nThere seems to be some typos in this URL, ' \
                             f'using default values for '
-            # for k,v in invalidInputs.items():
-            #     popup_message += f"{k} (\"{defaults2[k]}\" instead of \"{v}\")"
             popup_message += f"{', '.join(list(invalidInputs.keys()))}."
 
-    # if close_modal:
-    #     open_modal = False
-
     return tuple(defaults2.values()) + (show_popup,popup_message)
-    # return tuple(defaults2.values())
 
+@app.callback(
+    [
+        Output('runTime_hour_input','disabled'),
+        Output('runTime_min_input','disabled'),
+        Output('coreType_dropdown','disabled'),
+        Output('numberCPUs_input','disabled'),
+        Output('CPUmodel_dropdown', 'disabled'),
+        Output('tdpCPU_input','disabled'),
+        Output('numberGPUs_input','disabled'),
+        Output('GPUmodel_dropdown', 'disabled'),
+        Output('tdpGPU_input','disabled'),
+        Output('memory_input','disabled'),
+        Output('platformType_dropdown','disabled'),
+        Output('provider_dropdown','disabled'),
+        Output('appVersions_dropdown','disabled'),
+        Output('location_continent_dropdown', 'disabled'),
+        Output('location_country_dropdown', 'disabled'),
+        Output('location_region_dropdown', 'disabled'),
+        Output('usageCPU_input','disabled'),
+        Output('usageGPU_input','disabled'),
+        Output('PUE_input','disabled'),
+        Output('PSF_input','disabled'),
+        Output('runTime_hour_input','style'),
+        Output('runTime_min_input','style'),
+        Output('numberCPUs_input','style'),
+        Output('tdpCPU_input','style'),
+        Output('numberGPUs_input','style'),
+        Output('tdpGPU_input','style'),
+        Output('memory_input','style'),
+        Output('usageCPU_radio','options'),
+        Output('usageGPU_radio','options'),
+        Output('pue_radio','options'),
+        Output('PSF_radio', 'options'),
+    ],
+    [
+        Input('url','search'),
+    ],
+)
+def disable_inputFromURL(url_search):
+    '''
+    Disable all the input fields when filling in from URL to avoid weird inter-dependancies
+    :param url_search:
+    :return:
+    '''
+    n_output_disable = 20
+    n_output_style = 7
+    n_radio = 4
+
+    if (url_search is not None) & (url_search != ''):
+        yesNo_options_disabled = [
+            {'label': 'Yes', 'value': 'Yes', 'disabled':True},
+            {'label': 'No', 'value': 'No', 'disabled':True}
+        ]
+
+        return (True,)*n_output_disable + ({'background-color': myColors['boxesColor']},)*n_output_style + (yesNo_options_disabled,)*n_radio
+    else:
+        return (False,)*n_output_disable + (dict(),)*n_output_style + (yesNo_options,)*n_radio
+
+@app.callback(
+    Output('url', 'search'),
+    [
+        Input('confirm_reset','submit_n_clicks'),
+    ]
+)
+def reset_url(submit_n_clicks):
+    '''
+    When clicking reset, it reloads a new pages and removes the URL
+    :param submit_n_clicks:
+    :return:
+    '''
+    # Other way to do it:
+    # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    # if ('confirm_reset' in changed_id):
+    if submit_n_clicks:
+        return ""
 
 ######
 ## PLATFORM AND PROVIDER
@@ -982,7 +1042,6 @@ def set_server_options(selected_provider,selected_continent, data):
     List of options for servers, based on provider and continent
     '''
     availableOptions = availableOptions_servers(selected_provider,selected_continent,data=data)
-    # listOptions = [{'label': k, 'value': v} for k, v in zip(availableOptions.Name, availableOptions.location)]
     listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
 
     return listOptions
@@ -994,14 +1053,18 @@ def set_server_options(selected_provider,selected_continent, data):
     ],
     [
         Input('server_continent_dropdown','value'),
-        Input('server_dropdown','value')
+        Input('server_dropdown','value'),
+        Input('url','search'),
     ]
 )
-def disable_server_inputs(continent, server):
-    if (continent=='other')|(server=='other'):
+def disable_server_inputs(continent, server, url_search):
+    if (url_search is not None) & (url_search != ''):
         return True,True
     else:
-        return False,False
+        if (continent=='other')|(server=='other'):
+            return True,True
+        else:
+            return False,False
 
 ## LOCATION (only for local server, personal device or "other" cloud server)
 
@@ -1026,24 +1089,21 @@ def set_continentOptions(data):
         Input('server_continent_dropdown','value'),
         Input('server_div', 'style'),
         Input('url','search'),
-        Input('confirm_reset', 'submit_n_clicks'),
         Input('versioned_data','data')
     ],
     [
         State('location_continent_dropdown', 'value')
     ]
 )
-def set_continent_value(selected_serverContinent, display_server, url_search,reset, data, prev_selectedContinent):
+def set_continent_value(selected_serverContinent, display_server, url_search, data, prev_selectedContinent):
 
     url = prepURLqs(url_search, data=data, keysOfInterest=['locationContinent'])
-    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
 
+    # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if len(url)>0:
         return url['locationContinent']
     else:
-        if ('confirm_reset' in changed_id):
-            return 'Europe'
-        elif (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
+        if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
             # the server div is shown, so we pull the continent from there
             return selected_serverContinent
         elif (prev_selectedContinent is not None):
@@ -1057,7 +1117,7 @@ def set_continent_value(selected_serverContinent, display_server, url_search,res
     [
         Output('location_country_dropdown', 'options'),
         Output('location_country_dropdown', 'value'),
-        Output('location_country_dropdown_div', 'style')
+        Output('location_country_dropdown_div', 'style'),
     ],
     [
         Input('location_continent_dropdown', 'value'),
@@ -1073,7 +1133,6 @@ def set_countries_options(selected_continent, url_search, data, prev_selectedCou
     List of options and default value for countries.
     Hides country dropdown if continent=World is selected
     '''
-
     url = prepURLqs(url_search, data=data, keysOfInterest=['locationCountry'])
 
     availableOptions = availableOptions_country(selected_continent, data=data)
@@ -1150,16 +1209,24 @@ def set_regions_options(selected_continent, selected_country, url_search, data, 
 
 @app.callback(
     Output('usageCPU_input','style'),
-    [Input('usageCPU_radio', 'value')]
+    [
+        Input('usageCPU_radio', 'value'),
+        Input('usageCPU_input', 'disabled')
+    ]
 )
-def display_usage_input(answer_usage):
+def display_usage_input(answer_usage, disabled):
     '''
     Show or hide the usage factor input box, based on Yes/No input
     '''
     if answer_usage == 'No':
-        return {'display': 'none'}
+        out = {'display': 'none'}
     else:
-        return {'display': 'block'}
+        out = {'display': 'block'}
+
+    if disabled:
+        out['background-color'] = myColors['boxesColor']
+
+    return out
 
 @app.callback(
     Output('usageCPU_input','value'),
@@ -1170,10 +1237,11 @@ def display_usage_input(answer_usage):
     ]
 )
 def reset_usage_input(radio, url_search, data):
+    url = prepURLqs(url_search, data=data, keysOfInterest=['usageCPU'])
+
     if radio == 'No':
         return 1
     else:
-        url = prepURLqs(url_search, data=data, keysOfInterest=['usageCPU'])
         if len(url)>0:
             return url['usageCPU']
         else:
@@ -1182,16 +1250,24 @@ def reset_usage_input(radio, url_search, data):
 
 @app.callback(
     Output('usageGPU_input','style'),
-    [Input('usageGPU_radio', 'value')]
+    [
+        Input('usageGPU_radio', 'value'),
+        Input('usageGPU_input', 'disabled')
+    ]
 )
-def display_usage_input(answer_usage):
+def display_usage_input(answer_usage, disabled):
     '''
     Show or hide the usage factor input box, based on Yes/No input
     '''
     if answer_usage == 'No':
-        return {'display': 'none'}
+        out = {'display': 'none'}
     else:
-        return {'display': 'block'}
+        out = {'display': 'block'}
+
+    if disabled:
+        out['background-color'] = myColors['boxesColor']
+
+    return out
 
 @app.callback(
     Output('usageGPU_input','value'),
@@ -1202,10 +1278,11 @@ def display_usage_input(answer_usage):
     ]
 )
 def reset_usage_input(radio, url_search, data):
+    url = prepURLqs(url_search, data=data, keysOfInterest=['usageGPU'])
+
     if radio == 'No':
         return 1
     else:
-        url = prepURLqs(url_search, data=data, keysOfInterest=['usageGPU'])
         if len(url) > 0:
             return url['usageGPU']
         else:
@@ -1236,16 +1313,24 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
 
 @app.callback(
     Output('PUE_input','style'),
-    [Input('pue_radio', 'value')]
+    [
+        Input('pue_radio', 'value'),
+        Input('PUE_input','disabled')
+    ]
 )
-def display_pue_input(answer_pue):
+def display_pue_input(answer_pue, disabled):
     '''
     Shows or hides the PUE input box
     '''
     if answer_pue == 'No':
-        return {'display': 'none'}
+        out = {'display': 'none'}
     else:
-        return {'display': 'block'}
+        out = {'display': 'block'}
+
+    if disabled:
+        out['background-color'] = myColors['boxesColor']
+
+    return out
 
 @app.callback(
     Output('PUE_input','value'),
@@ -1256,6 +1341,8 @@ def display_pue_input(answer_pue):
     ]
 )
 def reset_PUE_input(radio, url_search, data):
+    url = prepURLqs(url_search, data=data, keysOfInterest=['PUE'])
+
     if data is not None:
         data_dict = SimpleNamespace(**data)
         defaultPUE = data_dict.pueDefault_dict['Unknown']
@@ -1265,7 +1352,6 @@ def reset_PUE_input(radio, url_search, data):
     if radio == 'No':
         return defaultPUE
     else:
-        url = prepURLqs(url_search, data=data, keysOfInterest=['PUE'])
         if len(url)>0:
             return url['PUE']
         else:
@@ -1275,16 +1361,24 @@ def reset_PUE_input(radio, url_search, data):
 
 @app.callback(
     Output('PSF_input','style'),
-    [Input('PSF_radio', 'value')]
+    [
+        Input('PSF_radio', 'value'),
+        Input('PSF_input', 'disabled')
+    ]
 )
-def display_PSF_input(answer_PSF):
+def display_PSF_input(answer_PSF, disabled):
     '''
     Shows or hides the PSF input box
     '''
     if answer_PSF == 'No':
-        return {'display': 'none'}
+        out = {'display': 'none'}
     else:
-        return {'display': 'block'}
+        out = {'display': 'block'}
+
+    if disabled:
+        out['background-color'] = myColors['boxesColor']
+
+    return out
 
 @app.callback(
     Output('PSF_input','value'),
@@ -1295,10 +1389,11 @@ def display_PSF_input(answer_PSF):
     ]
 )
 def reset_PSF_input(radio, url_search, data):
+    url = prepURLqs(url_search, data=data, keysOfInterest=['PSF'])
+
     if radio == 'No':
         return 1
     else:
-        url = prepURLqs(url_search, data=data, keysOfInterest=['PSF'])
         if len(url)>0:
             return url['PSF']
         else:
@@ -1340,29 +1435,17 @@ def display_oldVersion(clicks, version, oldStyle):
     [
         Input('appVersions_dropdown','value')
     ],
-    # [
-    #     State("versioned_data", "data")
-    # ]
 )
 def loadDataFromVersion(
         newVersion,
         # oldData
 ):
     print('-- version:', newVersion) # DEBUGONLY
-    # print('---', appVersions_options_list + [current_version])
 
     if newVersion is None:
         newVersion = current_version
 
     assert newVersion in appVersions_options_list + [current_version]
-
-    # if oldData is None:
-    #     loadData = True
-    # else:
-    #     if oldData['version'] == newVersion:  # To avoid unnecessary reloading of the data
-    #         loadData = False
-    #     else:
-    #         loadData = True
 
     if newVersion == current_version:
         newData = load_data(os.path.join(data_dir, 'latest'), version = current_version)
@@ -1503,8 +1586,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         notReady = True
 
     if notReady:
-        # print('Not enough information to display the results') # DEBUGONLY
-
         output['coreType'] = None
         output['CPUmodel'] = None
         output['n_CPUcores'] = None
@@ -1540,7 +1621,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['text_CE'] = '... g CO2e'
 
     else:
-        # print('Updating results') # DEBUGONLY
         permalink += permalink_temp
         ### PUE
         defaultPUE = data_dict.pueDefault_dict['Unknown']
@@ -1625,7 +1705,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
         # PSF
-
         if PSFradio == 'Yes':
             permalink += f'&PSFradio=Yes&PSF={PSF}'
 
@@ -1786,7 +1865,6 @@ def update_text(data):
     else:
         foo = f"of a flight {data['flying_text']}"
     return foo
-    # return ["of a flight", html.Br(), "{}".format(data['flying_text'])]
 
 ### UPDATE PERMALINK ###
 
