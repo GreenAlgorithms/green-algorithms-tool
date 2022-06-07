@@ -1240,10 +1240,6 @@ def display_usage_input(answer_usage, disabled):
     ]
 )
 def reset_usage_input(radio, url_search, data):
-    print('-')
-    for i in range(len(dash.callback_context.triggered)):
-        print(dash.callback_context.triggered[i]['prop_id'])
-    print('---')
 
     url = prepURLqs(url_search, data=data, keysOfInterest=['usageCPU'])
 
