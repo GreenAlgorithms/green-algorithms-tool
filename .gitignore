@@ -4,3 +4,4 @@
 *.pyc
 .DS_Store
 .env
+*.psd

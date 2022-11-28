@@ -1524,7 +1524,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
     output = dict()
 
-    permalink = f'https://green-algorithms.org//'
+    permalink = f'http://calculator.green-algorithms.org//'
     # permalink = 'http://127.0.0.1:8050/' # DEBUGONLY
     permalink_temp = ''
 
