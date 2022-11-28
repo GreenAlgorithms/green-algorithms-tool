@@ -68,6 +68,22 @@ def create_appLayout(
                 className='container header'
             ),
 
+            html.Div(
+                [
+                    html.Center(
+                        html.P([
+                            "Check out the new ",
+                            html.B("Green Algorithms website"),
+                            ": ",
+                            html.A("www.green-algorithms.org",
+                                   href='https://www.green-algorithms.org',
+                                   target='_blank')
+                        ]),
+                    ),
+                ],
+                className='container footer permalink preprint'
+            ),
+
             #### INPUT FORM ####
 
             html.Form(
@@ -745,7 +761,8 @@ def create_appLayout(
                         html.P(["More details about the methodology in the ",
                                 html.A("methods paper",
                                        href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                                       target='_blank')
+                                       target='_blank'),
+                                "."
                                 ]),
                     ),
                 ],
