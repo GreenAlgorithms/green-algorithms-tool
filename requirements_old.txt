@@ -59,6 +59,6 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 urllib3==1.26.5
 wcwidth==0.1.8
-Werkzeug==1.0.0
+Werkzeug==2.2.3
 zipp==3.1.0
 newrelic
