@@ -4,6 +4,8 @@ A8-7680,45,4,11.3,https://www.techpowerup.com/cpu-specs/
 A9-9425 SoC,15,2,7.5,https://www.techpowerup.com/cpu-specs/
 AMD 7552,200,48,4.2,https://www.amd.com/system/files/documents/AMD-EPYC-7002-Series-Datasheet.pdf
 AMD EPYC 7251,120,8,15.0,https://www.amd.com/en/products/cpu/amd-epyc-7251
+AMD EPYC 7343,190,16,11.9,https://www.amd.com/en/products/cpu/amd-epyc-7343
+AMD EPYC 7513,200,32,6.3,https://www.amd.com/en/products/cpu/amd-epyc-7513
 Any,,,12.0,
 Athlon 3000G,35,2,17.5,https://www.techpowerup.com/cpu-specs/
 Core 2 Quad Q6600,95,4,23.8,https://www.techpowerup.com/cpu-specs/
