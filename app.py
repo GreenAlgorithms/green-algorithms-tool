@@ -1504,6 +1504,7 @@ def showing(style):
         Input("usageCPU_input", "value"),
         Input("usageGPU_radio", "value"),
         Input("usageGPU_input", "value"),
+        Input('PUEquestion_div','style'),
         Input("pue_radio", "value"),
         Input("PUE_input", "value"),
         Input("PSF_radio", "value"),
@@ -1519,7 +1520,7 @@ def showing(style):
 def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
-                           PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle,
+                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle,
                            existing_state):
 
     output = dict()
@@ -1627,11 +1628,12 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         ### PUE
         defaultPUE = data_dict.pueDefault_dict['Unknown']
 
-        if PUEradio == 'Yes':
+        if (showing(PUEdivStyle))&(PUEradio == 'Yes'):
+            # I only use the inputted PUE if the PUE box is shown AND the radio button is "Yes"
             PUE_used = PUE
             permalink += f'&PUEradio={PUEradio}&PUE={PUE}'
         else:
-            # PUE question not asked
+            # PUE question not asked or is answered by "No"
             if selected_platform == 'personalComputer':
                 PUE_used = 1
             elif selected_platform == 'localServer':
