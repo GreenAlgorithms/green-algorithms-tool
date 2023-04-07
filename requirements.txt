@@ -1,5 +1,5 @@
 attrs==22.2.0
-certifi @ file:///Users/ec2-user/ci_py311/certifi_1678321191472/work/certifi
+certifi==2022.12.7
 click==8.1.3
 coverage==7.2.3
 dash==2.9.2
