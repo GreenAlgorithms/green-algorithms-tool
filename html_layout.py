@@ -1,8 +1,7 @@
 import dash
 from dash import dcc
 from dash import html
-# from dash import dcc
-# from dash import html
+
 # import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
@@ -62,8 +61,8 @@ def create_appLayout(
 
             html.Div(
                 [
-                    html.H1("Green Algorithms"),
-                    html.P("How green are your computations?"),
+                    html.H1("Green Algorithms calculator"),
+                    html.P("What's the carbon footprint of your computations?"),
                 ],
                 className='container header'
             ),
@@ -72,8 +71,8 @@ def create_appLayout(
                 [
                     html.Center(
                         html.P([
-                            "Check out the new ",
-                            html.B("Green Algorithms website"),
+                            "More resources on the  ",
+                            html.B("project website"),
                             ": ",
                             html.A("www.green-algorithms.org",
                                    href='https://www.green-algorithms.org',

@@ -4,8 +4,7 @@
 import dash
 from dash import dcc
 from dash import html
-# from dash import dcc
-# from dash import html
+
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
