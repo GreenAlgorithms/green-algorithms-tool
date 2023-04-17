@@ -2,13 +2,13 @@ import dash
 from dash import dcc
 from dash import html
 
-# import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
+import dash_bootstrap_components as dbc # legacy bug (hopefully) https://github.com/plotly/dash/issues/2064
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
 import os
 
-
+# B4RELEASE recreate requirements.txt
 def loading_wrapper(component):
     return html.P(dcc.Loading(component, type='circle', color='#96BA6E'))
 
@@ -63,25 +63,67 @@ def create_appLayout(
                 [
                     html.H1("Green Algorithms calculator"),
                     html.P("What's the carbon footprint of your computations?"),
+
                 ],
                 className='container header'
             ),
 
             html.Div(
                 [
-                    html.Center(
-                        html.P([
-                            "More resources on the  ",
-                            html.B("project website"),
-                            ": ",
-                            html.A("www.green-algorithms.org",
-                                   href='https://www.green-algorithms.org',
-                                   target='_blank')
-                        ]),
+                    html.H2("Some news..."), # TODO align this left?
+                    html.P([
+                        html.A(
+                            "A new publication",
+                            href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                            target="_blank"
+                        ),
+                        " discussing different options for carbon footprint estimation."
+                    ]),
+
+                    # TODO add something else there? GA4HPC?
+
+                    html.Div(
+                        [
+                            html.A(
+                                html.Button(
+                                    'More on the project website!'
+                                ),
+                                href='https://www.green-algorithms.org',
+                                target="_blank",
+                                className='button-container'
+                            ),
+
+                            # html.A(
+                            #     html.Button(
+                            #         'Website 2'
+                            #     ),
+                            #     href='https://www.green-algorithms.org',
+                            #     target="_blank",
+                            #     className='button-container'
+                            # ),
+                        ],
+                        className='buttons-row'
                     ),
                 ],
-                className='container footer permalink preprint'
+                className='container footer'
             ),
+
+
+            # html.Div( # TODO remove
+            #     [
+            #         html.Center(
+            #             html.P([
+            #                 "More resources on the  ",
+            #                 html.B("project website"),
+            #                 ": ",
+            #                 html.A("www.green-algorithms.org",
+            #                        href='https://www.green-algorithms.org',
+            #                        target='_blank')
+            #             ])
+            #         ),
+            #     ],
+            #     className='container footer permalink preprint'
+            # ),
 
             #### INPUT FORM ####
 

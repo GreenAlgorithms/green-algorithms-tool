@@ -2,7 +2,7 @@ html {
   font-size: 50%;
 }
 
-body {
+body,button {
     font-size: 18px;
     font-size: 1.8rem;
     font-family: 'Raleway', serif;
@@ -47,10 +47,15 @@ p:not(:last-of-type) {
     margin-bottom: 1rem;
 }
 
+button {
+    color: rgb(100, 100, 100);
+    font-weight: 400;
+    font-style: italic;
+}
+
 /*
 ---------------------------------- HEADER ----------------------------------------
 */
-
 
 .header p {
     font-family: 'Ruda', sans-serif;

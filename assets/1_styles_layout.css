@@ -45,6 +45,28 @@ body {
     box-shadow: 2px 2px 2px lightgrey;
 }
 
+button {
+    padding: 10px 40px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #959595;
+    background-color: #f9f9f9;
+    /*box-shadow: 2px 2px 2px lightgrey;*/
+}
+
+.buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-evenly;
+    margin-bottom: 0;
+    margin-top: 20px;
+}
+
+/*.button-container {*/
+/*    width: 100%;*/
+/*}*/
+
 /*
 ---------------------------------- HEADER ----------------------------------------
 */

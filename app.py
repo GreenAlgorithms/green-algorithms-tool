@@ -2,6 +2,8 @@
 #currently running on Python 3.7.4
 
 import dash
+import dash_bootstrap_components as dbc
+import dash_bootstrap_components.themes
 from dash import dcc
 from dash import html
 
@@ -407,7 +409,8 @@ default_values = dict(
 
 external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
-         rel="stylesheet")
+         rel="stylesheet"),
+    # dbc.themes.CERULEAN
 ]
 
 # print(f'Dash version: {dcc.__version__}') # DEBUGONLY
