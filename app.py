@@ -16,6 +16,7 @@ import os
 import copy
 import numpy as np
 import json
+import time
 
 from collections import OrderedDict
 from urllib import parse
@@ -390,9 +391,12 @@ default_values = dict(
     platformType='localServer',
     provider='gcp',
     usageCPUradio='No',
+    usageCPU=1.0,
     usageGPUradio='No',
+    usageGPU=1.0,
     PUEradio='No',
     PSFradio='No',
+    PSF=1,
     appVersion=current_version,
 )
 # FIXME no default value for location (therefore "reset" doesn't reset location)
@@ -588,9 +592,12 @@ def prepURLqs(url_search, data, keysOfInterest):
         Output('platformType_dropdown','value'),
         Output('provider_dropdown','value'),
         Output('usageCPU_radio','value'),
+        Output('usageCPU_input','value'),
         Output('usageGPU_radio','value'),
+        Output('usageGPU_input','value'),
         Output('pue_radio','value'),
         Output('PSF_radio', 'value'),
+        Output('PSF_input', 'value'),
         Output('appVersions_dropdown','value'),
         Output('fillIn_from_url', 'displayed'),
         Output('fillIn_from_url', 'message'),
@@ -604,16 +611,27 @@ def fillInFromURL(url_search):
     :param url_search: Format is "?key=value&key=value&..."
     '''
     # validateInput(default_values) # DEBUGONLY
-    # print("Running fillInFromURL") # DEBUGONLY
+    # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
+
+    # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
+    # ctx_msg = json.dumps({
+    #     'states': ctx.states,
+    #     'triggered': ctx.triggered,
+    #     'inputs': ctx.inputs,
+    #     'args': ctx.args_grouping
+    # }, indent=2) # DEBUGONLY
+    # print(ctx_msg) # DEBUGONLY
 
     show_popup = False
     popup_message = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
 
     defaults2 = copy.deepcopy(default_values)
 
+    # pull default PUE eitherway
+
     if ctx.triggered_id is None:
         # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
-        # print("\n## no-trigger callback prevented") # DEBUGONLY
+        # print("-> no-trigger callback prevented") # DEBUGONLY
         raise PreventUpdate # TODO find a cleaner workaround
 
     elif (url_search is not None)&(url_search != ''):
@@ -651,15 +669,7 @@ def fillInFromURL(url_search):
                             f'using default values for '
             popup_message += f"{', '.join(list(invalidInputs.keys()))}."
 
-    # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
-    # ctx_msg = json.dumps({
-    #     'states': ctx.states,
-    #     'triggered': ctx.triggered,
-    #     'inputs': ctx.inputs,
-    #     'args': ctx.args_grouping
-    # }, indent=2) # DEBUGONLY
-    # print(ctx_msg) # DEBUGONLY
-
+    # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
     return tuple(defaults2.values()) + (show_popup,popup_message)
 
 @app.callback(
@@ -1253,25 +1263,6 @@ def display_usage_input(answer_usage, disabled):
 
     return out
 
-@app.callback(
-    Output('usageCPU_input','value'),
-    [
-        Input('usageCPU_radio', 'value'),
-        Input('url_content','search'),
-        Input('versioned_data','data')
-    ]
-)
-def reset_usage_input(radio, url_search, data):
-
-    url = prepURLqs(url_search, data=data, keysOfInterest=['usageCPU'])
-
-    if radio == 'No':
-        return 1
-    else:
-        if len(url)>0:
-            return url['usageCPU']
-        else:
-            return 1
 
 
 @app.callback(
@@ -1295,24 +1286,6 @@ def display_usage_input(answer_usage, disabled):
 
     return out
 
-@app.callback(
-    Output('usageGPU_input','value'),
-    [
-        Input('usageGPU_radio', 'value'),
-        Input('url_content','search'),
-        Input('versioned_data','data')
-    ]
-)
-def reset_usage_input(radio, url_search, data):
-    url = prepURLqs(url_search, data=data, keysOfInterest=['usageGPU'])
-
-    if radio == 'No':
-        return 1
-    else:
-        if len(url) > 0:
-            return url['usageGPU']
-        else:
-            return 1
 
 ### PUE ###
 
@@ -1366,7 +1339,7 @@ def display_pue_input(answer_pue, disabled):
         Input('versioned_data','data')
     ]
 )
-def reset_PUE_input(radio, url_search, data):
+def set_PUE(radio, url_search, data):
     url = prepURLqs(url_search, data=data, keysOfInterest=['PUE'])
 
     if data is not None:
@@ -1406,24 +1379,6 @@ def display_PSF_input(answer_PSF, disabled):
 
     return out
 
-@app.callback(
-    Output('PSF_input','value'),
-    [
-        Input('PSF_radio', 'value'),
-        Input('url_content','search'),
-        Input('versioned_data','data')
-    ]
-)
-def reset_PSF_input(radio, url_search, data):
-    url = prepURLqs(url_search, data=data, keysOfInterest=['PSF'])
-
-    if radio == 'No':
-        return 1
-    else:
-        if len(url)>0:
-            return url['PSF']
-        else:
-            return 1
 
 ## RESET ###
 
@@ -1547,7 +1502,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
     output = dict()
 
-    # print('\n## data callback: ', selected_platform, '/', selected_provider, '//', providerStyle) # DEBUGONLY
+    # print('\n## data callback: runTime_hours=', runTime_hours) # DEBUGONLY
     # print("triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
 
     permalink = f'http://calculator.green-algorithms.org//'
@@ -1697,8 +1652,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
             if usageCPUradio == 'Yes':
                 permalink += f'&usageCPUradio=Yes&usageCPU={usageCPU}'
+                usageCPU_used = usageCPU
+            else:
+                usageCPU_used = 1.
 
-            powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU
+            powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
         else:
             powerNeeded_CPU = 0
             CPUpower = 0
@@ -1716,8 +1674,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
             if usageGPUradio == 'Yes':
                 permalink += f'&usageGPUradio=Yes&usageGPU={usageGPU}'
+                usageGPU_used = usageGPU
+            else:
+                usageGPU_used = 1.
 
-            powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU
+            powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
         else:
             powerNeeded_GPU = 0
             GPUpower = 0
@@ -1736,6 +1697,10 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         # PSF
         if PSFradio == 'Yes':
             permalink += f'&PSFradio=Yes&PSF={PSF}'
+            PSF_used = PSF
+        else:
+            PSF_used = 1
+
 
         # Power needed, in Watt
         powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
@@ -1743,11 +1708,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         powerNeeded = powerNeeded_core + powerNeeded_memory
 
         # Energy needed, in kWh (so dividing by 1000 to convert to kW)
-        energyNeeded_CPU = runTime * powerNeeded_CPU * PSF / 1000
-        energyNeeded_GPU = runTime * powerNeeded_GPU * PSF / 1000
-        energyNeeded_core = runTime * powerNeeded_core * PSF / 1000
-        eneregyNeeded_memory = runTime * powerNeeded_memory * PSF / 1000
-        energyNeeded = runTime * powerNeeded * PSF / 1000
+        energyNeeded_CPU = runTime * powerNeeded_CPU * PSF_used / 1000
+        energyNeeded_GPU = runTime * powerNeeded_GPU * PSF_used / 1000
+        energyNeeded_core = runTime * powerNeeded_core * PSF_used / 1000
+        eneregyNeeded_memory = runTime * powerNeeded_memory * PSF_used / 1000
+        energyNeeded = runTime * powerNeeded * PSF_used / 1000
 
         # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
         CE_CPU = energyNeeded_CPU * carbonIntensity
@@ -1770,7 +1735,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['location'] = locationVar
         output['carbonIntensity'] = carbonIntensity
         output['PUE'] = PUE_used
-        output['PSF'] = PSF
+        output['PSF'] = PSF_used
         output['selected_platform'] = selected_platform
         output['carbonEmissions'] = carbonEmissions
         output['CE_CPU'] = CE_CPU
