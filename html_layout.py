@@ -2,7 +2,7 @@ import dash
 from dash import dcc
 from dash import html
 
-import dash_bootstrap_components as dbc # legacy bug (hopefully) https://github.com/plotly/dash/issues/2064
+# import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
@@ -48,7 +48,7 @@ def create_appLayout(
         [
             dcc.Store(id="versioned_data"),
             dcc.Store(id="aggregate_data"),
-            dcc.Location(id='url', refresh=False),
+            dcc.Location(id='url_content', refresh='callback-nav'), # TODO issue https://github.com/plotly/dash/issues/1346 should be fixed in later releases
 
             #### POP UP FOR URL + INVALID INPUTS ####
 

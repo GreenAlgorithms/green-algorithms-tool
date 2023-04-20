@@ -2,10 +2,7 @@
 #currently running on Python 3.7.4
 
 import dash
-import dash_bootstrap_components as dbc
-import dash_bootstrap_components.themes
-from dash import dcc
-from dash import html
+from dash import dcc,html, ctx
 
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
@@ -18,6 +15,8 @@ import pandas as pd
 import os
 import copy
 import numpy as np
+import json
+import time
 
 from collections import OrderedDict
 from urllib import parse
@@ -392,11 +391,15 @@ default_values = dict(
     platformType='localServer',
     provider='gcp',
     usageCPUradio='No',
+    usageCPU=1.0,
     usageGPUradio='No',
+    usageGPU=1.0,
     PUEradio='No',
     PSFradio='No',
+    PSF=1,
     appVersion=current_version,
 )
+# FIXME no default value for location (therefore "reset" doesn't reset location)
 
 # rest_of_default_values = dict(
 #     serverContinent='Europe',
@@ -457,9 +460,12 @@ def validateInput(input_dict, data_dict, keysOfInterest):
 
     def validateKey(key, value):
         new_val = copy.copy(value)
+        # print('#b ', key, new_val, type(new_value))  # DEBUGONLY
 
-        if key in ['runTime_hour', 'runTime_min', 'numberCPUs', 'numberGPUs']:
-            new_val = int(new_val)
+        if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
+            new_val = int(float(new_val))
+        elif key in ['runTime_min']:
+            new_val = float(new_val)
             assert new_val >= 0
         elif key in ['PSF']:
             new_val = int(new_val)
@@ -487,7 +493,7 @@ def validateInput(input_dict, data_dict, keysOfInterest):
             list_servers = availableOptions_servers(unlist(input_dict['provider']),
                                                     unlist(input_dict['serverContinent']),
                                                     data=vars(data_dict))
-            assert new_val in [x['Name'] for x in list_servers] + ["other"]
+            assert new_val in [x['name_unique'] for x in list_servers] + ["other"]
         elif key == 'locationContinent':
             assert new_val in list(data_dict.CI_dict_byName.keys())
         elif key == 'locationCountry':
@@ -502,7 +508,7 @@ def validateInput(input_dict, data_dict, keysOfInterest):
         elif key == 'appVersion':
             assert new_val in (appVersions_options_list + [current_version])
         else:
-            assert False, 'Unknown key'
+            assert False, 'Unknown URL key'
 
         return new_val
 
@@ -572,6 +578,7 @@ def prepURLqs(url_search, data, keysOfInterest):
 ### URL-BASED QUERY ###
 # If parameters are passed on the URL, these are inputs in the app
 # In this function, it's all the values that don't have their own callbacks further down
+# FIXME still not working in prod
 @app.callback(
     [
         Output('runTime_hour_input','value'),
@@ -587,15 +594,18 @@ def prepURLqs(url_search, data, keysOfInterest):
         Output('platformType_dropdown','value'),
         Output('provider_dropdown','value'),
         Output('usageCPU_radio','value'),
+        Output('usageCPU_input','value'),
         Output('usageGPU_radio','value'),
+        Output('usageGPU_input','value'),
         Output('pue_radio','value'),
         Output('PSF_radio', 'value'),
+        Output('PSF_input', 'value'),
         Output('appVersions_dropdown','value'),
         Output('fillIn_from_url', 'displayed'),
         Output('fillIn_from_url', 'message'),
     ],
     [
-        Input('url','search'),
+        Input('url_content','search'),
     ],
 )
 def fillInFromURL(url_search):
@@ -603,14 +613,33 @@ def fillInFromURL(url_search):
     :param url_search: Format is "?key=value&key=value&..."
     '''
     # validateInput(default_values) # DEBUGONLY
-    # print("Running fillInFromURL") # DEBUGONLY
+    # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
+
+    # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
+    # ctx_msg = json.dumps({
+    #     'states': ctx.states,
+    #     'triggered': ctx.triggered,
+    #     'inputs': ctx.inputs,
+    #     'args': ctx.args_grouping
+    # }, indent=2) # DEBUGONLY
+    # print(ctx_msg) # DEBUGONLY
 
     show_popup = False
     popup_message = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
 
     defaults2 = copy.deepcopy(default_values)
 
-    if (url_search is not None)&(url_search != ''):
+    # pull default PUE eitherway
+
+    if ctx.triggered_id is None:
+        # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
+        # print("-> no-trigger callback prevented") # DEBUGONLY
+        raise PreventUpdate # TODO find a cleaner workaround
+
+    elif (url_search is not None)&(url_search != ''):
+
+        # print("\n## picked from url") # DEBUGONLY
+
         show_popup = True
 
         url = parse.parse_qs(url_search[1:])
@@ -642,6 +671,7 @@ def fillInFromURL(url_search):
                             f'using default values for '
             popup_message += f"{', '.join(list(invalidInputs.keys()))}."
 
+    # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
     return tuple(defaults2.values()) + (show_popup,popup_message)
 
 @app.callback(
@@ -679,7 +709,7 @@ def fillInFromURL(url_search):
         Output('PSF_radio', 'options'),
     ],
     [
-        Input('url','search'),
+        Input('url_content','search'),
     ],
 )
 def disable_inputFromURL(url_search):
@@ -703,7 +733,7 @@ def disable_inputFromURL(url_search):
         return (False,)*n_output_disable + (dict(),)*n_output_style + (yesNo_options,)*n_radio
 
 @app.callback(
-    Output('url', 'search'),
+    Output('url_content', 'search'),
     [
         Input('confirm_reset','submit_n_clicks'),
     ]
@@ -750,6 +780,8 @@ def set_providers(selected_platform):
     '''
     Shows or hide the "providers" box, based on the platform selected
     '''
+    # print('\n## platformDropdown changed to: ', selected_platform) # DEBUGONLY
+
     if selected_platform in ['cloudComputing']:
         # Only Cloud Computing need the providers box
         outputStyle = {'display': 'block'}
@@ -942,7 +974,7 @@ def display_location(selected_platform, selected_provider, selected_server, data
     Output('server_continent_dropdown','value'),
     [
         Input('provider_dropdown', 'value'),
-        Input('url','search'),
+        Input('url_content','search'),
         Input('versioned_data','data')
     ]
 )
@@ -1004,7 +1036,7 @@ def set_server_style(selected_continent):
     [
         Input('provider_dropdown', 'value'),
         Input('server_continent_dropdown', 'value'),
-        Input('url','search'),
+        Input('url_content','search'),
         Input('versioned_data','data')
     ]
 )
@@ -1056,7 +1088,7 @@ def set_server_options(selected_provider,selected_continent, data):
     [
         Input('server_continent_dropdown','value'),
         Input('server_dropdown','value'),
-        Input('url','search'),
+        Input('url_content','search'),
     ]
 )
 def disable_server_inputs(continent, server, url_search):
@@ -1090,7 +1122,7 @@ def set_continentOptions(data):
     [
         Input('server_continent_dropdown','value'),
         Input('server_div', 'style'),
-        Input('url','search'),
+        Input('url_content','search'),
         Input('versioned_data','data')
     ],
     [
@@ -1125,7 +1157,7 @@ def set_continent_value(selected_serverContinent, display_server, url_search, da
     ],
     [
         Input('location_continent_dropdown', 'value'),
-        Input('url','search'),
+        Input('url_content','search'),
         Input('versioned_data','data')
     ],
     [
@@ -1169,7 +1201,7 @@ def set_countries_options(selected_continent, url_search, data, prev_selectedCou
     [
         Input('location_continent_dropdown', 'value'),
         Input('location_country_dropdown', 'value'),
-        Input('url','search'),
+        Input('url_content','search'),
         Input('versioned_data','data')
     ],
     [
@@ -1233,25 +1265,6 @@ def display_usage_input(answer_usage, disabled):
 
     return out
 
-@app.callback(
-    Output('usageCPU_input','value'),
-    [
-        Input('usageCPU_radio', 'value'),
-        Input('url','search'),
-        Input('versioned_data','data')
-    ]
-)
-def reset_usage_input(radio, url_search, data):
-
-    url = prepURLqs(url_search, data=data, keysOfInterest=['usageCPU'])
-
-    if radio == 'No':
-        return 1
-    else:
-        if len(url)>0:
-            return url['usageCPU']
-        else:
-            return 1
 
 
 @app.callback(
@@ -1275,24 +1288,6 @@ def display_usage_input(answer_usage, disabled):
 
     return out
 
-@app.callback(
-    Output('usageGPU_input','value'),
-    [
-        Input('usageGPU_radio', 'value'),
-        Input('url','search'),
-        Input('versioned_data','data')
-    ]
-)
-def reset_usage_input(radio, url_search, data):
-    url = prepURLqs(url_search, data=data, keysOfInterest=['usageGPU'])
-
-    if radio == 'No':
-        return 1
-    else:
-        if len(url) > 0:
-            return url['usageGPU']
-        else:
-            return 1
 
 ### PUE ###
 
@@ -1342,11 +1337,11 @@ def display_pue_input(answer_pue, disabled):
     Output('PUE_input','value'),
     [
         Input('pue_radio', 'value'),
-        Input('url','search'),
+        Input('url_content','search'),
         Input('versioned_data','data')
     ]
 )
-def reset_PUE_input(radio, url_search, data):
+def set_PUE(radio, url_search, data):
     url = prepURLqs(url_search, data=data, keysOfInterest=['PUE'])
 
     if data is not None:
@@ -1386,24 +1381,6 @@ def display_PSF_input(answer_PSF, disabled):
 
     return out
 
-@app.callback(
-    Output('PSF_input','value'),
-    [
-        Input('PSF_radio', 'value'),
-        Input('url','search'),
-        Input('versioned_data','data')
-    ]
-)
-def reset_PSF_input(radio, url_search, data):
-    url = prepURLqs(url_search, data=data, keysOfInterest=['PSF'])
-
-    if radio == 'No':
-        return 1
-    else:
-        if len(url)>0:
-            return url['PSF']
-        else:
-            return 1
 
 ## RESET ###
 
@@ -1526,6 +1503,9 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                            existing_state):
 
     output = dict()
+
+    # print('\n## data callback: runTime_hours=', runTime_hours) # DEBUGONLY
+    # print("triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
 
     permalink = f'http://calculator.green-algorithms.org//'
     # permalink = 'http://127.0.0.1:8050/' # DEBUGONLY
@@ -1674,8 +1654,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
             if usageCPUradio == 'Yes':
                 permalink += f'&usageCPUradio=Yes&usageCPU={usageCPU}'
+                usageCPU_used = usageCPU
+            else:
+                usageCPU_used = 1.
 
-            powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU
+            powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
         else:
             powerNeeded_CPU = 0
             CPUpower = 0
@@ -1693,8 +1676,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
             if usageGPUradio == 'Yes':
                 permalink += f'&usageGPUradio=Yes&usageGPU={usageGPU}'
+                usageGPU_used = usageGPU
+            else:
+                usageGPU_used = 1.
 
-            powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU
+            powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
         else:
             powerNeeded_GPU = 0
             GPUpower = 0
@@ -1713,6 +1699,10 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         # PSF
         if PSFradio == 'Yes':
             permalink += f'&PSFradio=Yes&PSF={PSF}'
+            PSF_used = PSF
+        else:
+            PSF_used = 1
+
 
         # Power needed, in Watt
         powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
@@ -1720,11 +1710,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         powerNeeded = powerNeeded_core + powerNeeded_memory
 
         # Energy needed, in kWh (so dividing by 1000 to convert to kW)
-        energyNeeded_CPU = runTime * powerNeeded_CPU * PSF / 1000
-        energyNeeded_GPU = runTime * powerNeeded_GPU * PSF / 1000
-        energyNeeded_core = runTime * powerNeeded_core * PSF / 1000
-        eneregyNeeded_memory = runTime * powerNeeded_memory * PSF / 1000
-        energyNeeded = runTime * powerNeeded * PSF / 1000
+        energyNeeded_CPU = runTime * powerNeeded_CPU * PSF_used / 1000
+        energyNeeded_GPU = runTime * powerNeeded_GPU * PSF_used / 1000
+        energyNeeded_core = runTime * powerNeeded_core * PSF_used / 1000
+        eneregyNeeded_memory = runTime * powerNeeded_memory * PSF_used / 1000
+        energyNeeded = runTime * powerNeeded * PSF_used / 1000
 
         # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
         CE_CPU = energyNeeded_CPU * carbonIntensity
@@ -1747,7 +1737,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['location'] = locationVar
         output['carbonIntensity'] = carbonIntensity
         output['PUE'] = PUE_used
-        output['PSF'] = PSF
+        output['PSF'] = PSF_used
         output['selected_platform'] = selected_platform
         output['carbonEmissions'] = carbonEmissions
         output['CE_CPU'] = CE_CPU
