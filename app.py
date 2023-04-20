@@ -577,6 +577,7 @@ def prepURLqs(url_search, data, keysOfInterest):
 ### URL-BASED QUERY ###
 # If parameters are passed on the URL, these are inputs in the app
 # In this function, it's all the values that don't have their own callbacks further down
+# FIXME still not working in prod
 @app.callback(
     [
         Output('runTime_hour_input','value'),
