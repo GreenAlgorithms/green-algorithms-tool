@@ -1,0 +1,16 @@
+index,CPU/GPU/TPU,"Must match the models in ""TDP_cpu"" or ""TDP_gpu""",
+provider,type,model,source
+gcp,CPU,,Intel Xeon Scalable Proocessor (cascade lake)
+gcp,CPU,,Intel Xeon Scalable Proocessor (skylake)
+gcp,CPU,Xeon E7-8880 v4,(Best fit for Xeon E7) https://cloud.google.com/compute/docs/cpu-platforms
+gcp,CPU,Xeon E5-2699 v4,(Best fit for Xeon E5 v4) https://cloud.google.com/compute/docs/cpu-platforms
+gcp,CPU,Xeon E5-2699 v3,(Best fit for Xeon E5 v3) https://cloud.google.com/compute/docs/cpu-platforms
+gcp,CPU,Xeon E5-2670 v2,(Best fit for Xeon E5 v2) https://cloud.google.com/compute/docs/cpu-platforms
+gcp,CPU,Xeon E5-2670,(Best fit for Xeon E5) https://cloud.google.com/compute/docs/cpu-platforms
+gcp,CPU,AMD 7552,"Could also be 7742 or 7642, but this one is in the middle in terms of TDP per core, so best estimate https://cloud.google.com/compute/docs/cpu-platforms "
+gcp,GPU,NVIDIA A100 PCIe,https://cloud.google.com/compute/docs/gpus 
+gcp,GPU,NVIDIA Tesla T4,https://cloud.google.com/compute/docs/gpus
+gcp,GPU,NVIDIA Tesla P100 PCIe,https://cloud.google.com/compute/docs/gpus 
+gcp,GPU,NVIDIA Tesla V100,https://cloud.google.com/compute/docs/gpus
+gcp,GPU,NVIDIA Tesla P4,https://cloud.google.com/compute/docs/gpus 
+gcp,GPU,NVIDIA Tesla K80,https://cloud.google.com/compute/docs/gpus
