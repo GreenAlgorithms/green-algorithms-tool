@@ -1,0 +1,6 @@
+index,>1,
+provider,PUE,source
+Unknown,1.67,2019 https://journal.uptimeinstitute.com/is-pue-actually-going-up/
+gcp,1.11,https://www.google.co.uk/about/datacenters/efficiency/
+aws,1.2,https://aws.amazon.com/about-aws/sustainability/
+azure,1.125,but only for new datacentres https://azure.microsoft.com/en-gb/global-infrastructure/

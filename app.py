@@ -430,8 +430,11 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
-appVersions_options_list = [x for x in os.listdir(data_dir) if x[0]=='v']
+appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
 appVersions_options_list.sort(reverse=True)
+# Add the dev option for testing # TODO make it permanent, with a warning pop up if selected by mistake
+# appVersions_options_list.append('dev') # DEBUGONLY
+
 appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
 
 app.layout = create_appLayout(
@@ -1437,6 +1440,7 @@ def loadDataFromVersion(
         newData = load_data(os.path.join(data_dir, newVersion), version=newVersion)
         # print(f'Loading {newVersion} data') # DEBUGONLY
     # print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # DEBUGONLY
+    # print(f"TPUv3 TDP: {newData.cores_dict['GPU']['TPU v3']}")  # DEBUGONLY
 
     return vars(newData) # to turn the SimpleNamespace into a dict that can be json serialized
 

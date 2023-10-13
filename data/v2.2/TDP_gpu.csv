@@ -1,0 +1,21 @@
+index,in Watt,TO BE CHECKED,,
+model,TDP,n_cores,TDP_per_core,source
+NVIDIA Jetson AGX Xavier,30,,30,https://www.techpowerup.com/gpu-specs/jetson-agx-xavier.c3232
+NVIDIA Tesla T4,70,,70,https://www.techpowerup.com/gpu-specs/tesla-t4.c3316
+AMD RX480,150,,150,techpowerup.com
+NVIDIA GTX 1080,180,,180,techpowerup.com
+TPU v3,200,,200,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
+Any,,,200,
+NVIDIA RTX 2080,215,,215,techpowerup.com
+NVIDIA RTX 2080 Ti,250,,250,techpowerup.com
+NVIDIA GTX 1080 Ti,250,,250,techpowerup.com
+NVIDIA Titan V,250,,250,techpowerup.com
+TPU v2,250,,250,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
+NVIDIA GTX TITAN X,250,,250,techpowerup.com
+NVIDIA TITAN X Pascal,250,,250,techpowerup.com
+NVIDIA Tesla P100 PCIe,250,,250,techpowerup.com
+NVIDIA Tesla V100,300,,300,techpowerup.com
+TPU v3 pod,288000,,288000,https://www.nextplatform.com/2018/05/10/tearing-apart-googles-tpu-3-0-ai-coprocessor/
+NVIDIA A100 PCIe,250,,250,https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/a100-80gb-datasheet-update-nvidia-us-1521051-r2-web.pdf
+NVIDIA Tesla P4,75,,75,https://www.techpowerup.com/gpu-specs/tesla-p4.c2879
+NVIDIA Tesla K80,300,,300,https://www.techpowerup.com/gpu-specs/tesla-k80.c2616
