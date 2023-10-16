@@ -1036,9 +1036,9 @@ def create_appLayout(
                     html.H2("About us"),
 
                     dcc.Markdown('''
-                    The Green Algorithms project was jointly developed by
+                    The Green Algorithms project is led by
 
-                    Loïc Lannelongue\*¹, Jason Grealey\*², and Michael Inouye³
+                    [Loïc Lannelongue](www.lannelongue.eu)¹ and [Michael Inouye](https://www.inouyelab.org/home/people)².
                     ''',
                                  className='authors'
                                  ),
@@ -1046,22 +1046,19 @@ def create_appLayout(
                     dcc.Markdown('''
                     (1) University of Cambridge
 
-                    (2) Baker Heart and Diabetes Institute and La Trobe University
-
-                    (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
-
-                    \* Contributed equally to this work
+                    (2) Baker Heart and Diabetes Institute
+                    
                     ''',
                                  className='affiliations'
                                  ),
 
-                    html.Center(
-                        html.P(["More information ",
-                                html.A("here",
-                                       href='http://www.inouyelab.org/',
-                                       target='_blank')
-                                ]),
-                    ),
+                    # html.Center(
+                    #     html.P(["This work is being supported by ",
+                    #             html.A("here",
+                    #                    href='http://www.inouyelab.org/',
+                    #                    target='_blank')
+                    #             ]),
+                    # ),
                 ],
                 className='container about-us footer'
             ),
@@ -1084,6 +1081,10 @@ def create_appLayout(
                 ],
                 className='container citation footer'
             ),
+
+            #### FUNDERS ####
+
+            # TODO add funders logos
 
             #### SHOW YOUR STRIPES ####
 
