@@ -73,7 +73,15 @@ def create_appLayout(
                     html.H2("Some news..."), # TODO align this left?
                     html.P([
                         html.A(
-                            "A new publication",
+                            "The GREENER principles",
+                            href="https://rdcu.be/dfpLM",
+                            target="_blank"
+                        ),
+                        " for environmentally sustainable computational science."
+                    ]),
+                    html.P([
+                        html.A(
+                            "A short primer",
                             href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
                             target="_blank"
                         ),
@@ -734,10 +742,10 @@ def create_appLayout(
                             html.Div(
                                 [
                                     html.P([
-                                        html.B("Share your results "),
-                                        "with ",
+                                        "Use ",
                                         html.A("this link", target='_blank', id='share_permalink'),
-                                        "!"
+                                        html.B(" to save or share "),
+                                        "the current form!"
                                     ]),
                                 ],
                                 className='container footer permalink'
