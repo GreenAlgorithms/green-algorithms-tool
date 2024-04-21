@@ -92,27 +92,24 @@
     /*}*/
 
     /*
-    ---------------------------------- MAP AND DEFINITIONS ----------------------------------------
+    ---------------------------------- FORMULA AND DEFINITIONS ----------------------------------------
     */
 
-    .maps {
+    .formula {
         margin-right: 12px;
-        width: calc((50%) - (6px));
+        width: calc((60%) - (6px));
     }
 
-    .maps .graph-container {
-        margin-top: 30px;
-    }
-
-    /*
-    .maps .graph-container {
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-    */
+    /*.formula .graph-container {*/
+    /*    margin-top: 30px;*/
+    /*}*/
 
     .definitions {
-        width: calc((50%) - (6px));
+        width: calc((40%) - (6px));
+    }
+
+    .definitions .container {
+        height: calc((50%) - (12px));
     }
 
     /*
@@ -133,11 +130,11 @@
     ---------------------------------- FORMULA and REPORT ----------------------------------------
     */
 
-    .formula {
-        order: 1;
-        margin-right: 12px;
-        width: calc((60%) - (6px));
-    }
+    /*.formula {*/
+    /*    !*order: 1;*!*/
+    /*    margin-right: 12px;*/
+    /*    width: calc((60%) - (6px));*/
+    /*}*/
 
     .report {
         order: 1;
