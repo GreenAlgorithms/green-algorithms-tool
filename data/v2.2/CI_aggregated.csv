@@ -130,4 +130,3 @@ AU-WA2,Oceania,Australia,Western Australia (South West Interconnected System),70
 NZ,Oceania,New Zealand,Any,110.1,Country,carbonfootprint (March 2022) and Ministry for the Environment https://www.mfe.govt.nz/node/18670/ (data from 2018),"Emission factors published in 2020, based on 2018 national inventory."
 AR,South America,Argentina,Any,307,Country,carbonfootprint (March 2022) and Climate Transparency (2021 Report) (data from 2020),Emissions intensity of the power sector
 BR,South America,Brazil,Any,61.7,Country,carbonfootprint (March 2022) and Climate Transparency (2021 Report) (data from 2020),Emissions intensity of the power sector
-UY,South America,Uruguay,Any,129,Country,https://app.electricitymaps.com/zone/UY,Data from 2021
