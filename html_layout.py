@@ -888,6 +888,38 @@ def create_appLayout(
                 className='super-section definitions'
             ),
 
+            #### HOW TO REPORT ####
+
+            html.Div(
+                [
+                    html.H2("How to report it?"),
+
+                    dcc.Markdown('''
+            It's important to track the impact 
+            of computational research on climate change in order to stimulate greener algorithms.
+            For that, __we believe that the carbon footprint of a project should be reported on publications
+            alongside other performance metrics__. 
+
+            Here is a text you can include in your paper:
+            '''),
+
+                    dcc.Markdown(id='report_markdown'),
+
+                    dcc.Markdown(
+                        # '\[1\] see citation below',
+                        '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
+                        className='footnote citation-report'
+                    ),
+
+                    dcc.Markdown(
+                        '_Including the version of the tool is useful to keep track of the version of the data used._',
+                        className='footnote-authorship'
+                    )
+
+                ],
+                className='container report'
+            ),
+
             #### CORES COMPARISON ####
 
             html.Div(
@@ -912,62 +944,32 @@ def create_appLayout(
 
             #### WHAT TO DO ####
 
-            html.Div(
-                [
-                    html.H2("What can you do about it?"),
+            # TODO rewrite the "what can you do" section
 
-                    dcc.Markdown('''
-                    The main factor impacting your footprint is the location of your servers:
-                    the same algorithm will emit __74 times more__ CO2e
-                    if ran in Australia compared to Switzerland. 
-                    Although it's not always the case, 
-                    many cloud providers offer the option to select a data centre.
-
-                    Memory power draw is a huge source of waste, 
-                    because __the energy consumption depends on the memory available, 
-                    not the actual usage__, only requesting the needed memory 
-                    is a painless way to reduce greenhouse gas emissions.  
-
-                    Generally, taking the time to write optimised code that runs faster with fewer 
-                    resources saves both money and the planet.
-
-                    And above all, __only run jobs that you need!__
-                    ''')
-                ],
-                className='container to-do'
-            ),
-
-            #### HOW TO REPORT ####
-
-            html.Div(
-                [
-                    html.H2("How to report it?"),
-
-                    dcc.Markdown('''
-                    It's important to track the impact 
-                    of computational research on climate change in order to stimulate greener algorithms.
-                    For that, __we believe that the carbon footprint of a project should be reported on publications
-                    alongside other performance metrics__. 
-
-                    Here is a text you can include in your paper:
-                    '''),
-
-                    dcc.Markdown(id='report_markdown'),
-
-                    dcc.Markdown(
-                        # '\[1\] see citation below',
-                        '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
-                        className='footnote citation-report'
-                    ),
-
-                    dcc.Markdown(
-                        '_Including the version of the tool is useful to keep track of the version of the data used._',
-                        className='footnote-authorship'
-                    )
-
-                ],
-                className='container report'
-            ),
+            # html.Div(
+            #     [
+            #         html.H2("What can you do about it?"),
+            #
+            #         dcc.Markdown('''
+            #         The main factor impacting your footprint is the location of your servers:
+            #         the same algorithm will emit __74 times more__ CO2e
+            #         if ran in Australia compared to Switzerland.
+            #         Although it's not always the case,
+            #         many cloud providers offer the option to select a data centre.
+            #
+            #         Memory power draw is a huge source of waste,
+            #         because __the energy consumption depends on the memory available,
+            #         not the actual usage__, only requesting the needed memory
+            #         is a painless way to reduce greenhouse gas emissions.
+            #
+            #         Generally, taking the time to write optimised code that runs faster with fewer
+            #         resources saves both money and the planet.
+            #
+            #         And above all, __only run jobs that you need!__
+            #         ''')
+            #     ],
+            #     className='container to-do'
+            # ),
 
             #### DATA AND Q ####
 
@@ -1009,6 +1011,25 @@ def create_appLayout(
                 className='super-section data-questions'
             ),
 
+            #### HOW TO CITE ####
+
+            html.Div(
+                [
+                    html.H2("How to cite this work"),
+
+                    html.Center(
+                        html.P([
+                            "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
+                            "Adv. Sci. 2021, 2100707. ",
+                            html.A("https://doi.org/10.1002/advs.202100707",
+                                   href='https://doi.org/10.1002/advs.202100707',
+                                   target='_blank')
+                        ]),
+                    ),
+                ],
+                className='container citation footer'
+            ),
+
             #### ABOUT US ####
 
             html.Div(
@@ -1041,25 +1062,6 @@ def create_appLayout(
                     # ),
                 ],
                 className='container about-us footer'
-            ),
-
-            #### HOW TO CITE ####
-
-            html.Div(
-                [
-                    html.H2("How to cite this work"),
-
-                    html.Center(
-                        html.P([
-                                   "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
-                                   "Adv. Sci. 2021, 2100707. ",
-                                   html.A("https://doi.org/10.1002/advs.202100707",
-                                          href='https://doi.org/10.1002/advs.202100707',
-                                          target='_blank')
-                                   ]),
-                    ),
-                ],
-                className='container citation footer'
             ),
 
             #### FUNDERS ####
