@@ -973,6 +973,8 @@ def create_appLayout(
 
             #### DATA AND Q ####
 
+            # TODO reorganise the footer, it doesn't look great
+
             html.Div(
                 [
                     html.Div(
