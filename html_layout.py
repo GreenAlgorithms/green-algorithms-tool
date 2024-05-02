@@ -1047,7 +1047,7 @@ def create_appLayout(
                             "from 1850 to 2018. "
                             "This striking design was made by Ed Hawkins from the University of Reading. "),
                             html.P(["More on ",
-                                    html.A("ShowYourStipes.info",
+                                    html.A("ShowYourStripes.info",
                                            href='https://showyourstripes.info',
                                            target='_blank')]),
                             html.P(["Additional credits for the app can be found on the ",

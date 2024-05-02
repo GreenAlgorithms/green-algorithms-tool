@@ -886,7 +886,7 @@ app.layout = html.Div(
                         from 1850 to 2018.
                         This striking design has been made by Ed Hawkins from the University of Reading.
 
-                        More on [ShowYourStipes.info](https://showyourstripes.info)
+                        More on [ShowYourStripes.info](https://showyourstripes.info)
                         ''')
                     ],
                     className="pretty_container four columns",
