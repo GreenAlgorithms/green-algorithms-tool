@@ -19,3 +19,5 @@ TPU v3 pod,288000,,288000,https://www.nextplatform.com/2018/05/10/tearing-apart-
 NVIDIA A100 PCIe,250,,250,https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/a100-80gb-datasheet-update-nvidia-us-1521051-r2-web.pdf
 NVIDIA Tesla P4,75,,75,https://www.techpowerup.com/gpu-specs/tesla-p4.c2879
 NVIDIA Tesla K80,300,,300,https://www.techpowerup.com/gpu-specs/tesla-k80.c2616
+NVIDIA Tesla V100S,250,,250,https://technical.city/en/video/Tesla-V100S-PCIe-32-GB
+NVIDIA Tesla P100,250,,250,https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/tesla-p100/pdf/nvidia-tesla-p100-PCIe-datasheet.pdf
