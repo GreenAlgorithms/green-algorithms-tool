@@ -217,3 +217,46 @@ blockquote {
     font-style: italic;
     background-color: rgba(249, 249, 249,0.9);
 }
+
+
+/*
+---------------------------------- Tooltip ----------------------------------------
+*/
+
+.tooltip-icon {
+    display: inline-block;
+    /* Text content of the icon */
+    font-style: bold;
+    font-size: 0.8em;
+    text-align: center;
+    color: black;
+    /* Border of the icon */
+    height: 1.1em;
+    width: 1.2em;
+    line-height: 1.1em;
+    border-radius: 50%;
+    border: .5px solid rgb(100, 100, 100);
+    /* Position of the icon */
+    position: relative;
+    left: 0.3em;
+    top: 0.05em;
+}
+
+
+.tooltip-text {
+    visibility: hidden;
+    width: 12em;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    font-style: normal;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}

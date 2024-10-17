@@ -19,6 +19,15 @@
         width: calc((33.3%) - (6px));
     }
 
+    .short-input .box-fields,
+    .short-input > input[type = 'number'] {
+        width: 90%;
+    }
+    
+    .short-input .tooltip {
+        width: 5%;
+    }
+
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */

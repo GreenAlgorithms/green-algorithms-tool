@@ -195,7 +195,18 @@ def create_appLayout(
                                     ),
                                 ],
                                 className="box-fields"
-                            )
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Select the type of hardware used.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
                         ],
                         className='form-row short-input'
                     ),
@@ -217,6 +228,17 @@ def create_appLayout(
                                         id="numberCPUs_input",
                                         min=0,
                                     ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "A single CPU contains several cores.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
                                 ],
                                 className='form-row short-input'
                             ),
@@ -234,7 +256,19 @@ def create_appLayout(
                                             ),
                                         ],
                                         className="box-fields"
-                                    )
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "To fill-in a custom TDP, please select 'other'.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                    
                                 ],
                                 className='form-row short-input'
                             ),
@@ -278,6 +312,17 @@ def create_appLayout(
                                         id="numberGPUs_input",
                                         min=0,
                                     ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "Here, we ask for the number of GPUs (not the cores).",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
                                 ],
                                 className='form-row short-input'
                             ),
@@ -295,7 +340,18 @@ def create_appLayout(
                                             ),
                                         ],
                                         className="box-fields"
-                                    )
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "To fill-in a custom TDP, please select 'other'.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
                                 ],
                                 className='form-row short-input'
                             ),
@@ -338,6 +394,17 @@ def create_appLayout(
                                 type='number',
                                 id="memory_input",
                                 min=0,
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "We refer to the ‘allocated memory’, not the memory actually used by the program.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
                         ],
                         className='form-row short-input',
@@ -524,7 +591,7 @@ def create_appLayout(
                     ## PSF
                     html.Div(
                         [
-                            html.Label("Do you want to use a Pragmatic Scaling Factor?"),
+                            html.Label("Do you want to use a Pragmatic Scaling Factor (PSF)?"),
 
                             dcc.RadioItems(
                                 id='PSF_radio',

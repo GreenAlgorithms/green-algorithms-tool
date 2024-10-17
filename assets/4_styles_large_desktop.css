@@ -14,15 +14,11 @@
     ---------------------------------- INPUT FORM ----------------------------------------
     */
 
-    .short-input  {
-        flex-direction: row;
-        align-items: center;
-    }
 
     .short-input label {
-        width: 50%;
-        margin-bottom: 0;
-    }
+            width: 45%;
+            margin-bottom: 0;
+        }
 
     .short-input .box-runtime {
         display:block;
@@ -45,7 +41,7 @@
     }
 
     #div_memory label{
-        width: 47%;
+        width: 42%;
         margin-right: 3%;
     }
 
