@@ -535,6 +535,17 @@ def create_appLayout(
                                 id="usageCPU_input",
                                 style=dict(display='none'),
                             ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Between 0 and 1. Should correspond to a temporal factor usage, accessible from log files for instance.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
                         ],
                         className='form-row radio-and-field',
                         id='usageCPU_div'
@@ -559,6 +570,17 @@ def create_appLayout(
                                 id="usageGPU_input",
                                 style=dict(display='none'),
                             ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Between 0 and 1. In most cases, should be 1.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),                            
                         ],
                         className='form-row radio-and-field',
                         id='usageGPU_div'
@@ -582,6 +604,18 @@ def create_appLayout(
                                 id="PUE_input",
                                 style=dict(display='none'),
                             ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The PUE is strictly higher than 1: 1.67 was the average worldwide value in 2019.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
+
                         ],
                         className='form-row radio-and-field',
                         id='PUEquestion_div',
@@ -605,6 +639,18 @@ def create_appLayout(
                                 id="PSF_input",
                                 style=dict(display='none'),
                             ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The PSF refers to the number of repetions of the computation.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
+
                         ],
                         className='form-row radio-and-field',
                     ),

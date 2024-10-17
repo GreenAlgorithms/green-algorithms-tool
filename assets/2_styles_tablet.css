@@ -51,6 +51,10 @@
         margin-left:0;
     }
 
+    .radio-and-field label{
+        width: 45%;
+        margin-right: 5px;
+    }
 
     .radio-input {
         width: 30%;
