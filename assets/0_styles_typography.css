@@ -259,6 +259,7 @@ blockquote {
     font-style: normal;
     /* Position the tooltip */
     position: absolute;
+    right: 5em;
     z-index: 1;
 }
 

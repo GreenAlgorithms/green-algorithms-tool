@@ -53,6 +53,21 @@
         left: 1.5em;
     }
 
+    .short-input .tooltip-text {
+        position: absolute;
+        left: 600px
+    }
+
+    #platform-tooltip .tooltip-text {
+        position: absolute;
+        left: 600px
+    }
+
+    .radio-and-field .tooltip-text {
+        position: absolute;
+        left: 500px
+    }
+    
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
