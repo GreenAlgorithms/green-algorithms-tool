@@ -45,6 +45,10 @@
         margin-right: 3%;
     }
 
+    #platform-tooltip {
+        margin-left: 0em;
+    }
+
     .radio-and-field .tooltip-icon{
         left: 1.5em;
     }

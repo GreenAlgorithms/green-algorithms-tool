@@ -442,7 +442,19 @@ def create_appLayout(
                                     )
                                 ],
                                 className="box-fields"
-                            )
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The following two fields are used to define the PUE and energy mix associated with your computations.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                                id='platform-tooltip',
+                            ),    
                         ],
                         className='form-row'
                     ),
