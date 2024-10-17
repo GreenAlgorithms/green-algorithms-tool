@@ -55,17 +55,17 @@
 
     .short-input .tooltip-text {
         position: absolute;
-        left: 600px
+        left: 25em
     }
 
     #platform-tooltip .tooltip-text {
         position: absolute;
-        left: 600px
+        left: 25em
     }
 
     .radio-and-field .tooltip-text {
         position: absolute;
-        left: 500px
+        left: 20em
     }
     
     /*

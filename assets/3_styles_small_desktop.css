@@ -46,6 +46,11 @@
         left: 20em
     }
 
+    .radio-and-field .tooltip-text {
+        position: absolute;
+        left: 15em
+    }
+
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
