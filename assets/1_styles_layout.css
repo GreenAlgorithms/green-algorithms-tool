@@ -107,7 +107,8 @@ hr {
     margin-bottom: 20px;
     display: flex;
     justify-content: flex-start;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     flex-wrap: wrap;
 }
 
@@ -124,6 +125,7 @@ hr {
 
 .form-row > label {
     margin-bottom: 7px;
+    width: 100%;
 }
 
 
@@ -132,11 +134,11 @@ hr {
     background-color: #FFFFFF;
     border: 1px solid #D6D9DC;
     border-radius: 3px;
-    width: 100%;
 }
 
 .form-row input[type='number'] {
     padding: 7px;
+    width: 95%;
 }
 
 .bottom-dropdown {
@@ -147,11 +149,18 @@ hr {
     display: flex;
 }
 
-
 .box-runtime input[type='number'] {
-    width:50%;
+    width:50%; 
 }
 
+.short-input .tooltip {
+    width: 5%;
+    padding-left: 0.5em;
+}
+
+.form-row .box-fields {
+    width: 95%;
+}
 
 .box-runtime input:first-of-type {
     margin-right:2px;
@@ -159,6 +168,10 @@ hr {
 
 .box-runtime input:last-of-type {
     margin-left:2px;
+}
+
+#platform-tooltip {
+    margin-left:0.4em;
 }
 
 .radio-and-field {
@@ -170,7 +183,7 @@ hr {
 }
 
 .radio-input {
-    width: 60%;
+    width: 55%;
     margin: 10px 0 13px 0;
     display: flex;
     justify-content: space-around;
