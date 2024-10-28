@@ -262,7 +262,7 @@ def create_appLayout(
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "To fill-in a custom TDP, please select 'other'.",
+                                                "To fill-in a custom core power usage (TDP), please select 'other'.",
                                                 className='tooltip-text'
                                             ),
                                         ],
