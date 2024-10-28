@@ -621,7 +621,7 @@ def create_appLayout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "The PUE is strictly higher than 1: 1.67 was the average worldwide value in 2019.",
+                                        "The PUE accounts for the extra energy consumption of the data centre, including cooling (1.67 by default).",
                                         className='tooltip-text'
                                     ),
                                 ],
