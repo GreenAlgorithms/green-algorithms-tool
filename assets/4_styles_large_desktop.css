@@ -14,12 +14,6 @@
     ---------------------------------- INPUT FORM ----------------------------------------
     */
 
-
-    .short-input label {
-            width: 45%;
-            margin-bottom: 0;
-        }
-
     .short-input .box-runtime {
         display:block;
         width: 50%;
@@ -28,16 +22,24 @@
     .short-input .box-runtime input:first-of-type {
         margin-right:0;
         margin-bottom:2px;
-
     }
 
     .box-runtime input:last-of-type {
         margin-left:0;
     }
 
+    .short-input label {
+            width: 45%;
+            margin-bottom: 0;
+        }
+
     .short-input > input[type='number'],
     .short-input .box-fields {
-        width: 50%;
+        width: 45%;
+    }
+
+    .tooltip {
+        width: 5%
     }
 
     #div_memory label{
@@ -45,13 +47,6 @@
         margin-right: 3%;
     }
 
-    #platform-tooltip {
-        margin-left: 0em;
-    }
-
-    .radio-and-field .tooltip-icon{
-        left: 1.5em;
-    }
 
     .short-input .tooltip-text {
         position: absolute;

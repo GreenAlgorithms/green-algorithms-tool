@@ -83,6 +83,8 @@ button {
 ---------------------------------- INPUT FORM ----------------------------------------
 */
 
+/* GENERAL */
+
 .input-form {
     display: block;
     text-align:left;
@@ -119,16 +121,13 @@ hr {
 .group-of-rows {
     margin-bottom: 20px;
 }
-/*.group-of-rows > .form-row {*/
-/*    margin-bottom: 0;*/
-/*}*/
 
 .form-row > label {
     margin-bottom: 7px;
     width: 100%;
 }
 
-
+.radio-row  input[type='number'],
 .form-row  input[type='number'],
 .form-row .Select-control {
     background-color: #FFFFFF;
@@ -141,9 +140,20 @@ hr {
     width: 95%;
 }
 
+.form-row .tooltip {
+    width: 5%;
+    padding-left: 1em;
+}
+
+.form-row .box-fields {
+    width: 95%;
+}
+
 .bottom-dropdown {
     margin-top: 5px;
 }
+
+/* RUNTIME */
 
 .box-runtime {
     display: flex;
@@ -151,15 +161,6 @@ hr {
 
 .box-runtime input[type='number'] {
     width:50%; 
-}
-
-.short-input .tooltip {
-    width: 5%;
-    padding-left: 0.5em;
-}
-
-.form-row .box-fields {
-    width: 95%;
 }
 
 .box-runtime input:first-of-type {
@@ -170,36 +171,38 @@ hr {
     margin-left:2px;
 }
 
-#platform-tooltip {
-    margin-left:0.4em;
-}
+/* RADIO ROWS */
 
-.radio-and-field {
+.radio-row, .radio-and-field {
+    display: flex;
     flex-direction: row;
 }
 
-.radio-and-field > label {
+.radio-row > label {
     width: 100%;
+}
+
+.radio-and-field {
+    width: 95%  /* The remaining % are filled in by the tooltip */
 }
 
 .radio-input {
     width: 55%;
-    margin: 10px 0 13px 0;
+    margin: 5px 0 8px 0;
     display: flex;
     justify-content: space-around;
+}
+
+.radio-row input[type='number'] {
+    width: 45%;
 }
 
 .radio-input label:last-of-type {
     margin-right: 20px;
 }
 
-.form-row input[type='radio'] {
-    margin-right: 7px;
-}
 
-.radio-and-field input[type='number'] {
-    width: 40%;
-}
+/* OTHER */
 
 .reset-button {
     margin-bottom: 10px;

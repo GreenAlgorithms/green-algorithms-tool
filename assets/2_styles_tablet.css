@@ -10,17 +10,6 @@
     ---------------------------------- INPUT FORM ----------------------------------------
     */
 
-    /*
-    .input-form {
-        margin-right: 12px;
-        width: calc((50%) - (6px));
-    }
-
-    .first-output {
-        width:calc((50%) - (6px));
-    }
-    */
-
     .form-row > label {
         width: 50%;
         margin-bottom: 7;
@@ -32,7 +21,7 @@
         margin-bottom: 0;
     }
 
-    .short-input .tooltip {
+    .form-row .tooltip {
         width: 5%;
     }
 
@@ -44,25 +33,28 @@
     .form-row .box-runtime input:first-of-type {
         margin-right:0;
         margin-bottom:2px;
-
     }
 
     .form-row input:last-of-type {
         margin-left:0;
     }
+    
+    .radio-row label{
+            width: 45%;
+        }
 
-    .radio-and-field label{
-        width: 45%;
-        margin-right: 5px;
-    }
+    .radio-and-field{
+        width: 50%
+        /* equivalent to the .short-input .box-fields selector */  
+    }  
 
     .radio-input {
-        width: 30%;
+        width: 55%;
         margin: 0;
     }
 
-    .radio-and-field input[type='number'] {
-        width: 20%;
+    .radio-row input[type='number'] {
+        width: 45%;
     }
 
     .reset-button {

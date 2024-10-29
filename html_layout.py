@@ -429,19 +429,8 @@ def create_appLayout(
                                         id="platformType_dropdown",
                                         clearable=False,
                                     ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id="provider_dropdown",
-                                                clearable=False,
-                                                className='bottom-dropdown'
-                                            )
-                                        ],
-                                        id="provider_dropdown_div"
-                                    )
                                 ],
-                                className="box-fields"
+                                className='box-fields',
                             ),
 
                             html.Div(
@@ -453,11 +442,24 @@ def create_appLayout(
                                     ),
                                 ],
                                 className='tooltip',
-                                id='platform-tooltip',
                             ),    
+
+                            ## SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="provider_dropdown",
+                                        clearable=False,
+                                        className='bottom-dropdown'
+                                    ),
+                                ],
+                                className="box-fields",
+                                id="provider_dropdown_div"
+                            ),
                         ],
                         className='form-row'
                     ),
+
 
                     ## SERVER (for cloud computing)
                     html.Div(
@@ -532,20 +534,25 @@ def create_appLayout(
                     html.Div(
                         [
                             html.Label("Do you know the real usage factor of your CPU?"),
+                            
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='usageCPU_radio',
+                                        options=yesNo_options,
+                                        className="radio-input",
+                                    ),
 
-                            dcc.RadioItems(
-                                id='usageCPU_radio',
-                                options=yesNo_options,
-                                className="radio-input",
-                            ),
-
-                            dcc.Input(
-                                min=0,
-                                max=1,
-                                # step=0.1,
-                                type='number',
-                                id="usageCPU_input",
-                                style=dict(display='none'),
+                                    dcc.Input(
+                                        min=0,
+                                        max=1,
+                                        # step=0.1,
+                                        type='number',
+                                        id="usageCPU_input",
+                                        style=dict(display='none'),
+                                    )
+                                ],
+                                className='radio-and-field'
                             ),
 
                             html.Div(
@@ -559,7 +566,7 @@ def create_appLayout(
                                 className='tooltip',
                             ),
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                         id='usageCPU_div'
                     ),
 
@@ -567,20 +574,24 @@ def create_appLayout(
                         [
                             html.Label("Do you know the real usage factor of your GPU?"),
 
-                            dcc.RadioItems(
-                                id='usageGPU_radio',
-                                options=yesNo_options,
-                                className="radio-input"
-                                # labelStyle={"display": "inline-block"},
-                            ),
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='usageGPU_radio',
+                                        options=yesNo_options,
+                                        className="radio-input"
+                                    ),
 
-                            dcc.Input(
-                                min=0,
-                                max=1,
-                                # step=0.1,
-                                type='number',
-                                id="usageGPU_input",
-                                style=dict(display='none'),
+                                    dcc.Input(
+                                        min=0,
+                                        max=1,
+                                        # step=0.1,
+                                        type='number',
+                                        id="usageGPU_input",
+                                        style=dict(display='none'),
+                                    ),
+                                ],
+                                className='radio-and-field'
                             ),
 
                             html.Div(
@@ -594,7 +605,7 @@ def create_appLayout(
                                 className='tooltip',
                             ),                            
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                         id='usageGPU_div'
                     ),
 
@@ -603,18 +614,22 @@ def create_appLayout(
                         [
                             html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
 
-                            dcc.RadioItems(
-                                id='pue_radio',
-                                options=yesNo_options,
-                                className="radio-input"
-                                # labelStyle={"display": "inline-block"},
-                            ),
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='pue_radio',
+                                        options=yesNo_options,
+                                        className="radio-input"
+                                    ),
 
-                            dcc.Input(
-                                min=1,
-                                type='number',
-                                id="PUE_input",
-                                style=dict(display='none'),
+                                    dcc.Input(
+                                        min=1,
+                                        type='number',
+                                        id="PUE_input",
+                                        style=dict(display='none'),
+                                    ),
+                                ],
+                                className='radio-and-field'
                             ),
 
                             html.Div(
@@ -629,7 +644,7 @@ def create_appLayout(
                             ),
 
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                         id='PUEquestion_div',
                         style=dict(display='none'),
                     ),
@@ -639,17 +654,22 @@ def create_appLayout(
                         [
                             html.Label("Do you want to use a Pragmatic Scaling Factor (PSF)?"),
 
-                            dcc.RadioItems(
-                                id='PSF_radio',
-                                options=yesNo_options,
-                                className="radio-input"
-                            ),
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='PSF_radio',
+                                        options=yesNo_options,
+                                        className="radio-input"
+                                    ),
 
-                            dcc.Input(
-                                min=1,
-                                type='number',
-                                id="PSF_input",
-                                style=dict(display='none'),
+                                    dcc.Input(
+                                        min=1,
+                                        type='number',
+                                        id="PSF_input",
+                                        style=dict(display='none'),
+                                    ),
+                                ],
+                                className='radio-and-field',
                             ),
 
                             html.Div(
@@ -664,7 +684,7 @@ def create_appLayout(
                             ),
 
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                     ),
 
                     dcc.ConfirmDialog(

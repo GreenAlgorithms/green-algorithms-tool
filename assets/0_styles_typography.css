@@ -242,12 +242,6 @@ blockquote {
     top: 0.05em;
 }
 
-.radio-and-field .tooltip-icon{
-    left: 0.5em;
-    top: -0.1em;
-}
-
-
 .tooltip-text {
     visibility: hidden;
     width: 12em;

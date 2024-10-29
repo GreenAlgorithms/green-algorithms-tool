@@ -19,27 +19,15 @@
         width: calc((33.3%) - (6px));
     }
 
-    .short-input .box-fields,
-    .short-input > input[type = 'number'] {
+    .form-row .box-fields,
+    .form-row .radio-and-field,
+    .form-row > input[type = 'number'] {
         width: 90%;
     }
     
-    .short-input .tooltip {
+    .form-row .tooltip {
         width: 5%;
-    }
-
-    #platform-tooltip {
-        width: 5%;
-        margin-left:-0.2em;
-    }
-
-    #platformType_dropdown{
-        width: 95%;
-    }
-
-    .radio-and-field input[type='number'] {
-        width: 35%;
-    }
+    }  
 
     .tooltip-text {
         position: absolute;
