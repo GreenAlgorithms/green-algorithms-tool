@@ -223,6 +223,10 @@ blockquote {
 ---------------------------------- Tooltip ----------------------------------------
 */
 
+.tooltip {
+    position: relative;
+}
+
 .tooltip-icon {
     display: inline-block;
     /* Text content of the icon */
@@ -251,9 +255,9 @@ blockquote {
     border-radius: 6px;
     padding: 5px 0;
     font-style: normal;
-    /* Position the tooltip */
+    /* Position of the text */
     position: absolute;
-    right: 5em;
+    right: 1em;
     z-index: 1;
 }
 
