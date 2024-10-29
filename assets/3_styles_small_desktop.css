@@ -22,11 +22,12 @@
     .form-row .box-fields,
     .form-row .radio-and-field,
     .form-row > input[type = 'number'] {
-        width: 90%;
+        width: 91%;
     }
     
     .form-row .tooltip {
-        width: 5%;
+        width: 4%;
+        margin-left: -0.5em;
     }  
 
     .tooltip-text {

@@ -437,7 +437,7 @@ def create_appLayout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "The following two fields are used to define the PUE and energy mix associated with your computations.",
+                                        "This field enables us to retrieve the PUE and energy mix associated with your computations.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -498,39 +498,51 @@ def create_appLayout(
                                         id="location_continent_dropdown",
                                         clearable=False,
                                     ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id="location_country_dropdown",
-                                                className='bottom-dropdown',
-                                                clearable=False,
-                                            ),
-                                        ],
-                                        id="location_country_dropdown_div"
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id="location_region_dropdown",
-                                                className='bottom-dropdown',
-                                                clearable=False,
-                                            ),
-                                        ],
-                                        id="location_region_dropdown_div"
-                                    ),
-
                                 ],
-                                className="box-fields"
-                            )
+                                className="box-fields",
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "In particular, the location is used to retrieve the energy mix.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),   
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="location_country_dropdown",
+                                        className='bottom-dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields",
+                                id="location_country_dropdown_div"
+                            ),
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="location_region_dropdown",
+                                        className='bottom-dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields",
+                                id="location_region_dropdown_div"
+                            ),
                         ],
                         id='location_div',
                         className='form-row',
                         style={'display': 'flex'}
                     ),
 
-                    ## Core usage (CPU and GPU)
+                    ## CORE USAGE (CPU and GPU)
                     html.Div(
                         [
                             html.Label("Do you know the real usage factor of your CPU?"),

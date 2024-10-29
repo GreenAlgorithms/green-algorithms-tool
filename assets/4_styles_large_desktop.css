@@ -28,23 +28,28 @@
         margin-left:0;
     }
 
+    .form-row .box-fields {
+        width: 94%
+    }
+
     .short-input label {
-            width: 45%;
+            width: 47%;
             margin-bottom: 0;
         }
 
     .short-input > input[type='number'],
     .short-input .box-fields {
-        width: 45%;
+        width: 47%;
+    }
+
+    .form-row .radio-and-field {
+        width: 94%;
     }
 
     .tooltip {
-        width: 5%
-    }
-
-    #div_memory label{
-        width: 42%;
-        margin-right: 3%;
+        width: 4%;
+        margin-left: 0em;
+        margin-right: -1em;
     }
 
     .tooltip-text {
