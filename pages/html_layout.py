@@ -8,10 +8,13 @@ import plotly.graph_objects as go
 
 import os
 
-dash.register_page(__name__, path='/')
+dash.register_page(__name__, path='/', title='Green Algorithms')
 
 def loading_wrapper(component):
     return html.P(dcc.Loading(component, type='circle', color='#96BA6E'))
+
+# SOME GLOBAL VARIABLES
+#############################################
 
 image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
@@ -50,10 +53,43 @@ blank_figure = {
     }
 }
 
+default_values = dict(
+    runTime_hour=12,
+    runTime_min=0,
+    coreType='CPU',
+    numberCPUs=12,
+    CPUmodel='Xeon E5-2683 v4',
+    tdpCPU=12,
+    numberGPUs=1,
+    GPUmodel='NVIDIA Tesla V100',
+    tdpGPU=200,
+    memory=64,
+    platformType='localServer',
+    provider='gcp',
+    usageCPUradio='No',
+    usageCPU=1.0,
+    usageGPUradio='No',
+    usageGPU=1.0,
+    PUEradio='No',
+    PSFradio='No',
+    PSF=1,
+    appVersion=current_version,
+)
+
+def parse_url(url_query_strings):
+    all_fields = dict()
+    for key in default_values:
+        if key in url_query_strings:
+            all_fields[key] = url_query_strings[key]
+        else:
+            all_fields[key] = url_query_strings[key]
+    return all_fields
 
 def layout(
-        mapCI,
+        mapCI=go.Figure(),
+        **query_strings
 ):
+    print(query_strings) 
     appLayout = html.Div(
         [
             dcc.Store(id="versioned_data"),
@@ -64,7 +100,9 @@ def layout(
 
             dcc.ConfirmDialog(
                 id='fillIn_from_url',
-                message='Filling in values from the URL. To edit, click reset.',
+                message= 'Filling in values from the URL. \n'
+                'All fields will be frozen. To edit, please click reset. \n'
+                'Mispelled query fields in the URL are replaced by their default value.'
             ),
 
             #### HEADER ####

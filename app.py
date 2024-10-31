@@ -24,6 +24,10 @@ from urllib import parse
 import pycountry_convert as pc
 
 # from pages.html_layout import create_appLayout
+from handle_inputs import put_value_first, unlist, check_CIcountries, iso2_to_iso3
+from handle_inputs import load_data
+from handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
+from handle_inputs import validateInput, prepURLqs
 
 current_version = 'v2.2'
 
@@ -40,12 +44,12 @@ static_image_route = '/static/'
 # All these correspond to tabs of the spreadsheet on the Google Drive
 
 # Helpers functions
-def check_CIcountries(df):
+def check_CIcountries_old(df):
     foo = df.groupby(['continentName', 'countryName'])['regionName'].apply(','.join)
     for x in foo:
         assert 'Any' in x.split(','), f"{x} does't have an 'Any' column"
 
-def iso2_to_iso3(x):
+def iso2_to_iso3_old(x):
     try:
         output = pc.country_name_to_country_alpha3(pc.country_alpha2_to_country_name(x, cn_name_format="default"),
                                                    cn_name_format="default")
@@ -53,13 +57,13 @@ def iso2_to_iso3(x):
         output = ''
     return output
 
-class dotdict(dict):
+class dotdict_old(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-def load_data(data_dir, **kwargs):
+def load_data_old(data_dir, **kwargs):
 
     data_dict0 = dict() # dotdict()
 
@@ -177,7 +181,7 @@ def load_data(data_dir, **kwargs):
 # OPTIONS FOR DROPDOWN #
 ########################
 
-def put_value_first(L, value):
+def put_value_first_old(L, value):
     n = len(L)
     if value in L:
         L.remove(value)
@@ -192,7 +196,7 @@ yesNo_options = [
     {'label': 'No', 'value': 'No'}
 ]
 
-def availableLocations_continent(selected_provider, data):
+def availableLocations_continent_old(selected_provider, data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
         foo = data_dict.datacenters_dict_byProvider.get(selected_provider)
@@ -209,7 +213,7 @@ def availableLocations_continent(selected_provider, data):
     else:
         return []
 
-def availableOptions_servers(selected_provider,selected_continent, data):
+def availableOptions_servers_old(selected_provider,selected_continent, data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
         foo = data_dict.CI_dict_byName.get(selected_continent)
@@ -233,7 +237,7 @@ def availableOptions_servers(selected_provider,selected_continent, data):
         return []
 
 
-def availableOptions_country(selected_continent, data):
+def availableOptions_country_old(selected_continent, data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
         foo = data_dict.CI_dict_byName.get(selected_continent)
@@ -247,7 +251,7 @@ def availableOptions_country(selected_continent, data):
     else:
         return []
 
-def availableOptions_region(selected_continent,selected_country,data):
+def availableOptions_region_old(selected_continent,selected_country,data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
         foo = data_dict.CI_dict_byName.get(selected_continent)
@@ -421,10 +425,12 @@ app = dash.Dash(
     __name__,
     use_pages=True,
     external_stylesheets=external_stylesheets,
-    routing_callback_inputs={
-        # The mapCI will be passed as a `layout` keyword argument to page layout functions
-        "mapCI": mapCI,
-   },
+    # The following argument requires dash >= 2.14
+    #---------------------------------------------
+#     routing_callback_inputs={
+#         # The mapCI will be passed as a `layout` keyword argument to page layout functions
+#         "mapCI": mapCI,
+#    },
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[dict(
         name= 'viewport',
@@ -454,7 +460,7 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
 # HELP FUNCTIONS #
 ##################
 
-def unlist(x):
+def unlist_old(x):
     if isinstance(x, list):
         assert len(x) == 1
         return x[0]
@@ -462,7 +468,7 @@ def unlist(x):
         return x
 
 
-def validateInput(input_dict, data_dict, keysOfInterest):
+def validateInput_old(input_dict, data_dict, keysOfInterest):
     '''
     Validate the input, either from a url or others
     '''
@@ -563,7 +569,7 @@ def validateInput(input_dict, data_dict, keysOfInterest):
 
     return new_dict, wrong_imputs
 
-def prepURLqs(url_search, data, keysOfInterest):
+def prepURLqs_old(url_search, data, keysOfInterest):
     if (url_search is not None) & (url_search != '') & (data is not None):
         url0 = parse.parse_qs(url_search[1:])
 
@@ -617,7 +623,7 @@ def prepURLqs(url_search, data, keysOfInterest):
         Input('url_content','search'),
     ],
 )
-def fillInFromURL(url_search):
+def fillInFromURL_old(url_search):
     '''
     :param url_search: Format is "?key=value&key=value&..."
     '''
@@ -653,7 +659,7 @@ def fillInFromURL(url_search):
 
         url = parse.parse_qs(url_search[1:])
 
-        print(url)
+        # print(url)
 
         # Load the right dataset to validate the URL inputs
         if 'appVersion' in url:
@@ -684,6 +690,17 @@ def fillInFromURL(url_search):
 
     # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
     return tuple(defaults2.values()) + (show_popup,popup_message)
+
+@app.callback(
+    Output('fillIn_from_url', 'displayed'),
+    [
+        Input('url_content','search'),
+    ],
+)
+def fillInFromURL(url_search):
+    print('yea')
+    return True
+    
 
 @app.callback(
     [
