@@ -23,7 +23,7 @@ from urllib import parse
 
 import pycountry_convert as pc
 
-from html_layout import create_appLayout
+# from pages.html_layout import create_appLayout
 
 current_version = 'v2.2'
 
@@ -419,7 +419,12 @@ external_stylesheets = [
 
 app = dash.Dash(
     __name__,
+    use_pages=True,
     external_stylesheets=external_stylesheets,
+    routing_callback_inputs={
+        # The mapCI will be passed as a `layout` keyword argument to page layout functions
+        "mapCI": mapCI,
+   },
     # these tags are to insure proper responsiveness on mobile devices
     meta_tags=[dict(
         name= 'viewport',
@@ -436,12 +441,14 @@ appVersions_options_list.sort(reverse=True)
 
 appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
 
-app.layout = create_appLayout(
-    yesNo_options=yesNo_options,
-    image_dir=image_dir,
-    mapCI=mapCI,
-    appVersions_options=appVersions_options,
-)
+app.layout = html.Div(dash.page_container, id='fullfullPage')
+
+# app.layout = create_appLayout(
+#     yesNo_options=yesNo_options,
+#     image_dir=image_dir,
+#     mapCI=mapCI,
+#     appVersions_options=appVersions_options,
+# )
 
 ##################
 # HELP FUNCTIONS #
@@ -645,6 +652,8 @@ def fillInFromURL(url_search):
         show_popup = True
 
         url = parse.parse_qs(url_search[1:])
+
+        print(url)
 
         # Load the right dataset to validate the URL inputs
         if 'appVersion' in url:

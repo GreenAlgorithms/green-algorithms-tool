@@ -8,10 +8,23 @@ import plotly.graph_objects as go
 
 import os
 
+dash.register_page(__name__, path='/')
 
 def loading_wrapper(component):
     return html.P(dcc.Loading(component, type='circle', color='#96BA6E'))
 
+image_dir = os.path.join('assets/images')
+data_dir = os.path.join(os.path.abspath(''),'data')
+
+yesNo_options = [
+    {'label': 'Yes', 'value': 'Yes'},
+    {'label': 'No', 'value': 'No'}
+]
+current_version = 'v2.2'
+
+appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
+appVersions_options_list.sort(reverse=True)
+appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
 
 blank_figure = {
     "layout": {
@@ -38,11 +51,8 @@ blank_figure = {
 }
 
 
-def create_appLayout(
-        yesNo_options,
-        image_dir,
+def layout(
         mapCI,
-        appVersions_options
 ):
     appLayout = html.Div(
         [
