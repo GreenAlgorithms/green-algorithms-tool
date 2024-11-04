@@ -1,12 +1,14 @@
+import os
 import dash
+
 from dash import dcc
 from dash import html
+from handle_inputs import parse_query_strings
 
 # import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
-import os
 
 dash.register_page(__name__, path='/', title='Green Algorithms')
 
@@ -89,7 +91,7 @@ def layout(
         mapCI=go.Figure(),
         **query_strings
 ):
-    print(query_strings) 
+    clean_inputs = parse_query_strings(query_strings, default_values) 
     appLayout = html.Div(
         [
             dcc.Store(id="versioned_data"),
@@ -100,9 +102,8 @@ def layout(
 
             dcc.ConfirmDialog(
                 id='fillIn_from_url',
-                message= 'Filling in values from the URL. \n'
-                'All fields will be frozen. To edit, please click reset. \n'
-                'Mispelled query fields in the URL are replaced by their default value.'
+                message=clean_inputs['popup_message'],
+                displayed=clean_inputs['show_popup'],
             ),
 
             #### HEADER ####
@@ -158,6 +159,7 @@ def layout(
                                         type='number',
                                         id="runTime_hour_input",
                                         min=0,
+                                        value=clean_inputs['runTime_hour'],
                                     ),
 
                                     dcc.Input(
@@ -165,6 +167,7 @@ def layout(
                                         id="runTime_min_input",
                                         min=0,
                                         max=59,
+                                        value=clean_inputs['runTime_min'],
                                     )
                                 ],
                                 className="box-runtime box-fields"
@@ -190,6 +193,7 @@ def layout(
                                     dcc.Dropdown(
                                         id="coreType_dropdown",
                                         clearable=False,
+                                        value=clean_inputs['coreType'],
                                     ),
                                 ],
                                 className="box-fields"
@@ -214,6 +218,7 @@ def layout(
                                         type='number',
                                         id="numberCPUs_input",
                                         min=0,
+                                        value=clean_inputs['numberCPUs'],
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -229,6 +234,7 @@ def layout(
                                                 id="CPUmodel_dropdown",
                                                 className='bottom-dropdown',
                                                 clearable=False,
+                                                value=clean_inputs['CPUmodel'],
                                             ),
                                         ],
                                         className="box-fields"
@@ -248,6 +254,7 @@ def layout(
                                         type='number',
                                         id="tdpCPU_input",
                                         min=0,
+                                        value=clean_inputs['tdpCPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -275,6 +282,7 @@ def layout(
                                         type='number',
                                         id="numberGPUs_input",
                                         min=0,
+                                        value=clean_inputs['numberGPUs'],
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -290,6 +298,7 @@ def layout(
                                                 id="GPUmodel_dropdown",
                                                 className='bottom-dropdown',
                                                 clearable=False,
+                                                value=clean_inputs['GPUmodel']
                                             ),
                                         ],
                                         className="box-fields"
@@ -309,6 +318,7 @@ def layout(
                                         type='number',
                                         id="tdpGPU_input",
                                         min=0,
+                                        value=clean_inputs['tdpGPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -336,6 +346,7 @@ def layout(
                                 type='number',
                                 id="memory_input",
                                 min=0,
+                                value=clean_inputs['memory']
                             ),
                         ],
                         className='form-row short-input',
@@ -359,6 +370,7 @@ def layout(
                                     dcc.Dropdown(
                                         id="platformType_dropdown",
                                         clearable=False,
+                                        value=clean_inputs['platformType'],
                                     ),
 
                                     html.Div(
@@ -366,7 +378,8 @@ def layout(
                                             dcc.Dropdown(
                                                 id="provider_dropdown",
                                                 clearable=False,
-                                                className='bottom-dropdown'
+                                                className='bottom-dropdown',
+                                                value=clean_inputs['provider'],
                                             )
                                         ],
                                         id="provider_dropdown_div"
@@ -456,6 +469,7 @@ def layout(
                                 id='usageCPU_radio',
                                 options=yesNo_options,
                                 className="radio-input",
+                                value=clean_inputs['usageCPUradio'],
                             ),
 
                             dcc.Input(
@@ -465,6 +479,7 @@ def layout(
                                 type='number',
                                 id="usageCPU_input",
                                 style=dict(display='none'),
+                                value=clean_inputs['usageCPU'],
                             ),
                         ],
                         className='form-row radio-and-field',
@@ -478,7 +493,8 @@ def layout(
                             dcc.RadioItems(
                                 id='usageGPU_radio',
                                 options=yesNo_options,
-                                className="radio-input"
+                                className="radio-input",
+                                value=clean_inputs['usageGPUradio'],
                                 # labelStyle={"display": "inline-block"},
                             ),
 
@@ -489,6 +505,7 @@ def layout(
                                 type='number',
                                 id="usageGPU_input",
                                 style=dict(display='none'),
+                                value=clean_inputs['usageGPU'],
                             ),
                         ],
                         className='form-row radio-and-field',
@@ -503,7 +520,8 @@ def layout(
                             dcc.RadioItems(
                                 id='pue_radio',
                                 options=yesNo_options,
-                                className="radio-input"
+                                className="radio-input",
+                                value=clean_inputs['PUEradio'],
                                 # labelStyle={"display": "inline-block"},
                             ),
 
@@ -527,7 +545,8 @@ def layout(
                             dcc.RadioItems(
                                 id='PSF_radio',
                                 options=yesNo_options,
-                                className="radio-input"
+                                className="radio-input",
+                                value=clean_inputs['PSFradio'],
                             ),
 
                             dcc.Input(
@@ -535,6 +554,7 @@ def layout(
                                 type='number',
                                 id="PSF_input",
                                 style=dict(display='none'),
+                                value=clean_inputs['PSF'],
                             ),
                         ],
                         className='form-row radio-and-field',
@@ -542,7 +562,8 @@ def layout(
 
                     dcc.ConfirmDialog(
                         id='confirm_reset',
-                        message='This will reset all the values you have entered so far! Are you sure you want to continue?',
+                        message='This will reset all the values you have entered so far!\n' \
+                        'Are you sure you want to continue?',
                     ),
 
                     html.Div(
@@ -574,6 +595,7 @@ def layout(
                                         options=appVersions_options,
                                         className='bottom-dropdown',
                                         clearable=False,
+                                        value=clean_inputs['appVersion'],
                                     ),
                                 ],
                                 className="box-fields"

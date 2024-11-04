@@ -25,17 +25,17 @@ import pycountry_convert as pc
 
 # from pages.html_layout import create_appLayout
 from handle_inputs import put_value_first, unlist, check_CIcountries, iso2_to_iso3
-from handle_inputs import load_data
+from handle_inputs import load_data, current_version, data_dir
 from handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 from handle_inputs import validateInput, prepURLqs
 
-current_version = 'v2.2'
+# current_version = 'v2.2'
 
 #############
 # LOAD DATA #
 #############
 
-data_dir = os.path.join(os.path.abspath(''),'data')
+# data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
 
@@ -440,6 +440,8 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
+
+# TODO: move towards a utils script
 appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
 appVersions_options_list.sort(reverse=True)
 # Add the dev option for testing # TODO make it permanent, with a warning pop up if selected by mistake
@@ -594,80 +596,162 @@ def prepURLqs_old(url_search, data, keysOfInterest):
 # If parameters are passed on the URL, these are inputs in the app
 # In this function, it's all the values that don't have their own callbacks further down
 # FIXME still not working in prod
-@app.callback(
-    [
-        Output('runTime_hour_input','value'),
-        Output('runTime_min_input','value'),
-        Output('coreType_dropdown','value'),
-        Output('numberCPUs_input','value'),
-        Output('CPUmodel_dropdown', 'value'),
-        Output('tdpCPU_input','value'),
-        Output('numberGPUs_input','value'),
-        Output('GPUmodel_dropdown', 'value'),
-        Output('tdpGPU_input','value'),
-        Output('memory_input','value'),
-        Output('platformType_dropdown','value'),
-        Output('provider_dropdown','value'),
-        Output('usageCPU_radio','value'),
-        Output('usageCPU_input','value'),
-        Output('usageGPU_radio','value'),
-        Output('usageGPU_input','value'),
-        Output('pue_radio','value'),
-        Output('PSF_radio', 'value'),
-        Output('PSF_input', 'value'),
-        Output('appVersions_dropdown','value'),
-        Output('fillIn_from_url', 'displayed'),
-        Output('fillIn_from_url', 'message'),
-    ],
-    [
-        Input('url_content','search'),
-    ],
-)
-def fillInFromURL_old(url_search):
-    '''
-    :param url_search: Format is "?key=value&key=value&..."
-    '''
-    # validateInput(default_values) # DEBUGONLY
-    # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
+# @app.callback(
+#     [
+#         Output('runTime_hour_input','value'),
+#         Output('runTime_min_input','value'),
+#         Output('coreType_dropdown','value'),
+#         Output('numberCPUs_input','value'),
+#         Output('CPUmodel_dropdown', 'value'),
+#         Output('tdpCPU_input','value'),
+#         Output('numberGPUs_input','value'),
+#         Output('GPUmodel_dropdown', 'value'),
+#         Output('tdpGPU_input','value'),
+#         Output('memory_input','value'),
+#         Output('platformType_dropdown','value'),
+#         Output('provider_dropdown','value'),
+#         Output('usageCPU_radio','value'),
+#         Output('usageCPU_input','value'),
+#         Output('usageGPU_radio','value'),
+#         Output('usageGPU_input','value'),
+#         Output('pue_radio','value'),
+#         Output('PSF_radio', 'value'),
+#         Output('PSF_input', 'value'),
+#         Output('appVersions_dropdown','value'),
+#         Output('fillIn_from_url', 'displayed'),
+#         Output('fillIn_from_url', 'message'),
+#     ],
+#     [
+#         Input('url_content','search'),
+#     ],
+# )
+# def fillInFromURL(url_search):
+#     '''
+#     :param url_search: Format is "?key=value&key=value&..."
+#     '''
+#     # validateInput(default_values) # DEBUGONLY
+#     # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
 
-    # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
-    # ctx_msg = json.dumps({
-    #     'states': ctx.states,
-    #     'triggered': ctx.triggered,
-    #     'inputs': ctx.inputs,
-    #     'args': ctx.args_grouping
-    # }, indent=2) # DEBUGONLY
-    # print(ctx_msg) # DEBUGONLY
+#     # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
+#     # ctx_msg = json.dumps({
+#     #     'states': ctx.states,
+#     #     'triggered': ctx.triggered,
+#     #     'inputs': ctx.inputs,
+#     #     'args': ctx.args_grouping
+#     # }, indent=2) # DEBUGONLY
+#     # print(ctx_msg) # DEBUGONLY
 
-    show_popup = False
-    popup_message = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
+#     print('yea')
+#     show_popup = False
+#     popup_message = 'Filling in values from the URL. \nAll fields will be frozen. To edit, please click reset.'
 
-    defaults2 = copy.deepcopy(default_values)
+#     defaults2 = copy.deepcopy(default_values)
 
-    # pull default PUE eitherway
+#     # pull default PUE eitherway
+
+#     if ctx.triggered_id is None:
+#         print('raise triggered')
+
+#         # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
+#         # print("-> no-trigger callback prevented") # DEBUGONLY
+#         raise PreventUpdate # TODO find a cleaner workaround
+
+#     elif (url_search is not None)&(url_search != ''):
+#         print(f'filled url_search: {url_search}')
+
+#         # print("\n## picked from url") # DEBUGONLY
+
+#         show_popup = True
+
+#         url = parse.parse_qs(url_search[1:])
+
+#         # print(url)
+
+#         # Load the right dataset to validate the URL inputs
+#         if 'appVersion' in url:
+#             new_version = unlist(url['appVersion'])
+#             # print(f"Validating URL with {new_version} data") # DEBUGONLY
+#         else:
+#             # print(f"App version not provided in URL, using default ({default_values['appVersion']})") # DEBUGONLY
+#             new_version = default_values['appVersion']
+#         assert new_version in (appVersions_options_list + [current_version])
+#         if new_version == current_version:
+#             newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
+#         else:
+#             newData = load_data(os.path.join(data_dir, new_version), version=new_version)
+
+#         # Validate URL
+#         url2, invalidInputs = validateInput(
+#             input_dict=url,
+#             data_dict=newData,
+#             keysOfInterest=list(url.keys())
+#         )
+
+#         defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
+
+#         if len(invalidInputs) > 0:
+#             popup_message += f'\n\nThere seems to be some typos in this URL, ' \
+#                             f'using default values for '
+#             popup_message += f"{', '.join(list(invalidInputs.keys()))}."
+
+#     # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
+#     return tuple(defaults2.values()) + (show_popup,popup_message)
+
+# @app.callback(
+#     [
+#         Output('runTime_hour_input','value'),
+#         Output('runTime_min_input','value'),
+#         Output('coreType_dropdown','value'),
+#         Output('numberCPUs_input','value'),
+#         Output('CPUmodel_dropdown', 'value'),
+#         Output('tdpCPU_input','value'),
+#         Output('numberGPUs_input','value'),
+#         Output('GPUmodel_dropdown', 'value'),
+#         Output('tdpGPU_input','value'),
+#         Output('memory_input','value'),
+#         Output('platformType_dropdown','value'),
+#         Output('provider_dropdown','value'),
+#         Output('usageCPU_radio','value'),
+#         Output('usageCPU_input','value'),
+#         Output('usageGPU_radio','value'),
+#         Output('usageGPU_input','value'),
+#         Output('pue_radio','value'),
+#         Output('PSF_radio', 'value'),
+#         Output('PSF_input', 'value'),
+#         Output('appVersions_dropdown','value'),
+#         Output('fillIn_from_url', 'displayed'),
+#         Output('fillIn_from_url', 'message'),
+#     ],
+#     [
+#         Input('url_content','search'),
+#     ],
+# )
+# def fillInFromURL(url_search):
+    print('yea')
+    # print(url_search)
+
+    url = parse.parse_qs(url_search[1:])
+    print('url in the fillinfromUrl callback to understand for Validate:', url)
 
     if ctx.triggered_id is None:
+        print('raise triggered')
         # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
         # print("-> no-trigger callback prevented") # DEBUGONLY
         raise PreventUpdate # TODO find a cleaner workaround
 
-    elif (url_search is not None)&(url_search != ''):
+    values = copy.deepcopy(default_values)
+    show_popup = False
+    popup_message = 'Filling in values from the URL. \nAll fields will be frozen. To edit, please click reset.'
 
-        # print("\n## picked from url") # DEBUGONLY
-
+    # Are values actually filled in based on the url?
+    if (url_search is not None)&(url_search != ''):
         show_popup = True
-
-        url = parse.parse_qs(url_search[1:])
-
-        # print(url)
-
+        print(f'filled url_search: {url_search}')
+        
         # Load the right dataset to validate the URL inputs
+        new_version = default_values['appVersion']
         if 'appVersion' in url:
             new_version = unlist(url['appVersion'])
-            # print(f"Validating URL with {new_version} data") # DEBUGONLY
-        else:
-            # print(f"App version not provided in URL, using default ({default_values['appVersion']})") # DEBUGONLY
-            new_version = default_values['appVersion']
         assert new_version in (appVersions_options_list + [current_version])
         if new_version == current_version:
             newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
@@ -675,31 +759,21 @@ def fillInFromURL_old(url_search):
             newData = load_data(os.path.join(data_dir, new_version), version=new_version)
 
         # Validate URL
-        url2, invalidInputs = validateInput(
+        url, invalidInputs = validateInput(
             input_dict=url,
             data_dict=newData,
             keysOfInterest=list(url.keys())
         )
-
-        defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
-
         if len(invalidInputs) > 0:
             popup_message += f'\n\nThere seems to be some typos in this URL, ' \
                             f'using default values for '
             popup_message += f"{', '.join(list(invalidInputs.keys()))}."
+        
 
-    # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
-    return tuple(defaults2.values()) + (show_popup,popup_message)
-
-@app.callback(
-    Output('fillIn_from_url', 'displayed'),
-    [
-        Input('url_content','search'),
-    ],
-)
-def fillInFromURL(url_search):
-    print('yea')
-    return True
+    values.update((k, url[k]) for k in values.keys() & url.keys())
+    print('values in the FiFU callback', values)
+    print(show_popup)
+    return tuple(values.values()) + (show_popup, popup_message)
     
 
 @app.callback(

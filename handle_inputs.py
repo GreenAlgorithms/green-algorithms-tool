@@ -7,6 +7,8 @@ import pandas as pd
 from urllib import parse
 from types import SimpleNamespace
 
+current_version = 'v2.2'
+data_dir = os.path.join(os.path.abspath(''),'data')
 
 ###################################################
 ## UTILS 
@@ -173,6 +175,16 @@ def load_data(data_dir, **kwargs):
 
     return data_dict # This is a SimpleNamespace
 
+def get_available_versions():
+    # TODO: move towards a utils script
+    appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
+    appVersions_options_list.sort(reverse=True)
+    # Add the dev option for testing # TODO make it permanent, with a warning pop up if selected by mistake
+    # appVersions_options_list.append('dev') # DEBUGONLY
+
+    appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
+    return appVersions_options
+
 
 ###################################################
 ## DROPDOWN OPTIONS
@@ -266,10 +278,12 @@ def availableOptions_region(selected_continent,selected_country,data):
 Should be the core of the module 'handle_inputs'.
 '''
 
-def validateInput(input_dict, data_dict, keysOfInterest, appVersions_options_list, current_version):
+def validateInput(input_dict, data_dict, keysOfInterest):
     '''
     Validate the input, either from a url or others
     '''
+
+    appVersions_options_list = get_available_versions()
 
     def validateKey(key, value):
         new_val = copy.copy(value)
@@ -382,3 +396,41 @@ def prepURLqs(url_search, data, keysOfInterest):
     else:
         url = dict()
     return url
+
+def parse_query_strings(query_strings, default_values):
+
+    values = copy.deepcopy(default_values)
+    appVersions_options_list = get_available_versions()
+    popup_message = 'Filling in values from the URL. \n' \
+    'All fields will be frozen. To edit, please click reset.'
+    show_popup = False
+        
+    # Load the right dataset to validate the URL inputs
+    new_version = default_values['appVersion']
+    if 'appVersion' in query_strings:
+        new_version = unlist(query_strings['appVersion'])
+    assert new_version in (appVersions_options_list + [current_version])
+    if new_version == current_version:
+        newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
+    else:
+        newData = load_data(os.path.join(data_dir, new_version), version=new_version)
+
+    # Validate URL
+    processed_query_strings, invalidInputs = validateInput(
+        input_dict=query_strings,
+        data_dict=newData,
+        keysOfInterest=list(query_strings.keys())
+    )
+    # Check if the url contained relevant query strings used to fill the form in
+    if len(query_strings) > 0:
+        show_popup = True
+        # Check if there was mispelled inputs
+        if len(invalidInputs) > 0:
+            popup_message += f'\n\nThere seems to be some typos in this URL, ' \
+                            f'using default values for '
+            popup_message += f"{', '.join(list(invalidInputs.keys()))}."        
+
+    values.update((k, processed_query_strings[k]) for k in values.keys() & processed_query_strings.keys())
+    values['popup_message'] = popup_message
+    values['show_popup'] = show_popup
+    return values
