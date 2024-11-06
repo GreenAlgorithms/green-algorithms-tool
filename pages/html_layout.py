@@ -66,7 +66,7 @@ default_values = dict(
     GPUmodel='NVIDIA Tesla V100',
     tdpGPU=200,
     memory=64,
-    platformType='localServer',
+    platformType= 'localServer',
     provider='gcp',
     usageCPUradio='No',
     usageCPU=1.0,
@@ -76,6 +76,8 @@ default_values = dict(
     PSFradio='No',
     PSF=1,
     appVersion=current_version,
+    serverContinent='Europe', 
+    # locationContinent='Europe',
 )
 
 def parse_url(url_query_strings):
@@ -401,12 +403,13 @@ def layout(
                                     dcc.Dropdown(
                                         id="server_continent_dropdown",
                                         clearable=False,
+                                        value=clean_inputs['serverContinent'],
                                     ),
 
                                     dcc.Dropdown(
                                         id="server_dropdown",
-                                        className='bottom-dropdown',
                                         clearable=False,
+                                        className='bottom-dropdown',
                                     ),
                                 ],
                                 className="box-fields"
@@ -427,6 +430,7 @@ def layout(
                                     dcc.Dropdown(
                                         id="location_continent_dropdown",
                                         clearable=False,
+                                        # value=clean_inputs['locationContinent']
                                     ),
 
                                     html.Div(
