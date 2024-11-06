@@ -149,7 +149,7 @@ def load_data(data_dir, **kwargs):
         foo = datacenters_df.loc[datacenters_df.provider == x]
         assert len(foo.Name) == len(set(foo.Name))
 
-    datacenters_df['name_unique'] = datacenters_df.provider + ' / ' + datacenters_df.Name
+    datacenters_df['name_unique'] = datacenters_df.provider + '--' + datacenters_df.Name
 
     assert len(datacenters_df.name_unique) == len(set(datacenters_df.name_unique))
 
@@ -212,21 +212,21 @@ def availableLocations_continent(selected_provider, data):
 def availableOptions_servers(selected_provider,selected_continent, data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
-        foo = data_dict.CI_dict_byName.get(selected_continent)
-        bar = data_dict.datacenters_dict_byProvider.get(selected_provider)
+        ci_by_country_in_continent = data_dict.CI_dict_byName.get(selected_continent)
+        dict_per_server_id_in_provider = data_dict.datacenters_dict_byProvider.get(selected_provider)
     else:
-        foo, bar = None, None
+        ci_by_country_in_continent, dict_per_server_id_in_provider = None, None
 
-    if foo is not None:
-        locationsINcontinent = [region['location'] for country in foo.values() for region in country.values()]
+    if ci_by_country_in_continent is not None:
+        locationsINcontinent = [region['location'] for country in ci_by_country_in_continent.values() for region in country.values()]
     else:
         locationsINcontinent = []
 
-    if bar is not None:
-        availableOptions_Names = [server['Name'] for server in bar.values() if server['location'] in locationsINcontinent]
+    if dict_per_server_id_in_provider is not None:
+        availableOptions_Names = [server['Name'] for server in dict_per_server_id_in_provider.values() if server['location'] in locationsINcontinent]
         availableOptions_Names.sort()
 
-        availableOptions = [bar[name] for name in availableOptions_Names]
+        availableOptions = [dict_per_server_id_in_provider[name] for name in availableOptions_Names]
 
         return availableOptions
     else:
@@ -282,7 +282,6 @@ def validateInput(input_dict, data_dict, keysOfInterest):
     '''
     Validate the input, either from a url or others
     '''
-
     appVersions_options_list = get_available_versions()
 
     def validateKey(key, value):
@@ -339,7 +338,7 @@ def validateInput(input_dict, data_dict, keysOfInterest):
 
         return new_val
 
-    ## CREATE DICT OF OPTIONS
+    ## CREATE DICT OF OPTIONS to be used in validateKey
     if set(['CPUmodel','GPUmodel']) & set(input_dict.keys()):
         coreModels_options = dict()
         for coreType in ['CPU', 'GPU']:
@@ -372,7 +371,8 @@ def validateInput(input_dict, data_dict, keysOfInterest):
         try:
             new_dict[key] = validateKey(key, new_value)
 
-        except:
+        except Exception as e:
+            # print(f'Exception {e} raised for key = {key}')
             # print(f'Wrong input for {key}: {new_value}') # DEBUGONLY
             wrong_imputs[key] = new_value
             # new_value = None
@@ -424,7 +424,7 @@ def parse_query_strings(query_strings, default_values):
     # Check if the url contained relevant query strings used to fill the form in
     if len(query_strings) > 0:
         show_popup = True
-        # Check if there was mispelled inputs
+        # Check if there are mispelled inputs
         if len(invalidInputs) > 0:
             popup_message += f'\n\nThere seems to be some typos in this URL, ' \
                             f'using default values for '

@@ -381,7 +381,7 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 # DEFAULT VALUES #
 ##################
 
-default_values = dict(
+default_values_old = dict(
     runTime_hour=12,
     runTime_min=0,
     coreType='CPU',
@@ -592,189 +592,6 @@ def prepURLqs_old(url_search, data, keysOfInterest):
 # CALLBACKS #
 #############
 
-### URL-BASED QUERY ###
-# If parameters are passed on the URL, these are inputs in the app
-# In this function, it's all the values that don't have their own callbacks further down
-# FIXME still not working in prod
-# @app.callback(
-#     [
-#         Output('runTime_hour_input','value'),
-#         Output('runTime_min_input','value'),
-#         Output('coreType_dropdown','value'),
-#         Output('numberCPUs_input','value'),
-#         Output('CPUmodel_dropdown', 'value'),
-#         Output('tdpCPU_input','value'),
-#         Output('numberGPUs_input','value'),
-#         Output('GPUmodel_dropdown', 'value'),
-#         Output('tdpGPU_input','value'),
-#         Output('memory_input','value'),
-#         Output('platformType_dropdown','value'),
-#         Output('provider_dropdown','value'),
-#         Output('usageCPU_radio','value'),
-#         Output('usageCPU_input','value'),
-#         Output('usageGPU_radio','value'),
-#         Output('usageGPU_input','value'),
-#         Output('pue_radio','value'),
-#         Output('PSF_radio', 'value'),
-#         Output('PSF_input', 'value'),
-#         Output('appVersions_dropdown','value'),
-#         Output('fillIn_from_url', 'displayed'),
-#         Output('fillIn_from_url', 'message'),
-#     ],
-#     [
-#         Input('url_content','search'),
-#     ],
-# )
-# def fillInFromURL(url_search):
-#     '''
-#     :param url_search: Format is "?key=value&key=value&..."
-#     '''
-#     # validateInput(default_values) # DEBUGONLY
-#     # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
-
-#     # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
-#     # ctx_msg = json.dumps({
-#     #     'states': ctx.states,
-#     #     'triggered': ctx.triggered,
-#     #     'inputs': ctx.inputs,
-#     #     'args': ctx.args_grouping
-#     # }, indent=2) # DEBUGONLY
-#     # print(ctx_msg) # DEBUGONLY
-
-#     print('yea')
-#     show_popup = False
-#     popup_message = 'Filling in values from the URL. \nAll fields will be frozen. To edit, please click reset.'
-
-#     defaults2 = copy.deepcopy(default_values)
-
-#     # pull default PUE eitherway
-
-#     if ctx.triggered_id is None:
-#         print('raise triggered')
-
-#         # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
-#         # print("-> no-trigger callback prevented") # DEBUGONLY
-#         raise PreventUpdate # TODO find a cleaner workaround
-
-#     elif (url_search is not None)&(url_search != ''):
-#         print(f'filled url_search: {url_search}')
-
-#         # print("\n## picked from url") # DEBUGONLY
-
-#         show_popup = True
-
-#         url = parse.parse_qs(url_search[1:])
-
-#         # print(url)
-
-#         # Load the right dataset to validate the URL inputs
-#         if 'appVersion' in url:
-#             new_version = unlist(url['appVersion'])
-#             # print(f"Validating URL with {new_version} data") # DEBUGONLY
-#         else:
-#             # print(f"App version not provided in URL, using default ({default_values['appVersion']})") # DEBUGONLY
-#             new_version = default_values['appVersion']
-#         assert new_version in (appVersions_options_list + [current_version])
-#         if new_version == current_version:
-#             newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
-#         else:
-#             newData = load_data(os.path.join(data_dir, new_version), version=new_version)
-
-#         # Validate URL
-#         url2, invalidInputs = validateInput(
-#             input_dict=url,
-#             data_dict=newData,
-#             keysOfInterest=list(url.keys())
-#         )
-
-#         defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
-
-#         if len(invalidInputs) > 0:
-#             popup_message += f'\n\nThere seems to be some typos in this URL, ' \
-#                             f'using default values for '
-#             popup_message += f"{', '.join(list(invalidInputs.keys()))}."
-
-#     # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
-#     return tuple(defaults2.values()) + (show_popup,popup_message)
-
-# @app.callback(
-#     [
-#         Output('runTime_hour_input','value'),
-#         Output('runTime_min_input','value'),
-#         Output('coreType_dropdown','value'),
-#         Output('numberCPUs_input','value'),
-#         Output('CPUmodel_dropdown', 'value'),
-#         Output('tdpCPU_input','value'),
-#         Output('numberGPUs_input','value'),
-#         Output('GPUmodel_dropdown', 'value'),
-#         Output('tdpGPU_input','value'),
-#         Output('memory_input','value'),
-#         Output('platformType_dropdown','value'),
-#         Output('provider_dropdown','value'),
-#         Output('usageCPU_radio','value'),
-#         Output('usageCPU_input','value'),
-#         Output('usageGPU_radio','value'),
-#         Output('usageGPU_input','value'),
-#         Output('pue_radio','value'),
-#         Output('PSF_radio', 'value'),
-#         Output('PSF_input', 'value'),
-#         Output('appVersions_dropdown','value'),
-#         Output('fillIn_from_url', 'displayed'),
-#         Output('fillIn_from_url', 'message'),
-#     ],
-#     [
-#         Input('url_content','search'),
-#     ],
-# )
-# def fillInFromURL(url_search):
-    print('yea')
-    # print(url_search)
-
-    url = parse.parse_qs(url_search[1:])
-    print('url in the fillinfromUrl callback to understand for Validate:', url)
-
-    if ctx.triggered_id is None:
-        print('raise triggered')
-        # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
-        # print("-> no-trigger callback prevented") # DEBUGONLY
-        raise PreventUpdate # TODO find a cleaner workaround
-
-    values = copy.deepcopy(default_values)
-    show_popup = False
-    popup_message = 'Filling in values from the URL. \nAll fields will be frozen. To edit, please click reset.'
-
-    # Are values actually filled in based on the url?
-    if (url_search is not None)&(url_search != ''):
-        show_popup = True
-        print(f'filled url_search: {url_search}')
-        
-        # Load the right dataset to validate the URL inputs
-        new_version = default_values['appVersion']
-        if 'appVersion' in url:
-            new_version = unlist(url['appVersion'])
-        assert new_version in (appVersions_options_list + [current_version])
-        if new_version == current_version:
-            newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
-        else:
-            newData = load_data(os.path.join(data_dir, new_version), version=new_version)
-
-        # Validate URL
-        url, invalidInputs = validateInput(
-            input_dict=url,
-            data_dict=newData,
-            keysOfInterest=list(url.keys())
-        )
-        if len(invalidInputs) > 0:
-            popup_message += f'\n\nThere seems to be some typos in this URL, ' \
-                            f'using default values for '
-            popup_message += f"{', '.join(list(invalidInputs.keys()))}."
-        
-
-    values.update((k, url[k]) for k in values.keys() & url.keys())
-    print('values in the FiFU callback', values)
-    print(show_popup)
-    return tuple(values.values()) + (show_popup, popup_message)
-    
 
 @app.callback(
     [
@@ -1076,28 +893,37 @@ def display_location(selected_platform, selected_provider, selected_server, data
     Output('server_continent_dropdown','value'),
     [
         Input('provider_dropdown', 'value'),
+        Input('versioned_data','data'),
         Input('url_content','search'),
-        Input('versioned_data','data')
+    ],
+    [
+        State('server_continent_dropdown', 'value')
     ]
 )
-def set_serverContinents_value(selected_provider, url_search, data):
+def set_serverContinents_value(selected_provider, data, url_search, prev_server_continent):
     '''
     Default value for server's continent, depending on the provider
     '''
     availableOptions = availableLocations_continent(selected_provider, data=data)
     url = prepURLqs(url_search, data=data, keysOfInterest=['serverContinent'])
 
-    if len(url)>0: # that means that serverContinent is indeed in the url
-        defaultValue = url['serverContinent']
-    else:
-        if 'Europe' in availableOptions:
-            defaultValue = 'Europe'
-        else:
-            try:
-                defaultValue = availableOptions[0]
-            except:
-                defaultValue = None
+    # so far, commenting the next 2 lines prevents from using the url content for the 
+    # server continent even if included in parse_querry_string (by adding the corresponding key)
+    # in the dictionnary of default_values
+    # also, needs to be checked because the defaut v
 
+    # if len(url)>0: # that means that serverContinent is indeed in the url
+    #     return url['serverContinent']
+    if 'Europe' in availableOptions: 
+        defaultValue = 'Europe'
+    if prev_server_continent in availableOptions:
+        # to keep the default value or the one contained in the url, if exists
+        defaultValue = prev_server_continent
+    else:
+        try: 
+            defaultValue = availableOptions[0]
+        except:
+            defaultValue = None
     return defaultValue
 
 
@@ -1138,32 +964,35 @@ def set_server_style(selected_continent):
     [
         Input('provider_dropdown', 'value'),
         Input('server_continent_dropdown', 'value'),
+        Input('versioned_data','data'),
         Input('url_content','search'),
-        Input('versioned_data','data')
     ]
 )
-def set_server_value(selected_provider,selected_continent, url_search, data):
+def set_server_value(selected_provider,selected_continent, data, url_search):
     '''
     Default value for servers, based on provider and continent
     '''
+    # so far, commenting the next 3 lines prevents from using the url content for the 
+    # server continent even if included in parse_querry_string (by adding the corresponding key)
+    # in the dictionnary of default_values
+    # also, needs to be checked because it is not included in the url, but the default value from 
+    # the dictionnary default_values is not consistent with the query serverContinent from the url
+    # it will likely break the app
+    # could be removed by reading the State of the server instead of the url
 
     url = prepURLqs(url_search, data=data, keysOfInterest=['server'])
-
     if len(url)>0:
         return url['server']
-    else:
-        if selected_continent == 'other':
-            return 'other'
+    
+    if selected_continent == 'other':
+        return 'other'
 
-        else:
-            availableOptions = availableOptions_servers(selected_provider,selected_continent, data=data)
-
-            try:
-                defaultValue = availableOptions[0]['name_unique']
-            except:
-                defaultValue = None
-
-            return defaultValue
+    availableOptions = availableOptions_servers(selected_provider, selected_continent, data=data)
+    try:
+        defaultValue = availableOptions[0]['name_unique']
+    except:
+        defaultValue = None
+    return defaultValue
 
 @app.callback(
     Output('server_dropdown','options'),
@@ -1224,30 +1053,28 @@ def set_continentOptions(data):
     [
         Input('server_continent_dropdown','value'),
         Input('server_div', 'style'),
+        Input('versioned_data','data'),
         Input('url_content','search'),
-        Input('versioned_data','data')
     ],
     [
         State('location_continent_dropdown', 'value')
     ]
 )
-def set_continent_value(selected_serverContinent, display_server, url_search, data, prev_selectedContinent):
+def set_continent_value(selected_serverContinent, display_server, data, url_search, prev_selectedContinent):
 
     url = prepURLqs(url_search, data=data, keysOfInterest=['locationContinent'])
 
-    # print(dash.callback_context.triggered)
+    # # print(dash.callback_context.triggered)
 
-    # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    # # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if len(url)>0:
         return url['locationContinent']
-    else:
-        if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
-            # the server div is shown, so we pull the continent from there
-            return selected_serverContinent
-        elif (prev_selectedContinent is not None):
-            return prev_selectedContinent
-        else:
-            return 'Europe'
+    if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
+        # the server div is shown, so we pull the continent from there
+        return selected_serverContinent
+    if (prev_selectedContinent is not None):
+        return prev_selectedContinent
+    return 'Europe'
 
 
 
