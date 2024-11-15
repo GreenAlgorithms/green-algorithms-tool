@@ -2,7 +2,10 @@
 #currently running on Python 3.7.4
 
 import dash
+import base64
+import io
 from dash import dcc,html, ctx
+
 
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
@@ -16,7 +19,7 @@ import os
 import copy
 import numpy as np
 import json
-import time
+import datetime
 
 from collections import OrderedDict
 from urllib import parse
@@ -1459,6 +1462,25 @@ def loadDataFromVersion(
 def showing(style):
     return style['display'] != 'none'
 
+
+def read_input_csv(input_csv_content, filename):
+    _, content_string = input_csv_content.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        else:
+            return {}
+    except Exception as e:
+        print(e)
+        return html.Div([
+            'There was an error processing this file.'
+        ])
+    return  df.to_dict() 
+
+
 @app.callback(
     Output("aggregate_data", "data"),
     [
@@ -1493,17 +1515,28 @@ def showing(style):
         Input("PSF_input", "value"),
         Input('platformType_dropdown', 'value'),
         Input('provider_dropdown', 'value'),
-        Input('provider_dropdown_div', 'style')
+        Input('provider_dropdown_div', 'style'),
+        Input('upload-data', 'contents'),
     ],
     [
+        State('upload-data', 'filename'),
+        State('upload-data', 'last_modified'),
         State("aggregate_data", "data")
     ]
 )
 def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
-                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle,
-                           existing_state):
+                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle, input_content,
+                           input_filename, input_date, existing_state):
+
+    # first check if input is provided
+    if input_content is not None and 'upload-data.contents' in ctx.triggered_prop_ids:
+        input_data = read_input_csv(input_content, input_filename)
+        clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
+        return clean_input_data
+    
+    
 
     output = dict()
 
@@ -1865,7 +1898,7 @@ def update_text(data):
         foo = f"of a flight {data['flying_text']}"
     return foo
 
-### UPDATE PERMALINK ###
+### INPORT AND EXPORT RESULTS ###
 
 @app.callback(
     Output('share_permalink', 'href'),
@@ -1873,6 +1906,60 @@ def update_text(data):
 )
 def share_permalink(aggData):
     return f"{aggData['permalink']}"
+
+
+
+@app.callback(
+    Output('upload-data', 'contents'),
+    Output('upload-data', 'filename'),
+    Output('upload-data', 'last_modified'),
+    Input("coreType_dropdown", "value"),
+    Input("numberCPUs_input", "value"),
+    Input("CPUmodel_dropdown", "value"),
+    Input("tdpCPU_div", "style"),
+    Input("tdpCPU_input", "value"),
+    Input("numberGPUs_input", "value"),
+    Input("GPUmodel_dropdown", "value"),
+    Input("tdpGPU_div", "style"),
+    Input("tdpGPU_input", "value"),
+    Input("memory_input", "value"),
+    Input("runTime_hour_input", "value"),
+    Input("runTime_min_input", "value"),
+    Input("location_continent_dropdown", "value"),
+    Input("location_country_dropdown", "value"),
+    Input("location_region_dropdown", "value"),
+    Input("server_continent_dropdown", "value"),
+    Input("server_dropdown", "value"),
+    Input('location_div', 'style'),
+    Input('server_div','style'),
+    Input("usageCPU_radio", "value"),
+    Input("usageCPU_input", "value"),
+    Input("usageGPU_radio", "value"),
+    Input("usageGPU_input", "value"),
+    Input('PUEquestion_div','style'),
+    Input("pue_radio", "value"),
+    Input("PUE_input", "value"),
+    Input("PSF_radio", "value"),
+    Input("PSF_input", "value"),
+    Input('platformType_dropdown', 'value'),
+    Input('provider_dropdown', 'value'),
+    Input('provider_dropdown_div', 'style'),
+)
+def flush_input_content(**input):
+    # TO CHANGE TO ALL IDS
+    return None, None, None
+
+@app.callback(
+    Output("aggregate-data-csv", "data"),
+    Input("btn-download_csv", "n_clicks"),
+    State("aggregate_data", "data"),
+    prevent_initial_call=True,
+)
+def func(_, aggregate_data):
+    to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
+    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv")
 
 ### UPDATE PIE GRAPH ###
 @app.callback(
