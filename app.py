@@ -1,33 +1,22 @@
 # -*- coding: utf-8 -*-
 #currently running on Python 3.7.4
 
+import os
 import dash
-from dash import dcc,html, ctx
+from dash import html, ctx
+from dash.dependencies import Input, Output, State
 
-from dash.dependencies import Input, Output, State, ClientsideFunction
-import plotly.graph_objects as go
-from dash.exceptions import PreventUpdate
 from types import SimpleNamespace
-
 from flask import send_file # Integrating Loader IO
 
 import pandas as pd
-import os
-import copy
-import numpy as np
-import json
-import time
+import plotly.graph_objects as go
 
-from collections import OrderedDict
-from urllib import parse
-
-import pycountry_convert as pc
-
-# from pages.html_layout import create_appLayout
-from handle_inputs import put_value_first, unlist, check_CIcountries, iso2_to_iso3
-from handle_inputs import load_data, current_version, data_dir
-from handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from handle_inputs import validateInput, prepURLqs
+from utils.utils import put_value_first, YES_NO_OPTIONS
+from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic, MY_COLORS
+from utils.handle_inputs import load_data, current_version, data_dir
+from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
+from utils.handle_inputs import prepURLqs
 
 # current_version = 'v2.2'
 
@@ -38,376 +27,7 @@ from handle_inputs import validateInput, prepURLqs
 # data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
-
-# We download each csv and store it in a pd.DataFrame
-# We ignore the first row, as it contains metadata
-# All these correspond to tabs of the spreadsheet on the Google Drive
-
-# Helpers functions
-def check_CIcountries_old(df):
-    foo = df.groupby(['continentName', 'countryName'])['regionName'].apply(','.join)
-    for x in foo:
-        assert 'Any' in x.split(','), f"{x} does't have an 'Any' column"
-
-def iso2_to_iso3_old(x):
-    try:
-        output = pc.country_name_to_country_alpha3(pc.country_alpha2_to_country_name(x, cn_name_format="default"),
-                                                   cn_name_format="default")
-    except:
-        output = ''
-    return output
-
-class dotdict_old(dict):
-    """dot.notation access to dictionary attributes"""
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
-
-def load_data_old(data_dir, **kwargs):
-
-    data_dict0 = dict() # dotdict()
-
-    for k,v in kwargs.items():
-        data_dict0[k] = v
-
-    data_dict = SimpleNamespace(**data_dict0)
-
-    ### CPU ###
-    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
-                         sep=',', skiprows=1)
-    cpu_df.drop(['source'], axis=1, inplace=True)
-
-    ### GPU ###
-    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
-                         sep=',', skiprows=1)
-    gpu_df.drop(['source'], axis=1, inplace=True)
-
-    # Dict of dict with all the possible models
-    # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
-    data_dict.cores_dict = dict()
-    data_dict.cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
-    data_dict.cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
-
-    ### PUE ###
-    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
-                         sep=',', skiprows=1)
-    pue_df.drop(['source'], axis=1, inplace=True)
-
-    data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
-
-    ### HARDWARE ###
-    # hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
-    #                           sep=',', skiprows=1)
-    # hardware_df.drop(['source'], axis=1, inplace=True)
-
-    ### OFFSET ###
-    # offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
-    #                         sep=',', skiprows=1)
-    # offset_df.drop(['source'], axis=1, inplace=True)
-
-    ### CARBON INTENSITY BY LOCATION ###
-    CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
-                         sep=',', skiprows=1)
-    check_CIcountries(CI_df)
-    assert len(set(CI_df.location)) == len(CI_df.location)
-
-    data_dict.CI_dict_byLoc = dict()
-    for location in CI_df.location:
-        foo = dict()
-        for col in ['continentName','countryName','regionName','carbonIntensity']:
-            foo[col] = CI_df.loc[CI_df.location == location,col].values[0]
-        data_dict.CI_dict_byLoc[location] = foo
-
-    data_dict.CI_dict_byName = dict()
-    for continent in set(CI_df.continentName):
-        foo = CI_df.loc[CI_df.continentName == continent]
-        data_dict.CI_dict_byName[continent] = dict()
-        for country in set(foo.countryName):
-            bar = foo.loc[foo.countryName == country]
-            data_dict.CI_dict_byName[continent][country] = dict()
-            for region in set(bar.regionName):
-                baar = bar.loc[bar.regionName == region]
-                data_dict.CI_dict_byName[continent][country][region] = dict()
-                data_dict.CI_dict_byName[continent][country][region]['location'] = baar.location.values[0]
-                data_dict.CI_dict_byName[continent][country][region]['carbonIntensity'] = baar.carbonIntensity.values[0]
-
-    ### CLOUD DATACENTERS ###
-    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
-                                      sep=',', skiprows=1)
-    data_dict.providers_withoutDC = ['aws']
-
-    ### LOCAL DATACENTERS ###
-    # localDatacenters_df = pd.read_csv(os.path.join(data_dir, "localProviders_datacenters.csv"),
-    #                                   sep=',', skiprows=1)
-    # datacenters_df = pd.concat([data_dict.cloudDatacenters_df, localDatacenters_df], axis = 1)
-
-    datacenters_df = cloudDatacenters_df
-
-    # Remove datacentres with unknown CI
-    datacenters_df.dropna(subset=['location'], inplace=True)
-
-    # Create unique names (in case some names are shared between providers)
-    for x in set(datacenters_df.provider):
-        foo = datacenters_df.loc[datacenters_df.provider == x]
-        assert len(foo.Name) == len(set(foo.Name))
-
-    datacenters_df['name_unique'] = datacenters_df.provider + ' / ' + datacenters_df.Name
-
-    assert len(datacenters_df.name_unique) == len(set(datacenters_df.name_unique))
-
-    data_dict.datacenters_dict_byProvider = datacenters_df.groupby('provider')[['Name','name_unique','location','PUE']].apply(lambda x:x.set_index('Name', drop=False).to_dict(orient='index')).to_dict()
-    data_dict.datacenters_dict_byName = datacenters_df[['provider','Name','name_unique','location','PUE']].set_index('name_unique', drop=False).to_dict(orient='index')
-
-    ### PROVIDERS CODES AND NAMES ###
-    providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
-                                    sep=',', skiprows=1)
-
-    data_dict.providersTypes = pd.Series(providersNames_df.platformName.values, index=providersNames_df.platformType).to_dict()
-
-    data_dict.platformName_byType = dict()
-    for platformType in set(providersNames_df.platformType):
-        foo = providersNames_df.loc[providersNames_df.platformType == platformType]
-        data_dict.platformName_byType[platformType] = pd.Series(providersNames_df.providerName.values, index=providersNames_df.provider).to_dict()
-
-    ### REFERENCE VALUES
-    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
-                               sep=',', skiprows=1)
-    refValues_df.drop(['source'], axis=1, inplace=True)
-    data_dict.refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
-
-    return data_dict # This is a SimpleNamespace
-
-########################
-# OPTIONS FOR DROPDOWN #
-########################
-
-def put_value_first_old(L, value):
-    n = len(L)
-    if value in L:
-        L.remove(value)
-        return [value] + L
-        assert len(L)+1 == n
-    else:
-        # print(f'{value} not in list') # DEBUGONLY
-        return L
-
-yesNo_options = [
-    {'label': 'Yes', 'value': 'Yes'},
-    {'label': 'No', 'value': 'No'}
-]
-
-def availableLocations_continent_old(selected_provider, data):
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
-        foo = data_dict.datacenters_dict_byProvider.get(selected_provider)
-    else:
-        foo = None
-
-    if foo is not None:
-        availableLocations = [x['location'] for x in foo.values()]
-        availableLocations = list(set(availableLocations))
-
-        availableOptions = list(set([data_dict.CI_dict_byLoc[x]['continentName'] for x in availableLocations if x in data_dict.CI_dict_byLoc]))
-
-        return availableOptions
-    else:
-        return []
-
-def availableOptions_servers_old(selected_provider,selected_continent, data):
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
-        foo = data_dict.CI_dict_byName.get(selected_continent)
-        bar = data_dict.datacenters_dict_byProvider.get(selected_provider)
-    else:
-        foo, bar = None, None
-
-    if foo is not None:
-        locationsINcontinent = [region['location'] for country in foo.values() for region in country.values()]
-    else:
-        locationsINcontinent = []
-
-    if bar is not None:
-        availableOptions_Names = [server['Name'] for server in bar.values() if server['location'] in locationsINcontinent]
-        availableOptions_Names.sort()
-
-        availableOptions = [bar[name] for name in availableOptions_Names]
-
-        return availableOptions
-    else:
-        return []
-
-
-def availableOptions_country_old(selected_continent, data):
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
-        foo = data_dict.CI_dict_byName.get(selected_continent)
-    else:
-        foo = None
-
-    if foo is not None:
-        availableOptions = [country for country in foo]
-        availableOptions = sorted(availableOptions)
-        return availableOptions
-    else:
-        return []
-
-def availableOptions_region_old(selected_continent,selected_country,data):
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
-        foo = data_dict.CI_dict_byName.get(selected_continent)
-        if foo is not None:
-            availableOptions_data = foo.get(selected_country)
-        else:
-            availableOptions_data = None
-    else:
-        availableOptions_data = None
-
-    if availableOptions_data is not None:
-        availableOptions_names = list(availableOptions_data.keys())
-        availableOptions_names.sort()
-        # Move Any to the first row:
-        availableOptions_names.remove('Any')
-        availableOptions_names = ['Any'] + availableOptions_names
-
-        availableOptions_loc = [availableOptions_data[x]['location'] for x in availableOptions_names]
-
-    else:
-        availableOptions_loc = []
-
-    return availableOptions_loc
-
-####################
-# GRAPHIC SETTINGS #
-####################
-
-myColors = {
-    'fontColor':'rgb(60, 60, 60)',
-    'boxesColor': "#F9F9F9",
-    'backgroundColor': '#f2f2f2',
-    'pieChart': ['#E8A09A','#9BBFE0','#cfabd3'],
-    'plotGrid':'#e6e6e6',
-    'map1':['#78E7A2','#86D987','#93CB70','#9EBC5C',
-           '#A6AD4D','#AB9E43','#AF8F3E','#AF803C','#AC713D','#A76440','#9E5943']
-
-}
-
-def colours_hex2rgba(hex):
-    h = hex.lstrip('#')
-    return('rgba({},{},{})'.format(*tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))))
-
-def convertList_hex2rgba(hex_list):
-    out = []
-    for hex in hex_list:
-        out.append(colours_hex2rgba(hex))
-
-    return out
-
-font_graphs = "Raleway"
-
-layout_plots = dict(
-    autosize=True,
-    # margin=dict(l=30, r=30, b=20, t=40),
-    margin=dict(l=0, r=0, b=0, t=50),
-    paper_bgcolor=myColors['boxesColor'],
-    plot_bgcolor=myColors['boxesColor'],
-    # height=400,
-    font = dict(family=font_graphs, color=myColors['fontColor']),
-    separators=".,",
-    # modebar = dict(bgcolor='#ff0000')
-)
-
-## make map
-# The map is not updated when changing versions, but it's probably not an isssue
-CI_4map = pd.read_csv(os.path.join(data_dir, 'latest', "CI_aggregated.csv"), sep=',', skiprows=1)
-CI_4map['ISO3'] = CI_4map.location.apply(iso2_to_iso3)
-
-map_df = CI_4map.loc[CI_4map.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
-map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
-
-layout_map = copy.deepcopy(layout_plots)
-layout_map['height'] = 250
-layout_map['margin']['t'] = 30
-layout_map['geo'] = dict(
-    projection=dict(
-        type='natural earth',
-    ),
-    showcoastlines=False,
-    showocean=True,
-    oceancolor=myColors['boxesColor'],
-    showcountries=True,
-    countrycolor=myColors['boxesColor'],
-    showframe=False,
-    bgcolor=myColors['boxesColor'],
-)
-
-mapCI = go.Figure(
-    data=go.Choropleth(
-        geojson=os.path.join(data_dir, 'world.geo.json'),
-        locations = map_df.ISO3,
-        locationmode='geojson-id',
-        z=map_df.carbonIntensity.astype(float),
-        colorscale=myColors['map1'],
-        colorbar=dict(
-            title=dict(
-                # text="Carbon <br> intensity <br> (gCO2e/kWh)",
-                font=dict(
-                    color=myColors['fontColor'],
-                )
-            ),
-            tickfont=dict(
-                color=myColors['fontColor'],
-                size=12,
-            ),
-            thicknessmode='fraction',
-            thickness=0.04,
-            xpad=3,
-        ),
-        showscale=True,
-        hovertemplate="%{text} <extra> %{z:.0f} gCO2e/kWh </extra>",
-        text=map_df.countryName,
-        marker=dict(
-            line=dict(
-                color=myColors['boxesColor'],
-                width=0.5
-            )
-        ),
-    ),
-    layout=layout_map
-)
-
 images_dir = os.path.join(os.path.abspath(''),'images')
-
-##################
-# DEFAULT VALUES #
-##################
-
-default_values_old = dict(
-    runTime_hour=12,
-    runTime_min=0,
-    coreType='CPU',
-    numberCPUs=12,
-    CPUmodel='Xeon E5-2683 v4',
-    tdpCPU=12,
-    numberGPUs=1,
-    GPUmodel='NVIDIA Tesla V100',
-    tdpGPU=200,
-    memory=64,
-    platformType='localServer',
-    provider='gcp',
-    usageCPUradio='No',
-    usageCPU=1.0,
-    usageGPUradio='No',
-    usageGPU=1.0,
-    PUEradio='No',
-    PSFradio='No',
-    PSF=1,
-    appVersion=current_version,
-)
-# FIXME no default value for location (therefore "reset" doesn't reset location)
-
-# rest_of_default_values = dict(
-#     serverContinent='Europe',
-# )
 
 
 ##############
@@ -457,135 +77,6 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
 #     mapCI=mapCI,
 #     appVersions_options=appVersions_options,
 # )
-
-##################
-# HELP FUNCTIONS #
-##################
-
-def unlist_old(x):
-    if isinstance(x, list):
-        assert len(x) == 1
-        return x[0]
-    else:
-        return x
-
-
-def validateInput_old(input_dict, data_dict, keysOfInterest):
-    '''
-    Validate the input, either from a url or others
-    '''
-
-    def validateKey(key, value):
-        new_val = copy.copy(value)
-        # print('#b ', key, new_val, type(new_value))  # DEBUGONLY
-
-        if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
-            new_val = int(float(new_val))
-        elif key in ['runTime_min']:
-            new_val = float(new_val)
-            assert new_val >= 0
-        elif key in ['PSF']:
-            new_val = int(new_val)
-            assert new_val >= 1
-        elif key in ['tdpCPU', 'tdpGPU', 'memory']:
-            new_val = float(new_val)
-            assert new_val >= 0
-        elif key in ['usageCPU', 'usageGPU']:
-            new_val = float(new_val)
-            assert (new_val >= 0) & (new_val <= 1)
-        elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'PSFradio']:
-            assert new_val in ['Yes', 'No']
-        elif key == 'coreType':
-            assert new_val in ['CPU', 'GPU', 'Both']
-        elif key in ['CPUmodel', 'GPUmodel']:
-            assert new_val in [x['value'] for x in coreModels_options[key[:3]]]
-        elif key == 'platformType':
-            assert new_val in [x['value'] for x in platformType_options]
-        elif key == 'provider':
-            if unlist(input_dict['platformType']) == 'cloudComputing':  # TODO: I don't think this if is necessary?
-                assert (new_val in data_dict.platformName_byType['cloudComputing']) | (new_val == 'other')
-        elif key == 'serverContinent':
-            assert new_val in availableLocations_continent(unlist(input_dict['provider']), data=vars(data_dict)) + ['other']
-        elif key == 'server':
-            list_servers = availableOptions_servers(unlist(input_dict['provider']),
-                                                    unlist(input_dict['serverContinent']),
-                                                    data=vars(data_dict))
-            assert new_val in [x['name_unique'] for x in list_servers] + ["other"]
-        elif key == 'locationContinent':
-            assert new_val in list(data_dict.CI_dict_byName.keys())
-        elif key == 'locationCountry':
-            assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), data=vars(data_dict))
-        elif key == 'locationRegion':
-            list_loc = availableOptions_region(unlist(input_dict['locationContinent']),
-                                               unlist(input_dict['locationCountry']), data=vars(data_dict))
-            assert new_val in list_loc
-        elif key == 'PUE':
-            new_val = float(new_val)
-            assert new_val >= 1
-        elif key == 'appVersion':
-            assert new_val in (appVersions_options_list + [current_version])
-        else:
-            assert False, 'Unknown URL key'
-
-        return new_val
-
-    ## CREATE DICT OF OPTIONS
-    if set(['CPUmodel','GPUmodel']) & set(input_dict.keys()):
-        coreModels_options = dict()
-        for coreType in ['CPU', 'GPU']:
-            availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-            availableOptions = put_value_first(availableOptions, 'Any')
-            coreModels_options[coreType] = [
-                {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                                     [("Other", "other")]
-            ]
-    else:
-        coreModels_options = None
-
-
-    if 'platformType' in input_dict:
-        platformType_options = [
-            {'label': k,
-             'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                     [('personalComputer', 'Personal computer')] +
-                                     [('localServer', 'Local server')]
-        ]
-    else:
-        platformType_options = None
-
-    new_dict = dict()
-    wrong_imputs = dict()
-    for key in keysOfInterest:
-        new_value = unlist(input_dict[key])
-        # validateKey(key, new_value) # DEBUGONLY
-
-        try:
-            new_dict[key] = validateKey(key, new_value)
-
-        except:
-            # print(f'Wrong input for {key}: {new_value}') # DEBUGONLY
-            wrong_imputs[key] = new_value
-            # new_value = None
-
-        # new_dict[key] = new_value # I'm moving that in the try so that failed values are not added
-
-    return new_dict, wrong_imputs
-
-def prepURLqs_old(url_search, data, keysOfInterest):
-    if (url_search is not None) & (url_search != '') & (data is not None):
-        url0 = parse.parse_qs(url_search[1:])
-
-        # check whether the keysOfInterest are in the url
-        commonKeys = set(keysOfInterest)&set(url0.keys())
-
-        if len(commonKeys) > 0:
-            data_dict = SimpleNamespace(**data)
-            url, _ = validateInput(input_dict=url0, data_dict=data_dict, keysOfInterest=keysOfInterest)
-        else:
-            url = dict()
-    else:
-        url = dict()
-    return url
 
 
 #############
@@ -647,9 +138,9 @@ def disable_inputFromURL(url_search):
             {'label': 'No', 'value': 'No', 'disabled':True}
         ]
 
-        return (True,)*n_output_disable + ({'background-color': myColors['boxesColor']},)*n_output_style + (yesNo_options_disabled,)*n_radio
+        return (True,)*n_output_disable + ({'background-color': MY_COLORS['boxesColor']},)*n_output_style + (yesNo_options_disabled,)*n_radio
     else:
-        return (False,)*n_output_disable + (dict(),)*n_output_style + (yesNo_options,)*n_radio
+        return (False,)*n_output_disable + (dict(),)*n_output_style + (YES_NO_OPTIONS,)*n_radio
 
 @app.callback(
     Output('url_content', 'search'),
@@ -1190,7 +681,7 @@ def display_usage_input(answer_usage, disabled):
         out = {'display': 'block'}
 
     if disabled:
-        out['background-color'] = myColors['boxesColor']
+        out['background-color'] = MY_COLORS['boxesColor']
 
     return out
 
@@ -1213,7 +704,7 @@ def display_usage_input(answer_usage, disabled):
         out = {'display': 'block'}
 
     if disabled:
-        out['background-color'] = myColors['boxesColor']
+        out['background-color'] = MY_COLORS['boxesColor']
 
     return out
 
@@ -1258,7 +749,7 @@ def display_pue_input(answer_pue, disabled):
         out = {'display': 'block'}
 
     if disabled:
-        out['background-color'] = myColors['boxesColor']
+        out['background-color'] = MY_COLORS['boxesColor']
 
     return out
 
@@ -1306,7 +797,7 @@ def display_PSF_input(answer_PSF, disabled):
         out = {'display': 'block'}
 
     if disabled:
-        out['background-color'] = myColors['boxesColor']
+        out['background-color'] = MY_COLORS['boxesColor']
 
     return out
 
@@ -1793,7 +1284,6 @@ def update_text(data):
     return foo
 
 ### UPDATE PERMALINK ###
-
 @app.callback(
     Output('share_permalink', 'href'),
     [Input("aggregate_data", "data")],
@@ -1807,80 +1297,7 @@ def share_permalink(aggData):
     [Input("aggregate_data", "data")],
 )
 def create_pie_graph(aggData):
-    layout_pie = copy.deepcopy(layout_plots)
-    layout_pie['margin'] = dict(l=0, r=0, b=0, t=60)
-    if aggData['coreType'] == 'Both':
-        layout_pie['height'] = 400
-    else:
-        layout_pie['height'] = 350
-        layout_pie['margin']['t'] = 40
-
-    labels = ['Memory']
-    values = [aggData['CE_memory']]
-
-    if aggData['coreType'] in ['CPU', 'Both']:
-        labels.append('CPU')
-        values.append(aggData['CE_CPU'])
-
-    if aggData['coreType'] in ['GPU', 'Both']:
-        labels.append('GPU')
-        values.append(aggData['CE_GPU'])
-
-    annotations = []
-    percentages = [x/sum(values) if sum(values)!=0 else 0 for x in values]
-    to_del = []
-    for i,j in enumerate(percentages):
-        if j < 1e-8:
-            text = '{} makes up < 1e-6% ({:.0f} gCO2e)'.format(labels[i],values[i])
-            annotations.append(text)
-            to_del.append(i)
-    for idx in sorted(to_del, reverse=True):
-        del values[idx]
-        del labels[idx]
-    annotation = '<br>'.join(annotations)
-
-    fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=labels,
-                values=values,
-                hole=0.4,
-                insidetextorientation='horizontal',
-                showlegend=False,
-                pull=[0.05, 0.05],
-                marker=dict(
-                    colors=myColors['pieChart']
-                ),
-                texttemplate="<b>%{label}</b><br>%{percent}",
-                textfont=dict(
-                    family=font_graphs,
-                    color=myColors['fontColor'],
-                ),
-                hovertemplate='%{value:.0f} gCO2e<extra></extra>',
-                hoverlabel=dict(
-                    font=dict(
-                        family=font_graphs,
-                        color=myColors['fontColor'],
-                    )
-                )
-            )
-        ],
-        layout=layout_pie
-    )
-    fig.update_layout(
-        # Add annotations of trace (<1e-6%) variables
-        title = {
-            'text':annotation,
-            'font':{'size':12},
-            'x': 1,
-            'xanchor': 'right',
-            'y': 0.97,
-            'yanchor': 'top',
-        }
-    )
-
-    return fig
-
+    return create_cores_memory_pie_graphic(aggData)
 
 ### UPDATE BAR CHART COMPARISON
 # FIXME: looks weird with 0 emissions
@@ -1894,86 +1311,8 @@ def create_pie_graph(aggData):
 def create_bar_chart(aggData, data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
-
-        layout_bar = copy.deepcopy(layout_plots)
-        # if aggData['coreType'] == 'Both':
-        #     layout_bar['height'] = 400
-        # else:
-        #     layout_bar['height'] = 350
-
-        layout_bar['xaxis'] = dict(
-            color=myColors['fontColor'],
-        )
-
-        layout_bar['yaxis'] = dict(
-            color=myColors['fontColor'],
-            title=dict(
-                text='Emissions (gCO2e)',
-                standoff=100,
-            ),
-            showspikes=False,
-            showgrid=True,
-            gridcolor=myColors['plotGrid'],
-        )
-
-        loc_ref = {
-            'CH':{'name':'Switzerland'},
-            'SE':{'name':'Sweden'},
-            'FR':{'name':'France'},
-            'CA':{'name':'Canada'},
-            'GB':{'name':'United Kingdom'},
-            'US':{'name':'USA'},
-            'CN':{'name':'China'},
-            'IN':{'name':'India'},
-            'AU':{'name':'Australia'}
-        }
-
-        # calculate carbon emissions for each location
-        for countryCode in loc_ref.keys():
-            loc_ref[countryCode]['carbonEmissions'] = aggData['energy_needed'] * data_dict.CI_dict_byLoc[countryCode]['carbonIntensity']
-            loc_ref[countryCode]['opacity'] = 0.2
-
-        loc_ref['You'] = dict(
-            name='Your algorithm',
-            carbonEmissions=aggData['carbonEmissions'],
-            opacity=1
-        )
-
-        loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
-
-        loc_df.sort_values(by=['carbonEmissions'], inplace=True)
-
-        lines_thickness = [0] * len(loc_df)
-        lines_thickness[loc_df.index.get_loc('You')] = 4
-
-        fig = go.Figure(
-            data = [
-                go.Bar(
-                    x=loc_df.name.values,
-                    y=loc_df.carbonEmissions.values,
-                    marker = dict(
-                        color=loc_df.carbonEmissions.values,
-                        colorscale=myColors['map1'],
-                        line=dict(
-                            width=lines_thickness,
-                            color=myColors['fontColor'],
-                        )
-                    ),
-                    hovertemplate='%{y:.0f} gCO2e<extra></extra>',
-                    hoverlabel=dict(
-                        font=dict(
-                            color=myColors['fontColor'],
-                        )
-                    ),
-
-                )
-            ],
-            layout = layout_bar
-        )
-
-        return fig
-    else:
-        return None
+        return create_ci_bar_chart_graphic(aggData, data_dict)
+    return None
 
 ### UPDATE BAR CHARTCPU
 @app.callback(
@@ -1986,118 +1325,10 @@ def create_bar_chart(aggData, data):
 def create_bar_chart_cores(aggData, data):
     if data is not None:
         data_dict = SimpleNamespace(**data)
-
-        layout_bar = copy.deepcopy(layout_plots)
-
-        layout_bar['margin']['t'] = 60
-
-        layout_bar['xaxis'] = dict(
-            color=myColors['fontColor'],
-        )
-
-        layout_bar['yaxis'] = dict(
-            color=myColors['fontColor'],
-            showspikes=False,
-            showgrid=True,
-            gridcolor=myColors['plotGrid'],
-        )
-
         if aggData['coreType'] is None:
             return go.Figure()
-
-        else:
-            if aggData['coreType'] in ['GPU','Both']:
-                layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
-
-                list_cores0 = [
-                    'NVIDIA Jetson AGX Xavier',
-                    'NVIDIA Tesla T4',
-                    'NVIDIA GTX 1080',
-                    'TPU v3',
-                    'NVIDIA RTX 2080 Ti',
-                    'NVIDIA GTX TITAN X',
-                    'NVIDIA Tesla P100 PCIe',
-                    'NVIDIA Tesla V100'
-                ]
-                list_cores = [x for x in list_cores0 if x in data_dict.cores_dict['GPU']]
-
-                coreModel = aggData['GPUmodel']
-
-            else:
-                layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
-
-                list_cores0 = [
-                    'Ryzen 5 3500U',
-                    'Xeon Platinum 9282',
-                    'Xeon E5-2683 v4',
-                    'Core i7-10700',
-                    'Xeon Gold 6142',
-                    'Core i5-10600',
-                    'Ryzen 5 3600',
-                    'Core i9-10920XE',
-                    'Core i5-10600K',
-                    'Ryzen 5 3400G',
-                    'Core i3-10320',
-                    'Xeon X3430'
-                ]
-                list_cores = [x for x in list_cores0 if x in data_dict.cores_dict['CPU']]
-
-                coreModel = aggData['CPUmodel']
-
-            if coreModel not in list_cores:
-                list_cores.append(coreModel)
-
-            power_list = []
-
-            # calculate carbon emissions for each core
-            if aggData['coreType'] in ['GPU','Both']:
-                for gpu in list_cores:
-                    if gpu == 'other':
-                        power_list.append(aggData['GPUpower'])
-                    else:
-                        power_list.append(data_dict.cores_dict['GPU'][gpu])
-            else:
-                for cpu in list_cores:
-                    if cpu == 'other':
-                        power_list.append(aggData['CPUpower'])
-                    else:
-                        power_list.append(data_dict.cores_dict['CPU'][cpu])
-
-            power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
-            power_df.sort_values(by=['corePower'], inplace=True)
-            power_df.set_index('coreModel', inplace=True)
-
-            lines_thickness = [0] * len(power_df)
-            lines_thickness[power_df.index.get_loc(coreModel)] = 4
-
-            fig = go.Figure(
-                data = [
-                    go.Bar(
-                        x=list(power_df.index),
-                        y=power_df.corePower.values,
-                        marker = dict(
-                            color=power_df.corePower.values,
-                            colorscale='OrRd',
-                            line=dict(
-                                width=lines_thickness,
-                                color=myColors['fontColor'],
-                            )
-                        ),
-                        hovertemplate='%{y:.1f} W<extra></extra>',
-                        hoverlabel=dict(
-                            font=dict(
-                                color=myColors['fontColor'],
-                            )
-                        ),
-
-                    )
-                ],
-                layout = layout_bar
-            )
-
-            return fig
-    else:
-        return None
+        return create_cores_bar_chart_graphic(aggData, data_dict)
+    return None
 
 
 ### UPDATE THE REPORT TEXT ###

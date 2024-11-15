@@ -1,14 +1,14 @@
 import os
 import dash
 
-from dash import dcc
-from dash import html
-from handle_inputs import parse_query_strings
+from dash import html, dcc
+from utils.handle_inputs import parse_query_strings
+from utils.utils import YES_NO_OPTIONS
+from utils.graphics import BLANK_FIGURE
 
 # import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
-
 
 dash.register_page(__name__, path='/', title='Green Algorithms')
 
@@ -21,39 +21,13 @@ def loading_wrapper(component):
 image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
 
-yesNo_options = [
-    {'label': 'Yes', 'value': 'Yes'},
-    {'label': 'No', 'value': 'No'}
-]
 current_version = 'v2.2'
 
 appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
 appVersions_options_list.sort(reverse=True)
 appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
 
-blank_figure = {
-    "layout": {
-        "xaxis": {
-            "visible": False
-        },
-        "yaxis": {
-            "visible": False
-        },
-        "plot_bgcolor": "#f9f9f9",
-        "paper_bgcolor": "#f9f9f9",
-        "annotations": [
-            {
-                "text": "",
-                "xref": "paper",
-                "yref": "paper",
-                "showarrow": False,
-                "font": {
-                    "size": 28
-                }
-            }
-        ]
-    }
-}
+
 
 default_values = dict(
     runTime_hour=12,
@@ -80,14 +54,6 @@ default_values = dict(
     # locationContinent='Europe',
 )
 
-def parse_url(url_query_strings):
-    all_fields = dict()
-    for key in default_values:
-        if key in url_query_strings:
-            all_fields[key] = url_query_strings[key]
-        else:
-            all_fields[key] = url_query_strings[key]
-    return all_fields
 
 def layout(
         mapCI=go.Figure(),
@@ -471,7 +437,7 @@ def layout(
 
                             dcc.RadioItems(
                                 id='usageCPU_radio',
-                                options=yesNo_options,
+                                options=YES_NO_OPTIONS,
                                 className="radio-input",
                                 value=clean_inputs['usageCPUradio'],
                             ),
@@ -496,7 +462,7 @@ def layout(
 
                             dcc.RadioItems(
                                 id='usageGPU_radio',
-                                options=yesNo_options,
+                                options=YES_NO_OPTIONS,
                                 className="radio-input",
                                 value=clean_inputs['usageGPUradio'],
                                 # labelStyle={"display": "inline-block"},
@@ -523,7 +489,7 @@ def layout(
 
                             dcc.RadioItems(
                                 id='pue_radio',
-                                options=yesNo_options,
+                                options=YES_NO_OPTIONS,
                                 className="radio-input",
                                 value=clean_inputs['PUEradio'],
                                 # labelStyle={"display": "inline-block"},
@@ -548,7 +514,7 @@ def layout(
 
                             dcc.RadioItems(
                                 id='PSF_radio',
-                                options=yesNo_options,
+                                options=YES_NO_OPTIONS,
                                 className="radio-input",
                                 value=clean_inputs['PSFradio'],
                             ),
@@ -790,7 +756,7 @@ def layout(
                                             id="pie_graph",
                                             className='graph-container pie-graph',
                                             config={'displaylogo': False},
-                                            figure=blank_figure,
+                                            figure=BLANK_FIGURE,
                                         )
                                     ),
 
@@ -809,7 +775,7 @@ def layout(
                                             id="barPlotComparison",
                                             className='graph-container',
                                             config={'displaylogo': False},
-                                            figure=blank_figure,
+                                            figure=BLANK_FIGURE,
                                             style={
                                                 'margin-top': '20px'
                                             }
@@ -913,7 +879,7 @@ def layout(
                                 dcc.Graph(
                                     id="barPlotComparison_cores",
                                     config={'displaylogo': False},
-                                    figure=blank_figure,
+                                    figure=BLANK_FIGURE,
                                 ),
                             ),
                         ],

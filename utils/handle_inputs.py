@@ -1,69 +1,27 @@
 import os
 import copy
 
-import pycountry_convert as pc
 import pandas as pd
 
 from urllib import parse
 from types import SimpleNamespace
+from utils.utils import check_CIcountries_df, unlist, put_value_first
 
 current_version = 'v2.2'
 data_dir = os.path.join(os.path.abspath(''),'data')
 
-###################################################
-## UTILS 
-'''
-Utils to mannage the input values.
-Should be written in a separate utils file, either in the module
-or at the root of the app if used more globally.
-'''
-
-class dotdict(dict):
-    """dot.notation access to dictionary attributes"""
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
-
-def put_value_first(L, value):
-    n = len(L)
-    if value in L:
-        L.remove(value)
-        return [value] + L
-        assert len(L)+1 == n
-    else:
-        # print(f'{value} not in list') # DEBUGONLY
-        return L
-
-def unlist(x):
-    if isinstance(x, list):
-        assert len(x) == 1
-        return x[0]
-    else:
-        return x
-
-def check_CIcountries(df):
-    foo = df.groupby(['continentName', 'countryName'])['regionName'].apply(','.join)
-    for x in foo:
-        assert 'Any' in x.split(','), f"{x} does't have an 'Any' column"
-
-def iso2_to_iso3(x):
-    try:
-        output = pc.country_name_to_country_alpha3(pc.country_alpha2_to_country_name(x, cn_name_format="default"),
-                                                   cn_name_format="default")
-    except:
-        output = ''
-    return output
-
 
 ###################################################
 ## DATA LOADING 
-'''
-Only for data loading. No particular dependency except towards some utils.
-'''
 
 def load_data(data_dir, **kwargs):
+    '''
+    We download each csv and store it in a pd.DataFrame
+    We ignore the first row, as it contains metadata
+    All these correspond to tabs of the spreadsheet on the Google Drive
+    '''
 
-    data_dict0 = dict() # dotdict()
+    data_dict0 = dict()
 
     for k,v in kwargs.items():
         data_dict0[k] = v
@@ -106,7 +64,7 @@ def load_data(data_dir, **kwargs):
     ### CARBON INTENSITY BY LOCATION ###
     CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
                          sep=',', skiprows=1)
-    check_CIcountries(CI_df)
+    check_CIcountries_df(CI_df)
     assert len(set(CI_df.location)) == len(CI_df.location)
 
     data_dict.CI_dict_byLoc = dict()
@@ -209,7 +167,10 @@ def availableLocations_continent(selected_provider, data):
     else:
         return []
 
-def availableOptions_servers(selected_provider,selected_continent, data):
+def availableOptions_servers(selected_provider, selected_continent, data):
+    '''
+    Provides 
+    '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
         ci_by_country_in_continent = data_dict.CI_dict_byName.get(selected_continent)
@@ -398,7 +359,6 @@ def prepURLqs(url_search, data, keysOfInterest):
     return url
 
 def parse_query_strings(query_strings, default_values):
-
     values = copy.deepcopy(default_values)
     appVersions_options_list = get_available_versions()
     popup_message = 'Filling in values from the URL. \n' \
