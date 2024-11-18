@@ -1520,7 +1520,6 @@ def read_input_csv(input_csv_content, filename):
     ],
     [
         State('upload-data', 'filename'),
-        State('upload-data', 'last_modified'),
         State("aggregate_data", "data")
     ]
 )
@@ -1528,15 +1527,16 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                            PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle, input_content,
-                           input_filename, input_date, existing_state):
+                           input_filename, existing_state):
 
     # first check if input is provided
-    if input_content is not None and 'upload-data.contents' in ctx.triggered_prop_ids:
-        input_data = read_input_csv(input_content, input_filename)
-        clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
-        return clean_input_data
-    
-    
+    if 'upload-data.contents' in ctx.triggered_prop_ids:
+        if input_content is not None:
+            input_data = read_input_csv(input_content, input_filename)
+            clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
+            return clean_input_data
+        else:
+            return existing_state
 
     output = dict()
 
@@ -1907,47 +1907,23 @@ def update_text(data):
 def share_permalink(aggData):
     return f"{aggData['permalink']}"
 
-
+@app.callback(
+    Output('csv-input-timer', 'disabled'),
+    Input('upload-data', 'contents'),
+    prevent_initial_call=True,
+)
+def trigger_timer_to_flush_input_csv(input_csv):
+    if input_csv is None:
+        return True
+    return False
 
 @app.callback(
-    Output('upload-data', 'contents'),
-    Output('upload-data', 'filename'),
-    Output('upload-data', 'last_modified'),
-    Input("coreType_dropdown", "value"),
-    Input("numberCPUs_input", "value"),
-    Input("CPUmodel_dropdown", "value"),
-    Input("tdpCPU_div", "style"),
-    Input("tdpCPU_input", "value"),
-    Input("numberGPUs_input", "value"),
-    Input("GPUmodel_dropdown", "value"),
-    Input("tdpGPU_div", "style"),
-    Input("tdpGPU_input", "value"),
-    Input("memory_input", "value"),
-    Input("runTime_hour_input", "value"),
-    Input("runTime_min_input", "value"),
-    Input("location_continent_dropdown", "value"),
-    Input("location_country_dropdown", "value"),
-    Input("location_region_dropdown", "value"),
-    Input("server_continent_dropdown", "value"),
-    Input("server_dropdown", "value"),
-    Input('location_div', 'style'),
-    Input('server_div','style'),
-    Input("usageCPU_radio", "value"),
-    Input("usageCPU_input", "value"),
-    Input("usageGPU_radio", "value"),
-    Input("usageGPU_input", "value"),
-    Input('PUEquestion_div','style'),
-    Input("pue_radio", "value"),
-    Input("PUE_input", "value"),
-    Input("PSF_radio", "value"),
-    Input("PSF_input", "value"),
-    Input('platformType_dropdown', 'value'),
-    Input('provider_dropdown', 'value'),
-    Input('provider_dropdown_div', 'style'),
+        Output('upload-data', 'contents'),
+        Input('csv-input-timer', 'n_intervals'),
+        prevent_initial_call=True,
 )
-def flush_input_content(**input):
-    # TO CHANGE TO ALL IDS
-    return None, None, None
+def flush_input_csv_content(n):
+    return None
 
 @app.callback(
     Output("aggregate-data-csv", "data"),
@@ -1955,7 +1931,7 @@ def flush_input_content(**input):
     State("aggregate_data", "data"),
     prevent_initial_call=True,
 )
-def func(_, aggregate_data):
+def export_as_csv(_, aggregate_data):
     to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')

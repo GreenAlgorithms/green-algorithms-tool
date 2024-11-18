@@ -741,6 +741,12 @@ def create_appLayout(
                         className='super-section mini-boxes'
                     ),
 
+                    dcc.Interval(
+                        id='csv-input-timer',
+                        interval=500, # in milliseconds
+                        disabled=True
+                        ),
+
                     html.Div(
                         [
                             html.Div(
