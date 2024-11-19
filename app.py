@@ -1935,7 +1935,8 @@ def export_as_csv(_, aggregate_data):
     to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
-    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv")
+    # add an additional param to remove the index column
+    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv" )
 
 ### UPDATE PIE GRAPH ###
 @app.callback(
