@@ -2,7 +2,7 @@ html {
   font-size: 50%;
 }
 
-body {
+body,button {
     font-size: 18px;
     font-size: 1.8rem;
     font-family: 'Raleway', serif;
@@ -47,10 +47,15 @@ p:not(:last-of-type) {
     margin-bottom: 1rem;
 }
 
+button {
+    color: rgb(100, 100, 100);
+    font-weight: 400;
+    font-style: italic;
+}
+
 /*
 ---------------------------------- HEADER ----------------------------------------
 */
-
 
 .header p {
     font-family: 'Ruda', sans-serif;
@@ -224,4 +229,51 @@ blockquote {
 .preprint {
     font-style: italic;
     background-color: rgba(249, 249, 249,0.9);
+}
+
+
+/*
+---------------------------------- Tooltip ----------------------------------------
+*/
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip-icon {
+    display: inline-block;
+    /* Text content of the icon */
+    font-style: bold;
+    font-size: 0.8em;
+    text-align: center;
+    color: black;
+    /* Border of the icon */
+    height: 1.1em;
+    width: 1.2em;
+    line-height: 1.1em;
+    border-radius: 50%;
+    border: .5px solid rgb(100, 100, 100);
+    /* Position of the icon */
+    position: relative;
+    left: 0.3em;
+    top: 0.05em;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 12em;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    font-style: normal;
+    /* Position of the text */
+    position: absolute;
+    right: 1em;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
 }

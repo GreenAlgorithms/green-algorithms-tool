@@ -4,27 +4,56 @@
 import os
 import dash
 import datetime
+import copy
 
 from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 
 from types import SimpleNamespace
 from flask import send_file # Integrating Loader IO
+from urllib import parse
 
 import pandas as pd
 import plotly.graph_objects as go
 
-from utils.utils import put_value_first, YES_NO_OPTIONS
+from utils.utils import put_value_first, YES_NO_OPTIONS, unlist
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic, MY_COLORS
 from utils.handle_inputs import load_data, current_version, data_dir
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import prepURLqs, read_input_csv
+from utils.handle_inputs import prepURLqs, read_input_csv, validateInput
 
 # current_version = 'v2.2'
 
 #############
 # LOAD DATA #
 #############
+
+default_values = dict(
+    runTime_hour=12,
+    runTime_min=0,
+    coreType='CPU',
+    numberCPUs=12,
+    CPUmodel='Xeon E5-2683 v4',
+    tdpCPU=12,
+    numberGPUs=1,
+    GPUmodel='NVIDIA Tesla V100',
+    tdpGPU=200,
+    memory=64,
+    platformType= 'localServer',
+    provider='gcp',
+    usageCPUradio='No',
+    usageCPU=1.0,
+    usageGPUradio='No',
+    usageGPU=1.0,
+    PUEradio='No',
+    PSFradio='No',
+    PSF=1,
+    appVersion=current_version,
+    # serverContinent='Europe', 
+    # locationContinent='Europe',
+)
+
 
 # data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
@@ -38,7 +67,8 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 
 external_stylesheets = [
     dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
-         rel="stylesheet")
+         rel="stylesheet"),
+    # dbc.themes.CERULEAN
 ]
 
 # print(f'Dash version: {dcc.__version__}') # DEBUGONLY
@@ -85,6 +115,101 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
 # CALLBACKS #
 #############
 
+
+@app.callback(
+    [
+        Output('runTime_hour_input','value'),
+        Output('runTime_min_input','value'),
+        Output('coreType_dropdown','value'),
+        Output('numberCPUs_input','value'),
+        Output('CPUmodel_dropdown', 'value'),
+        Output('tdpCPU_input','value'),
+        Output('numberGPUs_input','value'),
+        Output('GPUmodel_dropdown', 'value'),
+        Output('tdpGPU_input','value'),
+        Output('memory_input','value'),
+        Output('platformType_dropdown','value'),
+        Output('provider_dropdown','value'),
+        Output('usageCPU_radio','value'),
+        Output('usageCPU_input','value'),
+        Output('usageGPU_radio','value'),
+        Output('usageGPU_input','value'),
+        Output('pue_radio','value'),
+        Output('PSF_radio', 'value'),
+        Output('PSF_input', 'value'),
+        Output('appVersions_dropdown','value'),
+        Output('fillIn_from_url', 'displayed'),
+        Output('fillIn_from_url', 'message'),
+    ],
+    [
+        Input('url_content','search'),
+    ],
+)
+def fillInFromURL(url_search):
+    '''
+    :param url_search: Format is "?key=value&key=value&..."
+    '''
+    # validateInput(default_values) # DEBUGONLY
+    # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
+
+    # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
+    # ctx_msg = json.dumps({
+    #     'states': ctx.states,
+    #     'triggered': ctx.triggered,
+    #     'inputs': ctx.inputs,
+    #     'args': ctx.args_grouping
+    # }, indent=2) # DEBUGONLY
+    # print(ctx_msg) # DEBUGONLY
+
+    show_popup = False
+    popup_message = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
+
+    defaults2 = copy.deepcopy(default_values)
+
+    # pull default PUE eitherway
+
+    if ctx.triggered_id is None:
+        # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
+        # print("-> no-trigger callback prevented") # DEBUGONLY
+        raise PreventUpdate # TODO find a cleaner workaround
+
+    elif (url_search is not None)&(url_search != ''):
+
+        # print("\n## picked from url") # DEBUGONLY
+
+        show_popup = True
+
+        url = parse.parse_qs(url_search[1:])
+
+        # Load the right dataset to validate the URL inputs
+        if 'appVersion' in url:
+            new_version = unlist(url['appVersion'])
+            # print(f"Validating URL with {new_version} data") # DEBUGONLY
+        else:
+            # print(f"App version not provided in URL, using default ({default_values['appVersion']})") # DEBUGONLY
+            new_version = default_values['appVersion']
+        assert new_version in (appVersions_options_list + [current_version])
+        if new_version == current_version:
+            newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
+        else:
+            newData = load_data(os.path.join(data_dir, new_version), version=new_version)
+
+        # Validate URL
+        url2, invalidInputs = validateInput(
+            input_dict=url,
+            data_dict=newData,
+            keysOfInterest=list(url.keys())
+        )
+
+        defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
+
+        if len(invalidInputs) > 0:
+            popup_message += f'\n\nThere seems to be some typos in this URL, ' \
+                            f'using default values for '
+            popup_message += f"{', '.join(list(invalidInputs.keys()))}."
+
+    # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
+    return tuple(defaults2.values()) + (show_popup,popup_message)
 
 @app.callback(
     [

@@ -19,6 +19,22 @@
         width: calc((33.3%) - (6px));
     }
 
+    .form-row .box-fields,
+    .form-row .radio-and-field,
+    .form-row > input[type = 'number'] {
+        width: 91%;
+    }
+    
+    .form-row .tooltip {
+        width: 4%;
+        margin-left: -0.5em;
+    }  
+
+    .tooltip-text {
+        position: absolute;
+        left: 1em
+    }
+
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
@@ -107,57 +123,50 @@
     /*}*/
 
     /*
-    ---------------------------------- MAP AND DEFINITIONS ----------------------------------------
+    ---------------------------------- FORMULA AND DEFINITIONS ----------------------------------------
     */
 
-    .maps {
+    .formula {
         margin-right: 12px;
-        width: calc((50%) - (6px));
+        width: calc((60%) - (6px));
     }
 
-    .maps .graph-container {
-        margin-top: 30px;
-    }
-
-    /*
-    .maps .graph-container {
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-    */
+    /*.formula .graph-container {*/
+    /*    margin-top: 30px;*/
+    /*}*/
 
     .definitions {
-        width: calc((50%) - (6px));
+        width: calc((40%) - (6px));
+    }
+
+    .definitions .container {
+        height: calc((50%) - (12px));
     }
 
     /*
-    ---------------------------------- WHAT TO DO and CORES COMPARISON ----------------------------------------
+    ---------------------------------- REPORT and CORES COMPARISON ----------------------------------------
     */
+
+    .report {
+        order: 1;
+        width: calc((45%) - (6px));
+    }
 
     .core-comparison {
         width: calc((55%) - (6px));
         order: 1;
     }
 
-    .to-do {
-        width: calc((45%) - (6px));
-        margin-right: 12px;
-    }
-
     /*
-    ---------------------------------- FORMULA and REPORT ----------------------------------------
+    ---------------------------------- WHAT CAN YOU DO ----------------------------------------
     */
 
-    .formula {
-        order: 1;
-        margin-right: 12px;
-        width: calc((60%) - (6px));
-    }
+    /*.to-do {*/
+    /*    width: calc((45%) - (6px));*/
+    /*    margin-right: 12px;*/
+    /*    order: 1;*/
+    /*}*/
 
-    .report {
-        order: 1;
-        width: calc((40%) - (6px));
-    }
 
     /*
     ---------------------------------- FOOTER ----------------------------------------
@@ -181,6 +190,6 @@
     }
 
     .citation {
-        order: 3;
+        order: 1;
     }
 }

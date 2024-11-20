@@ -70,35 +70,70 @@ def layout(
 
             dcc.ConfirmDialog(
                 id='fillIn_from_url',
-                message=clean_inputs['popup_message'],
-                displayed=clean_inputs['show_popup'],
+                message='Filling in values from the URL. To edit, click reset.',
+                # message=clean_inputs['popup_message'],
+                # displayed=clean_inputs['show_popup'],
             ),
 
             #### HEADER ####
 
             html.Div(
                 [
-                    html.H1("Green Algorithms"),
-                    html.P("How green are your computations?"),
+                    html.H1("Green Algorithms calculator"),
+                    html.P("What's the carbon footprint of your computations?"),
+
                 ],
                 className='container header'
             ),
 
             html.Div(
                 [
-                    html.Center(
-                        html.P([
-                            "Check out the new ",
-                            html.B("Green Algorithms website"),
-                            ": ",
-                            html.A("www.green-algorithms.org",
-                                   href='https://www.green-algorithms.org',
-                                   target='_blank')
-                        ]),
+                    html.H2("Some news..."), # TODO align this left?
+                    html.P([
+                        html.A(
+                            "The GREENER principles",
+                            href="https://rdcu.be/dfpLM",
+                            target="_blank"
+                        ),
+                        " for environmentally sustainable computational science."
+                    ]),
+                    html.P([
+                        html.A(
+                            "A short primer",
+                            href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                            target="_blank"
+                        ),
+                        " discussing different options for carbon footprint estimation."
+                    ]),
+
+                    # TODO add something else there? GA4HPC?
+
+                    html.Div(
+                        [
+                            html.A(
+                                html.Button(
+                                    'More on the project website!'
+                                ),
+                                href='https://www.green-algorithms.org',
+                                target="_blank",
+                                className='button-container'
+                            ),
+
+                            # html.A(
+                            #     html.Button(
+                            #         'Website 2'
+                            #     ),
+                            #     href='https://www.green-algorithms.org',
+                            #     target="_blank",
+                            #     className='button-container'
+                            # ),
+                        ],
+                        className='buttons-row'
                     ),
                 ],
-                className='container footer permalink preprint'
+                className='container footer'
             ),
+
 
             #### INPUT FORM ####
 
@@ -127,7 +162,7 @@ def layout(
                                         type='number',
                                         id="runTime_hour_input",
                                         min=0,
-                                        value=clean_inputs['runTime_hour'],
+                                        # value=clean_inputs['runTime_hour'],
                                     ),
 
                                     dcc.Input(
@@ -135,7 +170,7 @@ def layout(
                                         id="runTime_min_input",
                                         min=0,
                                         max=59,
-                                        value=clean_inputs['runTime_min'],
+                                        # value=clean_inputs['runTime_min'],
                                     )
                                 ],
                                 className="box-runtime box-fields"
@@ -161,11 +196,22 @@ def layout(
                                     dcc.Dropdown(
                                         id="coreType_dropdown",
                                         clearable=False,
-                                        value=clean_inputs['coreType'],
+                                        # value=clean_inputs['coreType'],
                                     ),
                                 ],
                                 className="box-fields"
-                            )
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Select the type of hardware used.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
                         ],
                         className='form-row short-input'
                     ),
@@ -186,7 +232,18 @@ def layout(
                                         type='number',
                                         id="numberCPUs_input",
                                         min=0,
-                                        value=clean_inputs['numberCPUs'],
+                                        # value=clean_inputs['numberCPUs'],
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "A single CPU contains several cores.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -202,11 +259,23 @@ def layout(
                                                 id="CPUmodel_dropdown",
                                                 className='bottom-dropdown',
                                                 clearable=False,
-                                                value=clean_inputs['CPUmodel'],
+                                                # value=clean_inputs['CPUmodel'],
                                             ),
                                         ],
                                         className="box-fields"
-                                    )
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "To fill-in a custom core power usage (TDP), please select 'other'.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                    
                                 ],
                                 className='form-row short-input'
                             ),
@@ -222,7 +291,7 @@ def layout(
                                         type='number',
                                         id="tdpCPU_input",
                                         min=0,
-                                        value=clean_inputs['tdpCPU'],
+                                        # value=clean_inputs['tdpCPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -250,7 +319,18 @@ def layout(
                                         type='number',
                                         id="numberGPUs_input",
                                         min=0,
-                                        value=clean_inputs['numberGPUs'],
+                                        # value=clean_inputs['numberGPUs'],
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "Here, we ask for the number of GPUs (not the cores).",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
                                     ),
                                 ],
                                 className='form-row short-input'
@@ -266,11 +346,22 @@ def layout(
                                                 id="GPUmodel_dropdown",
                                                 className='bottom-dropdown',
                                                 clearable=False,
-                                                value=clean_inputs['GPUmodel']
+                                                # value=clean_inputs['GPUmodel']
                                             ),
                                         ],
                                         className="box-fields"
-                                    )
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "To fill-in a custom TDP, please select 'other'.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
                                 ],
                                 className='form-row short-input'
                             ),
@@ -286,7 +377,7 @@ def layout(
                                         type='number',
                                         id="tdpGPU_input",
                                         min=0,
-                                        value=clean_inputs['tdpGPU'],
+                                        # value=clean_inputs['tdpGPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -314,7 +405,18 @@ def layout(
                                 type='number',
                                 id="memory_input",
                                 min=0,
-                                value=clean_inputs['memory']
+                                # value=clean_inputs['memory']
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "We refer to the ‘allocated memory’, not the memory actually used by the program.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
                         ],
                         className='form-row short-input',
@@ -338,26 +440,39 @@ def layout(
                                     dcc.Dropdown(
                                         id="platformType_dropdown",
                                         clearable=False,
-                                        value=clean_inputs['platformType'],
+                                        # value=clean_inputs['platformType'],
                                     ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id="provider_dropdown",
-                                                clearable=False,
-                                                className='bottom-dropdown',
-                                                value=clean_inputs['provider'],
-                                            )
-                                        ],
-                                        id="provider_dropdown_div"
-                                    )
                                 ],
-                                className="box-fields"
-                            )
+                                className='box-fields',
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "This field enables us to retrieve the PUE and energy mix associated with your computations.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),    
+
+                            ## SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="provider_dropdown",
+                                        clearable=False,
+                                        className='bottom-dropdown'
+                                    ),
+                                ],
+                                className="box-fields",
+                                id="provider_dropdown_div"
+                            ),
                         ],
                         className='form-row'
                     ),
+
 
                     ## SERVER (for cloud computing)
                     html.Div(
@@ -369,7 +484,7 @@ def layout(
                                     dcc.Dropdown(
                                         id="server_continent_dropdown",
                                         clearable=False,
-                                        value=clean_inputs['serverContinent'],
+                                        # value=clean_inputs['serverContinent'],
                                     ),
 
                                     dcc.Dropdown(
@@ -398,87 +513,124 @@ def layout(
                                         clearable=False,
                                         # value=clean_inputs['locationContinent']
                                     ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id="location_country_dropdown",
-                                                className='bottom-dropdown',
-                                                clearable=False,
-                                            ),
-                                        ],
-                                        id="location_country_dropdown_div"
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id="location_region_dropdown",
-                                                className='bottom-dropdown',
-                                                clearable=False,
-                                            ),
-                                        ],
-                                        id="location_region_dropdown_div"
-                                    ),
-
                                 ],
-                                className="box-fields"
-                            )
+                                className="box-fields",
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "In particular, the location is used to retrieve the energy mix.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),   
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="location_country_dropdown",
+                                        className='bottom-dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields",
+                                id="location_country_dropdown_div"
+                            ),
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id="location_region_dropdown",
+                                        className='bottom-dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className="box-fields",
+                                id="location_region_dropdown_div"
+                            ),
                         ],
                         id='location_div',
                         className='form-row',
                         style={'display': 'flex'}
                     ),
 
-                    ## Core usage (CPU and GPU)
+                    ## CORE USAGE (CPU and GPU)
                     html.Div(
                         [
                             html.Label("Do you know the real usage factor of your CPU?"),
-
-                            dcc.RadioItems(
-                                id='usageCPU_radio',
-                                options=YES_NO_OPTIONS,
-                                className="radio-input",
-                                value=clean_inputs['usageCPUradio'],
+                            
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='usageCPU_radio',
+                                        options=YES_NO_OPTIONS,
+                                        className="radio-input",
+                                    ),
+                                    dcc.Input(
+                                        min=0,
+                                        max=1,
+                                        # step=0.1,
+                                        type='number',
+                                        id="usageCPU_input",
+                                        style=dict(display='none'),
+                                    )
+                                ],
+                                className='radio-and-field'
                             ),
 
-                            dcc.Input(
-                                min=0,
-                                max=1,
-                                # step=0.1,
-                                type='number',
-                                id="usageCPU_input",
-                                style=dict(display='none'),
-                                value=clean_inputs['usageCPU'],
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Between 0 and 1. Should correspond to a temporal factor usage, accessible from log files for instance.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                         id='usageCPU_div'
                     ),
 
                     html.Div(
                         [
                             html.Label("Do you know the real usage factor of your GPU?"),
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='usageGPU_radio',
+                                        options=YES_NO_OPTIONS,
+                                        className="radio-input"
+                                    ),
 
-                            dcc.RadioItems(
-                                id='usageGPU_radio',
-                                options=YES_NO_OPTIONS,
-                                className="radio-input",
-                                value=clean_inputs['usageGPUradio'],
-                                # labelStyle={"display": "inline-block"},
+                                    dcc.Input(
+                                        min=0,
+                                        max=1,
+                                        # step=0.1,
+                                        type='number',
+                                        id="usageGPU_input",
+                                        style=dict(display='none'),
+                                    ),
+                                ],
+                                className='radio-and-field'
                             ),
 
-                            dcc.Input(
-                                min=0,
-                                max=1,
-                                # step=0.1,
-                                type='number',
-                                id="usageGPU_input",
-                                style=dict(display='none'),
-                                value=clean_inputs['usageGPU'],
-                            ),
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Between 0 and 1. In most cases, should be 1.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),                            
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                         id='usageGPU_div'
                     ),
 
@@ -486,23 +638,37 @@ def layout(
                     html.Div(
                         [
                             html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='pue_radio',
+                                        options=YES_NO_OPTIONS,
+                                        className="radio-input"
+                                    ),
 
-                            dcc.RadioItems(
-                                id='pue_radio',
-                                options=YES_NO_OPTIONS,
-                                className="radio-input",
-                                value=clean_inputs['PUEradio'],
-                                # labelStyle={"display": "inline-block"},
+                                    dcc.Input(
+                                        min=1,
+                                        type='number',
+                                        id="PUE_input",
+                                        style=dict(display='none'),
+                                    ),
+                                ],
+                                className='radio-and-field'
                             ),
 
-                            dcc.Input(
-                                min=1,
-                                type='number',
-                                id="PUE_input",
-                                style=dict(display='none'),
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The PUE accounts for the extra energy consumption of the data centre, including cooling (1.67 by default).",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
+
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                         id='PUEquestion_div',
                         style=dict(display='none'),
                     ),
@@ -510,24 +676,38 @@ def layout(
                     ## PSF
                     html.Div(
                         [
-                            html.Label("Do you want to use a Pragmatic Scaling Factor?"),
+                            html.Label("Do you want to use a Pragmatic Scaling Factor (PSF)?"),
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='PSF_radio',
+                                        options=YES_NO_OPTIONS,
+                                        className="radio-input"
+                                    ),
 
-                            dcc.RadioItems(
-                                id='PSF_radio',
-                                options=YES_NO_OPTIONS,
-                                className="radio-input",
-                                value=clean_inputs['PSFradio'],
+                                    dcc.Input(
+                                        min=1,
+                                        type='number',
+                                        id="PSF_input",
+                                        style=dict(display='none'),
+                                    ),
+                                ],
+                                className='radio-and-field',
                             ),
 
-                            dcc.Input(
-                                min=1,
-                                type='number',
-                                id="PSF_input",
-                                style=dict(display='none'),
-                                value=clean_inputs['PSF'],
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The PSF refers to the number of repetions of the computation.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
+
                         ],
-                        className='form-row radio-and-field',
+                        className='form-row radio-row',
                     ),
 
                     dcc.ConfirmDialog(
@@ -565,7 +745,7 @@ def layout(
                                         options=appVersions_options,
                                         className='bottom-dropdown',
                                         clearable=False,
-                                        value=clean_inputs['appVersion'],
+                                        # value=clean_inputs['appVersion'],
                                     ),
                                 ],
                                 className="box-fields"
@@ -851,26 +1031,37 @@ def layout(
                 className='container footer preprint'
             ),
 
-            #### MAP ####
+            #### FORMULA ####
 
             html.Div(
                 [
-                    html.H2("Carbon Intensity across the world"),
-                    html.Div(
-                        [
-                            loading_wrapper(
-                                dcc.Graph(
-                                    figure=mapCI,
-                                    className='graph',
-                                    config={'displaylogo': False},
-                                ),
-                            ),
-                        ],
-                        className='graph-container'
-                    )
+                    html.H2("The formula"),
 
+                    dcc.Markdown('''
+                        The carbon footprint is calculated by estimating the energy draw of the algorithm
+                        and the carbon intensity of producing this energy at a given location:
+
+                        `carbon footprint = energy needed * carbon intensity`
+
+                        Where the energy needed is: 
+
+                        `runtime * (cores power draw cores * usage + memory power draw) * PUE * PSF`
+
+                        The power draw of the computing cores depends on the model and number of cores, 
+                        while the memory power draw only depends on the size of memory __available__. 
+                        The usage factor corrects for the real core usage (default is 1, i.e. full usage).
+                        The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
+                        to operate the data centre (cooling, lighting etc.). 
+                        The PSF (Pragmatic Scaling Factor) is used to take into account multiple identical runs 
+                        (e.g. for testing or optimisation).
+
+                        The Carbon Intensity depends on the location and the technologies used to produce electricity.
+                        If you want to check out the carbon intensity in real time, and see discrepancies between countries,
+                        check out the [ElectricityMap website](https://app.electricitymaps.com/map).
+                        Also, note that __the "energy needed" indicated at the top of this page is independent of the location.__
+                        ''')
                 ],
-                className="container maps",
+                className='container formula'
             ),
 
             #### DEFINITIONS ####
@@ -910,6 +1101,38 @@ def layout(
                 className='super-section definitions'
             ),
 
+            #### HOW TO REPORT ####
+
+            html.Div(
+                [
+                    html.H2("How to report it?"),
+
+                    dcc.Markdown('''
+            It's important to track the impact 
+            of computational research on climate change in order to stimulate greener algorithms.
+            For that, __we believe that the carbon footprint of a project should be reported on publications
+            alongside other performance metrics__. 
+
+            Here is a text you can include in your paper:
+            '''),
+
+                    dcc.Markdown(id='report_markdown'),
+
+                    dcc.Markdown(
+                        # '\[1\] see citation below',
+                        '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
+                        className='footnote citation-report'
+                    ),
+
+                    dcc.Markdown(
+                        '_Including the version of the tool is useful to keep track of the version of the data used._',
+                        className='footnote-authorship'
+                    )
+
+                ],
+                className='container report'
+            ),
+
             #### CORES COMPARISON ####
 
             html.Div(
@@ -934,95 +1157,36 @@ def layout(
 
             #### WHAT TO DO ####
 
-            html.Div(
-                [
-                    html.H2("What can you do about it?"),
+            # TODO rewrite the "what can you do" section
 
-                    dcc.Markdown('''
-                    The main factor impacting your footprint is the location of your servers:
-                    the same algorithm will emit __74 times more__ CO2e
-                    if ran in Australia compared to Switzerland. 
-                    Although it's not always the case, 
-                    many cloud providers offer the option to select a data centre.
-
-                    Memory power draw is a huge source of waste, 
-                    because __the energy consumption depends on the memory available, 
-                    not the actual usage__, only requesting the needed memory 
-                    is a painless way to reduce greenhouse gas emissions.  
-
-                    Generally, taking the time to write optimised code that runs faster with fewer 
-                    resources saves both money and the planet.
-
-                    And above all, __only run jobs that you need!__
-                    ''')
-                ],
-                className='container to-do'
-            ),
-
-            #### FORMULA ####
-
-            html.Div(
-                [
-                    html.H2("The formula"),
-
-                    dcc.Markdown('''
-                    The carbon footprint is calculated by estimating the energy draw of the algorithm
-                    and the carbon intensity of producing this energy at a given location:
-
-                    `carbon footprint = energy needed * carbon intensity`
-
-                    Where the energy needed is: 
-
-                    `runtime * (power draw for cores * usage + power draw for memory) * PUE * PSF`
-
-                    The power draw for the computing cores depends on the model and number of cores, 
-                    while the memory power draw only depends on the size of memory available. 
-                    The usage factor corrects for the real core usage (default is 1, i.e. full usage).
-                    The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
-                    to operate the data centre (cooling, lighting etc.). 
-                    The PSF (Pragmatic Scaling Factor) is used to take into account multiple identical runs 
-                    (e.g. for testing or optimisation).
-
-                    The Carbon Intensity depends on the location and the technologies used to produce electricity.
-                    But note that __the "energy needed" indicated at the top of this page is independent of the location.__
-                    ''')
-                ],
-                className='container formula'
-            ),
-
-            #### HOW TO REPORT ####
-
-            html.Div(
-                [
-                    html.H2("How to report it?"),
-
-                    dcc.Markdown('''
-                    It's important to track the impact 
-                    of computational research on climate change in order to stimulate greener algorithms.
-                    For that, __we believe that the carbon footprint of a project should be reported on publications
-                    alongside other performance metrics__. 
-
-                    Here is a text you can include in your paper:
-                    '''),
-
-                    dcc.Markdown(id='report_markdown'),
-
-                    dcc.Markdown(
-                        # '\[1\] see citation below',
-                        '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
-                        className='footnote citation-report'
-                    ),
-
-                    dcc.Markdown(
-                        '_Including the version of the tool is useful to keep track of the version of the data used._',
-                        className='footnote-authorship'
-                    )
-
-                ],
-                className='container report'
-            ),
+            # html.Div(
+            #     [
+            #         html.H2("What can you do about it?"),
+            #
+            #         dcc.Markdown('''
+            #         The main factor impacting your footprint is the location of your servers:
+            #         the same algorithm will emit __74 times more__ CO2e
+            #         if ran in Australia compared to Switzerland.
+            #         Although it's not always the case,
+            #         many cloud providers offer the option to select a data centre.
+            #
+            #         Memory power draw is a huge source of waste,
+            #         because __the energy consumption depends on the memory available,
+            #         not the actual usage__, only requesting the needed memory
+            #         is a painless way to reduce greenhouse gas emissions.
+            #
+            #         Generally, taking the time to write optimised code that runs faster with fewer
+            #         resources saves both money and the planet.
+            #
+            #         And above all, __only run jobs that you need!__
+            #         ''')
+            #     ],
+            #     className='container to-do'
+            # ),
 
             #### DATA AND Q ####
+
+            # TODO reorganise the footer, it doesn't look great
 
             html.Div(
                 [
@@ -1062,43 +1226,6 @@ def layout(
                 className='super-section data-questions'
             ),
 
-            #### ABOUT US ####
-
-            html.Div(
-                [
-                    html.H2("About us"),
-
-                    dcc.Markdown('''
-                    The Green Algorithms project was jointly developed by
-
-                    Loïc Lannelongue\*¹, Jason Grealey\*², and Michael Inouye³
-                    ''',
-                                 className='authors'
-                                 ),
-
-                    dcc.Markdown('''
-                    (1) University of Cambridge
-
-                    (2) Baker Heart and Diabetes Institute and La Trobe University
-
-                    (3) Baker Institute, University of Cambridge, Alan Turing Institute, Health Data Research UK
-
-                    \* Contributed equally to this work
-                    ''',
-                                 className='affiliations'
-                                 ),
-
-                    html.Center(
-                        html.P(["More information ",
-                                html.A("here",
-                                       href='http://www.inouyelab.org/',
-                                       target='_blank')
-                                ]),
-                    ),
-                ],
-                className='container about-us footer'
-            ),
-
             #### HOW TO CITE ####
 
             html.Div(
@@ -1107,16 +1234,54 @@ def layout(
 
                     html.Center(
                         html.P([
-                                   "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
-                                   "Adv. Sci. 2021, 2100707. ",
-                                   html.A("https://doi.org/10.1002/advs.202100707",
-                                          href='https://doi.org/10.1002/advs.202100707',
-                                          target='_blank')
-                                   ]),
+                            "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
+                            "Adv. Sci. 2021, 2100707. ",
+                            html.A("https://doi.org/10.1002/advs.202100707",
+                                   href='https://doi.org/10.1002/advs.202100707',
+                                   target='_blank')
+                        ]),
                     ),
                 ],
                 className='container citation footer'
             ),
+
+            #### ABOUT US ####
+
+            html.Div(
+                [
+                    html.H2("About us"),
+
+                    dcc.Markdown('''
+                    The Green Algorithms project is led by
+
+                    [Loïc Lannelongue](www.lannelongue.eu)¹ and [Michael Inouye](https://www.inouyelab.org/home/people)².
+                    ''',
+                                 className='authors'
+                                 ),
+
+                    dcc.Markdown('''
+                    (1) University of Cambridge
+
+                    (2) Baker Heart and Diabetes Institute
+                    
+                    ''',
+                                 className='affiliations'
+                                 ),
+
+                    # html.Center(
+                    #     html.P(["This work is being supported by ",
+                    #             html.A("here",
+                    #                    href='http://www.inouyelab.org/',
+                    #                    target='_blank')
+                    #             ]),
+                    # ),
+                ],
+                className='container about-us footer'
+            ),
+
+            #### FUNDERS ####
+
+            # TODO add funders logos
 
             #### SHOW YOUR STRIPES ####
 

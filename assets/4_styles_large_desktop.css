@@ -14,16 +14,6 @@
     ---------------------------------- INPUT FORM ----------------------------------------
     */
 
-    .short-input  {
-        flex-direction: row;
-        align-items: center;
-    }
-
-    .short-input label {
-        width: 50%;
-        margin-bottom: 0;
-    }
-
     .short-input .box-runtime {
         display:block;
         width: 50%;
@@ -32,23 +22,41 @@
     .short-input .box-runtime input:first-of-type {
         margin-right:0;
         margin-bottom:2px;
-
     }
 
     .box-runtime input:last-of-type {
         margin-left:0;
     }
 
+    .form-row .box-fields {
+        width: 94%
+    }
+
+    .short-input label {
+            width: 47%;
+            margin-bottom: 0;
+        }
+
     .short-input > input[type='number'],
     .short-input .box-fields {
-        width: 50%;
-    }
-
-    #div_memory label{
         width: 47%;
-        margin-right: 3%;
     }
 
+    .form-row .radio-and-field {
+        width: 94%;
+    }
+
+    .tooltip {
+        width: 4%;
+        margin-left: 0em;
+        margin-right: -1em;
+    }
+
+    .tooltip-text {
+        position: absolute;
+        left: 1em
+    }
+    
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
