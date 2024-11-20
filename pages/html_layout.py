@@ -112,7 +112,8 @@ def layout(
                         [
                             html.A(
                                 html.Button(
-                                    'More on the project website!'
+                                    'More on the project website!',
+                                    id='website-link-button'
                                 ),
                                 href='https://www.green-algorithms.org',
                                 target="_blank",
