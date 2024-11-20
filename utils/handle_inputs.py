@@ -1,9 +1,12 @@
 import os
 import copy
+import base64
+import io
 
 import pandas as pd
 
 from urllib import parse
+from dash import html
 from types import SimpleNamespace
 from utils.utils import check_CIcountries_df, unlist, put_value_first
 
@@ -394,3 +397,22 @@ def parse_query_strings(query_strings, default_values):
     values['popup_message'] = popup_message
     values['show_popup'] = show_popup
     return values
+
+def read_input_csv(input_csv_content, filename):
+    _, content_string = input_csv_content.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        else:
+            return {}
+    except Exception as e:
+        print(e)
+        return html.Div([
+            'There was an error processing this file.'
+        ])
+    return  df.to_dict() 
+
+

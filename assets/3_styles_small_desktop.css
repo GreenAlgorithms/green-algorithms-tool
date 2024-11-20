@@ -61,7 +61,22 @@
         height: 260px;
     }
 
+    
+    /*
+    ---------------------------------- IMPORT-EXPORT ----------------------------------------
+    */
 
+    .import-export{
+        flex-direction: row;
+    }
+ 
+    #permalink {
+        margin-right: 6px
+    }
+
+    #import-result {
+        margin-left: 6px
+    }
 
 
 

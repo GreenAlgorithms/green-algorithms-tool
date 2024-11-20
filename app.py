@@ -3,7 +3,9 @@
 
 import os
 import dash
-from dash import html, ctx
+import datetime
+
+from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 
 from types import SimpleNamespace
@@ -16,7 +18,7 @@ from utils.utils import put_value_first, YES_NO_OPTIONS
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic, MY_COLORS
 from utils.handle_inputs import load_data, current_version, data_dir
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import prepURLqs
+from utils.handle_inputs import prepURLqs, read_input_csv
 
 # current_version = 'v2.2'
 
@@ -911,18 +913,29 @@ def showing(style):
         Input("PSF_input", "value"),
         Input('platformType_dropdown', 'value'),
         Input('provider_dropdown', 'value'),
-        Input('provider_dropdown_div', 'style')
+        Input('provider_dropdown_div', 'style'),
+        Input('upload-data', 'contents'),
     ],
     [
+        State('upload-data', 'filename'),
         State("aggregate_data", "data")
     ]
 )
 def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
-                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle,
-                           existing_state):
+                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle, input_content,
+                           input_filename, existing_state):
 
+    # first check if input is provided
+    if 'upload-data.contents' in ctx.triggered_prop_ids:
+        if input_content is not None:
+            input_data = read_input_csv(input_content, input_filename)
+            clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
+            return clean_input_data
+        else:
+            return existing_state
+        
     output = dict()
 
     # print('\n## data callback: runTime_hours=', runTime_hours) # DEBUGONLY
@@ -1283,13 +1296,45 @@ def update_text(data):
         foo = f"of a flight {data['flying_text']}"
     return foo
 
-### UPDATE PERMALINK ###
+### INPORT AND EXPORT RESULTS ###
+
 @app.callback(
     Output('share_permalink', 'href'),
     [Input("aggregate_data", "data")],
 )
 def share_permalink(aggData):
     return f"{aggData['permalink']}"
+
+@app.callback(
+    Output('csv-input-timer', 'disabled'),
+    Input('upload-data', 'contents'),
+    prevent_initial_call=True,
+)
+def trigger_timer_to_flush_input_csv(input_csv):
+    if input_csv is None:
+        return True
+    return False
+
+@app.callback(
+        Output('upload-data', 'contents'),
+        Input('csv-input-timer', 'n_intervals'),
+        prevent_initial_call=True,
+)
+def flush_input_csv_content(n):
+    return None
+
+@app.callback(
+    Output("aggregate-data-csv", "data"),
+    Input("btn-download_csv", "n_clicks"),
+    State("aggregate_data", "data"),
+    prevent_initial_call=True,
+)
+def export_as_csv(_, aggregate_data):
+    to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
+    # add an additional param to remove the index column
+    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv" )
 
 ### UPDATE PIE GRAPH ###
 @app.callback(

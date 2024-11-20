@@ -204,6 +204,21 @@ hr {
     width: 100%;
 }
 
+
+/*
+---------------------------------- IMPORT-EXPORT ----------------------------------------
+*/
+
+.import-export{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+
 /*
 ---------------------------------- TWO-GRAPHS BOX ----------------------------------------
 */

@@ -728,21 +728,64 @@ def layout(
                                 ],
                                 className="container mini-box"
                             ),
-
+                            
                             html.Div(
                                 [
-                                    html.P([
-                                        html.B("Share your results "),
-                                        "with ",
-                                        html.A("this link", target='_blank', id='share_permalink'),
-                                        "!"
-                                    ]),
+                                    html.Div(
+                                        [
+                                            html.P([
+                                                html.B("Share your results "),
+                                                "with ",
+                                                html.A("this link", target='_blank', id='share_permalink'),
+                                                ","
+                                            ]),
+
+                                            html.Div([
+                                                html.B("or export as a "),
+                                                html.Button("csv file", id="btn-download_csv"),
+                                                dcc.Download(id="aggregate-data-csv"),
+                                                html.B(' !')
+                                            ])
+                                        ],
+                                        className='container footer',
+                                        id='permalink',
+                                    ),
+
+                                    html.Div(
+                                        dcc.Upload(
+                                            html.Div(
+                                                [
+                                                    html.B("Import resuts"),
+                                                    html.Div(
+                                                        [
+                                                            html.A("Drag and drop or click to select your .csv file.")
+                                                        ],
+                                                        style={'font-size': '12px', 'margin-top': '3px', 'text-decoration': 'underline'}
+                                                    )
+                                                ]
+                                            ),
+                                            id='upload-data',
+                                        ),
+                                        className='container footer',
+                                        style={
+                                            'borderWidth': '2px',
+                                            'borderStyle': 'dashed',
+                                            'borderRadius': '5px',
+                                        },
+                                        id='import-result',
+                                    ),
                                 ],
-                                className='container footer permalink'
-                            ),
+                                className='import-export'
+                            )
                         ],
                         className='super-section mini-boxes'
                     ),
+
+                    dcc.Interval(
+                        id='csv-input-timer',
+                        interval=500, # in milliseconds
+                        disabled=True
+                        ),
 
                     html.Div(
                         [

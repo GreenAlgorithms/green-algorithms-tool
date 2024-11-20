@@ -144,10 +144,23 @@ input, select, .Select, textarea {
     font-size: 2rem;*/
 }
 
-.permalink {
+
+
+/*
+---------------------------------- IMPORT-EXPORT ----------------------------------------
+*/
+
+#permalink {
     font-size: 22px;
     font-size: 2.2rem;
 }
+
+
+#import-result{
+    font-size: 22px;
+    font-size: 2.2rem;
+}
+
 
 /*
 ---------------------------------- DESCRIPTIONS ----------------------------------------
