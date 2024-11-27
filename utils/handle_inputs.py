@@ -10,8 +10,36 @@ from dash import html
 from types import SimpleNamespace
 from utils.utils import check_CIcountries_df, unlist, put_value_first
 
+
 current_version = 'v2.2'
 data_dir = os.path.join(os.path.abspath(''),'data')
+
+appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
+appVersions_options_list.sort(reverse=True)
+
+default_values = dict(
+    runTime_hour=12,
+    runTime_min=0,
+    coreType='CPU',
+    numberCPUs=12,
+    CPUmodel='Xeon E5-2683 v4',
+    tdpCPU=12,
+    numberGPUs=1,
+    GPUmodel='NVIDIA Tesla V100',
+    tdpGPU=200,
+    memory=64,
+    platformType= 'localServer',
+    provider='gcp',
+    usageCPUradio='No',
+    usageCPU=1.0,
+    usageGPUradio='No',
+    usageGPU=1.0,
+    PUEradio='No',
+    PSFradio='No',
+    PSF=1,
+    appVersion=current_version,
+    # serverContinent='Europe', 
+)
 
 
 ###################################################
@@ -361,9 +389,63 @@ def prepURLqs(url_search, data, keysOfInterest):
         url = dict()
     return url
 
+def open_input_csv_and_comment(upload_csv_content, filename):
+    _, upload_string = upload_csv_content.split(',')
+    decoded = base64.b64decode(upload_string)
+    try:
+        if 'csv' in filename:
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
+        else:
+            return {}, 'The provided file should be a csv.', ''
+    except Exception as e:
+        subtitle = 'Something went wrong when opening the csv file.'
+        message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
+        return {}, subtitle, message
+    return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+
+
+def read_csv_input(upload_csv):
+
+    # print('upload_csv in read_csv: ', upload_csv)
+
+    show_error_mess = False
+    mess_subtitle = 'Filling in values from the input csv file.'
+    mess_content = ''
+    
+    # Load the right dataset to validate the inputs
+    appVersions_options_list = get_available_versions()
+    new_version = default_values['appVersion']
+    if 'appVersion' in upload_csv:
+        new_version = unlist(upload_csv['appVersion'])
+        # print('appVersions_options_list + [current_version] in read_csv: ', appVersions_options_list + [current_version])
+    assert new_version in (appVersions_options_list + [current_version])
+    if new_version == current_version:
+        newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
+    else:
+        newData = load_data(os.path.join(data_dir, new_version), version=new_version)
+
+    # Validate the inputs against the data
+    processed_inputs, invalid_inputs = validateInput(
+        input_dict=upload_csv,
+        data_dict=newData,
+        keysOfInterest=list(upload_csv.keys())
+    )
+    if len(invalid_inputs) > 0:
+        # to be changed
+        show_error_mess = True
+        mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
+                        f'so we use default values for \n'
+        mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
+
+    # Return the verified inputs, where wrong keys are replaced by default values
+    values = copy.deepcopy(default_values)
+    values.update((k, processed_inputs[k]) for k in values.keys() & processed_inputs.keys())
+    print('values in read_csv_input: ', values)
+    return values, show_error_mess, mess_subtitle, mess_content
+
+
 def parse_query_strings(query_strings, default_values):
     values = copy.deepcopy(default_values)
-    appVersions_options_list = get_available_versions()
     popup_message = 'Filling in values from the URL. \n' \
     'All fields will be frozen. To edit, please click reset.'
     show_popup = False

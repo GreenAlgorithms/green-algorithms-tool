@@ -17,42 +17,17 @@ from urllib import parse
 import pandas as pd
 import plotly.graph_objects as go
 
-from utils.utils import put_value_first, YES_NO_OPTIONS, unlist
+from utils.utils import put_value_first, YES_NO_OPTIONS, unlist, is_shown
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic, MY_COLORS
 from utils.handle_inputs import load_data, current_version, data_dir
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import prepURLqs, read_input_csv, validateInput
+from utils.handle_inputs import validateInput, prepURLqs, open_input_csv_and_comment, read_csv_input, default_values, read_input_csv
 
 # current_version = 'v2.2'
 
 #############
 # LOAD DATA #
 #############
-
-default_values = dict(
-    runTime_hour=12,
-    runTime_min=0,
-    coreType='CPU',
-    numberCPUs=12,
-    CPUmodel='Xeon E5-2683 v4',
-    tdpCPU=12,
-    numberGPUs=1,
-    GPUmodel='NVIDIA Tesla V100',
-    tdpGPU=200,
-    memory=64,
-    platformType= 'localServer',
-    provider='gcp',
-    usageCPUradio='No',
-    usageCPU=1.0,
-    usageGPUradio='No',
-    usageGPU=1.0,
-    PUEradio='No',
-    PSFradio='No',
-    PSF=1,
-    appVersion=current_version,
-    # serverContinent='Europe', 
-    # locationContinent='Europe',
-)
 
 
 # data_dir = os.path.join(os.path.abspath(''),'data')
@@ -143,26 +118,19 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
     ],
     [
         Input('url_content','search'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State('aggregate_data', 'data'),
     ],
 )
-def fillInFromURL(url_search):
-    '''
-    :param url_search: Format is "?key=value&key=value&..."
-    '''
-    # validateInput(default_values) # DEBUGONLY
-    # print("\n## Running fillInFromURL / triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
+def filling_from_inputs(url_search, upload_content, filename, current_app_state):
 
-    # print("\n## URL callback 1 / triggered by: ", ctx.triggered_prop_ids)  # DEBUGONLY
-    # ctx_msg = json.dumps({
-    #     'states': ctx.states,
-    #     'triggered': ctx.triggered,
-    #     'inputs': ctx.inputs,
-    #     'args': ctx.args_grouping
-    # }, indent=2) # DEBUGONLY
-    # print(ctx_msg) # DEBUGONLY
 
-    show_popup = False
-    popup_message = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
+    show_err_mess = False
+    mess_content = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
+    return_current_state = False
 
     defaults2 = copy.deepcopy(default_values)
 
@@ -172,12 +140,16 @@ def fillInFromURL(url_search):
         # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
         # print("-> no-trigger callback prevented") # DEBUGONLY
         raise PreventUpdate # TODO find a cleaner workaround
+    
+    # only for initial call
+    elif 'upload-data.contents' not in ctx.triggered_prop_ids:
+        return tuple(default_values.values()) + (False, ' ')  # (False, '', '')
 
     elif (url_search is not None)&(url_search != ''):
 
         # print("\n## picked from url") # DEBUGONLY
 
-        show_popup = True
+        show_err_mess = True
 
         url = parse.parse_qs(url_search[1:])
 
@@ -204,70 +176,120 @@ def fillInFromURL(url_search):
         defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
 
         if len(invalidInputs) > 0:
-            popup_message += f'\n\nThere seems to be some typos in this URL, ' \
+            mess_content += f'\n\nThere seems to be some typos in this URL, ' \
                             f'using default values for '
-            popup_message += f"{', '.join(list(invalidInputs.keys()))}."
+            mess_content += f"{', '.join(list(invalidInputs.keys()))}."
 
-    # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
-    return tuple(defaults2.values()) + (show_popup,popup_message)
+        # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
+        return tuple(defaults2.values()) + (show_err_mess, mess_content)
+    # First we deal with the case the input_csv has just been flushed
+    # Then we want to fill in the form with its current state
+    elif upload_content is None:
+        return_current_state = True
+        show_err_mess = dash.no_update
+        mess_subtitle = dash.no_update
+        mess_content = dash.no_update
 
-@app.callback(
-    [
-        Output('runTime_hour_input','disabled'),
-        Output('runTime_min_input','disabled'),
-        Output('coreType_dropdown','disabled'),
-        Output('numberCPUs_input','disabled'),
-        Output('CPUmodel_dropdown', 'disabled'),
-        Output('tdpCPU_input','disabled'),
-        Output('numberGPUs_input','disabled'),
-        Output('GPUmodel_dropdown', 'disabled'),
-        Output('tdpGPU_input','disabled'),
-        Output('memory_input','disabled'),
-        Output('platformType_dropdown','disabled'),
-        Output('provider_dropdown','disabled'),
-        Output('appVersions_dropdown','disabled'),
-        Output('location_continent_dropdown', 'disabled'),
-        Output('location_country_dropdown', 'disabled'),
-        Output('location_region_dropdown', 'disabled'),
-        Output('usageCPU_input','disabled'),
-        Output('usageGPU_input','disabled'),
-        Output('PUE_input','disabled'),
-        Output('PSF_input','disabled'),
-        Output('runTime_hour_input','style'),
-        Output('runTime_min_input','style'),
-        Output('numberCPUs_input','style'),
-        Output('tdpCPU_input','style'),
-        Output('numberGPUs_input','style'),
-        Output('tdpGPU_input','style'),
-        Output('memory_input','style'),
-        Output('usageCPU_radio','options'),
-        Output('usageGPU_radio','options'),
-        Output('pue_radio','options'),
-        Output('PSF_radio', 'options'),
-    ],
-    [
-        Input('url_content','search'),
-    ],
-)
-def disable_inputFromURL(url_search):
-    '''
-    Disable all the input fields when filling in from URL to avoid weird inter-dependancies
-    :param url_search:
-    :return:
-    '''
-    n_output_disable = 20
-    n_output_style = 7
-    n_radio = 4
+    elif upload_content:
+        input_data, mess_subtitle, mess_content = open_input_csv_and_comment(upload_content, filename)
+        # The input file could not be opened correctly
+        if not input_data:
+            return_current_state = True
+            show_err_mess = True
+        # If everything is fine so far, we parse the csv content
+        else:
+            defaults2, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
+            return tuple(defaults2.values()) + (show_err_mess, mess_content)  #(show_err_mess, mess_subtitle, mess_content)
+    # The keys used to retrieve the content from aggregate data must 
+    # match those of the callback generating it
+    if return_current_state:
+        return tuple(
+            [
+                current_app_state['runTime_hour'],
+                current_app_state['runTime_min'],
+                current_app_state['coreType'],
+                current_app_state['numberCPUs'],
+                current_app_state['CPUmodel'],
+                current_app_state['tdpCPU'],
+                current_app_state['numberGPUs'],
+                current_app_state['GPUmodel'],
+                current_app_state['tdpGPU'],
+                current_app_state['memory'],
+                current_app_state['platformType'],
+                current_app_state['provider'],
+                current_app_state['usageCPUradio'],
+                current_app_state['usageCPU'],
+                current_app_state['usageGPUradio'],
+                current_app_state['usageGPU'],
+                current_app_state['PUEradio'],
+                current_app_state['PSFradio'],
+                current_app_state['PSF'],
+                current_app_state['appVersion'],
+                False,
+                ' '
+                # show_err_mess,
+                # mess_subtitle,
+                # mess_content
+            ]
+        )
 
-    if (url_search is not None) & (url_search != ''):
-        yesNo_options_disabled = [
-            {'label': 'Yes', 'value': 'Yes', 'disabled':True},
-            {'label': 'No', 'value': 'No', 'disabled':True}
-        ]
+# @app.callback(
+#     [
+#         Output('runTime_hour_input','disabled'),
+#         Output('runTime_min_input','disabled'),
+#         Output('coreType_dropdown','disabled'),
+#         Output('numberCPUs_input','disabled'),
+#         Output('CPUmodel_dropdown', 'disabled'),
+#         Output('tdpCPU_input','disabled'),
+#         Output('numberGPUs_input','disabled'),
+#         Output('GPUmodel_dropdown', 'disabled'),
+#         Output('tdpGPU_input','disabled'),
+#         Output('memory_input','disabled'),
+#         Output('platformType_dropdown','disabled'),
+#         Output('provider_dropdown','disabled'),
+#         Output('appVersions_dropdown','disabled'),
+#         Output('location_continent_dropdown', 'disabled'),
+#         Output('location_country_dropdown', 'disabled'),
+#         Output('location_region_dropdown', 'disabled'),
+#         Output('usageCPU_input','disabled'),
+#         Output('usageGPU_input','disabled'),
+#         Output('PUE_input','disabled'),
+#         Output('PSF_input','disabled'),
+#         Output('runTime_hour_input','style'),
+#         Output('runTime_min_input','style'),
+#         Output('numberCPUs_input','style'),
+#         Output('tdpCPU_input','style'),
+#         Output('numberGPUs_input','style'),
+#         Output('tdpGPU_input','style'),
+#         Output('memory_input','style'),
+#         Output('usageCPU_radio','options'),
+#         Output('usageGPU_radio','options'),
+#         Output('pue_radio','options'),
+#         Output('PSF_radio', 'options'),
+#     ],
+#     [
+#         Input('url_content','search'),
+#     ],
+# )
+# def disable_inputFromURL(url_search):
+#     '''
+#     Disable all the input fields when filling in from URL to avoid weird inter-dependancies
+#     :param url_search:
+#     :return:
+#     '''
+#     n_output_disable = 20
+#     n_output_style = 7
+#     n_radio = 4
 
-        return (True,)*n_output_disable + ({'background-color': MY_COLORS['boxesColor']},)*n_output_style + (yesNo_options_disabled,)*n_radio
-    else:
-        return (False,)*n_output_disable + (dict(),)*n_output_style + (YES_NO_OPTIONS,)*n_radio
+#     if (url_search is not None) & (url_search != ''):
+#         yesNo_options_disabled = [
+#             {'label': 'Yes', 'value': 'Yes', 'disabled':True},
+#             {'label': 'No', 'value': 'No', 'disabled':True}
+#         ]
+
+#         return (True,)*n_output_disable + ({'background-color': MY_COLORS['boxesColor']},)*n_output_style + (yesNo_options_disabled,)*n_radio
+#     else:
+#         return (False,)*n_output_disable + (dict(),)*n_output_style + (YES_NO_OPTIONS,)*n_radio
 
 @app.callback(
     Output('url_content', 'search'),
@@ -400,7 +422,7 @@ def set_coreOptions(data):
             availableOptions = put_value_first(availableOptions, 'Any')
             coreModels_options[coreType] = [
                 {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                                     [("Other", "other")]
+                [("Other", "other")]
             ]
 
         return coreModels_options['CPU'], coreModels_options['GPU']
@@ -737,7 +759,7 @@ def set_countries_options(selected_continent, url_search, data, prev_selectedCou
     else:
         country_style = {'display': 'block'}
 
-    return listOptions,defaultValue,country_style
+    return listOptions, defaultValue, country_style
 
 @app.callback(
     [
@@ -1039,28 +1061,26 @@ def showing(style):
         Input('platformType_dropdown', 'value'),
         Input('provider_dropdown', 'value'),
         Input('provider_dropdown_div', 'style'),
-        Input('upload-data', 'contents'),
     ],
-    [
-        State('upload-data', 'filename'),
-        State("aggregate_data", "data")
-    ]
+    # [
+    #     State("aggregate_data", "data")
+    # ]
 )
 def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
-                           memory, runTime_hours, runTime_min, locationContinent, locationCountry, location,
+                           memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
-                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle, input_content,
-                           input_filename, existing_state):
+                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle): #, existing_agg_data):
 
     # first check if input is provided
-    if 'upload-data.contents' in ctx.triggered_prop_ids:
-        if input_content is not None:
-            input_data = read_input_csv(input_content, input_filename)
-            clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
-            return clean_input_data
-        else:
-            return existing_state
-        
+    # if 'upload-data.contents' in ctx.triggered_prop_ids:
+    #     if input_content is not None:
+    #         input_data = read_input_csv(input_content, input_filename)
+    #         clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
+    #         return clean_input_data
+    #     else:
+    #         return existing_agg_data
+
+    print('in aggregate callback ctx.triggered_prop_ids: ', ctx.triggered_prop_ids)
     output = dict()
 
     # print('\n## data callback: runTime_hours=', runTime_hours) # DEBUGONLY
@@ -1070,12 +1090,12 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     # permalink = 'http://127.0.0.1:8050/' # DEBUGONLY
     permalink_temp = ''
 
-    ### Preprocess
-    #######
+    #############################################
+    ### PREPROCESS: check if computations can be performed
 
     notReady = False
 
-    ## Runtime
+    ### Runtime
     test_runTime = 0
     if runTime_hours is None:
         actual_runTime_hours = 0
@@ -1091,7 +1111,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     permalink_temp += f'?runTime_hour={actual_runTime_hours}&runTime_min={actual_runTime_min}'
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
-    ## Core type
+    ### Core type
     if coreType is None:
         notReady = True
     elif (coreType in ['CPU','Both'])&((n_CPUcores is None)|(CPUmodel is None)):
@@ -1099,32 +1119,32 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
         notReady = True
 
-    ## Data
+    ### Versioned data
     if data is not None:
         data_dict = SimpleNamespace(**data)
         permalink_temp += f'&appVersion={data_dict.version}'
     else:
         notReady = True
 
-    ## Location
-    if showing(locationStyle):
+    ### Location
+    if is_shown(locationStyle):
         # this means the "location" input is shown, so we use location instead of server
-        locationVar = location
-        permalink_temp += f'&locationContinent={locationContinent}&locationCountry={locationCountry}&locationRegion={location}'
+        locationVar = locationRegion
+        permalink_temp += f'&locationContinent={locationContinent}&locationCountry={locationCountry}&locationRegion={locationRegion}'
     elif (server is None)|(server == 'other')|(data is None):
         locationVar = None
     else:
         locationVar = data_dict.datacenters_dict_byName[server]['location']
-    if showing(serverStyle):
+    if is_shown(serverStyle):
         permalink_temp += f'&serverContinent={serverContinent}&server={server}'
 
-    ## Platform
+    ### Platform
     if selected_platform is None:
         notReady = True
     elif (selected_platform == 'cloudComputing')&(selected_provider is None):
         notReady = True
 
-    ## The rest
+    ### The rest
     if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)| \
             (usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None):
         notReady = True
@@ -1168,13 +1188,13 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         permalink += permalink_temp
         ### PUE
         defaultPUE = data_dict.pueDefault_dict['Unknown']
-
-        if (showing(PUEdivStyle))&(PUEradio == 'Yes'):
-            # I only use the inputted PUE if the PUE box is shown AND the radio button is "Yes"
+        # the input PUE is used only if the PUE box is shown AND the radio button is "Yes"
+        if (is_shown(PUEdivStyle)) & (PUEradio == 'Yes'):
             PUE_used = PUE
             permalink += f'&PUEradio={PUEradio}&PUE={PUE}'
+        
+        ### PLATFORM ALONG WITH PUE
         else:
-            # PUE question not asked or is answered by "No"
             if selected_platform == 'personalComputer':
                 PUE_used = 1
             elif selected_platform == 'localServer':
@@ -1184,24 +1204,22 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                 if selected_provider == 'other':
                     PUE_used = defaultPUE
                 else:
-                    foo = data_dict.datacenters_dict_byName.get(server)
-
-                    if foo is not None:
-                        if pd.isnull(foo['PUE']):
-                            # if we don't know the PUE of this specific data centre, or if we don't know the data centre,
-                            # we use the provider's default
+                    # if we don't know the PUE of this specific data centre, or if we 
+                    # don't know the data centre, we use the provider's default
+                    server_data = data_dict.datacenters_dict_byName.get(server)
+                    if server_data is not None:
+                        if pd.isnull(server_data['PUE']):
                             PUE_used = data_dict.pueDefault_dict[selected_provider]
                         else:
-                            PUE_used = foo['PUE']
+                            PUE_used = server_data['PUE']
                     else:
                         PUE_used = data_dict.pueDefault_dict[selected_provider]
 
-        ### CORES
-
+        ### CPUs
         permalink += f'&coreType={coreType}'
         if coreType in ['CPU', 'Both']:
             permalink += f'&numberCPUs={n_CPUcores}&CPUmodel={CPUmodel}'
-            if showing(tdpCPUstyle):
+            if is_shown(tdpCPUstyle):
                 # we asked the question about TDP
                 permalink += f'&tdpCPU={tdpCPU}'
                 CPUpower = tdpCPU
@@ -1210,13 +1228,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                     CPUpower = tdpCPU
                 else:
                     CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
-
             if usageCPUradio == 'Yes':
                 permalink += f'&usageCPUradio=Yes&usageCPU={usageCPU}'
                 usageCPU_used = usageCPU
             else:
                 usageCPU_used = 1.
-
             powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
         else:
             powerNeeded_CPU = 0
@@ -1224,7 +1240,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
         if coreType in ['GPU', 'Both']:
             permalink += f'&numberGPUs={n_GPUs}&GPUmodel={GPUmodel}'
-            if showing(tdpGPUstyle):
+            if is_shown(tdpGPUstyle):
                 permalink += f'&tdpGPU={tdpGPU}'
                 GPUpower = tdpGPU
             else:
@@ -1232,13 +1248,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                     GPUpower = tdpGPU
                 else:
                     GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
-
             if usageGPUradio == 'Yes':
                 permalink += f'&usageGPUradio=Yes&usageGPU={usageGPU}'
                 usageGPU_used = usageGPU
             else:
                 usageGPU_used = 1.
-
             powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
         else:
             powerNeeded_GPU = 0
@@ -1249,19 +1263,21 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
         ### PLATFORM
         permalink += f'&platformType={selected_platform}'
-        if showing(providerStyle):
+        if is_shown(providerStyle):
             permalink += f'&provider={selected_provider}'
 
-        # SERVER/LOCATION
+        ### SERVER/LOCATION
         carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
-        # PSF
+        ### PSF
         if PSFradio == 'Yes':
             permalink += f'&PSFradio=Yes&PSF={PSF}'
             PSF_used = PSF
         else:
             PSF_used = 1
 
+        #############################################
+        ### COMPUTATIONS: final outputs are computed
 
         # Power needed, in Watt
         powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
@@ -1306,14 +1322,14 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['energy_needed'] = energyNeeded
         output['power_needed'] = powerNeeded
 
-        ### CONTEXT
-
+        ### Context
         output['n_treeMonths'] = carbonEmissions / data_dict.refValues_dict['treeYear'] * 12
 
         output['nkm_drivingUS'] = carbonEmissions / data_dict.refValues_dict['passengerCar_US_perkm']
         output['nkm_drivingEU'] = carbonEmissions / data_dict.refValues_dict['passengerCar_EU_perkm']
         output['nkm_train'] = carbonEmissions / data_dict.refValues_dict['train_perkm']
 
+        ### Text plane trips
         if carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NY-SF']:
             output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_PAR-LON']
             output['flying_text'] = "Paris-London"
@@ -1324,7 +1340,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
             output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NYC-MEL']
             output['flying_text'] = "NYC-Melbourne"
 
-        ### text carbon emissions
+        ### Text carbon emissions
         carbonEmissions_value = carbonEmissions  # in g CO2e
         carbonEmissions_unit = "g"
         if carbonEmissions_value >= 1e6:
@@ -1336,13 +1352,12 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         elif carbonEmissions_value < 1:
             carbonEmissions_value *= 1e3
             carbonEmissions_unit = "mg"
-
         if (carbonEmissions_value != 0)&((carbonEmissions_value >= 1e3)|(carbonEmissions_value < 1)):
             output['text_CE'] = f"{carbonEmissions_value:,.2e} {carbonEmissions_unit} CO2e"
         else:
             output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
 
-        ### text energy
+        ### Text energy
         energyNeeded_value = energyNeeded  # in kWh
         energyNeeded_unit = "kWh"
         if energyNeeded_value >= 1e3:
@@ -1351,7 +1366,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         elif energyNeeded_value < 1:
             energyNeeded_value *= 1e3
             energyNeeded_unit = "Wh"
-
         if (energyNeeded_value != 0) & ((energyNeeded_value >= 1e3) | (energyNeeded_value < 1)):
             output['text_energyNeeded'] = f"{energyNeeded_value:,.2e} {energyNeeded_unit}"
         else:
@@ -1363,7 +1377,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         if treeTime_value >= 24:
             treeTime_value /= 12
             treeTime_unit = "tree-years"
-
         if (treeTime_value != 0) & ((treeTime_value >= 1e3) | (treeTime_value < 0.1)):
             output['text_treeYear'] = f"{treeTime_value:,.2e} {treeTime_unit}"
         else:
@@ -1423,12 +1436,12 @@ def update_text(data):
 
 ### INPORT AND EXPORT RESULTS ###
 
-@app.callback(
-    Output('share_permalink', 'href'),
-    [Input("aggregate_data", "data")],
-)
-def share_permalink(aggData):
-    return f"{aggData['permalink']}"
+# @app.callback(
+#     Output('share_permalink', 'href'),
+#     [Input("aggregate_data", "data")],
+# )
+# def share_permalink(aggData):
+#     return f"{aggData['permalink']}"
 
 @app.callback(
     Output('csv-input-timer', 'disabled'),
@@ -1458,8 +1471,7 @@ def export_as_csv(_, aggregate_data):
     to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
-    # add an additional param to remove the index column
-    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv" )
+    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv", index=False, sep=';')
 
 ### UPDATE PIE GRAPH ###
 @app.callback(

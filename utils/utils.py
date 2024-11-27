@@ -24,6 +24,9 @@ def unlist(x):
         return x[0]
     else:
         return x
+    
+def is_shown(style):
+    return style['display'] != 'none'
 
 def check_CIcountries_df(df):
     '''

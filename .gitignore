@@ -6,3 +6,5 @@
 .env
 *.psd
 minimal_examples
+
+sandbox**
