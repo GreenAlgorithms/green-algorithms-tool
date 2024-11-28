@@ -113,8 +113,8 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
         Output('PSF_radio', 'value'),
         Output('PSF_input', 'value'),
         Output('appVersions_dropdown','value'),
-        Output('fillIn_from_url', 'displayed'),
-        Output('fillIn_from_url', 'message'),
+        # Output('fillIn_from_url', 'displayed'),
+        # Output('fillIn_from_url', 'message'),
     ],
     [
         Input('url_content','search'),
@@ -143,7 +143,7 @@ def filling_from_inputs(url_search, upload_content, filename, current_app_state)
     
     # only for initial call
     elif 'upload-data.contents' not in ctx.triggered_prop_ids:
-        return tuple(default_values.values()) + (False, ' ')  # (False, '', '')
+        return tuple(default_values.values())   # + (False, '', '')
 
     elif (url_search is not None)&(url_search != ''):
 
@@ -181,7 +181,7 @@ def filling_from_inputs(url_search, upload_content, filename, current_app_state)
             mess_content += f"{', '.join(list(invalidInputs.keys()))}."
 
         # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
-        return tuple(defaults2.values()) + (show_err_mess, mess_content)
+        return tuple(defaults2.values()) # + (show_err_mess, mess_content)
     # First we deal with the case the input_csv has just been flushed
     # Then we want to fill in the form with its current state
     elif upload_content is None:
@@ -199,7 +199,7 @@ def filling_from_inputs(url_search, upload_content, filename, current_app_state)
         # If everything is fine so far, we parse the csv content
         else:
             defaults2, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
-            return tuple(defaults2.values()) + (show_err_mess, mess_content)  #(show_err_mess, mess_subtitle, mess_content)
+            return tuple(defaults2.values()) # + (show_err_mess, mess_content)  #(show_err_mess, mess_subtitle, mess_content)
     # The keys used to retrieve the content from aggregate data must 
     # match those of the callback generating it
     if return_current_state:
@@ -225,8 +225,8 @@ def filling_from_inputs(url_search, upload_content, filename, current_app_state)
                 current_app_state['PSFradio'],
                 current_app_state['PSF'],
                 current_app_state['appVersion'],
-                False,
-                ' '
+                # False,
+                # ' '
                 # show_err_mess,
                 # mess_subtitle,
                 # mess_content
@@ -1122,6 +1122,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     ### Versioned data
     if data is not None:
         data_dict = SimpleNamespace(**data)
+        version = data_dict.version
         permalink_temp += f'&appVersion={data_dict.version}'
     else:
         notReady = True
@@ -1152,29 +1153,30 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     if notReady:
         output['coreType'] = None
         output['CPUmodel'] = None
-        output['n_CPUcores'] = None
+        output['numberCPUs'] = None
+        output['usageCPU'] = None
+        output['tdpCPU'] = None
         output['GPUmodel'] = None
-        output['n_GPUs'] = None
+        output['numberGPUs'] = None
+        output['tdpGPU'] = None
+        output['usageGPU'] = None
         output['CPUpower'] = None
         output['GPUpower'] = None
         output['memory'] = None
-        output['runTime_hours'] = None
+        output['runTime_hour'] = None
         output['runTime_min'] = None
         output['runTime'] = None
+        output['platformType'] = None
         output['location'] = None
         output['carbonIntensity'] = None
-        output['usageCPU'] = None
-        output['usageGPU'] = None
         output['PUE'] = None
         output['PSF'] = None
-        output['selected_platform'] = None
         output['carbonEmissions'] = 0
         output['CE_CPU'] = 0
         output['CE_GPU'] = 0
         output['CE_core'] = 0
         output['CE_memory'] = 0
         output['n_treeMonths'] = 0
-        # output['nkm_flying'] = 0
         output['flying_context'] = 0
         output['nkm_drivingUS'] = 0
         output['nkm_drivingEU'] = 0
@@ -1183,6 +1185,10 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['power_needed'] = 0
         output['flying_text'] = None
         output['text_CE'] = '... g CO2e'
+        output['appVersion'] = version
+
+    #############################################
+    ### PRE-COMPUTATIONS: update variables used in the calcul based on inputs
 
     else:
         permalink += permalink_temp
@@ -1237,6 +1243,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         else:
             powerNeeded_CPU = 0
             CPUpower = 0
+            usageCPU_used = 0
 
         if coreType in ['GPU', 'Both']:
             permalink += f'&numberGPUs={n_GPUs}&GPUmodel={GPUmodel}'
@@ -1257,6 +1264,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         else:
             powerNeeded_GPU = 0
             GPUpower = 0
+            usageGPU_used = 0
 
         ### MEMORY
         permalink += f'&memory={memory}'
@@ -1298,22 +1306,35 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         CE_memory  = eneregyNeeded_memory * carbonIntensity
         carbonEmissions = energyNeeded * carbonIntensity
 
+        # Storing all outputs to catch the app state and adapt textual content
         output['coreType'] = coreType
         output['CPUmodel'] = CPUmodel
-        output['n_CPUcores'] = n_CPUcores
-        output['CPUpower'] = CPUpower
+        output['numberCPUs'] = n_CPUcores
+        output['tdpCPU'] = CPUpower
+        output['usageCPUradio'] = usageCPUradio
+        output['usageCPU'] = usageCPU_used
         output['GPUmodel'] = GPUmodel
-        output['n_GPUs'] = n_GPUs
-        output['GPUpower'] = GPUpower
+        output['numberGPUs'] = n_GPUs
+        output['tdpGPU'] = GPUpower
+        output['usageGPUradio'] = usageGPUradio
+        output['usageGPU'] = usageGPU_used
         output['memory'] = memory
-        output['runTime_hours'] = actual_runTime_hours
+        output['runTime_hour'] = actual_runTime_hours
         output['runTime_min'] = actual_runTime_min
         output['runTime'] = runTime
+        output['platformType'] = selected_platform
+        output['locationContinent'] = locationContinent
+        output['locationCountry'] = locationCountry
+        output['locationRegion'] = locationRegion
+        output['provider'] = selected_provider
+        output['serverContinent'] = serverContinent
+        output['server'] = server
         output['location'] = locationVar
         output['carbonIntensity'] = carbonIntensity
         output['PUE'] = PUE_used
+        output['PUEradio'] = PUEradio
         output['PSF'] = PSF_used
-        output['selected_platform'] = selected_platform
+        output['PSFradio'] = PSFradio
         output['carbonEmissions'] = carbonEmissions
         output['CE_CPU'] = CE_CPU
         output['CE_GPU'] = CE_GPU
@@ -1321,10 +1342,10 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['CE_memory'] = CE_memory
         output['energy_needed'] = energyNeeded
         output['power_needed'] = powerNeeded
+        output['appVersion'] = version
 
         ### Context
         output['n_treeMonths'] = carbonEmissions / data_dict.refValues_dict['treeYear'] * 12
-
         output['nkm_drivingUS'] = carbonEmissions / data_dict.refValues_dict['passengerCar_US_perkm']
         output['nkm_drivingEU'] = carbonEmissions / data_dict.refValues_dict['passengerCar_EU_perkm']
         output['nkm_train'] = carbonEmissions / data_dict.refValues_dict['train_perkm']
@@ -1524,7 +1545,7 @@ def create_bar_chart_cores(aggData, data):
 )
 def fillin_report_text(aggData, data):
 
-    if (aggData['n_CPUcores'] is None)&(aggData['n_GPUs'] is None):
+    if (aggData['numberCPUs'] is None)&(aggData['numberGPUs'] is None):
         return('')
     elif data is None:
         return ('')
@@ -1533,7 +1554,7 @@ def fillin_report_text(aggData, data):
 
         # Text runtime
         minutes = aggData['runTime_min']
-        hours = aggData['runTime_hours']
+        hours = aggData['runTime_hour']
         if (minutes > 0)&(hours>0):
             textRuntime = "{}h and {}min".format(hours, minutes)
         elif (hours > 0):
@@ -1544,19 +1565,19 @@ def fillin_report_text(aggData, data):
         # text cores
         textCores = ""
         if aggData['coreType'] in ['GPU','Both']:
-            if aggData['n_GPUs'] > 1:
+            if aggData['numberGPUs'] > 1:
                 suffixProcessor = 's'
             else:
                 suffixProcessor = ''
-            textCores += f"{aggData['n_GPUs']} GPU{suffixProcessor} {aggData['GPUmodel']}"
+            textCores += f"{aggData['numberGPUs']} GPU{suffixProcessor} {aggData['GPUmodel']}"
         if aggData['coreType'] == 'Both':
             textCores += " and "
         if aggData['coreType'] in ['CPU','Both']:
-            if aggData['n_CPUcores'] > 1:
+            if aggData['numberCPUs'] > 1:
                 suffixProcessor = 's'
             else:
                 suffixProcessor = ''
-            textCores += f"{aggData['n_CPUcores']} CPU{suffixProcessor} {aggData['CPUmodel']}"
+            textCores += f"{aggData['numberCPUs']} CPU{suffixProcessor} {aggData['CPUmodel']}"
 
         country = data_dict.CI_dict_byLoc[aggData['location']]['countryName']
         region = data_dict.CI_dict_byLoc[aggData['location']]['regionName']

@@ -964,7 +964,11 @@ def layout(
 
                     dcc.Interval(
                         id='csv-input-timer',
-                        interval=500, # in milliseconds
+                        interval=3000, 
+                        # in milliseconds, should not be lower than 1000
+                        # otherwise the update of the upload csv content is done too soon
+                        # and there is not consistency between the state of the form and 
+                        # the content  of the csv
                         disabled=True
                         ),
 
