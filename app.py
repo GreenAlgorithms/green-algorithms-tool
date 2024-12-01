@@ -571,7 +571,9 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
     # NOTE The following handles two cases: 
     # when the server continent value had previously been set by the user
     # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+    # print('avai loc in set conti server, ', availableOptions)
     if prev_server_continent in availableOptions:
+        # print('prev continent ', prev_server_continent)
         defaultValue = prev_server_continent
         # print('previous continent gives defaultValue being ', defaultValue)
     else:
@@ -655,7 +657,10 @@ def set_server_value(selected_provider, selected_continent, versioned_data, uplo
     # Otherwise we return a suitable default value
     availableOptions = availableOptions_servers(selected_provider, selected_continent, data=versioned_data)
     try:
-        if prev_server_value is not None:
+        # print('looking for def val in set server', prev_server_value)
+        # print([server['name_unique'] for server in availableOptions])
+        if prev_server_value in [server['name_unique'] for server in availableOptions]:
+            # print('set server val, get previous value ', prev_server_value)
             # NOTE The following handles two cases: 
             # when the server continent value had previously been set by the user
             # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
@@ -725,27 +730,38 @@ def set_continentOptions(data):
     [
         Input('server_continent_dropdown','value'),
         Input('server_div', 'style'),
-        Input('versioned_data','data'),
-        Input('url_content','search'),
+        Input('upload-data', 'contents'),
     ],
     [
-        State('location_continent_dropdown', 'value')
+        State('upload-data', 'filename'),
+        State('location_continent_dropdown', 'value'),
+        State('versioned_data','data'),
     ]
 )
-def set_continent_value(selected_serverContinent, display_server, data, url_search, prev_selectedContinent):
+def set_continent_value(selected_serverContinent, display_server, upload_content, filename, prev_locationContinent, versioned_data):
 
-    url = prepURLqs(url_search, data=data, keysOfInterest=['locationContinent'])
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_locationContinent
+    
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        print('in set continent : the upload-csv')
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['locationContinent'])
+            if target_input :
+                return target_input['locationContinent']
 
-    # # print(dash.callback_context.triggered)
-
-    # # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    if len(url)>0:
-        return url['locationContinent']
-    if (display_server['display'] != 'none')&(selected_serverContinent != 'other'):
-        # the server div is shown, so we pull the continent from there
+    if prev_locationContinent is not None :
+        return prev_locationContinent
+    
+    # the server div is shown, so we pull the continent from there
+    if (display_server['display'] != 'none') & (selected_serverContinent != 'other'):
         return selected_serverContinent
-    if (prev_selectedContinent is not None):
-        return prev_selectedContinent
     return 'Europe'
 
 
