@@ -839,44 +839,64 @@ def set_countries_options(selected_continent, versioned_data, upload_content, fi
     [
         Input('location_continent_dropdown', 'value'),
         Input('location_country_dropdown', 'value'),
-        Input('url_content','search'),
-        Input('versioned_data','data')
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
     ],
     [
+        State('upload-data', 'filename'),
         State('location_region_dropdown', 'value'),
     ]
 
 )
-def set_regions_options(selected_continent, selected_country, url_search, data, prev_selectedRegion):
+def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, filename, prev_selectedRegion):
     '''
     List of options and default value for regions.
     Hides region dropdown if only one possible region (or continent=World)
     '''
-    url = prepURLqs(url_search, data=data, keysOfInterest=['locationRegion'])
 
-    locs = availableOptions_region(selected_continent, selected_country, data=data)
-    if data is not None:
-        listOptions = [{'label': data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
+    locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
+    if versioned_data is not None:
+        listOptions = [{'label': versioned_data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
     else:
         listOptions = []
 
-    if len(url)>0:
-        defaultValue =  url['locationRegion']
-    else:
-        try:
-            if (prev_selectedRegion is not None) and (prev_selectedRegion in locs):
-                defaultValue = prev_selectedRegion
-            else:
-                defaultValue = locs[0]
-        except:
-            defaultValue = None
+    defaultValue = None
+
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        defaultValue = prev_selectedRegion
+
+
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['locationRegion'])
+            if target_input :
+                defaultValue = target_input['locationRegion']
+
+    # otherwise we get a suitable default value  
+    if defaultValue is None:
+        # NOTE The following handles two cases: 
+        # when the country value had previously been set by the user
+        # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+        if prev_selectedRegion in locs:
+            defaultValue = prev_selectedRegion
+        else:
+            try:
+                    defaultValue = locs[0]
+            except:
+                defaultValue = None
 
     if (selected_continent == 'World')|(len(listOptions) == 1):
         region_style = {'display': 'none'}
     else:
         region_style = {'display': 'block'}
 
-    return listOptions,defaultValue,region_style
+    return listOptions, defaultValue, region_style
 
 
 ### Usage factor ###
