@@ -995,26 +995,41 @@ def display_pue_input(answer_pue, disabled):
     Output('PUE_input','value'),
     [
         Input('pue_radio', 'value'),
-        Input('url_content','search'),
-        Input('versioned_data','data')
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State('PUE_input','value'),
     ]
 )
-def set_PUE(radio, url_search, data):
-    url = prepURLqs(url_search, data=data, keysOfInterest=['PUE'])
+def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
 
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
+    if versioned_data is not None:
+        data_dict = SimpleNamespace(**versioned_data)
         defaultPUE = data_dict.pueDefault_dict['Unknown']
     else:
         defaultPUE = 0
 
     if radio == 'No':
         return defaultPUE
-    else:
-        if len(url)>0:
-            return url['PUE']
-        else:
-            return defaultPUE
+    
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        defaultPUE = prev_pue
+
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['PUE'])
+            if target_input :
+                defaultPUE = target_input['PUE']
+
+            
+    return defaultPUE
 
 ### PSF ###
 
