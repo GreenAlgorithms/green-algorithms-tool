@@ -274,6 +274,9 @@ def validateInput(input_dict, data_dict, keysOfInterest):
     '''
     Validate the input, either from a url or others
     '''
+    if type(data_dict) == dict:
+        data_dict = SimpleNamespace(**data_dict)
+
     appVersions_options_list = get_available_versions()
 
     def validateKey(key, value):
@@ -440,7 +443,7 @@ def read_csv_input(upload_csv):
     # Return the verified inputs, where wrong keys are replaced by default values
     values = copy.deepcopy(default_values)
     values.update((k, processed_inputs[k]) for k in values.keys() & processed_inputs.keys())
-    print('values in read_csv_input: ', values)
+    # print('values in read_csv_input: ', values)
     return values, show_error_mess, mess_subtitle, mess_content
 
 

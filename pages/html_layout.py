@@ -59,7 +59,7 @@ def layout(
         mapCI=go.Figure(),
         **query_strings
 ):
-    clean_inputs = parse_query_strings(query_strings, default_values) 
+    # clean_inputs = parse_query_strings(query_strings, default_values) 
     appLayout = html.Div(
         [
             dcc.Store(id="versioned_data"),

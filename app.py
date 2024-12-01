@@ -534,31 +534,46 @@ def display_location(selected_platform, selected_provider, selected_server, data
     [
         Input('provider_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('url_content','search'),
+        Input('upload-data', 'contents'),
     ],
     [
-        State('server_continent_dropdown', 'value')
+        State('upload-data', 'filename'),
+        State('server_continent_dropdown', 'value'),
     ]
 )
-def set_serverContinents_value(selected_provider, data, url_search, prev_server_continent):
+def set_serverContinents_value(selected_provider, versioned_data, upload_content, filename, prev_server_continent):
     '''
     Default value for server's continent, depending on the provider
     '''
-    availableOptions = availableLocations_continent(selected_provider, data=data)
-    url = prepURLqs(url_search, data=data, keysOfInterest=['serverContinent'])
 
-    # so far, commenting the next 2 lines prevents from using the url content for the 
-    # server continent even if included in parse_querry_string (by adding the corresponding key)
-    # in the dictionnary of default_values
-    # also, needs to be checked because the defaut v
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to understand which cases
+    # may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        # print('in set server continent, when csb flushed')
+        # print(prev_server_continent)
+        return prev_server_continent
 
-    # if len(url)>0: # that means that serverContinent is indeed in the url
-    #     return url['serverContinent']
-    if 'Europe' in availableOptions: 
-        defaultValue = 'Europe'
+
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['serverContinent'])
+            if target_input:
+                return target_input['serverContinent']
+
+    
+    # Otherwise we return a suitable default value
+    availableOptions = availableLocations_continent(selected_provider, data=versioned_data)
+
+    # NOTE The following handles two cases: 
+    # when the server continent value had previously been set by the user
+    # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
     if prev_server_continent in availableOptions:
-        # to keep the default value or the one contained in the url, if exists
         defaultValue = prev_server_continent
+        # print('previous continent gives defaultValue being ', defaultValue)
     else:
         try: 
             defaultValue = availableOptions[0]
@@ -605,31 +620,48 @@ def set_server_style(selected_continent):
         Input('provider_dropdown', 'value'),
         Input('server_continent_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('url_content','search'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State('server_dropdown','value'),
     ]
 )
-def set_server_value(selected_provider,selected_continent, data, url_search):
+def set_server_value(selected_provider, selected_continent, versioned_data, upload_content, filename, prev_server_value):
     '''
     Default value for servers, based on provider and continent
     '''
-    # so far, commenting the next 3 lines prevents from using the url content for the 
-    # server continent even if included in parse_querry_string (by adding the corresponding key)
-    # in the dictionnary of default_values
-    # also, needs to be checked because it is not included in the url, but the default value from 
-    # the dictionnary default_values is not consistent with the query serverContinent from the url
-    # it will likely break the app
-    # could be removed by reading the State of the server instead of the url
-
-    url = prepURLqs(url_search, data=data, keysOfInterest=['server'])
-    if len(url)>0:
-        return url['server']
     
+    
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_server_value
+
+    # We first check wheter the target value is found in the input csv 
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['server'])
+            if target_input :
+                return target_input['server']
+    
+    # Handles special case
     if selected_continent == 'other':
         return 'other'
 
-    availableOptions = availableOptions_servers(selected_provider, selected_continent, data=data)
+    # Otherwise we return a suitable default value
+    availableOptions = availableOptions_servers(selected_provider, selected_continent, data=versioned_data)
     try:
-        defaultValue = availableOptions[0]['name_unique']
+        if prev_server_value is not None:
+            # NOTE The following handles two cases: 
+            # when the server continent value had previously been set by the user
+            # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+            defaultValue = prev_server_value
+        else :
+            defaultValue = availableOptions[0]['name_unique']
     except:
         defaultValue = None
     return defaultValue
@@ -651,25 +683,25 @@ def set_server_options(selected_provider,selected_continent, data):
 
     return listOptions
 
-@app.callback(
-    [
-        Output('server_continent_dropdown','disabled'),
-        Output('server_dropdown','disabled'),
-    ],
-    [
-        Input('server_continent_dropdown','value'),
-        Input('server_dropdown','value'),
-        Input('url_content','search'),
-    ]
-)
-def disable_server_inputs(continent, server, url_search):
-    if (url_search is not None) & (url_search != ''):
-        return True,True
-    else:
-        if (continent=='other')|(server=='other'):
-            return True,True
-        else:
-            return False,False
+# @app.callback(
+#     [
+#         Output('server_continent_dropdown','disabled'),
+#         Output('server_dropdown','disabled'),
+#     ],
+#     [
+#         Input('server_continent_dropdown','value'),
+#         Input('server_dropdown','value'),
+#         Input('url_content','search'),
+#     ]
+# )
+# def disable_server_inputs(continent, server, url_search):
+#     if (url_search is not None) & (url_search != ''):
+#         return True,True
+#     else:
+#         if (continent=='other')|(server=='other'):
+#             return True,True
+#         else:
+#             return False,False
 
 ## LOCATION (only for local server, personal device or "other" cloud server)
 
@@ -1080,7 +1112,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     #     else:
     #         return existing_agg_data
 
-    print('in aggregate callback ctx.triggered_prop_ids: ', ctx.triggered_prop_ids)
+    # print('in aggregate callback ctx.triggered_prop_ids: ', ctx.triggered_prop_ids)
     output = dict()
 
     # print('\n## data callback: runTime_hours=', runTime_hours) # DEBUGONLY
