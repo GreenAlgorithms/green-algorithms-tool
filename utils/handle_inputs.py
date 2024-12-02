@@ -41,6 +41,30 @@ default_values = dict(
     # serverContinent='Europe', 
 )
 
+# The following list should contain tke keys of aggregate_data that should not
+# raise an message error because they are not intended to be processed as inputs
+INPUT_KEYS_TO_IGNORE = [
+    'runTime',
+    'location',
+    'carbonIntensity',
+    'carbonEmissions',
+    'CE_CPU',
+    'CE_GPU',
+    'CE_core',
+    'CE_memory',
+    'text_CE',
+    'power_needed',
+    'energy_needed',
+    'text_energyNeeded',
+    'n_treeMonths',
+    'text_treeYear',
+    'nkm_drivingUS',
+    'nkm_drivingEU',
+    'nkm_train',
+    'flying_context',
+    'flying_text',
+]
+
 
 ###################################################
 ## DATA LOADING 
@@ -360,19 +384,14 @@ def validateInput(input_dict, data_dict, keysOfInterest):
     new_dict = dict()
     wrong_imputs = dict()
     for key in keysOfInterest:
-        new_value = unlist(input_dict[key])
-        # validateKey(key, new_value) # DEBUGONLY
-
-        try:
-            new_dict[key] = validateKey(key, new_value)
-
-        except Exception as e:
-            # print(f'Exception {e} raised for key = {key}')
-            # print(f'Wrong input for {key}: {new_value}') # DEBUGONLY
-            wrong_imputs[key] = new_value
-            # new_value = None
-
-        # new_dict[key] = new_value # I'm moving that in the try so that failed values are not added
+        if key not in INPUT_KEYS_TO_IGNORE:
+            new_value = unlist(input_dict[key])
+            # validateKey(key, new_value) # DEBUGONLY 
+            try:
+                new_dict[key] = validateKey(key, new_value)
+            except Exception as e:
+                # print(f'Wrong input for {key}: {new_value}') # DEBUGONLY
+                wrong_imputs[key] = new_value
 
     return new_dict, wrong_imputs
 
@@ -437,13 +456,12 @@ def read_csv_input(upload_csv):
         # to be changed
         show_error_mess = True
         mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
-                        f'so we use default values for \n'
+                        f'so we use default values for the following fields: \n'
         mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
 
     # Return the verified inputs, where wrong keys are replaced by default values
     values = copy.deepcopy(default_values)
     values.update((k, processed_inputs[k]) for k in values.keys() & processed_inputs.keys())
-    # print('values in read_csv_input: ', values)
     return values, show_error_mess, mess_subtitle, mess_content
 
 
@@ -483,21 +501,5 @@ def parse_query_strings(query_strings, default_values):
     values['show_popup'] = show_popup
     return values
 
-def read_input_csv(input_csv_content, filename):
-    _, content_string = input_csv_content.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'csv' in filename:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        else:
-            return {}
-    except Exception as e:
-        print(e)
-        return html.Div([
-            'There was an error processing this file.'
-        ])
-    return  df.to_dict() 
 
 

@@ -916,16 +916,16 @@ def layout(
                                 className='import-export'
                             ),
 
-                            # dbc.Alert(
-                            #     [
-                            #         html.B('Import logs (automatic erase after 1min):'),
-                            #         html.Div(id='log-error-subtitle'),
-                            #         html.Div(id='log-error-content'),
-                            #     ],
-                            #     id='import-error-message',
-                            #     is_open=False,
-                            #     duration=60000,
-                            # ),
+                            dbc.Alert(
+                                [
+                                    html.B('Logs from import (automatic erase after 1min)'),
+                                    html.Div(id='log-error-subtitle'),
+                                    html.Div(id='log-error-content'),
+                                ],
+                                id='import-error-message',
+                                is_open=False,
+                                duration=60000,
+                            ),
 
                         ],
                         className='super-section mini-boxes'

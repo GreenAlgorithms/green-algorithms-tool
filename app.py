@@ -21,7 +21,7 @@ from utils.utils import put_value_first, YES_NO_OPTIONS, unlist, is_shown
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic, MY_COLORS
 from utils.handle_inputs import load_data, current_version, data_dir
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import validateInput, prepURLqs, open_input_csv_and_comment, read_csv_input, default_values, read_input_csv
+from utils.handle_inputs import validateInput, prepURLqs, open_input_csv_and_comment, read_csv_input, default_values
 
 # current_version = 'v2.2'
 
@@ -113,8 +113,9 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
         Output('PSF_radio', 'value'),
         Output('PSF_input', 'value'),
         Output('appVersions_dropdown','value'),
-        # Output('fillIn_from_url', 'displayed'),
-        # Output('fillIn_from_url', 'message'),
+        Output('import-error-message', 'is_open'),
+        Output('log-error-subtitle', 'children'),
+        Output('log-error-content', 'children'),
     ],
     [
         Input('url_content','search'),
@@ -124,12 +125,10 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
         State('upload-data', 'filename'),
         State('aggregate_data', 'data'),
     ],
+    suppress_callback_exceptions=True,
 )
 def filling_from_inputs(_, upload_content, filename, current_app_state):
 
-
-    show_err_mess = False
-    mess_content = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
     return_current_state = False
 
     if ctx.triggered_id is None:
@@ -141,7 +140,7 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
     
     # only for initial call, when trigerred by the url
     elif 'upload-data.contents' not in ctx.triggered_prop_ids:
-        return tuple(default_values.values())   # + (False, '', '')
+        return tuple(default_values.values()) + (False, '', '')
 
     # First we deal with the case the input_csv has just been flushed
     # Then we want to fill in the form with its current state
@@ -160,7 +159,7 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
         # If everything is fine so far, we parse the csv content
         else:
             processed_values, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
-            return tuple(processed_values.values()) # + (show_err_mess, mess_content)  #(show_err_mess, mess_subtitle, mess_content)
+            return tuple(processed_values.values()) + (show_err_mess, mess_subtitle, mess_content)
         
     # The keys used to retrieve the content from aggregate data must 
     # match those of the callback generating it
@@ -187,11 +186,9 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
                 current_app_state['PSFradio'],
                 current_app_state['PSF'],
                 current_app_state['appVersion'],
-                # False,
-                # ' '
-                # show_err_mess,
-                # mess_subtitle,
-                # mess_content
+                show_err_mess,
+                mess_subtitle,
+                mess_content
             ]
         )
 
@@ -628,7 +625,6 @@ def set_continent_value(selected_serverContinent, display_server, upload_content
     
     # We first check wheter the target value is found in the input csv
     if upload_content is not None:
-        print('in set continent : the upload-csv')
         input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
         if input_data:
             target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['locationContinent'])
