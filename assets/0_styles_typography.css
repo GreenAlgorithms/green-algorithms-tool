@@ -258,7 +258,7 @@ blockquote {
     /* Position of the icon */
     position: relative;
     left: 0.3em;
-    top: 0.05em;
+    top: 0.05em;       
 }
 
 .tooltip-text {
@@ -276,6 +276,6 @@ blockquote {
     z-index: 1;
 }
 
-.tooltip:hover .tooltip-text {
+.tooltip:hover .tooltip-text, .tooltip:active .tooltip-text {
     visibility: visible;
 }
