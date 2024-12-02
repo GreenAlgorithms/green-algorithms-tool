@@ -217,13 +217,13 @@ def create_cores_bar_chart_graphic(aggregated_data, data_dict):
     if aggregated_data['coreType'] in ['GPU','Both']:
         for gpu in list_cores:
             if gpu == 'other':
-                power_list.append(aggregated_data['GPUpower'])
+                power_list.append(aggregated_data['tdpGPU'])
             else:
                 power_list.append(data_dict.cores_dict['GPU'][gpu])
     else:
         for cpu in list_cores:
             if cpu == 'other':
-                power_list.append(aggregated_data['CPUpower'])
+                power_list.append(aggregated_data['tdpCPU'])
             else:
                 power_list.append(data_dict.cores_dict['CPU'][cpu])
 
