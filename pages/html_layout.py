@@ -2,7 +2,6 @@ import os
 import dash
 
 from dash import html, dcc
-from utils.handle_inputs import parse_query_strings
 from utils.utils import YES_NO_OPTIONS
 from utils.graphics import BLANK_FIGURE
 
@@ -26,33 +25,6 @@ current_version = 'v2.2'
 appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
 appVersions_options_list.sort(reverse=True)
 appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
-
-
-
-default_values = dict(
-    runTime_hour=12,
-    runTime_min=0,
-    coreType='CPU',
-    numberCPUs=12,
-    CPUmodel='Xeon E5-2683 v4',
-    tdpCPU=12,
-    numberGPUs=1,
-    GPUmodel='NVIDIA Tesla V100',
-    tdpGPU=200,
-    memory=64,
-    platformType= 'localServer',
-    provider='gcp',
-    usageCPUradio='No',
-    usageCPU=1.0,
-    usageGPUradio='No',
-    usageGPU=1.0,
-    PUEradio='No',
-    PSFradio='No',
-    PSF=1,
-    appVersion=current_version,
-    serverContinent='Europe', 
-    # locationContinent='Europe',
-)
 
 
 def layout(
@@ -605,7 +577,8 @@ def layout(
                                     dcc.RadioItems(
                                         id='usageGPU_radio',
                                         options=YES_NO_OPTIONS,
-                                        className="radio-input"
+                                        className="radio-input",
+                                        # value=default_values['usageGPUradio']
                                     ),
 
                                     dcc.Input(

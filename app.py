@@ -125,63 +125,22 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
         State('aggregate_data', 'data'),
     ],
 )
-def filling_from_inputs(url_search, upload_content, filename, current_app_state):
+def filling_from_inputs(_, upload_content, filename, current_app_state):
 
 
     show_err_mess = False
     mess_content = 'Filling in values from the URL. To edit, click reset at the bottom of the form.'
     return_current_state = False
 
-    defaults2 = copy.deepcopy(default_values)
-
-    # pull default PUE eitherway
-
     if ctx.triggered_id is None:
-        # NB This is needed because of this callback firing for no reason as documented by https://community.plotly.com/t/callback-fired-several-times-with-no-trigger-dcc-location/74525
-        # print("-> no-trigger callback prevented") # DEBUGONLY
-        raise PreventUpdate # TODO find a cleaner workaround
+        # NOTE this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+        # TODO understand this behaviour
+        raise PreventUpdate 
     
-    # only for initial call
+    # only for initial call, when trigerred by the url
     elif 'upload-data.contents' not in ctx.triggered_prop_ids:
         return tuple(default_values.values())   # + (False, '', '')
 
-    elif (url_search is not None)&(url_search != ''):
-
-        # print("\n## picked from url") # DEBUGONLY
-
-        show_err_mess = True
-
-        url = parse.parse_qs(url_search[1:])
-
-        # Load the right dataset to validate the URL inputs
-        if 'appVersion' in url:
-            new_version = unlist(url['appVersion'])
-            # print(f"Validating URL with {new_version} data") # DEBUGONLY
-        else:
-            # print(f"App version not provided in URL, using default ({default_values['appVersion']})") # DEBUGONLY
-            new_version = default_values['appVersion']
-        assert new_version in (appVersions_options_list + [current_version])
-        if new_version == current_version:
-            newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
-        else:
-            newData = load_data(os.path.join(data_dir, new_version), version=new_version)
-
-        # Validate URL
-        url2, invalidInputs = validateInput(
-            input_dict=url,
-            data_dict=newData,
-            keysOfInterest=list(url.keys())
-        )
-
-        defaults2.update((k, url2[k]) for k in defaults2.keys() & url2.keys())
-
-        if len(invalidInputs) > 0:
-            mess_content += f'\n\nThere seems to be some typos in this URL, ' \
-                            f'using default values for '
-            mess_content += f"{', '.join(list(invalidInputs.keys()))}."
-
-        # print(tuple(defaults2.values()) + (show_popup,popup_message)) # DEBUGONLY
-        return tuple(defaults2.values()) # + (show_err_mess, mess_content)
     # First we deal with the case the input_csv has just been flushed
     # Then we want to fill in the form with its current state
     elif upload_content is None:
@@ -198,8 +157,9 @@ def filling_from_inputs(url_search, upload_content, filename, current_app_state)
             show_err_mess = True
         # If everything is fine so far, we parse the csv content
         else:
-            defaults2, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
-            return tuple(defaults2.values()) # + (show_err_mess, mess_content)  #(show_err_mess, mess_subtitle, mess_content)
+            processed_values, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
+            return tuple(processed_values.values()) # + (show_err_mess, mess_content)  #(show_err_mess, mess_subtitle, mess_content)
+        
     # The keys used to retrieve the content from aggregate data must 
     # match those of the callback generating it
     if return_current_state:
@@ -232,64 +192,6 @@ def filling_from_inputs(url_search, upload_content, filename, current_app_state)
                 # mess_content
             ]
         )
-
-# @app.callback(
-#     [
-#         Output('runTime_hour_input','disabled'),
-#         Output('runTime_min_input','disabled'),
-#         Output('coreType_dropdown','disabled'),
-#         Output('numberCPUs_input','disabled'),
-#         Output('CPUmodel_dropdown', 'disabled'),
-#         Output('tdpCPU_input','disabled'),
-#         Output('numberGPUs_input','disabled'),
-#         Output('GPUmodel_dropdown', 'disabled'),
-#         Output('tdpGPU_input','disabled'),
-#         Output('memory_input','disabled'),
-#         Output('platformType_dropdown','disabled'),
-#         Output('provider_dropdown','disabled'),
-#         Output('appVersions_dropdown','disabled'),
-#         Output('location_continent_dropdown', 'disabled'),
-#         Output('location_country_dropdown', 'disabled'),
-#         Output('location_region_dropdown', 'disabled'),
-#         Output('usageCPU_input','disabled'),
-#         Output('usageGPU_input','disabled'),
-#         Output('PUE_input','disabled'),
-#         Output('PSF_input','disabled'),
-#         Output('runTime_hour_input','style'),
-#         Output('runTime_min_input','style'),
-#         Output('numberCPUs_input','style'),
-#         Output('tdpCPU_input','style'),
-#         Output('numberGPUs_input','style'),
-#         Output('tdpGPU_input','style'),
-#         Output('memory_input','style'),
-#         Output('usageCPU_radio','options'),
-#         Output('usageGPU_radio','options'),
-#         Output('pue_radio','options'),
-#         Output('PSF_radio', 'options'),
-#     ],
-#     [
-#         Input('url_content','search'),
-#     ],
-# )
-# def disable_inputFromURL(url_search):
-#     '''
-#     Disable all the input fields when filling in from URL to avoid weird inter-dependancies
-#     :param url_search:
-#     :return:
-#     '''
-#     n_output_disable = 20
-#     n_output_style = 7
-#     n_radio = 4
-
-#     if (url_search is not None) & (url_search != ''):
-#         yesNo_options_disabled = [
-#             {'label': 'Yes', 'value': 'Yes', 'disabled':True},
-#             {'label': 'No', 'value': 'No', 'disabled':True}
-#         ]
-
-#         return (True,)*n_output_disable + ({'background-color': MY_COLORS['boxesColor']},)*n_output_style + (yesNo_options_disabled,)*n_radio
-#     else:
-#         return (False,)*n_output_disable + (dict(),)*n_output_style + (YES_NO_OPTIONS,)*n_radio
 
 @app.callback(
     Output('url_content', 'search'),
@@ -688,25 +590,6 @@ def set_server_options(selected_provider,selected_continent, data):
 
     return listOptions
 
-# @app.callback(
-#     [
-#         Output('server_continent_dropdown','disabled'),
-#         Output('server_dropdown','disabled'),
-#     ],
-#     [
-#         Input('server_continent_dropdown','value'),
-#         Input('server_dropdown','value'),
-#         Input('url_content','search'),
-#     ]
-# )
-# def disable_server_inputs(continent, server, url_search):
-#     if (url_search is not None) & (url_search != ''):
-#         return True,True
-#     else:
-#         if (continent=='other')|(server=='other'):
-#             return True,True
-#         else:
-#             return False,False
 
 ## LOCATION (only for local server, personal device or "other" cloud server)
 
