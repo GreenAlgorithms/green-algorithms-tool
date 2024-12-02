@@ -5,7 +5,7 @@ from dash import html, dcc
 from utils.utils import YES_NO_OPTIONS
 from utils.graphics import BLANK_FIGURE
 
-# import dash_bootstrap_components as dbc # TODO use when the bug with dash==2.4.0 is resolved: https://github.com/plotly/dash/issues/2064
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
@@ -41,8 +41,8 @@ def layout(
             #### POP UP FOR URL + INVALID INPUTS ####
 
             dcc.ConfirmDialog(
-                id='fillIn_from_url',
-                message='Filling in values from the URL. To edit, click reset.',
+                id='filling_from_csv',
+                message='Filling in values from the input csv file.',
                 # message=clean_inputs['popup_message'],
                 # displayed=clean_inputs['show_popup'],
             ),
@@ -135,7 +135,6 @@ def layout(
                                         type='number',
                                         id="runTime_hour_input",
                                         min=0,
-                                        # value=clean_inputs['runTime_hour'],
                                     ),
 
                                     dcc.Input(
@@ -143,7 +142,6 @@ def layout(
                                         id="runTime_min_input",
                                         min=0,
                                         max=59,
-                                        # value=clean_inputs['runTime_min'],
                                     )
                                 ],
                                 className="box-runtime box-fields"
@@ -169,7 +167,6 @@ def layout(
                                     dcc.Dropdown(
                                         id="coreType_dropdown",
                                         clearable=False,
-                                        # value=clean_inputs['coreType'],
                                     ),
                                 ],
                                 className="box-fields"
@@ -205,7 +202,6 @@ def layout(
                                         type='number',
                                         id="numberCPUs_input",
                                         min=0,
-                                        # value=clean_inputs['numberCPUs'],
                                     ),
 
                                     html.Div(
@@ -232,7 +228,6 @@ def layout(
                                                 id="CPUmodel_dropdown",
                                                 className='bottom-dropdown',
                                                 clearable=False,
-                                                # value=clean_inputs['CPUmodel'],
                                             ),
                                         ],
                                         className="box-fields"
@@ -264,7 +259,6 @@ def layout(
                                         type='number',
                                         id="tdpCPU_input",
                                         min=0,
-                                        # value=clean_inputs['tdpCPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -292,7 +286,6 @@ def layout(
                                         type='number',
                                         id="numberGPUs_input",
                                         min=0,
-                                        # value=clean_inputs['numberGPUs'],
                                     ),
 
                                     html.Div(
@@ -319,7 +312,6 @@ def layout(
                                                 id="GPUmodel_dropdown",
                                                 className='bottom-dropdown',
                                                 clearable=False,
-                                                # value=clean_inputs['GPUmodel']
                                             ),
                                         ],
                                         className="box-fields"
@@ -350,7 +342,6 @@ def layout(
                                         type='number',
                                         id="tdpGPU_input",
                                         min=0,
-                                        # value=clean_inputs['tdpGPU'],
                                     )
                                 ],
                                 className='form-row',
@@ -378,7 +369,6 @@ def layout(
                                 type='number',
                                 id="memory_input",
                                 min=0,
-                                # value=clean_inputs['memory']
                             ),
 
                             html.Div(
@@ -413,7 +403,6 @@ def layout(
                                     dcc.Dropdown(
                                         id="platformType_dropdown",
                                         clearable=False,
-                                        # value=clean_inputs['platformType'],
                                     ),
                                 ],
                                 className='box-fields',
@@ -457,7 +446,6 @@ def layout(
                                     dcc.Dropdown(
                                         id="server_continent_dropdown",
                                         clearable=False,
-                                        # value=clean_inputs['serverContinent'],
                                     ),
 
                                     dcc.Dropdown(
@@ -484,7 +472,6 @@ def layout(
                                     dcc.Dropdown(
                                         id="location_continent_dropdown",
                                         clearable=False,
-                                        # value=clean_inputs['locationContinent']
                                     ),
                                 ],
                                 className="box-fields",
@@ -578,7 +565,6 @@ def layout(
                                         id='usageGPU_radio',
                                         options=YES_NO_OPTIONS,
                                         className="radio-input",
-                                        # value=default_values['usageGPUradio']
                                     ),
 
                                     dcc.Input(
@@ -617,7 +603,6 @@ def layout(
                                     dcc.RadioItems(
                                         id='pue_radio',
                                         options=YES_NO_OPTIONS,
-                                        className="radio-input"
                                     ),
 
                                     dcc.Input(
@@ -656,7 +641,7 @@ def layout(
                                     dcc.RadioItems(
                                         id='PSF_radio',
                                         options=YES_NO_OPTIONS,
-                                        className="radio-input"
+                                        className="radio-input",
                                     ),
 
                                     dcc.Input(
@@ -719,7 +704,6 @@ def layout(
                                         options=appVersions_options,
                                         className='bottom-dropdown',
                                         clearable=False,
-                                        # value=clean_inputs['appVersion'],
                                     ),
                                 ],
                                 className="box-fields"
@@ -887,22 +871,22 @@ def layout(
                                 [
                                     html.Div(
                                         [
-                                            html.P([
-                                                html.B("Share your results "),
-                                                "with ",
-                                                html.A("this link", target='_blank', id='share_permalink'),
-                                                ","
-                                            ]),
+                                            # html.P([
+                                            #     html.B("Share your results "),
+                                            #     "with ",
+                                            #     html.A("this link", target='_blank', id='share_permalink'),
+                                            #     ","
+                                            # ]),
 
                                             html.Div([
-                                                html.B("or export as a "),
+                                                html.B("Share your results as a "),
                                                 html.Button("csv file", id="btn-download_csv"),
                                                 dcc.Download(id="aggregate-data-csv"),
                                                 html.B(' !')
                                             ])
                                         ],
                                         className='container footer',
-                                        id='permalink',
+                                        id='export-result',
                                     ),
 
                                     html.Div(
@@ -930,7 +914,19 @@ def layout(
                                     ),
                                 ],
                                 className='import-export'
-                            )
+                            ),
+
+                            # dbc.Alert(
+                            #     [
+                            #         html.B('Import logs (automatic erase after 1min):'),
+                            #         html.Div(id='log-error-subtitle'),
+                            #         html.Div(id='log-error-content'),
+                            #     ],
+                            #     id='import-error-message',
+                            #     is_open=False,
+                            #     duration=60000,
+                            # ),
+
                         ],
                         className='super-section mini-boxes'
                     ),

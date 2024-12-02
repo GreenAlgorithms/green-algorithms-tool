@@ -134,6 +134,8 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
 
     if ctx.triggered_id is None:
         # NOTE this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+        # this is also the case for most of the callbacks takin the csv upload content as input, and was already the case when using 
+        # the url instead of csv files for sharing the results
         # TODO understand this behaviour
         raise PreventUpdate 
     
@@ -453,8 +455,6 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
     # server continent value for the default Value, but it allows to understand which cases
     # may trigger this callback
     if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
-        # print('in set server continent, when csb flushed')
-        # print(prev_server_continent)
         return prev_server_continent
 
 
@@ -475,9 +475,7 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
     # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
     # print('avai loc in set conti server, ', availableOptions)
     if prev_server_continent in availableOptions:
-        # print('prev continent ', prev_server_continent)
         defaultValue = prev_server_continent
-        # print('previous continent gives defaultValue being ', defaultValue)
     else:
         try: 
             defaultValue = availableOptions[0]
@@ -559,8 +557,6 @@ def set_server_value(selected_provider, selected_continent, versioned_data, uplo
     # Otherwise we return a suitable default value
     availableOptions = availableOptions_servers(selected_provider, selected_continent, data=versioned_data)
     try:
-        # print('looking for def val in set server', prev_server_value)
-        # print([server['name_unique'] for server in availableOptions])
         if prev_server_value in [server['name_unique'] for server in availableOptions]:
             # print('set server val, get previous value ', prev_server_value)
             # NOTE The following handles two cases: 
@@ -680,7 +676,7 @@ def set_countries_options(selected_continent, versioned_data, upload_content, fi
 
     # Handles the case when the upload csv has just been flushed
     # NOTE: this could be handled below when looking for the previous
-    # server continent value for the default Value, but it allows to 
+    # server country value for the default Value, but it allows to 
     # understand which cases may trigger this callback
     if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
         defaultValue = prev_selectedCountry
@@ -747,7 +743,7 @@ def set_regions_options(selected_continent, selected_country, versioned_data, up
 
     # Handles the case when the upload csv has just been flushed
     # NOTE: this could be handled below when looking for the previous
-    # server continent value for the default Value, but it allows to 
+    # server region value for the default Value, but it allows to 
     # understand which cases may trigger this callback
     if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
         defaultValue = prev_selectedRegion
@@ -764,7 +760,7 @@ def set_regions_options(selected_continent, selected_country, versioned_data, up
     # otherwise we get a suitable default value  
     if defaultValue is None:
         # NOTE The following handles two cases: 
-        # when the country value had previously been set by the user
+        # when the region value had previously been set by the user
         # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
         if prev_selectedRegion in locs:
             defaultValue = prev_selectedRegion
@@ -898,9 +894,6 @@ def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
         return defaultPUE
     
     # Handles the case when the upload csv has just been flushed
-    # NOTE: this could be handled below when looking for the previous
-    # server continent value for the default Value, but it allows to 
-    # understand which cases may trigger this callback
     if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
         defaultPUE = prev_pue
 
@@ -1049,33 +1042,14 @@ def showing(style):
         Input('provider_dropdown', 'value'),
         Input('provider_dropdown_div', 'style'),
     ],
-    # [
-    #     State("aggregate_data", "data")
-    # ]
 )
 def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                            PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle): #, existing_agg_data):
 
-    # first check if input is provided
-    # if 'upload-data.contents' in ctx.triggered_prop_ids:
-    #     if input_content is not None:
-    #         input_data = read_input_csv(input_content, input_filename)
-    #         clean_input_data = {key: value[0] for key, value in input_data.items() if key!='Unnamed: 0'}
-    #         return clean_input_data
-    #     else:
-    #         return existing_agg_data
 
-    # print('in aggregate callback ctx.triggered_prop_ids: ', ctx.triggered_prop_ids)
     output = dict()
-
-    # print('\n## data callback: runTime_hours=', runTime_hours) # DEBUGONLY
-    # print("triggered by: ", ctx.triggered_prop_ids) # DEBUGONLY
-
-    permalink = f'http://calculator.green-algorithms.org//'
-    # permalink = 'http://127.0.0.1:8050/' # DEBUGONLY
-    permalink_temp = ''
 
     #############################################
     ### PREPROCESS: check if computations can be performed
@@ -1095,7 +1069,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         test_runTime += 1
     else:
         actual_runTime_min = runTime_min
-    permalink_temp += f'?runTime_hour={actual_runTime_hours}&runTime_min={actual_runTime_min}'
     runTime = actual_runTime_hours + actual_runTime_min/60.
 
     ### Core type
@@ -1110,7 +1083,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     if data is not None:
         data_dict = SimpleNamespace(**data)
         version = data_dict.version
-        permalink_temp += f'&appVersion={data_dict.version}'
     else:
         notReady = True
 
@@ -1118,13 +1090,10 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     if is_shown(locationStyle):
         # this means the "location" input is shown, so we use location instead of server
         locationVar = locationRegion
-        permalink_temp += f'&locationContinent={locationContinent}&locationCountry={locationCountry}&locationRegion={locationRegion}'
     elif (server is None)|(server == 'other')|(data is None):
         locationVar = None
     else:
         locationVar = data_dict.datacenters_dict_byName[server]['location']
-    if is_shown(serverStyle):
-        permalink_temp += f'&serverContinent={serverContinent}&server={server}'
 
     ### Platform
     if selected_platform is None:
@@ -1132,11 +1101,12 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     elif (selected_platform == 'cloudComputing')&(selected_provider is None):
         notReady = True
 
-    ### The rest
+    ### Other required inputs
     if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)| \
             (usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None):
         notReady = True
 
+    ### If any of the required inputs is note ready: do not compute
     if notReady:
         output['coreType'] = None
         output['CPUmodel'] = None
@@ -1178,13 +1148,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     ### PRE-COMPUTATIONS: update variables used in the calcul based on inputs
 
     else:
-        permalink += permalink_temp
         ### PUE
         defaultPUE = data_dict.pueDefault_dict['Unknown']
         # the input PUE is used only if the PUE box is shown AND the radio button is "Yes"
         if (is_shown(PUEdivStyle)) & (PUEradio == 'Yes'):
             PUE_used = PUE
-            permalink += f'&PUEradio={PUEradio}&PUE={PUE}'
         
         ### PLATFORM ALONG WITH PUE
         else:
@@ -1209,12 +1177,9 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                         PUE_used = data_dict.pueDefault_dict[selected_provider]
 
         ### CPUs
-        permalink += f'&coreType={coreType}'
         if coreType in ['CPU', 'Both']:
-            permalink += f'&numberCPUs={n_CPUcores}&CPUmodel={CPUmodel}'
             if is_shown(tdpCPUstyle):
                 # we asked the question about TDP
-                permalink += f'&tdpCPU={tdpCPU}'
                 CPUpower = tdpCPU
             else:
                 if CPUmodel == 'other':
@@ -1222,7 +1187,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                 else:
                     CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
             if usageCPUradio == 'Yes':
-                permalink += f'&usageCPUradio=Yes&usageCPU={usageCPU}'
                 usageCPU_used = usageCPU
             else:
                 usageCPU_used = 1.
@@ -1233,9 +1197,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
             usageCPU_used = 0
 
         if coreType in ['GPU', 'Both']:
-            permalink += f'&numberGPUs={n_GPUs}&GPUmodel={GPUmodel}'
             if is_shown(tdpGPUstyle):
-                permalink += f'&tdpGPU={tdpGPU}'
                 GPUpower = tdpGPU
             else:
                 if GPUmodel == 'other':
@@ -1243,7 +1205,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
                 else:
                     GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
             if usageGPUradio == 'Yes':
-                permalink += f'&usageGPUradio=Yes&usageGPU={usageGPU}'
                 usageGPU_used = usageGPU
             else:
                 usageGPU_used = 1.
@@ -1254,19 +1215,19 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
             usageGPU_used = 0
 
         ### MEMORY
-        permalink += f'&memory={memory}'
+        # permalink += f'&memory={memory}'
 
         ### PLATFORM
-        permalink += f'&platformType={selected_platform}'
-        if is_shown(providerStyle):
-            permalink += f'&provider={selected_provider}'
+        # permalink += f'&platformType={selected_platform}'
+        # if is_shown(providerStyle):
+            # permalink += f'&provider={selected_provider}'
 
         ### SERVER/LOCATION
         carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
         ### PSF
         if PSFradio == 'Yes':
-            permalink += f'&PSFradio=Yes&PSF={PSF}'
+            # permalink += f'&PSFradio=Yes&PSF={PSF}'
             PSF_used = PSF
         else:
             PSF_used = 1
@@ -1389,8 +1350,6 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
             output['text_treeYear'] = f"{treeTime_value:,.2e} {treeTime_unit}"
         else:
             output['text_treeYear'] = f"{treeTime_value:,.2f} {treeTime_unit}"
-
-    output['permalink'] = permalink.replace(' ','%20')
 
     return output
 
