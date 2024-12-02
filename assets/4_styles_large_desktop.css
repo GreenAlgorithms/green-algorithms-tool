@@ -61,28 +61,13 @@
     ---------------------------------- MINI-BOX ----------------------------------------
     */
 
-    /*.mini-box:not(:last-of-type)  {*/
-    /*    margin-right: 12px;*/
-    /*}*/
-
-    /*.mini-box {*/
-    /*    flex-direction: column;*/
-    /*    height: 260px;*/
-    /*    width:calc((25%) - (9px));*/
-    /*}*/
-
-
-    .mini-box:nth-of-type(n+3) {
+    .mini-box:nth-of-type(n+4) {
         height: 240px;
     }
 
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------
     */
-
-    /*.two-graphs-box {*/
-    /*    flex-grow: 1;*/
-    /*}*/
 
     .one-of-two-graphs {
         width: calc((50%) - (10px));

@@ -91,15 +91,6 @@ def layout(
                                 target="_blank",
                                 className='button-container'
                             ),
-
-                            # html.A(
-                            #     html.Button(
-                            #         'Website 2'
-                            #     ),
-                            #     href='https://www.green-algorithms.org',
-                            #     target="_blank",
-                            #     className='button-container'
-                            # ),
                         ],
                         className='buttons-row'
                     ),
@@ -603,6 +594,7 @@ def layout(
                                     dcc.RadioItems(
                                         id='pue_radio',
                                         options=YES_NO_OPTIONS,
+                                        className='radio-input',
                                     ),
 
                                     dcc.Input(
@@ -729,6 +721,63 @@ def layout(
                 [
                     html.Div(
                         [
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.Div(
+                                                        [
+                                                            html.B("Share your results as a "),
+                                                            html.Button("csv file", id="btn-download_csv"),
+                                                            dcc.Download(id="aggregate-data-csv"),
+                                                            html.B(' !'),
+                                                        ],
+                                                    )
+                                                ],
+                                                className='container footer import-export',
+                                                id='export-result',
+                                            ),
+
+                                            html.Div(
+                                                dcc.Upload(
+                                                    html.Div(
+                                                        [
+                                                            html.B("Import resuts"),
+                                                            html.Div(
+                                                                [
+                                                                    html.A("Drag and drop or click to select your .csv file.")
+                                                                ],
+                                                                style={'font-size': '12px', 'margin-top': '3px', 'text-decoration': 'underline'}
+                                                            )
+                                                        ]
+                                                    ),
+                                                    id='upload-data',
+                                                ),
+                                                className='container footer import-export',
+                                                id='import-result',
+                                            ),
+                                        ],
+                                        id='import-export-buttons'
+                                    ),
+
+                                    dbc.Alert(
+                                        [
+                                            html.B('Filling values from csv: error'),
+                                            html.Div(id='log-error-subtitle'),
+                                            html.Div(id='log-error-content'),
+                                        ],
+                                        className = 'container footer import-export',
+                                        id='import-error-message',
+                                        is_open=False,
+                                        duration=60000,
+                                    ),
+
+                                ],
+                                id='import-export'
+                            ),
+
                             html.Div(
                                 [
                                     html.Img(
@@ -866,67 +915,6 @@ def layout(
                                 ],
                                 className="container mini-box"
                             ),
-                            
-                            html.Div(
-                                [
-                                    html.Div(
-                                        [
-                                            # html.P([
-                                            #     html.B("Share your results "),
-                                            #     "with ",
-                                            #     html.A("this link", target='_blank', id='share_permalink'),
-                                            #     ","
-                                            # ]),
-
-                                            html.Div([
-                                                html.B("Share your results as a "),
-                                                html.Button("csv file", id="btn-download_csv"),
-                                                dcc.Download(id="aggregate-data-csv"),
-                                                html.B(' !')
-                                            ])
-                                        ],
-                                        className='container footer',
-                                        id='export-result',
-                                    ),
-
-                                    html.Div(
-                                        dcc.Upload(
-                                            html.Div(
-                                                [
-                                                    html.B("Import resuts"),
-                                                    html.Div(
-                                                        [
-                                                            html.A("Drag and drop or click to select your .csv file.")
-                                                        ],
-                                                        style={'font-size': '12px', 'margin-top': '3px', 'text-decoration': 'underline'}
-                                                    )
-                                                ]
-                                            ),
-                                            id='upload-data',
-                                        ),
-                                        className='container footer',
-                                        style={
-                                            'borderWidth': '2px',
-                                            'borderStyle': 'dashed',
-                                            'borderRadius': '5px',
-                                        },
-                                        id='import-result',
-                                    ),
-                                ],
-                                className='import-export'
-                            ),
-
-                            dbc.Alert(
-                                [
-                                    html.B('Logs from import (automatic erase after 1min)'),
-                                    html.Div(id='log-error-subtitle'),
-                                    html.Div(id='log-error-content'),
-                                ],
-                                id='import-error-message',
-                                is_open=False,
-                                duration=60000,
-                            ),
-
                         ],
                         className='super-section mini-boxes'
                     ),

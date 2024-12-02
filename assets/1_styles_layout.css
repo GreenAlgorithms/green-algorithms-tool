@@ -214,6 +214,37 @@ hr {
     display: flex;
 }
 
+
+/*
+---------------------------------- IMPORT-EXPORT ----------------------------------------
+*/
+
+#import-export{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+#import-error-message {
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+
+#import-result{
+    margin-bottom: 6px;
+    border-width: 2px;
+    border-style: dashed;
+    border-radius: 5px;
+}
+
+#upload-data, #btn-download_csv {
+    cursor: pointer;
+}
+
+
 /*
 ---------------------------------- MINI-BOX ----------------------------------------
 */
@@ -236,20 +267,6 @@ hr {
 
 .caption-icons {
     width: 100%;
-}
-
-
-/*
----------------------------------- IMPORT-EXPORT ----------------------------------------
-*/
-
-.import-export{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
-    margin-top: 6px;
-    margin-bottom: 6px;
 }
 
 

@@ -837,7 +837,6 @@ def display_pue_question(selected_datacenter, selected_platform, selected_provid
     '''
     Shows or hides the PUE question depending on the platform
     '''
-
     if selected_platform == 'localServer':
         return {'display': 'flex'}
     elif (selected_platform == 'cloudComputing')&((selected_provider == 'other')|(selected_server == 'other')):

@@ -115,20 +115,36 @@ input, select, .Select, textarea {
     color: rgb(80, 80, 80);
 }
 
+
 /*
-.Select,
-#platformType_dropdown .Select-value-label,
-#provider_dropdown .Select-value-label,
-#coreType_dropdown .Select-value-label,
-#coreModel_dropdown .Select-value-label,
-#location_continent_dropdown .Select-value-label,
-#location_country_dropdown .Select-value-label,
-#location_region_dropdown .Select-value-label {
-    font-size: 15px;
-    font-size: 1.5rem;
-    color: #ff0000;
-}
+---------------------------------- IMPORT-EXPORT ----------------------------------------
 */
+
+#export-result {
+    font-size: 22px;
+    font-size: 2.2rem;
+    justify-content: center;
+    align-items: center;
+}
+
+#export-content {
+    vertical-align: middle;
+}
+
+#import-result {
+    font-size: 22px;
+    font-size: 2.2rem;
+}
+
+#log-error-subtitle {
+    font-size: 12px ;
+}
+
+#log-error-content {
+    font-size: 12px ;
+    font-style: italic;
+}
+
 
 /*
 ---------------------------------- MINI-BOX ----------------------------------------
@@ -150,22 +166,6 @@ input, select, .Select, textarea {
     /*font-style: italic;
     font-size: 20px;
     font-size: 2rem;*/
-}
-
-
-/*
----------------------------------- IMPORT-EXPORT ----------------------------------------
-*/
-
-#permalink {
-    font-size: 22px;
-    font-size: 2.2rem;
-}
-
-
-#import-result{
-    font-size: 22px;
-    font-size: 2.2rem;
 }
 
 

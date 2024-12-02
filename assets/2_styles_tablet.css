@@ -63,6 +63,30 @@
     }
 
     /*
+    ---------------------------------- IMPORT-EXPORT ----------------------------------
+    */
+
+    #import-export-buttons {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #export-result {
+        margin-right: 4px;
+        width: calc((50%) - (4px));
+    }
+
+    #import-result {
+        margin-left: 4px;
+        width: calc((50%) - (4px));
+    }
+
+    #import-error-message{
+        width: 100%;
+    }
+    
+
+    /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
 
@@ -71,15 +95,18 @@
         height: 180px;
     }
 
-    .mini-box:nth-of-type(2), .mini-box:nth-of-type(5) {
+    /* We target the extreme right mini-box(s) */
+    .mini-box:nth-of-type(3), .mini-box:nth-of-type(6) {
         margin-right: 0;
     }
 
-    .mini-box:nth-of-type(-n+2) {
+    /* We target the top row of mini-box(s) */
+    .mini-box:nth-of-type(2), .mini-box:nth-of-type(3) {
         width: calc((50%) - (6px));
     }
 
-    .mini-box:nth-of-type(n+3) {
+    /* We target the second row of mini-boxe(s) */
+    .mini-box:nth-of-type(n+4) {
         width: calc((33%) - (8px));
         flex-direction: column;
         height: 240px;

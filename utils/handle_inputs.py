@@ -38,7 +38,6 @@ default_values = dict(
     PSFradio='No',
     PSF=1,
     appVersion=current_version,
-    # serverContinent='Europe', 
 )
 
 # The following list should contain tke keys of aggregate_data that should not
@@ -418,11 +417,12 @@ def open_input_csv_and_comment(upload_csv_content, filename):
         if 'csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
-            return {}, 'The provided file should be a csv.', ''
+            return {}, 'CSV file can’t be read, doing nothing…', 'The file extension is not "csv".'
     except Exception as e:
-        subtitle = 'Something went wrong when opening the csv file.'
+        subtitle = 'CSV file can’t be read, doing nothing…'
         message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
         return {}, subtitle, message
+    # TODO : raise a warning if there are several rows in the input csv
     return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
 
 
