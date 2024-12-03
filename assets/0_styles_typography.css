@@ -248,7 +248,7 @@ blockquote {
     font-style: bold;
     font-size: 0.8em;
     text-align: center;
-    color: black;
+    color: rgb(100, 100, 100);
     /* Border of the icon */
     height: 1.1em;
     width: 1.2em;
@@ -278,4 +278,9 @@ blockquote {
 
 .tooltip:hover .tooltip-text, .tooltip:active .tooltip-text {
     visibility: visible;
+}
+
+.tooltip:hover .tooltip-icon, .tooltip:active .tooltip-icon {
+    color: rgb(60, 60, 60);
+    border-color: rgb(60, 60, 60);
 }

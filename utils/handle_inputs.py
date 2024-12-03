@@ -5,19 +5,25 @@ import io
 
 import pandas as pd
 
-from urllib import parse
-from dash import html
 from types import SimpleNamespace
 from utils.utils import check_CIcountries_df, unlist, put_value_first
 
 
-current_version = 'v2.2'
-data_dir = os.path.join(os.path.abspath(''),'data')
+###################################################
+## GLOABAL VARIABLES
 
-appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
-appVersions_options_list.sort(reverse=True)
+CURRENT_VERSION = 'v2.2'
+DATA_DIR = os.path.join(os.path.abspath(''),'data')
 
-default_values = dict(
+# TODO Add the dev option for testing, make it permanent, with a warning pop up if selected by mistake
+APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0]=='v')&(x!=CURRENT_VERSION))]
+APP_VERSION_OPTIONS_LIST.sort(reverse=True)
+
+# The default values used to fill in the form when no other input is provided
+# WARNING: do not modify the order unless modifying the order of the outputs of 
+# the fillin_from_inputs callback accordingly
+# TODO: make it more robust
+DEFAULT_VALUES = dict(
     runTime_hour=12,
     runTime_min=0,
     coreType='CPU',
@@ -37,7 +43,7 @@ default_values = dict(
     PUEradio='No',
     PSFradio='No',
     PSF=1,
-    appVersion=current_version,
+    appVersion=CURRENT_VERSION,
 )
 
 # The following list should contain tke keys of aggregate_data that should not
@@ -70,11 +76,10 @@ INPUT_KEYS_TO_IGNORE = [
 
 def load_data(data_dir, **kwargs):
     '''
-    We download each csv and store it in a pd.DataFrame
-    We ignore the first row, as it contains metadata
-    All these correspond to tabs of the spreadsheet on the Google Drive
+    We download each csv and store it in a pd.DataFrame.
+    We ignore the first row, as it contains metadata.
+    All these correspond to tabs of the spreadsheet on the Google Drive.
     '''
-
     data_dict0 = dict()
 
     for k,v in kwargs.items():
@@ -104,16 +109,6 @@ def load_data(data_dir, **kwargs):
     pue_df.drop(['source'], axis=1, inplace=True)
 
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
-
-    ### HARDWARE ###
-    # hardware_df = pd.read_csv(os.path.join(data_dir, "providers_hardware.csv"),
-    #                           sep=',', skiprows=1)
-    # hardware_df.drop(['source'], axis=1, inplace=True)
-
-    ### OFFSET ###
-    # offset_df = pd.read_csv(os.path.join(data_dir, "servers_offset.csv"),
-    #                         sep=',', skiprows=1)
-    # offset_df.drop(['source'], axis=1, inplace=True)
 
     ### CARBON INTENSITY BY LOCATION ###
     CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
@@ -145,11 +140,6 @@ def load_data(data_dir, **kwargs):
     cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
                                       sep=',', skiprows=1)
     data_dict.providers_withoutDC = ['aws']
-
-    ### LOCAL DATACENTERS ###
-    # localDatacenters_df = pd.read_csv(os.path.join(data_dir, "localProviders_datacenters.csv"),
-    #                                   sep=',', skiprows=1)
-    # datacenters_df = pd.concat([data_dict.cloudDatacenters_df, localDatacenters_df], axis = 1)
 
     datacenters_df = cloudDatacenters_df
 
@@ -188,42 +178,34 @@ def load_data(data_dir, **kwargs):
     return data_dict # This is a SimpleNamespace
 
 def get_available_versions():
-    # TODO: move towards a utils script
-    appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
-    appVersions_options_list.sort(reverse=True)
-    # Add the dev option for testing # TODO make it permanent, with a warning pop up if selected by mistake
-    # appVersions_options_list.append('dev') # DEBUGONLY
-
-    appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
+    appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
     return appVersions_options
 
 
 ###################################################
 ## DROPDOWN OPTIONS
-'''
-No particular dependency. Could be stored in a separate file.
-'''
 
 def availableLocations_continent(selected_provider, data):
+    '''
+    Provides the available continents for a given provider.
+    '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
-        foo = data_dict.datacenters_dict_byProvider.get(selected_provider)
+        dict_per_server_id_in_provider = data_dict.datacenters_dict_byProvider.get(selected_provider)
     else:
-        foo = None
+        dict_per_server_id_in_provider = None
 
-    if foo is not None:
-        availableLocations = [x['location'] for x in foo.values()]
+    if dict_per_server_id_in_provider is not None:
+        availableLocations = [x['location'] for x in dict_per_server_id_in_provider.values()]
         availableLocations = list(set(availableLocations))
-
         availableOptions = list(set([data_dict.CI_dict_byLoc[x]['continentName'] for x in availableLocations if x in data_dict.CI_dict_byLoc]))
-
         return availableOptions
     else:
         return []
 
 def availableOptions_servers(selected_provider, selected_continent, data):
     '''
-    Provides 
+    Provides the available servers for the given provider and continent.
     '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
@@ -240,33 +222,37 @@ def availableOptions_servers(selected_provider, selected_continent, data):
     if dict_per_server_id_in_provider is not None:
         availableOptions_Names = [server['Name'] for server in dict_per_server_id_in_provider.values() if server['location'] in locationsINcontinent]
         availableOptions_Names.sort()
-
         availableOptions = [dict_per_server_id_in_provider[name] for name in availableOptions_Names]
-
         return availableOptions
     else:
         return []
 
 def availableOptions_country(selected_continent, data):
+    '''
+    Provides the available country for the selected continent.
+    '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
-        foo = data_dict.CI_dict_byName.get(selected_continent)
+        ci_per_country_dit = data_dict.CI_dict_byName.get(selected_continent)
     else:
-        foo = None
+        ci_per_country_dit = None
 
-    if foo is not None:
-        availableOptions = [country for country in foo]
+    if ci_per_country_dit is not None:
+        availableOptions = [country for country in ci_per_country_dit]
         availableOptions = sorted(availableOptions)
         return availableOptions
     else:
         return []
 
 def availableOptions_region(selected_continent,selected_country,data):
+    '''
+    Provides the available region for the selected continent and contry.
+    '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
-        foo = data_dict.CI_dict_byName.get(selected_continent)
-        if foo is not None:
-            availableOptions_data = foo.get(selected_country)
+        ci_per_country_dict = data_dict.CI_dict_byName.get(selected_continent)
+        if ci_per_country_dict is not None:
+            availableOptions_data = ci_per_country_dict.get(selected_country)
         else:
             availableOptions_data = None
     else:
@@ -278,9 +264,7 @@ def availableOptions_region(selected_continent,selected_country,data):
         # Move Any to the first row:
         availableOptions_names.remove('Any')
         availableOptions_names = ['Any'] + availableOptions_names
-
         availableOptions_loc = [availableOptions_data[x]['location'] for x in availableOptions_names]
-
     else:
         availableOptions_loc = []
 
@@ -289,23 +273,61 @@ def availableOptions_region(selected_continent,selected_country,data):
 
 ###################################################
 ## PROPERLY HANDLE INPUTS
-'''
-Should be the core of the module 'handle_inputs'.
-'''
 
 def validateInput(input_dict, data_dict, keysOfInterest):
     '''
-    Validate the input, either from a url or others
+    Validates the inputs: ensures the consistency between the keys and corresponding 
+    value but also between some values.
+    args:
+        - input_dict: inputs to process
+        - data_dict: backend data used to check consistency between provided values.
+        - keyOfInterest [list]: a list of keys to process.
+    returns: 
+        - new_dict: a curated subset of input_dict with clean inputs. Its keys
+        are contained in keysofInterest.
+        - wrong_imputs: a subset of the input_dict containing inputs
+        either raising erorrs either not corresponding to keysOfInterest.
     '''
     if type(data_dict) == dict:
         data_dict = SimpleNamespace(**data_dict)
-
     appVersions_options_list = get_available_versions()
 
-    def validateKey(key, value):
-        new_val = copy.copy(value)
-        # print('#b ', key, new_val, type(new_value))  # DEBUGONLY
+    ############################
+    # We first build some data frameworks to be used later on during our checkings
+    
+    ### CPU AND GPU options
+    if set(['CPUmodel','GPUmodel']) & set(input_dict.keys()):
+        coreModels_options = dict()
+        for coreType in ['CPU', 'GPU']:
+            availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
+            availableOptions = put_value_first(availableOptions, 'Any')
+            coreModels_options[coreType] = [
+                {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
+                                                    [("Other", "other")]
+            ]
+    else:
+        coreModels_options = None
 
+    ### PLATFORM TYPE options
+    if 'platformType' in input_dict:
+        platformType_options = [
+            {'label': k,
+            'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                    [('personalComputer', 'Personal computer')] +
+                                    [('localServer', 'Local server')]
+        ]
+    else:
+        platformType_options = None
+
+    def validateKey(key, value):
+        '''
+        WARNING: the keys used to check should be the same as those used
+        in the DEFAULT_VALUES and aggregate_data.
+
+        Ensures the consistency between the key and the provided value and
+        checks the dependencies between different values.
+        '''
+        new_val = copy.copy(value)
         if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
             new_val = int(float(new_val))
         elif key in ['runTime_min']:
@@ -350,35 +372,13 @@ def validateInput(input_dict, data_dict, keysOfInterest):
             new_val = float(new_val)
             assert new_val >= 1
         elif key == 'appVersion':
-            assert new_val in (appVersions_options_list + [current_version])
+            assert new_val in (appVersions_options_list + [CURRENT_VERSION])
         else:
-            assert False, 'Unknown URL key'
-
+            assert False, 'Unknown key'
         return new_val
 
-    ## CREATE DICT OF OPTIONS to be used in validateKey
-    if set(['CPUmodel','GPUmodel']) & set(input_dict.keys()):
-        coreModels_options = dict()
-        for coreType in ['CPU', 'GPU']:
-            availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-            availableOptions = put_value_first(availableOptions, 'Any')
-            coreModels_options[coreType] = [
-                {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                                     [("Other", "other")]
-            ]
-    else:
-        coreModels_options = None
-
-
-    if 'platformType' in input_dict:
-        platformType_options = [
-            {'label': k,
-             'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                     [('personalComputer', 'Personal computer')] +
-                                     [('localServer', 'Local server')]
-        ]
-    else:
-        platformType_options = None
+    ############################
+    # Now we validate each of the target key from the input dict
 
     new_dict = dict()
     wrong_imputs = dict()
@@ -394,26 +394,15 @@ def validateInput(input_dict, data_dict, keysOfInterest):
 
     return new_dict, wrong_imputs
 
-def prepURLqs(url_search, data, keysOfInterest):
-    if (url_search is not None) & (url_search != '') & (data is not None):
-        url0 = parse.parse_qs(url_search[1:])
-
-        # check whether the keysOfInterest are in the url
-        commonKeys = set(keysOfInterest)&set(url0.keys())
-
-        if len(commonKeys) > 0:
-            data_dict = SimpleNamespace(**data)
-            url, _ = validateInput(input_dict=url0, data_dict=data_dict, keysOfInterest=keysOfInterest)
-        else:
-            url = dict()
-    else:
-        url = dict()
-    return url
-
 def open_input_csv_and_comment(upload_csv_content, filename):
+    '''
+    Opens the input file content and stores it in a pandas DataFrame.
+    NOTE: so far, only the first line of an input csv is read.
+    '''
     _, upload_string = upload_csv_content.split(',')
     decoded = base64.b64decode(upload_string)
     try:
+        # TODO: extarct content from .xlsx files as well.
         if 'csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
@@ -425,81 +414,49 @@ def open_input_csv_and_comment(upload_csv_content, filename):
     # TODO : raise a warning if there are several rows in the input csv
     return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
 
-
-def read_csv_input(upload_csv):
-
-    # print('upload_csv in read_csv: ', upload_csv)
-
+def read_csv_input(upload_csv:pd.DataFrame):
+    '''
+    Reads the input dataframe to extract all the keys supposed to be verified.
+    When an input raises an error, it is replaced by its corresponding default value.
+    Returns:
+    - values: curated inputs
+    - show_error_mess [bool]: whether to display an error message 
+    - mess_subtitle [str]: erorr message subtitle
+    - mess_content [str]: error message content
+    '''
     show_error_mess = False
     mess_subtitle = 'Filling in values from the input csv file.'
     mess_content = ''
     
-    # Load the right dataset to validate the inputs
+    # Loads the right dataset to validate the inputs
     appVersions_options_list = get_available_versions()
-    new_version = default_values['appVersion']
+    new_version = DEFAULT_VALUES['appVersion']
     if 'appVersion' in upload_csv:
         new_version = unlist(upload_csv['appVersion'])
-        # print('appVersions_options_list + [current_version] in read_csv: ', appVersions_options_list + [current_version])
-    assert new_version in (appVersions_options_list + [current_version])
-    if new_version == current_version:
-        newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
+    assert new_version in (appVersions_options_list + [CURRENT_VERSION])
+    if new_version == CURRENT_VERSION:
+        newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
     else:
-        newData = load_data(os.path.join(data_dir, new_version), version=new_version)
+        newData = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
 
-    # Validate the inputs against the data
+    # Validates the inputs against the data
     processed_inputs, invalid_inputs = validateInput(
         input_dict=upload_csv,
         data_dict=newData,
         keysOfInterest=list(upload_csv.keys())
     )
     if len(invalid_inputs) > 0:
-        # to be changed
         show_error_mess = True
         mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
                         f'so we use default values for the following fields: \n'
         mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
 
-    # Return the verified inputs, where wrong keys are replaced by default values
-    values = copy.deepcopy(default_values)
+    # Returns the verified inputs, where wrong keys are replaced by default values,
+    # hence the importance of the order of the keys
+    values = copy.deepcopy(DEFAULT_VALUES)
     values.update((k, processed_inputs[k]) for k in values.keys() & processed_inputs.keys())
     return values, show_error_mess, mess_subtitle, mess_content
 
-
-def parse_query_strings(query_strings, default_values):
-    values = copy.deepcopy(default_values)
-    popup_message = 'Filling in values from the URL. \n' \
-    'All fields will be frozen. To edit, please click reset.'
-    show_popup = False
-        
-    # Load the right dataset to validate the URL inputs
-    new_version = default_values['appVersion']
-    if 'appVersion' in query_strings:
-        new_version = unlist(query_strings['appVersion'])
-    assert new_version in (appVersions_options_list + [current_version])
-    if new_version == current_version:
-        newData = load_data(os.path.join(data_dir, 'latest'), version=current_version)
-    else:
-        newData = load_data(os.path.join(data_dir, new_version), version=new_version)
-
-    # Validate URL
-    processed_query_strings, invalidInputs = validateInput(
-        input_dict=query_strings,
-        data_dict=newData,
-        keysOfInterest=list(query_strings.keys())
-    )
-    # Check if the url contained relevant query strings used to fill the form in
-    if len(query_strings) > 0:
-        show_popup = True
-        # Check if there are mispelled inputs
-        if len(invalidInputs) > 0:
-            popup_message += f'\n\nThere seems to be some typos in this URL, ' \
-                            f'using default values for '
-            popup_message += f"{', '.join(list(invalidInputs.keys()))}."        
-
-    values.update((k, processed_query_strings[k]) for k in values.keys() & processed_query_strings.keys())
-    values['popup_message'] = popup_message
-    values['show_popup'] = show_popup
-    return values
 
 
 

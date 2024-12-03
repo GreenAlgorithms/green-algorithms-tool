@@ -2,11 +2,11 @@ import os
 import dash
 
 from dash import html, dcc
+from utils.handle_inputs import get_available_versions, CURRENT_VERSION
 from utils.utils import YES_NO_OPTIONS
 from utils.graphics import BLANK_FIGURE
 
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 
 dash.register_page(__name__, path='/', title='Green Algorithms')
@@ -20,32 +20,17 @@ def loading_wrapper(component):
 image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
 
-current_version = 'v2.2'
+appVersions_options = get_available_versions()
 
-appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
-appVersions_options_list.sort(reverse=True)
-appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
+# DEFINE APP LAYOUT
+###################
 
-
-def layout(
-        mapCI=go.Figure(),
-        **query_strings
-):
-    # clean_inputs = parse_query_strings(query_strings, default_values) 
+def layout(**query_strings):
     appLayout = html.Div(
         [
             dcc.Store(id="versioned_data"),
             dcc.Store(id="aggregate_data"),
             dcc.Location(id='url_content', refresh='callback-nav'), # TODO issue https://github.com/plotly/dash/issues/1346 should be fixed in later releases
-
-            #### POP UP FOR URL + INVALID INPUTS ####
-
-            dcc.ConfirmDialog(
-                id='filling_from_csv',
-                message='Filling in values from the input csv file.',
-                # message=clean_inputs['popup_message'],
-                # displayed=clean_inputs['show_popup'],
-            ),
 
             #### HEADER ####
 
@@ -1228,14 +1213,6 @@ def layout(
                     ''',
                                  className='affiliations'
                                  ),
-
-                    # html.Center(
-                    #     html.P(["This work is being supported by ",
-                    #             html.A("here",
-                    #                    href='http://www.inouyelab.org/',
-                    #                    target='_blank')
-                    #             ]),
-                    # ),
                 ],
                 className='container about-us footer'
             ),

@@ -5,7 +5,7 @@ import pandas as pd
 import pycountry_convert as pc
 import plotly.graph_objects as go
 
-from utils.handle_inputs import data_dir
+from utils.handle_inputs import DATA_DIR
 
 
 ###################################################
@@ -105,7 +105,7 @@ def create_CI_map_graphic():
     The map is not updated when changing versions, but it's probably not an isssue
     '''
     # Loading carbon intensity data
-    CI_4map = pd.read_csv(os.path.join(data_dir, 'latest', "CI_aggregated.csv"), sep=',', skiprows=1)
+    CI_4map = pd.read_csv(os.path.join(DATA_DIR, 'latest', "CI_aggregated.csv"), sep=',', skiprows=1)
     CI_4map['ISO3'] = CI_4map.location.apply(iso2_to_iso3)
 
     map_df = CI_4map.loc[CI_4map.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
@@ -114,7 +114,7 @@ def create_CI_map_graphic():
     # Building the map
     mapCI = go.Figure(
         data=go.Choropleth(
-            geojson=os.path.join(data_dir, 'world.geo.json'),
+            geojson=os.path.join(DATA_DIR, 'world.geo.json'),
             locations = map_df.ISO3,
             locationmode='geojson-id',
             z=map_df.carbonIntensity.astype(float),

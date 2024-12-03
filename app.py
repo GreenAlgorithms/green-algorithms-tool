@@ -4,7 +4,6 @@
 import os
 import dash
 import datetime
-import copy
 
 from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
@@ -12,87 +11,66 @@ from dash.exceptions import PreventUpdate
 
 from types import SimpleNamespace
 from flask import send_file # Integrating Loader IO
-from urllib import parse
 
 import pandas as pd
 import plotly.graph_objects as go
 
-from utils.utils import put_value_first, YES_NO_OPTIONS, unlist, is_shown
+from utils.utils import put_value_first, is_shown
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic, MY_COLORS
-from utils.handle_inputs import load_data, current_version, data_dir
+from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import validateInput, prepURLqs, open_input_csv_and_comment, read_csv_input, default_values
-
-# current_version = 'v2.2'
-
-#############
-# LOAD DATA #
-#############
+from utils.handle_inputs import validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES, APP_VERSION_OPTIONS_LIST
 
 
-# data_dir = os.path.join(os.path.abspath(''),'data')
+###################################################
+## LOAD DATA
+
 image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
 images_dir = os.path.join(os.path.abspath(''),'images')
 
 
-##############
-# CREATE APP #
-##############
+###################################################
+## CREATE APP
 
 external_stylesheets = [
-    dict(href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
-         rel="stylesheet"),
-    # dbc.themes.CERULEAN
+    dict(
+        href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
+        rel="stylesheet"
+    ),
 ]
-
-# print(f'Dash version: {dcc.__version__}') # DEBUGONLY
 
 app = dash.Dash(
     __name__,
     use_pages=True,
     external_stylesheets=external_stylesheets,
-    # The following argument requires dash >= 2.14
-    #---------------------------------------------
-#     routing_callback_inputs={
-#         # The mapCI will be passed as a `layout` keyword argument to page layout functions
-#         "mapCI": mapCI,
-#    },
     # these tags are to insure proper responsiveness on mobile devices
-    meta_tags=[dict(
-        name= 'viewport',
-        content="width=device-width, initial-scale=1.0" #maximum-scale=1.0
-    )]
+    meta_tags=[
+        dict(
+            name= 'viewport',
+            content="width=device-width, initial-scale=1.0" #maximum-scale=1.0
+        )
+    ]
 )
 app.title = "Green Algorithms"
 server = app.server
 
-
-# TODO: move towards a utils script
-appVersions_options_list = [x for x in os.listdir(data_dir) if ((x[0]=='v')&(x!=current_version))]
-appVersions_options_list.sort(reverse=True)
-# Add the dev option for testing # TODO make it permanent, with a warning pop up if selected by mistake
-# appVersions_options_list.append('dev') # DEBUGONLY
-
-appVersions_options = [{'label': f'{current_version} (latest)', 'value': current_version}] + [{'label': k, 'value': k} for k in appVersions_options_list]
-
+appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
 app.layout = html.Div(dash.page_container, id='fullfullPage')
 
-# app.layout = create_appLayout(
-#     yesNo_options=yesNo_options,
-#     image_dir=image_dir,
-#     mapCI=mapCI,
-#     appVersions_options=appVersions_options,
-# )
 
-
-#############
+###################################################
 # CALLBACKS #
-#############
 
+
+### LOAD APP AND INPUTS
+#######################
 
 @app.callback(
     [
+        ##################################################################
+        ## WARNING: do not modify the order, unless modifying the order
+        ## of the DEFAULT_VALUES accordingly
         Output('runTime_hour_input','value'),
         Output('runTime_min_input','value'),
         Output('coreType_dropdown','value'),
@@ -125,10 +103,19 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
         State('upload-data', 'filename'),
         State('aggregate_data', 'data'),
     ],
+    # below line is required because the 'alert' container import-error-message is not in the layout initially
     suppress_callback_exceptions=True,
 )
 def filling_from_inputs(_, upload_content, filename, current_app_state):
+    '''
+    Fills the form either from the content of a csv of with default values.
+    When errors are found in the csv, an alert container is displayed with 
+    additional information for the user. Wrong values are replaced by default ones.
+    The url is given as input so default values are filled when opening the app first.
 
+    Once the appVersions_dropdown value is set, versionned data is loaded and
+    the form starts to work accordingly.
+    '''
     return_current_state = False
 
     if ctx.triggered_id is None:
@@ -140,7 +127,7 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
     
     # only for initial call, when trigerred by the url
     elif 'upload-data.contents' not in ctx.triggered_prop_ids:
-        return tuple(default_values.values()) + (False, '', '')
+        return tuple(DEFAULT_VALUES.values()) + (False, '', '')
 
     # First we deal with the case the input_csv has just been flushed
     # Then we want to fill in the form with its current state
@@ -201,27 +188,51 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
 def reset_url(submit_n_clicks):
     '''
     When clicking reset, it reloads a new pages and removes the URL
-    :param submit_n_clicks:
-    :return:
     '''
-    # Other way to do it:
-    # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    # if ('confirm_reset' in changed_id):
     if submit_n_clicks:
         return ""
+    
+@app.callback(
+    Output("versioned_data", "data"),
+    [
+        Input('appVersions_dropdown','value')
+    ],
+)
+def loadDataFromVersion(
+        newVersion,
+        # oldData
+):
+    '''
+    Loads all the backend data required to propose consistent options to the user.
+    '''
+    if newVersion is None:
+        newVersion = CURRENT_VERSION
+    assert newVersion in APP_VERSION_OPTIONS_LIST + [CURRENT_VERSION]
 
-######
+    if newVersion == CURRENT_VERSION:
+        newData = load_data(os.path.join(DATA_DIR, 'latest'), version = CURRENT_VERSION)
+        # print('Loading latest data') # DEBUGONLY
+    else:
+        newData = load_data(os.path.join(DATA_DIR, newVersion), version=newVersion)
+        # print(f'Loading {newVersion} data') # DEBUGONLY
+    # print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # DEBUGONLY
+    # print(f"TPUv3 TDP: {newData.cores_dict['GPU']['TPU v3']}")  # DEBUGONLY
+    return vars(newData)
+
+
 ## PLATFORM AND PROVIDER
-################
+########################
 
 @app.callback(
     Output('platformType_dropdown', 'options'),
     [Input('versioned_data','data')]
 )
 def set_platform(data):
+    '''
+    Loads platform options based on backend data.
+    '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
-
         platformType_options = [
             {'label': k,
              'value': v} for v, k in list(data_dict.providersTypes.items()) +
@@ -238,10 +249,8 @@ def set_platform(data):
 )
 def set_providers(selected_platform):
     '''
-    Shows or hide the "providers" box, based on the platform selected
+    Shows or hide the "providers" box, based on the platform selected.
     '''
-    # print('\n## platformDropdown changed to: ', selected_platform) # DEBUGONLY
-
     if selected_platform in ['cloudComputing']:
         # Only Cloud Computing need the providers box
         outputStyle = {'display': 'block'}
@@ -259,28 +268,27 @@ def set_providers(selected_platform):
 )
 def set_providers(selected_platform, data):
     '''
-    List options for the "provider" box
+    List options for the "provider" box.
     '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
 
-        foo = data_dict.platformName_byType.get(selected_platform)
-        if foo is not None:
-            availableOptions = list(foo.items())
+        providers_dict = data_dict.platformName_byType.get(selected_platform)
+        if providers_dict is not None:
+            availableOptions = list(providers_dict.items())
         else:
             availableOptions = []
 
         listOptions = [
             {'label': v, 'value': k} for k, v in availableOptions + [("other","Other")]
         ]
-
         return listOptions
     else:
         return []
 
-######
+
 ## COMPUTING CORES
-################
+##################
 
 @app.callback(
     Output('coreType_dropdown', 'options'),
@@ -289,9 +297,10 @@ def set_providers(selected_platform, data):
         Input('platformType_dropdown', 'value'),
         Input('versioned_data','data')
     ])
-def set_coreType_options(selected_provider, selected_platform, data):
+def set_coreType_options(_, __, data):
     '''
-    List of options for coreType (CPU or GPU), based on the platform/provider selected
+    List of options for coreType (CPU or GPU), based on the platform/provider selected.
+    Not really useful so far because we have no specific core types for a given provider.
     '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
@@ -302,7 +311,6 @@ def set_coreType_options(selected_provider, selected_platform, data):
     else:
         return []
 
-
 @app.callback(
     [
         Output('CPUmodel_dropdown', 'options'),
@@ -312,7 +320,7 @@ def set_coreType_options(selected_provider, selected_platform, data):
 )
 def set_coreOptions(data):
     '''
-    List of options for core models
+    List of options for core models.
     '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
@@ -331,7 +339,6 @@ def set_coreOptions(data):
     else:
         return [],[]
 
-
 @app.callback(
     [
         Output('CPU_div', 'style'),
@@ -347,7 +354,7 @@ def set_coreOptions(data):
 )
 def show_CPUGPUdiv(selected_coreType):
     '''
-    Show or hide the CPU/GPU input blocks (and the titles) based on the selected core type
+    Shows or hides the CPU/GPU input blocks (and the titles) based on the selected core type.
     '''
     show = {'display': 'block'}
     showFlex = {'display': 'flex'}
@@ -367,7 +374,7 @@ def show_CPUGPUdiv(selected_coreType):
 )
 def display_TDP4CPU(selected_coreModel):
     '''
-    Shows or hide the CPU TDP input box
+    Shows or hides the CPU TDP input box.
     '''
     if selected_coreModel == "other":
         return {'display': 'flex'}
@@ -382,16 +389,16 @@ def display_TDP4CPU(selected_coreModel):
 )
 def display_TDP4GPU(selected_coreModel):
     '''
-    Shows or hide the GPU TDP input box
+    Shows or hides the GPU TDP input box.
     '''
     if selected_coreModel == "other":
         return {'display': 'flex'}
     else:
         return {'display': 'none'}
 
-######
+
 ## LOCATION AND SERVER
-################
+######################
 
 @app.callback(
     [
@@ -407,7 +414,7 @@ def display_TDP4GPU(selected_coreModel):
 )
 def display_location(selected_platform, selected_provider, selected_server, data):
     '''
-    Shows either LOCATION or SERVER depending on the platform
+    Shows either LOCATION or SERVER depending on the platform.
     '''
     if data is not None:
         data_dict = SimpleNamespace(**data)
@@ -426,9 +433,9 @@ def display_location(selected_platform, selected_provider, selected_server, data
             return hide, show
     else:
         return show, hide
+    
 
-
-## SERVER (only for Cloud computing for now)
+### SERVER (only for Cloud computing for now)
 
 @app.callback(
     Output('server_continent_dropdown','value'),
@@ -444,16 +451,16 @@ def display_location(selected_platform, selected_provider, selected_server, data
 )
 def set_serverContinents_value(selected_provider, versioned_data, upload_content, filename, prev_server_continent):
     '''
-    Default value for server's continent, depending on the provider
+    Sets the value for server's continent, depending on the provider.
+    We want to fetch the value based on csv input but also to display 
+    a value selcted previously by the user.
     '''
-
     # Handles the case when the upload csv has just been flushed
     # NOTE: this could be handled below when looking for the previous
     # server continent value for the default Value, but it allows to understand which cases
     # may trigger this callback
     if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
         return prev_server_continent
-
 
     # We first check wheter the target value is found in the input csv
     if upload_content is not None:
@@ -463,7 +470,6 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
             if target_input:
                 return target_input['serverContinent']
 
-    
     # Otherwise we return a suitable default value
     availableOptions = availableLocations_continent(selected_provider, data=versioned_data)
 
@@ -480,7 +486,6 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
             defaultValue = None
     return defaultValue
 
-
 @app.callback(
     Output('server_continent_dropdown','options'),
     [
@@ -495,7 +500,6 @@ def set_serverContinents_options(selected_provider, data):
     availableOptions = availableLocations_continent(selected_provider, data=data)
     listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
     return listOptions
-
 
 @app.callback(
     Output('server_dropdown','style'),
@@ -528,10 +532,10 @@ def set_server_style(selected_continent):
 )
 def set_server_value(selected_provider, selected_continent, versioned_data, upload_content, filename, prev_server_value):
     '''
-    Default value for servers, based on provider and continent
+    Sets the value for servers, based on provider and continent.
+    Here again we want to display a default value, to 
+    fecth the value from a csv or to show a value previously selected by the user.
     '''
-    
-    
     # Handles the case when the upload csv has just been flushed
     # NOTE: this could be handled below when looking for the previous
     # server continent value for the default Value, but it allows to 
@@ -615,7 +619,10 @@ def set_continentOptions(data):
     ]
 )
 def set_continent_value(selected_serverContinent, display_server, upload_content, filename, prev_locationContinent, versioned_data):
-
+    '''
+    Sets the value for location continent.
+    Same as for server and server continent regarding the different inputs.
+    '''
     # Handles the case when the upload csv has just been flushed
     # NOTE: this could be handled below when looking for the previous
     # server continent value for the default Value, but it allows to 
@@ -642,8 +649,6 @@ def set_continent_value(selected_serverContinent, display_server, upload_content
         return selected_serverContinent
     return 'Europe'
 
-
-
 @app.callback(
     [
         Output('location_country_dropdown', 'options'),
@@ -662,8 +667,9 @@ def set_continent_value(selected_serverContinent, display_server, upload_content
 )
 def set_countries_options(selected_continent, versioned_data, upload_content, filename, prev_selectedCountry):
     '''
-    List of options and default value for countries.
-    Hides country dropdown if continent=World is selected
+    List of options and value for countries.
+    Hides country dropdown if continent=World is selected.
+    Must fetch the value from a csv as well.
     '''
     availableOptions = availableOptions_country(selected_continent, data=versioned_data)
     listOptions = [{'label': k, 'value': k} for k in availableOptions]
@@ -725,10 +731,9 @@ def set_countries_options(selected_continent, versioned_data, upload_content, fi
 )
 def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, filename, prev_selectedRegion):
     '''
-    List of options and default value for regions.
+    List of options and value for regions.
     Hides region dropdown if only one possible region (or continent=World)
     '''
-
     locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
     if versioned_data is not None:
         listOptions = [{'label': versioned_data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
@@ -774,7 +779,8 @@ def set_regions_options(selected_continent, selected_country, versioned_data, up
     return listOptions, defaultValue, region_style
 
 
-### Usage factor ###
+## USAGE FACTORS
+################
 
 @app.callback(
     Output('usageCPU_input','style'),
@@ -787,7 +793,6 @@ def display_usage_input(answer_usage, disabled):
     '''
     Show or hide the usage factor input box, based on Yes/No input
     '''
-
     if answer_usage == 'No':
         out = {'display': 'none'}
     else:
@@ -797,8 +802,6 @@ def display_usage_input(answer_usage, disabled):
         out['background-color'] = MY_COLORS['boxesColor']
 
     return out
-
-
 
 @app.callback(
     Output('usageGPU_input','style'),
@@ -822,7 +825,8 @@ def display_usage_input(answer_usage, disabled):
     return out
 
 
-### PUE ###
+## PUE INPUTS
+################
 
 @app.callback(
     Output('PUEquestion_div','style'),
@@ -833,7 +837,7 @@ def display_usage_input(answer_usage, disabled):
         Input('server_dropdown', 'value')
     ]
 )
-def display_pue_question(selected_datacenter, selected_platform, selected_provider, selected_server):
+def display_pue_question(_, selected_platform, selected_provider, selected_server):
     '''
     Shows or hides the PUE question depending on the platform
     '''
@@ -878,7 +882,9 @@ def display_pue_input(answer_pue, disabled):
     ]
 )
 def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
-
+    '''
+    Sets the PUE value, either from csv input or as a default value.
+    '''
     if versioned_data is not None:
         data_dict = SimpleNamespace(**versioned_data)
         defaultPUE = data_dict.pueDefault_dict['Unknown']
@@ -899,10 +905,11 @@ def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
             if target_input :
                 defaultPUE = target_input['PUE']
 
-            
     return defaultPUE
 
-### PSF ###
+
+## PSF INPUTS
+##############
 
 @app.callback(
     Output('PSF_input','style'),
@@ -926,7 +933,8 @@ def display_PSF_input(answer_PSF, disabled):
     return out
 
 
-## RESET ###
+## RESET AND APP VERSIONS
+#########################
 
 @app.callback(
     Output('confirm_reset','displayed'),
@@ -935,11 +943,12 @@ def display_PSF_input(answer_PSF, disabled):
     ]
 )
 def display_confirm(clicks):
+    '''
+    Display a popup asking for reset confirmation.
+    '''
     if clicks is not None:
         return True
     return False
-
-## CHANGE APP VERSION ##
 
 @app.callback(
     Output('oldVersions_div','style'),
@@ -952,54 +961,17 @@ def display_confirm(clicks):
     ]
 )
 def display_oldVersion(clicks, version, oldStyle):
-    if (clicks is not None)|((version is not None)&(version != current_version)):
+    '''
+    Show the different available versions.
+    '''
+    if (clicks is not None)|((version is not None)&(version != CURRENT_VERSION)):
         return {'display':'flex'}
     else:
         return oldStyle
 
-@app.callback(
-    Output("versioned_data", "data"),
-    [
-        Input('appVersions_dropdown','value')
-    ],
-)
-def loadDataFromVersion(
-        newVersion,
-        # oldData
-):
-    # print('-- version:', newVersion) # DEBUGONLY
 
-    if newVersion is None:
-        newVersion = current_version
-
-    assert newVersion in appVersions_options_list + [current_version]
-
-    if newVersion == current_version:
-        newData = load_data(os.path.join(data_dir, 'latest'), version = current_version)
-        # print('Loading latest data') # DEBUGONLY
-    else:
-        newData = load_data(os.path.join(data_dir, newVersion), version=newVersion)
-        # print(f'Loading {newVersion} data') # DEBUGONLY
-    # print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # DEBUGONLY
-    # print(f"TPUv3 TDP: {newData.cores_dict['GPU']['TPU v3']}")  # DEBUGONLY
-
-    return vars(newData) # to turn the SimpleNamespace into a dict that can be json serialized
-
-# app.clientside_callback(
-#     clientside_function = ClientsideFunction(
-#         namespace='clientside',
-#         function_name='reset_function'
-#     ),
-#     output = Output('placeholder', 'children'),
-#     inputs = [Input('confirm_reset', 'submit_n_clicks')]
-# )
-
+## PROCESS INPUTS
 #################
-# PROCESS INPUT #
-#################
-
-def showing(style):
-    return style['display'] != 'none'
 
 @app.callback(
     Output("aggregate_data", "data"),
@@ -1041,9 +1013,10 @@ def showing(style):
 def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                            serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
-                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle): #, existing_agg_data):
-
-
+                           PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle):
+    '''
+    Computes all the metrics and gathers the information provided by the inputs of the form.
+    '''
     output = dict()
 
     #############################################
@@ -1209,20 +1182,11 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
             GPUpower = 0
             usageGPU_used = 0
 
-        ### MEMORY
-        # permalink += f'&memory={memory}'
-
-        ### PLATFORM
-        # permalink += f'&platformType={selected_platform}'
-        # if is_shown(providerStyle):
-            # permalink += f'&provider={selected_provider}'
-
         ### SERVER/LOCATION
         carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
         ### PSF
         if PSFradio == 'Yes':
-            # permalink += f'&PSFradio=Yes&PSF={PSF}'
             PSF_used = PSF
         else:
             PSF_used = 1
@@ -1348,7 +1312,9 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
 
     return output
 
-### UPDATE TOP TEXT ###
+
+## UPDATE TOP TEXT
+##################
 
 @app.callback(
     [
@@ -1364,12 +1330,10 @@ def update_text(data):
     text_CE = data.get('text_CE')
     text_energy = data.get('text_energyNeeded')
     text_ty = data.get('text_treeYear')
-
     if (data['nkm_drivingEU'] != 0) & ((data['nkm_drivingEU'] >= 1e3) | (data['nkm_drivingEU'] < 0.1)):
         text_car = f"{data['nkm_drivingEU']:,.2e} km"
     else:
         text_car = f"{data['nkm_drivingEU']:,.2f} km"
-
     if data['flying_context'] == 0:
         text_fly = "0"
     elif data['flying_context'] > 1e6:
@@ -1382,7 +1346,6 @@ def update_text(data):
         text_fly = f"{data['flying_context']:,.2%}"
     else:
         text_fly = f"{data['flying_context']*100:,.0e} %"
-
     return text_CE, text_energy, text_ty, text_car, text_fly
 
 @app.callback(
@@ -1396,14 +1359,9 @@ def update_text(data):
         foo = f"of a flight {data['flying_text']}"
     return foo
 
-### INPORT AND EXPORT RESULTS ###
 
-# @app.callback(
-#     Output('share_permalink', 'href'),
-#     [Input("aggregate_data", "data")],
-# )
-# def share_permalink(aggData):
-#     return f"{aggData['permalink']}"
+## IMPORT AND EXPORT RESULTS
+############################
 
 @app.callback(
     Output('csv-input-timer', 'disabled'),
@@ -1411,6 +1369,11 @@ def update_text(data):
     prevent_initial_call=True,
 )
 def trigger_timer_to_flush_input_csv(input_csv):
+    '''
+    When a csv is dropped, triggers a timer that allows to flush this csv.
+    If the input is none, this means that we just flushed it so we do not
+    trigger the timer again.
+    '''
     if input_csv is None:
         return True
     return False
@@ -1421,6 +1384,12 @@ def trigger_timer_to_flush_input_csv(input_csv):
         prevent_initial_call=True,
 )
 def flush_input_csv_content(n):
+    '''
+    Flushes the input csv.
+    This is required if we want to enable the user to load again the same csv.
+    Otherwise, if not flushed, the csv content does not change so it does not trigger
+    the reading of its content.
+    '''
     return None
 
 @app.callback(
@@ -1430,12 +1399,18 @@ def flush_input_csv_content(n):
     prevent_initial_call=True,
 )
 def export_as_csv(_, aggregate_data):
+    '''
+    Exports the aggregate_data.
+    '''
     to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
     return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv", index=False, sep=';')
 
-### UPDATE PIE GRAPH ###
+
+## OUTPU GRAPHICS
+#################
+
 @app.callback(
     Output("pie_graph", "figure"),
     [Input("aggregate_data", "data")],
@@ -1475,7 +1450,8 @@ def create_bar_chart_cores(aggData, data):
     return None
 
 
-### UPDATE THE REPORT TEXT ###
+## OUTPUT SUMMARY
+#################
 
 @app.callback(
     Output('report_markdown', 'children'),
@@ -1485,7 +1461,10 @@ def create_bar_chart_cores(aggData, data):
     ],
 )
 def fillin_report_text(aggData, data):
-
+    '''
+    Writes a summary text of the current computation that is shown as an example
+    for the user on how to report its impact.
+    '''
     if (aggData['numberCPUs'] is None)&(aggData['numberGPUs'] is None):
         return('')
     elif data is None:
@@ -1542,7 +1521,7 @@ def fillin_report_text(aggData, data):
         > This algorithm runs in {textRuntime} on {textCores},
         > and draws {aggData['text_energyNeeded']}. 
         > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['text_treeYear']}
-        (calculated using green-algorithms.org {current_version} \[1\]).
+        (calculated using green-algorithms.org {CURRENT_VERSION} \[1\]).
         '''
 
         return myText
