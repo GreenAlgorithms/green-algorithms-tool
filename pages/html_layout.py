@@ -78,7 +78,7 @@ def layout(
                         " discussing different options for carbon footprint estimation."
                     ]),
 
-                    # TODO add something else there? GA4HPC?
+            #         # TODO add something else there? GA4HPC?
 
                     html.Div(
                         [
@@ -729,10 +729,9 @@ def layout(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.B("Share your results as a "),
-                                                            html.Button("csv file", id="btn-download_csv"),
+                                                            html.B("Share your results "),
+                                                            html.A(html.B('as a csv file!'), id='btn-download_csv'),
                                                             dcc.Download(id="aggregate-data-csv"),
-                                                            html.B(' !'),
                                                         ],
                                                     )
                                                 ],

@@ -240,8 +240,17 @@ hr {
     border-radius: 5px;
 }
 
-#upload-data, #btn-download_csv {
+#upload-data, #btn-download_csv{
     cursor: pointer;
+}
+
+#btn-download_csv {
+    color: #1773D0;
+    text-decoration: underline;
+}
+
+#btn-download_csv:visited{
+    color: #653096
 }
 
 
