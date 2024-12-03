@@ -35,7 +35,6 @@ DEFAULT_VALUES = dict(
     tdpGPU=200,
     memory=64,
     platformType= 'localServer',
-    provider='gcp',
     usageCPUradio='No',
     usageCPU=1.0,
     usageGPUradio='No',

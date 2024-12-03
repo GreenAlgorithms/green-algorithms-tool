@@ -401,7 +401,7 @@ def layout(**query_strings):
                                     dcc.Dropdown(
                                         id="provider_dropdown",
                                         clearable=False,
-                                        className='bottom-dropdown'
+                                        className='bottom-dropdown',
                                     ),
                                 ],
                                 className="box-fields",
@@ -905,7 +905,7 @@ def layout(**query_strings):
 
                     dcc.Interval(
                         id='csv-input-timer',
-                        interval=3000, 
+                        interval=2000, 
                         # in milliseconds, should not be lower than 1000
                         # otherwise the update of the upload csv content is done too soon
                         # and there is not consistency between the state of the form and 

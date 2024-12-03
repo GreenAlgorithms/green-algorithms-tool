@@ -82,7 +82,6 @@ app.layout = html.Div(dash.page_container, id='fullfullPage')
         Output('tdpGPU_input','value'),
         Output('memory_input','value'),
         Output('platformType_dropdown','value'),
-        Output('provider_dropdown','value'),
         Output('usageCPU_radio','value'),
         Output('usageCPU_input','value'),
         Output('usageGPU_radio','value'),
@@ -147,7 +146,7 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
         else:
             processed_values, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
             return tuple(processed_values.values()) + (show_err_mess, mess_subtitle, mess_content)
-        
+
     # The keys used to retrieve the content from aggregate data must 
     # match those of the callback generating it
     if return_current_state:
@@ -164,7 +163,6 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
                 current_app_state['tdpGPU'],
                 current_app_state['memory'],
                 current_app_state['platformType'],
-                current_app_state['provider'],
                 current_app_state['usageCPUradio'],
                 current_app_state['usageCPU'],
                 current_app_state['usageGPUradio'],
@@ -258,6 +256,37 @@ def set_providers(selected_platform):
         outputStyle = {'display': 'none'}
 
     return outputStyle
+
+@app.callback(
+    Output('provider_dropdown','value'),
+    [
+        Input('platformType_dropdown', 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State('provider_dropdown', 'value'),
+    ]
+)
+def set_provider(_, versioned_data, upload_content, filename, prev_provider):
+    '''
+    Sets the provider value, either from the csv content of as a default value.
+    TODO: improve the choice of the default value.
+    '''
+    # Handles the case when the upload csv has just been flushed
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_provider
+    
+    # We check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['provider'])
+            if target_input:
+                return target_input['provider']   
+                
+    return 'gcp'     
 
 @app.callback(
     Output('provider_dropdown', 'options'),
@@ -536,6 +565,7 @@ def set_server_value(selected_provider, selected_continent, versioned_data, uplo
     Here again we want to display a default value, to 
     fecth the value from a csv or to show a value previously selected by the user.
     '''
+
     # Handles the case when the upload csv has just been flushed
     # NOTE: this could be handled below when looking for the previous
     # server continent value for the default Value, but it allows to 
@@ -643,7 +673,6 @@ def set_continent_value(selected_serverContinent, display_server, upload_content
     # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
     if prev_locationContinent is not None :
         return prev_locationContinent
-    
     # the server div is shown, so we pull the continent from there
     if (display_server['display'] != 'none') & (selected_serverContinent != 'other'):
         return selected_serverContinent
@@ -1058,7 +1087,7 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
     if is_shown(locationStyle):
         # this means the "location" input is shown, so we use location instead of server
         locationVar = locationRegion
-    elif (server is None)|(server == 'other')|(data is None):
+    elif (server is None) | (server == 'other') | (data is None):
         locationVar = None
     else:
         locationVar = data_dict.datacenters_dict_byName[server]['location']
@@ -1080,12 +1109,13 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['CPUmodel'] = None
         output['numberCPUs'] = None
         output['usageCPU'] = None
+        output['usageCPUradio'] = None
         output['tdpCPU'] = None
         output['GPUmodel'] = None
         output['numberGPUs'] = None
         output['tdpGPU'] = None
         output['usageGPU'] = None
-        output['CPUpower'] = None
+        output['usageGPUradio'] = None
         output['GPUpower'] = None
         output['memory'] = None
         output['runTime_hour'] = None
@@ -1095,7 +1125,9 @@ def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, td
         output['location'] = None
         output['carbonIntensity'] = None
         output['PUE'] = None
+        output['PUEradio'] = None
         output['PSF'] = None
+        output['PSFradio'] = None
         output['carbonEmissions'] = 0
         output['CE_CPU'] = 0
         output['CE_GPU'] = 0
