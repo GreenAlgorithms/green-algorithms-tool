@@ -65,8 +65,8 @@ body {
 
 .compute_section{
     align-items: center;
-    width: 30%;
-    margin:10px
+    width: 30%;  /*strech */
+    /* margin:10px */
 }
 
 .result-section{
