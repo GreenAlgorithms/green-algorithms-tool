@@ -7,7 +7,6 @@ from utils.utils import YES_NO_OPTIONS
 from utils.graphics import BLANK_FIGURE
 
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 
 dash.register_page(__name__, path='/', title='Green Algorithms')
 

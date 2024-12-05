@@ -196,10 +196,7 @@ def reset_url(submit_n_clicks):
         Input('appVersions_dropdown','value')
     ],
 )
-def loadDataFromVersion(
-        newVersion,
-        # oldData
-):
+def loadDataFromVersion(newVersion):
     '''
     Loads all the backend data required to propose consistent options to the user.
     '''
