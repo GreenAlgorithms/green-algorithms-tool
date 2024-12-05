@@ -2,12 +2,11 @@ import os
 import dash
 
 from dash import html, dcc
-from utils.handle_inputs import get_available_versions, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions
 from utils.utils import YES_NO_OPTIONS
 from utils.graphics import BLANK_FIGURE
 
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 
 dash.register_page(__name__, path='/', title='Green Algorithms')
 
@@ -62,8 +61,7 @@ def layout(**query_strings):
                         ),
                         " discussing different options for carbon footprint estimation."
                     ]),
-
-            #         # TODO add something else there? GA4HPC?
+                    # TODO add something else there? GA4HPC?
 
                     html.Div(
                         [

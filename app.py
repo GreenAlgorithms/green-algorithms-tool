@@ -12,6 +12,7 @@ from dash.exceptions import PreventUpdate
 from types import SimpleNamespace
 from flask import send_file # Integrating Loader IO
 
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -31,9 +32,34 @@ images_dir = os.path.join(os.path.abspath(''),'images')
 
 
 ###################################################
+## CREATE NAVIGATION BAR
+
+navbar = dbc.NavbarSimple(
+    [
+        dbc.NavItem(dbc.NavLink("Home", href="/")),
+        dbc.NavItem(dbc.NavLink("AI tab", href="/ai")),
+        dbc.DropdownMenu(
+            [
+                dbc.DropdownMenuItem("English", header=True),
+            ],
+            nav=True,
+            in_navbar=True,
+            label="Language",
+        ),
+    ],
+    brand="GreenAlgorithms",
+    brand_href="#",
+    id='navbar',
+    links_left=True
+)
+
+
+
+###################################################
 ## CREATE APP
 
 external_stylesheets = [
+    dbc.themes.BOOTSTRAP,
     dict(
         href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
         rel="stylesheet"
@@ -54,9 +80,22 @@ app = dash.Dash(
 )
 app.title = "Green Algorithms"
 server = app.server
-
 appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
-app.layout = html.Div(dash.page_container, id='fullfullPage')
+
+app.layout = html.Div(
+    [
+        html.Div(navbar, id='navbar-container'),
+        dash.page_container
+    ],
+    id='fullfullPage'
+)
+# app.layout = dbc.Container(
+    # [
+    #     html.Div(navbar, id='navbar-container'),
+    #     dash.page_container
+    # ],
+#     # fluid=True,
+# )
 
 
 ###################################################
@@ -196,10 +235,7 @@ def reset_url(submit_n_clicks):
         Input('appVersions_dropdown','value')
     ],
 )
-def loadDataFromVersion(
-        newVersion,
-        # oldData
-):
+def loadDataFromVersion(newVersion):
     '''
     Loads all the backend data required to propose consistent options to the user.
     '''
