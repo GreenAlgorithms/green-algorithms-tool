@@ -34,31 +34,6 @@ image_dir = os.path.join('assets/images')
 static_image_route = '/static/'
 images_dir = os.path.join(os.path.abspath(''),'images')
 
-
-###################################################
-## CREATE NAVIGATION BAR
-
-navbar = dbc.NavbarSimple(
-    [
-        dbc.NavItem(dbc.NavLink("Home", href="/")),
-        dbc.NavItem(dbc.NavLink("AI tab", href="/ai")),
-        dbc.DropdownMenu(
-            [
-                dbc.DropdownMenuItem("English", header=True),
-            ],
-            nav=True,
-            in_navbar=True,
-            label="Language",
-        ),
-    ],
-    brand="GreenAlgorithms",
-    brand_href="#",
-    id='navbar',
-    links_left=True
-)
-
-
-
 ###################################################
 ## CREATE APP
 
@@ -85,6 +60,77 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
+
+###################################################
+## CREATE NAVIGATION BAR
+
+# navbar = dbc.NavbarSimple(
+#     [
+#         dbc.NavItem(dbc.NavLink("Home", href="/")),
+#         dbc.NavItem(dbc.NavLink("AI tab", href="/ai")),
+#         dbc.DropdownMenu(
+#             [
+#                 dbc.DropdownMenuItem("English", header=True),
+#             ],
+#             nav=True,
+#             in_navbar=True,
+#             label="Language",
+#         ),
+#     ],
+#     brand="GreenAlgorithms",
+#     brand_href="#",
+#     id='navbar',
+#     links_left=True
+# )
+
+pages_dropdown = dbc.DropdownMenu(
+    [
+        dbc.DropdownMenuItem(
+            children=html.Div(
+                [
+                    html.Img(
+                        src=app.get_asset_url(page["image"]),
+                        height="20px",
+                        width="20px",
+                        style={'padding-right': '5px'}
+                    ),
+                    page["name"],
+                ]
+            ),
+            href=page["path"],
+            style={'align-item': 'center'}
+        )
+        for page in dash.page_registry.values()
+    ],
+    nav=True,
+    label="More Pages",
+    # toggle_class_name="text-white",
+)
+
+
+navbar = dbc.Navbar(
+    dbc.Container(
+        [
+            html.A(
+                # Use row and col to control vertical alignment of logo / brand
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            html.Img(src=app.get_asset_url("favicon.ico"), height="50px")
+                        ),
+                        dbc.Col(dbc.NavbarBrand("Navbar", className="ms-2")),
+                    ],
+                    align="center",
+                    className="g-0",
+                ),
+            ),
+            pages_dropdown,
+        ],
+        fluid=True,
+    ),
+)
+
+
 
 app.layout = html.Div(
     [
