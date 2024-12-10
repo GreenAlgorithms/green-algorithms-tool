@@ -29,7 +29,7 @@ def layout(**query_strings):
     appLayout = html.Div(
         [
             dcc.Store(id="versioned_data"),
-            dcc.Store(id="aggregate_data"),
+            # dcc.Store(id="aggregate_data"),
             dcc.Location(id='url_content', refresh='callback-nav'), # TODO issue https://github.com/plotly/dash/issues/1346 should be fixed in later releases
 
             #### HEADER ####
@@ -62,7 +62,6 @@ def layout(**query_strings):
                         ),
                         " discussing different options for carbon footprint estimation."
                     ]),
-
                     # TODO add something else there? GA4HPC?
 
                     html.Div(
