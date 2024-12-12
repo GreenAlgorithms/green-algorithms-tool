@@ -1,5 +1,6 @@
 import os 
 import copy
+import dash
 
 import pandas as pd
 import pycountry_convert as pc
@@ -58,6 +59,9 @@ BLANK_FIGURE = {
 
 ###################################################
 ## UTILS
+
+def loading_wrapper(component):
+    return dash.html.P(dash.dcc.Loading(component, type='circle', color='#96BA6E'))
 
 def iso2_to_iso3(x):
     try:

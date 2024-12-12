@@ -14,9 +14,9 @@ from utils.graphics import MY_COLORS
 from all_in_one_components.form.green_algo_form_AIO_layout import get_green_algo_form_layout
 from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
 
-ID_MAIN_FORM = 'main-form'
-ID_TRAINING = 'training-form'
-ID_INFERENCE = 'inference-form'
+MAIN_FORM_ID = 'main-form'
+TRAINING_FORM_ID = 'training-form'
+INFERENCE_FORM_ID = 'inference-form'
 
 class GreenAlgoFormAIO(html.Form): 
     ''' 
@@ -36,9 +36,9 @@ class GreenAlgoFormAIO(html.Form):
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    def __init__(self, aio_id):
+    def __init__(self, aio_id, title, subtitle):
         super().__init__(
-            get_green_algo_form_layout(aio_id),
+            get_green_algo_form_layout(aio_id, title, subtitle),
             className='container input-form'
         )
         self.aio_id = aio_id
@@ -306,6 +306,7 @@ class GreenAlgoFormAIO(html.Form):
         listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
         return listOptions
     
+    
     ## Location (only for local server, personal device or "other" cloud server)
 
     @callback(
@@ -435,9 +436,9 @@ class GreenAlgoFormAIO(html.Form):
             out['background-color'] = MY_COLORS['boxesColor']
 
         return out
-    
+       
 
-    ##################### PSF INPUTS ###
+    ##################### PROCESS INPUTS ###
     
     @callback(
         Output(ids.aggregate_data(MATCH), "data"),
@@ -518,6 +519,7 @@ class GreenAlgoFormAIO(html.Form):
             data_dict = SimpleNamespace(**data)
             version = data_dict.version
         else:
+            version = None
             notReady = True
 
         ### Location

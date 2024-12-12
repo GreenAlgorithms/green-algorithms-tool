@@ -1,91 +1,62 @@
 import os
 import dash
-
-from dash import html, dcc
-from utils.handle_inputs import get_available_versions
-from utils.graphics import BLANK_FIGURE
-
-from all_in_one_components.form.green_algo_form_AIO import GreenAlgoFormAIO, ID_MAIN_FORM
+import datetime
 
 import dash_bootstrap_components as dbc
+import pandas as pd
+import plotly.graph_objects as go
+
+from dash import ctx, html, dcc, callback, Input, Output, State
+from dash.exceptions import PreventUpdate
+from types import SimpleNamespace
+
+from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
+from utils.handle_inputs import get_available_versions, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES, CURRENT_VERSION
+
+from utils.graphics import BLANK_FIGURE, loading_wrapper
+from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
+
+from all_in_one_components.form.green_algo_form_AIO import GreenAlgoFormAIO, MAIN_FORM_ID
+from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
+
 
 dash.register_page(__name__, path='/', title='Green Algorithms')
 
-def loading_wrapper(component):
-    return html.P(dcc.Loading(component, type='circle', color='#96BA6E'))
 
+###################################################
 # SOME GLOBAL VARIABLES
-#############################################
 
 image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
 
 appVersions_options = get_available_versions()
+form_ids = GreenAlgoFormIDS()
 
+
+###################################################
 # DEFINE APP LAYOUT
-###################
 
 def layout(**query_strings):
     appLayout = html.Div(
         [
-            dcc.Store(id="versioned_data"),
-            # dcc.Store(id="aggregate_data"),
-            dcc.Location(id='url_content', refresh='callback-nav'), # TODO issue https://github.com/plotly/dash/issues/1346 should be fixed in later releases
-
-            #### HEADER ####
-
-            html.Div(
-                [
-                    html.H1("Green Algorithms calculator"),
-                    html.P("What's the carbon footprint of your computations?"),
-
-                ],
-                className='container header'
-            ),
-
-            html.Div(
-                [
-                    html.H2("Some news..."), # TODO align this left?
-                    html.P([
-                        html.A(
-                            "The GREENER principles",
-                            href="https://rdcu.be/dfpLM",
-                            target="_blank"
-                        ),
-                        " for environmentally sustainable computational science."
-                    ]),
-                    html.P([
-                        html.A(
-                            "A short primer",
-                            href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
-                            target="_blank"
-                        ),
-                        " discussing different options for carbon footprint estimation."
-                    ]),
-                    # TODO add something else there? GA4HPC?
-
-                    html.Div(
-                        [
-                            html.A(
-                                html.Button(
-                                    'More on the project website!',
-                                    id='website-link-button'
-                                ),
-                                href='https://www.green-algorithms.org',
-                                target="_blank",
-                                className='button-container'
-                            ),
-                        ],
-                        className='buttons-row'
-                    ),
-                ],
-                className='container footer'
-            ),
-
 
             #### INPUT FORM ####
 
-            GreenAlgoFormAIO(ID_MAIN_FORM),
+            GreenAlgoFormAIO(
+                        MAIN_FORM_ID, 
+                        "Details about your algorithm",
+                        html.P(
+                            [
+                                "To understand how each parameter impacts your carbon footprint, "
+                                "check out the formula below and the ",
+                                html.A(
+                                    "methods article",
+                                    href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
+                                    target='_blank'
+                                )
+                            ]
+                        )
+                    ),
 
             #### FIRST OUTPUTS ####
 
@@ -638,3 +609,697 @@ def layout(**query_strings):
     )
 
     return appLayout
+
+
+###################################################
+# DEFINE CALLBACKS
+
+
+################## LOAD PAGE AND INPUTS
+
+@callback(
+    [
+        ##################################################################
+        ## WARNING: do not modify the order, unless modifying the order
+        ## of the DEFAULT_VALUES accordingly
+        Output(form_ids.runTime_hour_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.runTime_min_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.coreType_dropdown(MAIN_FORM_ID),'value'),
+        Output(form_ids.numberCPUs_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.CPUmodel_dropdown(MAIN_FORM_ID), 'value'),
+        Output(form_ids.tdpCPU_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.numberGPUs_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.GPUmodel_dropdown(MAIN_FORM_ID), 'value'),
+        Output(form_ids.tdpGPU_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.memory_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.platformType_dropdown(MAIN_FORM_ID),'value'),
+        Output(form_ids.usageCPU_radio(MAIN_FORM_ID),'value'),
+        Output(form_ids.usageCPU_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.usageGPU_radio(MAIN_FORM_ID),'value'),
+        Output(form_ids.usageGPU_input(MAIN_FORM_ID),'value'),
+        Output(form_ids.pue_radio(MAIN_FORM_ID),'value'),
+        Output(form_ids.PSF_radio(MAIN_FORM_ID), 'value'),
+        Output(form_ids.PSF_input(MAIN_FORM_ID), 'value'),
+        Output('appVersions_dropdown','value'),
+        Output('import-error-message', 'is_open'),
+        Output('log-error-subtitle', 'children'),
+        Output('log-error-content', 'children'),
+    ],
+    [
+        Input('url_content','search'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.aggregate_data(MAIN_FORM_ID), 'data'),
+    ],
+    # below line is required because the 'alert' container import-error-message is not in the layout initially
+    suppress_callback_exceptions=True,
+)
+def filling_from_inputs(_, upload_content, filename, current_app_state):
+    '''
+    Fills the form either from the content of a csv of with default values.
+    When errors are found in the csv, an alert container is displayed with 
+    additional information for the user. Wrong values are replaced by default ones.
+    The url is given as input so default values are filled when opening the app first.
+
+    Once the appVersions_dropdown value is set, versionned data is loaded and
+    the form starts to work accordingly.
+    '''
+    return_current_state = False
+
+    if ctx.triggered_id is None:
+        # NOTE this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+        # this is also the case for most of the callbacks takin the csv upload content as input, and was already the case when using 
+        # the url instead of csv files for sharing the results
+        # TODO understand this behaviour
+        raise PreventUpdate 
+    
+    # only for initial call, when trigerred by the url
+    if 'upload-data.contents' not in ctx.triggered_prop_ids:
+        return tuple(DEFAULT_VALUES.values()) + (False, '', '')
+
+    # First we deal with the case the input_csv has just been flushed
+    # Then we want to fill in the form with its current state
+    if upload_content is None:
+        if current_app_state is None:
+            return tuple(DEFAULT_VALUES.values()) + (False, '', '')
+        else:
+            return_current_state = True
+            show_err_mess = dash.no_update
+            mess_subtitle = dash.no_update
+            mess_content = dash.no_update
+
+    elif upload_content:
+        input_data, mess_subtitle, mess_content = open_input_csv_and_comment(upload_content, filename)
+        # The input file could not be opened correctly
+        if not input_data:
+            return_current_state = True
+            show_err_mess = True
+        # If everything is fine so far, we parse the csv content
+        else:
+            processed_values, show_err_mess, mess_subtitle, mess_content = read_csv_input(input_data)
+            return tuple(processed_values.values()) + (show_err_mess, mess_subtitle, mess_content)
+
+    # The keys used to retrieve the content from aggregate data must 
+    # match those of the callback generating it
+    if return_current_state:
+        return tuple(
+            [
+                current_app_state['runTime_hour'],
+                current_app_state['runTime_min'],
+                current_app_state['coreType'],
+                current_app_state['numberCPUs'],
+                current_app_state['CPUmodel'],
+                current_app_state['tdpCPU'],
+                current_app_state['numberGPUs'],
+                current_app_state['GPUmodel'],
+                current_app_state['tdpGPU'],
+                current_app_state['memory'],
+                current_app_state['platformType'],
+                current_app_state['usageCPUradio'],
+                current_app_state['usageCPU'],
+                current_app_state['usageGPUradio'],
+                current_app_state['usageGPU'],
+                current_app_state['PUEradio'],
+                current_app_state['PSFradio'],
+                current_app_state['PSF'],
+                current_app_state['appVersion'],
+                show_err_mess,
+                mess_subtitle,
+                mess_content
+            ]
+        )
+    
+
+@callback(
+    Output(form_ids.provider_dropdown(MAIN_FORM_ID),'value'),
+    [
+        Input(form_ids.platformType_dropdown(MAIN_FORM_ID), 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.provider_dropdown(MAIN_FORM_ID), 'value'),
+    ]
+)
+def set_provider(_, versioned_data, upload_content, filename, prev_provider):
+    '''
+    Sets the provider value, either from the csv content of as a default value.
+    TODO: improve the choice of the default value.
+    '''
+    # Handles the case when the upload csv has just been flushed
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_provider
+    
+    # We check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['provider'])
+            if target_input:
+                return target_input['provider']   
+                
+    return 'gcp'
+
+@callback(
+    Output(form_ids.server_continent_dropdown(MAIN_FORM_ID),'value'),
+    [
+        Input(form_ids.provider_dropdown(MAIN_FORM_ID), 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.server_continent_dropdown(MAIN_FORM_ID), 'value'),
+    ]
+)
+def set_serverContinents_value(selected_provider, versioned_data, upload_content, filename, prev_server_continent):
+    '''
+    Sets the value for server's continent, depending on the provider.
+    We want to fetch the value based on csv input but also to display 
+    a value selcted previously by the user.
+    '''
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to understand which cases
+    # may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_server_continent
+
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['serverContinent'])
+            if target_input:
+                return target_input['serverContinent']
+
+    # Otherwise we return a suitable default value
+    availableOptions = availableLocations_continent(selected_provider, data=versioned_data)
+
+    # NOTE The following handles two cases: 
+    # when the server continent value had previously been set by the user
+    # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+    # print('avai loc in set conti server, ', availableOptions)
+    if prev_server_continent in availableOptions:
+        defaultValue = prev_server_continent
+    else:
+        try: 
+            defaultValue = availableOptions[0]
+        except:
+            defaultValue = None
+    return defaultValue
+
+
+@callback(
+    Output(form_ids.server_dropdown(MAIN_FORM_ID),'value'),
+    [
+        Input(form_ids.provider_dropdown(MAIN_FORM_ID), 'value'),
+        Input(form_ids.server_continent_dropdown(MAIN_FORM_ID), 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.server_dropdown(MAIN_FORM_ID),'value'),
+    ]
+)
+def set_server_value(selected_provider, selected_continent, versioned_data, upload_content, filename, prev_server_value):
+    '''
+    Sets the value for servers, based on provider and continent.
+    Here again we want to display a default value, to 
+    fecth the value from a csv or to show a value previously selected by the user.
+    '''
+
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_server_value
+
+    # We first check wheter the target value is found in the input csv 
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['server'])
+            if target_input :
+                return target_input['server']
+    
+    # Handles special case
+    if selected_continent == 'other':
+        return 'other'
+
+    # Otherwise we return a suitable default value
+    availableOptions = availableOptions_servers(selected_provider, selected_continent, data=versioned_data)
+    try:
+        if prev_server_value in [server['name_unique'] for server in availableOptions]:
+            # print('set server val, get previous value ', prev_server_value)
+            # NOTE The following handles two cases: 
+            # when the server continent value had previously been set by the user
+            # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+            defaultValue = prev_server_value
+        else :
+            defaultValue = availableOptions[0]['name_unique']
+    except:
+        defaultValue = None
+    return defaultValue
+
+
+@callback(
+    Output(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+    [
+        Input(form_ids.server_continent_dropdown(MAIN_FORM_ID),'value'),
+        Input(form_ids.server_div(MAIN_FORM_ID), 'style'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+        State('versioned_data','data'),
+    ]
+)
+def set_continent_value(selected_serverContinent, display_server, upload_content, filename, prev_locationContinent, versioned_data):
+    '''
+    Sets the value for location continent.
+    Same as for server and server continent regarding the different inputs.
+    '''
+
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server continent value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        return prev_locationContinent
+    
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['locationContinent'])
+            if target_input :
+                return target_input['locationContinent']
+    
+    # NOTE The following handles two cases: 
+    # when the continent value had previously been set by the user
+    # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+    if prev_locationContinent is not None :
+        return prev_locationContinent
+    # the server div is shown, so we pull the continent from there
+    if (display_server['display'] != 'none') & (selected_serverContinent != 'other'):
+        return selected_serverContinent
+    return 'Europe'
+
+@callback(
+    [
+        Output(form_ids.location_country_dropdown(MAIN_FORM_ID), 'options'),
+        Output(form_ids.location_country_dropdown(MAIN_FORM_ID), 'value'),
+        Output(form_ids.location_country_dropdown_div(MAIN_FORM_ID), 'style'),
+    ],
+    [
+        Input(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.location_country_dropdown(MAIN_FORM_ID), 'value')
+    ]
+)
+def set_countries_options(selected_continent, versioned_data, upload_content, filename, prev_selectedCountry):
+    '''
+    List of options and value for countries.
+    Hides country dropdown if continent=World is selected.
+    Must fetch the value from a csv as well.
+    '''
+    availableOptions = availableOptions_country(selected_continent, data=versioned_data)
+    listOptions = [{'label': k, 'value': k} for k in availableOptions]
+    
+    defaultValue = None
+
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server country value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        defaultValue = prev_selectedCountry
+
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['locationCountry'])
+            if target_input :
+                defaultValue = target_input['locationCountry']
+
+    # otherwise we get a suitable default value    
+    if defaultValue is None:
+        # NOTE The following handles two cases: 
+        # when the country value had previously been set by the user
+        # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+        if prev_selectedCountry in availableOptions :
+            defaultValue = prev_selectedCountry
+        else:
+            try:
+                defaultValue = availableOptions[0]
+            except:
+                defaultValue = None
+
+    if selected_continent == 'World':
+        country_style = {'display': 'none'}
+    else:
+        country_style = {'display': 'block'}
+
+    return listOptions, defaultValue, country_style
+
+@callback(
+    [
+        Output(form_ids.location_region_dropdown(MAIN_FORM_ID), 'options'),
+        Output(form_ids.location_region_dropdown(MAIN_FORM_ID), 'value'),
+        Output(form_ids.location_region_dropdown_div(MAIN_FORM_ID), 'style'),
+    ],
+    [
+        Input(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+        Input(form_ids.location_country_dropdown(MAIN_FORM_ID), 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.location_region_dropdown(MAIN_FORM_ID), 'value'),
+    ]
+
+)
+def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, filename, prev_selectedRegion):
+    '''
+    List of options and value for regions.
+    Hides region dropdown if only one possible region (or continent=World)
+    '''
+    locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
+    if versioned_data is not None:
+        listOptions = [{'label': versioned_data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
+    else:
+        listOptions = []
+
+    defaultValue = None
+
+    # Handles the case when the upload csv has just been flushed
+    # NOTE: this could be handled below when looking for the previous
+    # server region value for the default Value, but it allows to 
+    # understand which cases may trigger this callback
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        defaultValue = prev_selectedRegion
+
+
+    # We first check wheter the target value is found in the input csv
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['locationRegion'])
+            if target_input :
+                defaultValue = target_input['locationRegion']
+
+    # otherwise we get a suitable default value  
+    if defaultValue is None:
+        # NOTE The following handles two cases: 
+        # when the region value had previously been set by the user
+        # when this callback fires for no reason (ctx.triggered_id is None) which happens after each regular trigger of the callback
+        if prev_selectedRegion in locs:
+            defaultValue = prev_selectedRegion
+        else:
+            try:
+                    defaultValue = locs[0]
+            except:
+                defaultValue = None
+
+    if (selected_continent == 'World')|(len(listOptions) == 1):
+        region_style = {'display': 'none'}
+    else:
+        region_style = {'display': 'block'}
+
+    return listOptions, defaultValue, region_style
+
+
+@callback(
+    Output(form_ids.PUE_input(MAIN_FORM_ID),'value'),
+    [
+        Input(form_ids.pue_radio(MAIN_FORM_ID), 'value'),
+        Input('versioned_data','data'),
+        Input('upload-data', 'contents'),
+    ],
+    [
+        State('upload-data', 'filename'),
+        State(form_ids.PUE_input(MAIN_FORM_ID),'value'),
+    ]
+)
+def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
+    '''
+    Sets the PUE value, either from csv input or as a default value.
+    '''
+    if versioned_data is not None:
+        data_dict = SimpleNamespace(**versioned_data)
+        defaultPUE = data_dict.pueDefault_dict['Unknown']
+    else:
+        defaultPUE = 0
+
+    if radio == 'No':
+        return defaultPUE
+    
+    # Handles the case when the upload csv has just been flushed
+    if 'upload-data.contents' in ctx.triggered_prop_ids and upload_content is None:
+        defaultPUE = prev_pue
+
+    if upload_content is not None:
+        input_data, _, _ = open_input_csv_and_comment(upload_content, filename)
+        if input_data:
+            target_input, _ = validateInput(input_data, versioned_data, keysOfInterest=['PUE'])
+            if target_input :
+                defaultPUE = target_input['PUE']
+
+    return defaultPUE
+
+
+@callback(
+    Output('csv-input-timer', 'disabled'),
+    Input('upload-data', 'contents'),
+    prevent_initial_call=True,
+)
+def trigger_timer_to_flush_input_csv(input_csv):
+    '''
+    When a csv is dropped, triggers a timer that allows to flush this csv.
+    If the input is none, this means that we just flushed it so we do not
+    trigger the timer again.
+    '''
+    if input_csv is None:
+        return True
+    return False
+
+@callback(
+        Output('upload-data', 'contents'),
+        Input('csv-input-timer', 'n_intervals'),
+        prevent_initial_call=True,
+)
+def flush_input_csv_content(n):
+    '''
+    Flushes the input csv.
+    This is required if we want to enable the user to load again the same csv.
+    Otherwise, if not flushed, the csv content does not change so it does not trigger
+    the reading of its content.
+    '''
+    return None
+
+@callback(
+    Output("aggregate-data-csv", "data"),
+    Input("btn-download_csv", "n_clicks"),
+    State(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+    prevent_initial_call=True,
+)
+def export_as_csv(_, aggregate_data):
+    '''
+    Exports the aggregate_data.
+    '''
+    to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
+    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv", index=False, sep=';')
+
+
+    ##################### RESET ###
+
+@callback(
+    Output(form_ids.confirm_reset(MAIN_FORM_ID),'displayed'),
+    [
+        Input(form_ids.reset_link(MAIN_FORM_ID),'n_clicks')
+    ]
+)
+def display_confirm(clicks):
+    '''
+    Display a popup asking for reset confirmation.
+    '''
+    if clicks is not None:
+        return True
+    return False
+
+
+## OUTPUT GRAPHICS
+#################
+
+@callback(
+    Output("pie_graph", "figure"),
+    Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+)
+def create_pie_graph(aggData):
+    return create_cores_memory_pie_graphic(aggData)
+
+### UPDATE BAR CHART COMPARISON
+# FIXME: looks weird with 0 emissions
+@callback(
+    Output("barPlotComparison", "figure"),
+    [
+        Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+        Input('versioned_data','data')
+    ],
+)
+def create_bar_chart(aggData, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        return create_ci_bar_chart_graphic(aggData, data_dict)
+    return None
+
+### UPDATE BAR CHARTCPU
+@callback(
+    Output("barPlotComparison_cores", "figure"),
+    [
+        Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+        Input('versioned_data','data')
+    ],
+)
+def create_bar_chart_cores(aggData, data):
+    if data is not None:
+        data_dict = SimpleNamespace(**data)
+        if aggData['coreType'] is None:
+            return go.Figure()
+        return create_cores_bar_chart_graphic(aggData, data_dict)
+    return None
+
+
+## OUTPUT SUMMARY
+#################
+
+@callback(
+    Output('report_markdown', 'children'),
+    [
+        Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+        Input('versioned_data','data')
+    ],
+)
+def fillin_report_text(aggData, data):
+    '''
+    Writes a summary text of the current computation that is shown as an example
+    for the user on how to report its impact.
+    '''
+    if (aggData['numberCPUs'] is None)&(aggData['numberGPUs'] is None):
+        return('')
+    elif data is None:
+        return ('')
+    else:
+        data_dict = SimpleNamespace(**data)
+
+        # Text runtime
+        minutes = aggData['runTime_min']
+        hours = aggData['runTime_hour']
+        if (minutes > 0)&(hours>0):
+            textRuntime = "{}h and {}min".format(hours, minutes)
+        elif (hours > 0):
+            textRuntime = "{}h".format(hours)
+        else:
+            textRuntime = "{}min".format(minutes)
+
+        # text cores
+        textCores = ""
+        if aggData['coreType'] in ['GPU','Both']:
+            if aggData['numberGPUs'] > 1:
+                suffixProcessor = 's'
+            else:
+                suffixProcessor = ''
+            textCores += f"{aggData['numberGPUs']} GPU{suffixProcessor} {aggData['GPUmodel']}"
+        if aggData['coreType'] == 'Both':
+            textCores += " and "
+        if aggData['coreType'] in ['CPU','Both']:
+            if aggData['numberCPUs'] > 1:
+                suffixProcessor = 's'
+            else:
+                suffixProcessor = ''
+            textCores += f"{aggData['numberCPUs']} CPU{suffixProcessor} {aggData['CPUmodel']}"
+
+        country = data_dict.CI_dict_byLoc[aggData['location']]['countryName']
+        region = data_dict.CI_dict_byLoc[aggData['location']]['regionName']
+
+        if region == 'Any':
+            textRegion = ''
+        else:
+            textRegion = ' ({})'.format(region)
+
+        if country in ['United States of America', 'United Kingdom']:
+            prefixCountry = 'the '
+        else:
+            prefixCountry = ''
+
+        if aggData['PSF'] > 1:
+            textPSF = ' and ran {} times in total,'.format(aggData['PSF'])
+        else:
+            textPSF = ''
+
+        myText = f'''
+        > This algorithm runs in {textRuntime} on {textCores},
+        > and draws {aggData['text_energyNeeded']}. 
+        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['text_treeYear']}
+        (calculated using green-algorithms.org {CURRENT_VERSION} \[1\]).
+        '''
+
+        return myText
+
+@callback(
+    [
+        Output("carbonEmissions_text", "children"),
+        Output("energy_text", "children"),
+        Output("treeMonths_text", "children"),
+        Output("driving_text", "children"),
+        Output("flying_text", "children"),
+    ],
+    [Input(form_ids.aggregate_data(MAIN_FORM_ID), "data")],
+)
+def update_text(data):
+    text_CE = data.get('text_CE')
+    text_energy = data.get('text_energyNeeded')
+    text_ty = data.get('text_treeYear')
+    if (data['nkm_drivingEU'] != 0) & ((data['nkm_drivingEU'] >= 1e3) | (data['nkm_drivingEU'] < 0.1)):
+        text_car = f"{data['nkm_drivingEU']:,.2e} km"
+    else:
+        text_car = f"{data['nkm_drivingEU']:,.2f} km"
+    if data['flying_context'] == 0:
+        text_fly = "0"
+    elif data['flying_context'] > 1e6:
+        text_fly = f"{data['flying_context']:,.0e}"
+    elif data['flying_context'] >= 1:
+        text_fly = f"{data['flying_context']:,.1f}"
+    elif data['flying_context'] >= 0.01:
+        text_fly = f"{data['flying_context']:,.0%}"
+    elif data['flying_context'] >= 1e-4:
+        text_fly = f"{data['flying_context']:,.2%}"
+    else:
+        text_fly = f"{data['flying_context']*100:,.0e} %"
+    return text_CE, text_energy, text_ty, text_car, text_fly
+
+@callback(
+    Output("flying_label", "children"),
+    Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+)
+def update_text(data):
+    if (data['flying_context'] >= 1)|(data['flying_context'] == 0):
+        foo = f"flights {data['flying_text']}"
+    else:
+        foo = f"of a flight {data['flying_text']}"
+    return foo

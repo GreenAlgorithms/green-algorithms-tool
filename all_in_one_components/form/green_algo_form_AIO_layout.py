@@ -6,21 +6,12 @@ from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
 
 appVersions_options = get_available_versions()
 
-def get_green_algo_form_layout(aio_id):
+def get_green_algo_form_layout(aio_id, title, subtitle):
     ids = GreenAlgoFormIDS()
     return [
                 dcc.Store(id=ids.aggregate_data(aio_id)),
-                html.H2(
-                    "Details about your algorithm"
-                ),
-                html.Center(
-                    html.P(["To understand how each parameter impacts your carbon footprint, "
-                            "check out the formula below and the ",
-                            html.A("methods article",
-                                href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                                target='_blank')
-                            ]),
-                ),
+                html.H2(title),
+                html.Center(subtitle),
 
                 ## RUN TIME
                 html.Div(
@@ -582,36 +573,36 @@ def get_green_algo_form_layout(aio_id):
                             ],
                             className='reset-button'
                         ),
-                        html.Div(
-                            [
-                                html.P("Change app version", id='oldVersion_link'),
-                            ],
-                            className='reset-button'
-                        ),
+                        # html.Div(
+                        #     [
+                        #         html.P("Change app version", id='oldVersion_link'),
+                        #     ],
+                        #     className='reset-button'
+                        # ),
                     ],
                     className='two-buttons'
                 ),
 
-                html.Div(
-                    [
-                        html.Label("App version"),
+                # html.Div(
+                #     [
+                #         html.Label("App version"),
 
-                        html.Div(
-                            [
-                                dcc.Dropdown(
-                                    id="appVersions_dropdown",
-                                    options=appVersions_options,
-                                    className='bottom-dropdown',
-                                    clearable=False,
-                                ),
-                            ],
-                            className="box-fields"
-                        )
-                    ],
-                    className='form-row short-input',
-                    id='oldVersions_div',
-                    style=dict(display='none'),
-                ),
+                #         html.Div(
+                #             [
+                #                 dcc.Dropdown(
+                #                     id="appVersions_dropdown",
+                #                     options=appVersions_options,
+                #                     className='bottom-dropdown',
+                #                     clearable=False,
+                #                 ),
+                #             ],
+                #             className="box-fields"
+                #         )
+                #     ],
+                #     className='form-row short-input',
+                #     id='oldVersions_div',
+                #     style=dict(display='none'),
+                # ),
 
                 html.P(
                     id="placeholder",
