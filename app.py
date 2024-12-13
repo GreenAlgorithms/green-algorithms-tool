@@ -14,6 +14,9 @@ import dash_bootstrap_components as dbc
 from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR
 from utils.handle_inputs import APP_VERSION_OPTIONS_LIST
 
+from pages.home import HOME_PAGE
+from pages.ai import AI_PAGE
+
 
 ###################################################
 ## CREATE APP
@@ -34,12 +37,18 @@ app = dash.Dash(
     meta_tags=[
         dict(
             name= 'viewport',
-            content="width=device-width, initial-scale=1.0" #maximum-scale=1.0
+            content="width=device-width, initial-scale=1.0" 
         )
-    ]
+    ],
+    suppress_callback_exceptions=True
 )
 app.title = "Green Algorithms"
 server = app.server
+
+HOME_PAGE.register(app, module='home', path='/')
+AI_PAGE.register(app, module='ai', path='/ai')
+
+
 appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
 
 
@@ -264,5 +273,4 @@ def download_loader():
                      as_attachment=True)
 
 if __name__ == '__main__':
-    # allows app to update when code is changed!
     app.run_server(debug=True)

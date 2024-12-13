@@ -4,21 +4,22 @@ See here http://dash.plotly.com/all-in-one-components for the original conventio
 '''
 import pandas as pd
 
-from dash import Output, Input, html, callback, MATCH
+# from dash import Output, Input, html, callback, MATCH
+from dash_extensions.enrich import DashBlueprint, html, Output, Input, PrefixIdTransform
 from types import SimpleNamespace
 
-from utils.utils import put_value_first, is_shown
+from utils.utils import put_value_first, is_shown, custom_prefix_escape
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers
 from utils.graphics import MY_COLORS
 
-from all_in_one_components.form.green_algo_form_AIO_layout import get_green_algo_form_layout
-from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
+from blueprints.form.form_layout import get_green_algo_form_layout
+# from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
 
-MAIN_FORM_ID = 'main-form'
-TRAINING_FORM_ID = 'training-form'
-INFERENCE_FORM_ID = 'inference-form'
+# MAIN_FORM_ID = 'main-form'
+# TRAINING_FORM_ID = 'training-form'
+# INFERENCE_FORM_ID = 'inference-form'
 
-class GreenAlgoFormAIO(html.Form): 
+def get_form_blueprint(id_prefix, title, subtitle):
     ''' 
     An All-in-One component for the Green Algorithms Form.
     Formally, this class is just a convention, building a convenient wrapper
@@ -31,18 +32,19 @@ class GreenAlgoFormAIO(html.Form):
     pattern-matching callback that will apply to every instance of this component.
     ''' 
 
-    ids = GreenAlgoFormIDS()
-
+    form_blueprint = DashBlueprint(
+        transforms=[
+            PrefixIdTransform(
+                prefix=id_prefix,
+                escape=custom_prefix_escape
+            )
+        ]
+    )
+    
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    def __init__(self, aio_id, title, subtitle):
-        super().__init__(
-            get_green_algo_form_layout(aio_id, title, subtitle),
-            className='container input-form'
-        )
-        self.aio_id = aio_id
-
+    form_blueprint.layout = get_green_algo_form_layout(title, subtitle)
 
 
     ##### DEFINE ITS CALLBACKS
@@ -50,8 +52,8 @@ class GreenAlgoFormAIO(html.Form):
 
     ##################### PLATFORM AND PROVIDER ###
 
-    @callback(
-        Output(ids.platformType_dropdown(MATCH), 'options'),
+    @form_blueprint.callback(
+        Output('platformType_dropdown', 'options'),
         Input('versioned_data','data'),
     )
     def set_platform(data):
@@ -70,9 +72,9 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return []
 
-    @callback(
-        Output(ids.provider_dropdown_div(MATCH), 'style'),
-        Input(ids.platformType_dropdown(MATCH), 'value'),
+    @form_blueprint.callback(
+        Output('provider_dropdown_div', 'style'),
+        Input('platformType_dropdown', 'value'),
     )
     def set_providers(selected_platform):
         '''
@@ -85,10 +87,10 @@ class GreenAlgoFormAIO(html.Form):
             outputStyle = {'display': 'none'}
         return outputStyle
     
-    @callback(
-        Output(ids.provider_dropdown(MATCH), 'options'),
+    @form_blueprint.callback(
+        Output('provider_dropdown', 'options'),
         [
-            Input(ids.platformType_dropdown(MATCH), 'value'),
+            Input('platformType_dropdown', 'value'),
             Input('versioned_data','data')
         ],
     )
@@ -115,11 +117,11 @@ class GreenAlgoFormAIO(html.Form):
 
     ##################### COMPUTING CORES ###
 
-    @callback(
-        Output(ids.coreType_dropdown(MATCH), 'options'),
+    @form_blueprint.callback(
+        Output('coreType_dropdown', 'options'),
         [
-            Input(ids.provider_dropdown(MATCH), 'value'),
-            Input(ids.platformType_dropdown(MATCH), 'value'),
+            Input('provider_dropdown', 'value'),
+            Input('platformType_dropdown', 'value'),
             Input('versioned_data','data')
         ]
     )
@@ -137,10 +139,10 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return []
         
-    @callback(
+    @form_blueprint.callback(
         [
-            Output(ids.CPUmodel_dropdown(MATCH), 'options'),
-            Output(ids.GPUmodel_dropdown(MATCH), 'options')
+            Output('CPUmodel_dropdown', 'options'),
+            Output('GPUmodel_dropdown', 'options')
         ],
         [Input('versioned_data','data')]
     )
@@ -165,17 +167,17 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return [],[]
         
-    @callback(
+    @form_blueprint.callback(
         [
-            Output(ids.CPU_div(MATCH), 'style'),
-            Output(ids.title_CPU(MATCH), 'style'),
-            Output(ids.usageCPU_div(MATCH), 'style'),
-            Output(ids.GPU_div(MATCH), 'style'),
-            Output(ids.title_GPU(MATCH), 'style'),
-            Output(ids.usageGPU_div(MATCH), 'style'),
+            Output('CPU_div', 'style'),
+            Output('title_CPU', 'style'),
+            Output('usageCPU_div', 'style'),
+            Output('GPU_div', 'style'),
+            Output('title_GPU', 'style'),
+            Output('usageGPU_div', 'style'),
         ],
         [
-            Input(ids.coreType_dropdown(MATCH), 'value')
+            Input('coreType_dropdown', 'value')
         ]
     )
     def show_CPUGPUdiv(selected_coreType):
@@ -192,10 +194,10 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return show, show, showFlex, show, show, showFlex
         
-    @callback(
-        Output(ids.tdpCPU_div(MATCH), 'style'),
+    @form_blueprint.callback(
+        Output('tdpCPU_div', 'style'),
         [
-            Input(ids.CPUmodel_dropdown(MATCH), 'value'),
+            Input('CPUmodel_dropdown', 'value'),
         ]
     )
     def display_TDP4CPU(selected_coreModel):
@@ -207,10 +209,10 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return {'display': 'none'}
         
-    @callback(
-        Output(ids.tdpGPU_div(MATCH), 'style'),
+    @form_blueprint.callback(
+        Output('tdpGPU_div', 'style'),
         [
-            Input(ids.GPUmodel_dropdown(MATCH), 'value'),
+            Input('GPUmodel_dropdown', 'value'),
         ]
     )
     def display_TDP4GPU(selected_coreModel):
@@ -225,15 +227,15 @@ class GreenAlgoFormAIO(html.Form):
 
     ##################### LOCATION AND SERVER ###
 
-    @callback(
+    @form_blueprint.callback(
         [
-            Output(ids.location_div(MATCH), 'style'),
-            Output(ids.server_div(MATCH), 'style'),
+            Output('location_div', 'style'),
+            Output('server_div', 'style'),
         ],
         [
-            Input(ids.platformType_dropdown(MATCH), 'value'),
-            Input(ids.provider_dropdown(MATCH), 'value'),
-            Input(ids.server_dropdown(MATCH),'value'),
+            Input('platformType_dropdown', 'value'),
+            Input('provider_dropdown', 'value'),
+            Input('server_dropdown','value'),
             Input('versioned_data','data')
         ]
     )
@@ -261,10 +263,10 @@ class GreenAlgoFormAIO(html.Form):
         
     ### Server (only for Cloud computing for now)
 
-    @callback(
-        Output(ids.server_continent_dropdown(MATCH),'options'),
+    @form_blueprint.callback(
+        Output('server_continent_dropdown','options'),
         [
-            Input(ids.provider_dropdown(MATCH), 'value'),
+            Input('provider_dropdown', 'value'),
             Input('versioned_data','data')
         ]
     )
@@ -276,9 +278,9 @@ class GreenAlgoFormAIO(html.Form):
         listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
         return listOptions
     
-    @callback(
-        Output(ids.server_dropdown(MATCH),'style'),
-        Input(ids.server_continent_dropdown(MATCH), 'value'),
+    @form_blueprint.callback(
+        Output('server_dropdown','style'),
+        Input('server_continent_dropdown', 'value'),
     )
     def set_server_style(selected_continent):
         '''
@@ -290,11 +292,11 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return {'display': 'block'}
         
-    @callback(
-        Output(ids.server_dropdown(MATCH),'options'),
+    @form_blueprint.callback(
+        Output('server_dropdown','options'),
         [
-            Input(ids.provider_dropdown(MATCH), 'value'),
-            Input(ids.server_continent_dropdown(MATCH), 'value'),
+            Input('provider_dropdown', 'value'),
+            Input('server_continent_dropdown', 'value'),
             Input('versioned_data','data')
         ]
     )
@@ -309,8 +311,8 @@ class GreenAlgoFormAIO(html.Form):
     
     ## Location (only for local server, personal device or "other" cloud server)
 
-    @callback(
-        Output(ids.location_continent_dropdown(MATCH), 'options'),
+    @form_blueprint.callback(
+        Output('location_continent_dropdown', 'options'),
         [Input('versioned_data','data')]
     )
     def set_continentOptions(data):
@@ -327,11 +329,11 @@ class GreenAlgoFormAIO(html.Form):
         
     ##################### USAGE FACTORS ###
 
-    @callback(
-        Output(ids.usageCPU_input(MATCH),'style'),
+    @form_blueprint.callback(
+        Output('usageCPU_input','style'),
         [
-            Input(ids.usageCPU_radio(MATCH), 'value'),
-            Input(ids.usageCPU_input(MATCH), 'disabled')
+            Input('usageCPU_radio', 'value'),
+            Input('usageCPU_input', 'disabled')
         ]
     )
     def display_usage_input(answer_usage, disabled):
@@ -348,11 +350,11 @@ class GreenAlgoFormAIO(html.Form):
 
         return out
 
-    @callback(
-        Output(ids.usageGPU_input(MATCH),'style'),
+    @form_blueprint.callback(
+        Output('usageGPU_input','style'),
         [
-            Input(ids.usageGPU_radio(MATCH), 'value'),
-            Input(ids.usageGPU_input(MATCH), 'disabled')
+            Input('usageGPU_radio', 'value'),
+            Input('usageGPU_input', 'disabled')
         ]
     )
     def display_usage_input(answer_usage, disabled):
@@ -372,13 +374,13 @@ class GreenAlgoFormAIO(html.Form):
         
     ##################### PUE INPUTS ###
 
-    @callback(
-        Output(ids.PUEquestion_div(MATCH),'style'),
+    @form_blueprint.callback(
+        Output('PUEquestion_div','style'),
         [
-            Input(ids.location_region_dropdown(MATCH),'value'),
-            Input(ids.platformType_dropdown(MATCH), 'value'),
-            Input(ids.provider_dropdown(MATCH), 'value'),
-            Input(ids.server_dropdown(MATCH), 'value')
+            Input('location_region_dropdown','value'),
+            Input('platformType_dropdown', 'value'),
+            Input('provider_dropdown', 'value'),
+            Input('server_dropdown', 'value')
         ]
     )
     def display_pue_question(_, selected_platform, selected_provider, selected_server):
@@ -392,11 +394,11 @@ class GreenAlgoFormAIO(html.Form):
         else:
             return {'display': 'none'}
 
-    @callback(
-        Output(ids.PUE_input(MATCH),'style'),
+    @form_blueprint.callback(
+        Output('PUE_input','style'),
         [
-            Input(ids.pue_radio(MATCH), 'value'),
-            Input(ids.PUE_input(MATCH),'disabled')
+            Input('pue_radio', 'value'),
+            Input('PUE_input','disabled')
         ]
     )
     def display_pue_input(answer_pue, disabled):
@@ -416,11 +418,11 @@ class GreenAlgoFormAIO(html.Form):
 
     ##################### PSF INPUTS ###
 
-    @callback(
-        Output(ids.PSF_input(MATCH),'style'),
+    @form_blueprint.callback(
+        Output('PSF_input','style'),
         [
-            Input(ids.PSF_radio(MATCH), 'value'),
-            Input(ids.PSF_input(MATCH), 'disabled')
+            Input('PSF_radio', 'value'),
+            Input('PSF_input', 'disabled')
         ]
     )
     def display_PSF_input(answer_PSF, disabled):
@@ -440,41 +442,41 @@ class GreenAlgoFormAIO(html.Form):
 
     ##################### PROCESS INPUTS ###
     
-    @callback(
-        Output(ids.aggregate_data(MATCH), "data"),
+    @form_blueprint.callback(
+        Output('aggregate_data', "data"),
         [
             Input('versioned_data','data'),
-            Input(ids.coreType_dropdown(MATCH), "value"),
-            Input(ids.numberCPUs_input(MATCH), "value"),
-            Input(ids.CPUmodel_dropdown(MATCH), "value"),
-            Input(ids.tdpCPU_div(MATCH), "style"),
-            Input(ids.tdpCPU_input(MATCH), "value"),
-            Input(ids.numberGPUs_input(MATCH), "value"),
-            Input(ids.GPUmodel_dropdown(MATCH), "value"),
-            Input(ids.tdpGPU_div(MATCH), "style"),
-            Input(ids.tdpGPU_input(MATCH), "value"),
-            Input(ids.memory_input(MATCH), "value"),
-            Input(ids.runTime_hour_input(MATCH), "value"),
-            Input(ids.runTime_min_input(MATCH), "value"),
-            Input(ids.location_continent_dropdown(MATCH), "value"),
-            Input(ids.location_country_dropdown(MATCH), "value"),
-            Input(ids.location_region_dropdown(MATCH), "value"),
-            Input(ids.server_continent_dropdown(MATCH), "value"),
-            Input(ids.server_dropdown(MATCH), "value"),
-            Input(ids.location_div(MATCH), 'style'),
-            Input(ids.server_div(MATCH),'style'),
-            Input(ids.usageCPU_radio(MATCH), "value"),
-            Input(ids.usageCPU_input(MATCH), "value"),
-            Input(ids.usageGPU_radio(MATCH), "value"),
-            Input(ids.usageGPU_input(MATCH), "value"),
-            Input(ids.PUEquestion_div(MATCH),'style'),
-            Input(ids.pue_radio(MATCH), "value"),
-            Input(ids.PUE_input(MATCH), "value"),
-            Input(ids.PSF_radio(MATCH), "value"),
-            Input(ids.PSF_input(MATCH), "value"),
-            Input(ids.platformType_dropdown(MATCH), 'value'),
-            Input(ids.provider_dropdown(MATCH), 'value'),
-            Input(ids.provider_dropdown_div(MATCH), 'style'),
+            Input('coreType_dropdown', "value"),
+            Input('numberCPUs_input', "value"),
+            Input('CPUmodel_dropdown', "value"),
+            Input('tdpCPU_div', "style"),
+            Input('tdpCPU_input', "value"),
+            Input('numberGPUs_input', "value"),
+            Input('GPUmodel_dropdown', "value"),
+            Input('tdpGPU_div', "style"),
+            Input('tdpGPU_input', "value"),
+            Input('memory_input', "value"),
+            Input('runTime_hour_input', "value"),
+            Input('runTime_min_input', "value"),
+            Input('location_continent_dropdown', "value"),
+            Input('location_country_dropdown', "value"),
+            Input('location_region_dropdown', "value"),
+            Input('server_continent_dropdown', "value"),
+            Input('server_dropdown', "value"),
+            Input('location_div', 'style'),
+            Input('server_div','style'),
+            Input('usageCPU_radio', "value"),
+            Input('usageCPU_input', "value"),
+            Input('usageGPU_radio', "value"),
+            Input('usageGPU_input', "value"),
+            Input('PUEquestion_div','style'),
+            Input('pue_radio', "value"),
+            Input('PUE_input', "value"),
+            Input('PSF_radio', "value"),
+            Input('PSF_input', "value"),
+            Input('platformType_dropdown', 'value'),
+            Input('provider_dropdown', 'value'),
+            Input('provider_dropdown_div', 'style'),
         ],
     )
     def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
@@ -782,3 +784,5 @@ class GreenAlgoFormAIO(html.Form):
                 output['text_treeYear'] = f"{treeTime_value:,.2f} {treeTime_unit}"
 
         return output
+    
+    return form_blueprint

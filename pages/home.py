@@ -16,11 +16,31 @@ from utils.handle_inputs import get_available_versions, validateInput, open_inpu
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
 
-from all_in_one_components.form.green_algo_form_AIO import GreenAlgoFormAIO, MAIN_FORM_ID
-from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
+from dash_extensions.enrich import DashBlueprint, html
+from blueprints.form.form_blueprint import get_form_blueprint
 
 
-dash.register_page(__name__, path='/', title='Green Algorithms')
+# dash.register_page(__name__, path='/', title='Green Algorithms')
+
+HOME_PAGE = DashBlueprint()
+
+HOME_PAGE_ID_PREFIX = 'main'
+
+form = get_form_blueprint(
+    id_prefix = HOME_PAGE_ID_PREFIX,
+    title = "Details about your algorithm",
+    subtitle = html.P(
+        [
+            "To understand how each parameter impacts your carbon footprint, "
+            "check out the formula below and the ",
+            html.A(
+                "methods article",
+                href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
+                target='_blank'
+            )
+        ]
+    )
+)
 
 
 ###################################################
@@ -30,33 +50,19 @@ image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
 
 appVersions_options = get_available_versions()
-form_ids = GreenAlgoFormIDS()
+# form_ids = GreenAlgoFormIDS()
 
 
 ###################################################
 # DEFINE APP LAYOUT
 
-def layout(**query_strings):
-    appLayout = html.Div(
+def get_home_page_layout():
+    page_layout = html.Div(
         [
 
             #### INPUT FORM ####
 
-            GreenAlgoFormAIO(
-                        MAIN_FORM_ID, 
-                        "Details about your algorithm",
-                        html.P(
-                            [
-                                "To understand how each parameter impacts your carbon footprint, "
-                                "check out the formula below and the ",
-                                html.A(
-                                    "methods article",
-                                    href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                                    target='_blank'
-                                )
-                            ]
-                        )
-                    ),
+            form.embed(HOME_PAGE),
 
             #### FIRST OUTPUTS ####
 
@@ -608,8 +614,9 @@ def layout(**query_strings):
         className='fullPage'
     )
 
-    return appLayout
+    return page_layout
 
+HOME_PAGE.layout = get_home_page_layout()
 
 ###################################################
 # DEFINE CALLBACKS
@@ -617,29 +624,29 @@ def layout(**query_strings):
 
 ################## LOAD PAGE AND INPUTS
 
-@callback(
+@HOME_PAGE.callback(
     [
         ##################################################################
         ## WARNING: do not modify the order, unless modifying the order
         ## of the DEFAULT_VALUES accordingly
-        Output(form_ids.runTime_hour_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.runTime_min_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.coreType_dropdown(MAIN_FORM_ID),'value'),
-        Output(form_ids.numberCPUs_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.CPUmodel_dropdown(MAIN_FORM_ID), 'value'),
-        Output(form_ids.tdpCPU_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.numberGPUs_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.GPUmodel_dropdown(MAIN_FORM_ID), 'value'),
-        Output(form_ids.tdpGPU_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.memory_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.platformType_dropdown(MAIN_FORM_ID),'value'),
-        Output(form_ids.usageCPU_radio(MAIN_FORM_ID),'value'),
-        Output(form_ids.usageCPU_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.usageGPU_radio(MAIN_FORM_ID),'value'),
-        Output(form_ids.usageGPU_input(MAIN_FORM_ID),'value'),
-        Output(form_ids.pue_radio(MAIN_FORM_ID),'value'),
-        Output(form_ids.PSF_radio(MAIN_FORM_ID), 'value'),
-        Output(form_ids.PSF_input(MAIN_FORM_ID), 'value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-runTime_hour_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-runTime_min_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-coreType_dropdown','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-numberCPUs_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-CPUmodel_dropdown', 'value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-tdpCPU_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-numberGPUs_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-GPUmodel_dropdown', 'value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-tdpGPU_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-memory_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-platformType_dropdown','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-usageCPU_radio','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-usageCPU_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-usageGPU_radio','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-usageGPU_input','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-pue_radio','value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-PSF_radio', 'value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-PSF_input', 'value'),
         Output('appVersions_dropdown','value'),
         Output('import-error-message', 'is_open'),
         Output('log-error-subtitle', 'children'),
@@ -651,7 +658,7 @@ def layout(**query_strings):
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.aggregate_data(MAIN_FORM_ID), 'data'),
+        State(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', 'data'),
     ],
     # below line is required because the 'alert' container import-error-message is not in the layout initially
     suppress_callback_exceptions=True,
@@ -732,16 +739,16 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
         )
     
 
-@callback(
-    Output(form_ids.provider_dropdown(MAIN_FORM_ID),'value'),
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown','value'),
     [
-        Input(form_ids.platformType_dropdown(MAIN_FORM_ID), 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-platformType_dropdown', 'value'),
         Input('versioned_data','data'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.provider_dropdown(MAIN_FORM_ID), 'value'),
+        State(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown', 'value'),
     ]
 )
 def set_provider(_, versioned_data, upload_content, filename, prev_provider):
@@ -763,16 +770,16 @@ def set_provider(_, versioned_data, upload_content, filename, prev_provider):
                 
     return 'gcp'
 
-@callback(
-    Output(form_ids.server_continent_dropdown(MAIN_FORM_ID),'value'),
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown','value'),
     [
-        Input(form_ids.provider_dropdown(MAIN_FORM_ID), 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown', 'value'),
         Input('versioned_data','data'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.server_continent_dropdown(MAIN_FORM_ID), 'value'),
+        State(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown', 'value'),
     ]
 )
 def set_serverContinents_value(selected_provider, versioned_data, upload_content, filename, prev_server_continent):
@@ -813,17 +820,17 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
     return defaultValue
 
 
-@callback(
-    Output(form_ids.server_dropdown(MAIN_FORM_ID),'value'),
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-server_dropdown','value'),
     [
-        Input(form_ids.provider_dropdown(MAIN_FORM_ID), 'value'),
-        Input(form_ids.server_continent_dropdown(MAIN_FORM_ID), 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown', 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown', 'value'),
         Input('versioned_data','data'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.server_dropdown(MAIN_FORM_ID),'value'),
+        State(f'{HOME_PAGE_ID_PREFIX}-server_dropdown','value'),
     ]
 )
 def set_server_value(selected_provider, selected_continent, versioned_data, upload_content, filename, prev_server_value):
@@ -868,16 +875,16 @@ def set_server_value(selected_provider, selected_continent, versioned_data, uplo
     return defaultValue
 
 
-@callback(
-    Output(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
     [
-        Input(form_ids.server_continent_dropdown(MAIN_FORM_ID),'value'),
-        Input(form_ids.server_div(MAIN_FORM_ID), 'style'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown','value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-server_div', 'style'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+        State(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
         State('versioned_data','data'),
     ]
 )
@@ -912,20 +919,20 @@ def set_continent_value(selected_serverContinent, display_server, upload_content
         return selected_serverContinent
     return 'Europe'
 
-@callback(
+@HOME_PAGE.callback(
     [
-        Output(form_ids.location_country_dropdown(MAIN_FORM_ID), 'options'),
-        Output(form_ids.location_country_dropdown(MAIN_FORM_ID), 'value'),
-        Output(form_ids.location_country_dropdown_div(MAIN_FORM_ID), 'style'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown', 'options'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown', 'value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown_div', 'style'),
     ],
     [
-        Input(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
         Input('versioned_data','data'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.location_country_dropdown(MAIN_FORM_ID), 'value')
+        State(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown', 'value')
     ]
 )
 def set_countries_options(selected_continent, versioned_data, upload_content, filename, prev_selectedCountry):
@@ -974,21 +981,21 @@ def set_countries_options(selected_continent, versioned_data, upload_content, fi
 
     return listOptions, defaultValue, country_style
 
-@callback(
+@HOME_PAGE.callback(
     [
-        Output(form_ids.location_region_dropdown(MAIN_FORM_ID), 'options'),
-        Output(form_ids.location_region_dropdown(MAIN_FORM_ID), 'value'),
-        Output(form_ids.location_region_dropdown_div(MAIN_FORM_ID), 'style'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-location_region_dropdown', 'options'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-location_region_dropdown', 'value'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-location_region_dropdown_div', 'style'),
     ],
     [
-        Input(form_ids.location_continent_dropdown(MAIN_FORM_ID), 'value'),
-        Input(form_ids.location_country_dropdown(MAIN_FORM_ID), 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown', 'value'),
         Input('versioned_data','data'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.location_region_dropdown(MAIN_FORM_ID), 'value'),
+        State(f'{HOME_PAGE_ID_PREFIX}-location_region_dropdown', 'value'),
     ]
 
 )
@@ -1042,16 +1049,16 @@ def set_regions_options(selected_continent, selected_country, versioned_data, up
     return listOptions, defaultValue, region_style
 
 
-@callback(
-    Output(form_ids.PUE_input(MAIN_FORM_ID),'value'),
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-PUE_input','value'),
     [
-        Input(form_ids.pue_radio(MAIN_FORM_ID), 'value'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-pue_radio', 'value'),
         Input('versioned_data','data'),
         Input('upload-data', 'contents'),
     ],
     [
         State('upload-data', 'filename'),
-        State(form_ids.PUE_input(MAIN_FORM_ID),'value'),
+        State(f'{HOME_PAGE_ID_PREFIX}-PUE_input','value'),
     ]
 )
 def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
@@ -1081,7 +1088,7 @@ def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
     return defaultPUE
 
 
-@callback(
+@HOME_PAGE.callback(
     Output('csv-input-timer', 'disabled'),
     Input('upload-data', 'contents'),
     prevent_initial_call=True,
@@ -1096,7 +1103,7 @@ def trigger_timer_to_flush_input_csv(input_csv):
         return True
     return False
 
-@callback(
+@HOME_PAGE.callback(
         Output('upload-data', 'contents'),
         Input('csv-input-timer', 'n_intervals'),
         prevent_initial_call=True,
@@ -1110,10 +1117,10 @@ def flush_input_csv_content(n):
     '''
     return None
 
-@callback(
+@HOME_PAGE.callback(
     Output("aggregate-data-csv", "data"),
     Input("btn-download_csv", "n_clicks"),
-    State(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+    State(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
     prevent_initial_call=True,
 )
 def export_as_csv(_, aggregate_data):
@@ -1128,10 +1135,10 @@ def export_as_csv(_, aggregate_data):
 
     ##################### RESET ###
 
-@callback(
-    Output(form_ids.confirm_reset(MAIN_FORM_ID),'displayed'),
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-confirm_reset','displayed'),
     [
-        Input(form_ids.reset_link(MAIN_FORM_ID),'n_clicks')
+        Input(f'{HOME_PAGE_ID_PREFIX}-reset_link','n_clicks')
     ]
 )
 def display_confirm(clicks):
@@ -1146,19 +1153,19 @@ def display_confirm(clicks):
 ## OUTPUT GRAPHICS
 #################
 
-@callback(
+@HOME_PAGE.callback(
     Output("pie_graph", "figure"),
-    Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+    Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
 )
 def create_pie_graph(aggData):
     return create_cores_memory_pie_graphic(aggData)
 
 ### UPDATE BAR CHART COMPARISON
 # FIXME: looks weird with 0 emissions
-@callback(
+@HOME_PAGE.callback(
     Output("barPlotComparison", "figure"),
     [
-        Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+        Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
         Input('versioned_data','data')
     ],
 )
@@ -1169,10 +1176,10 @@ def create_bar_chart(aggData, data):
     return None
 
 ### UPDATE BAR CHARTCPU
-@callback(
+@HOME_PAGE.callback(
     Output("barPlotComparison_cores", "figure"),
     [
-        Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+        Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
         Input('versioned_data','data')
     ],
 )
@@ -1188,10 +1195,10 @@ def create_bar_chart_cores(aggData, data):
 ## OUTPUT SUMMARY
 #################
 
-@callback(
+@HOME_PAGE.callback(
     Output('report_markdown', 'children'),
     [
-        Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+        Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
         Input('versioned_data','data')
     ],
 )
@@ -1261,7 +1268,7 @@ def fillin_report_text(aggData, data):
 
         return myText
 
-@callback(
+@HOME_PAGE.callback(
     [
         Output("carbonEmissions_text", "children"),
         Output("energy_text", "children"),
@@ -1269,7 +1276,7 @@ def fillin_report_text(aggData, data):
         Output("driving_text", "children"),
         Output("flying_text", "children"),
     ],
-    [Input(form_ids.aggregate_data(MAIN_FORM_ID), "data")],
+    [Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data")],
 )
 def update_text(data):
     text_CE = data.get('text_CE')
@@ -1293,9 +1300,9 @@ def update_text(data):
         text_fly = f"{data['flying_context']*100:,.0e} %"
     return text_CE, text_energy, text_ty, text_car, text_fly
 
-@callback(
+@HOME_PAGE.callback(
     Output("flying_label", "children"),
-    Input(form_ids.aggregate_data(MAIN_FORM_ID), "data"),
+    Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
 )
 def update_text(data):
     if (data['flying_context'] >= 1)|(data['flying_context'] == 0):

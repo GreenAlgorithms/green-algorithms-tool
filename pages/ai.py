@@ -4,14 +4,30 @@ import dash
 from dash import html, ctx, callback, Input, Output, State
 from types import SimpleNamespace
 
-from all_in_one_components.form.green_algo_form_AIO import GreenAlgoFormAIO, TRAINING_FORM_ID, INFERENCE_FORM_ID
-from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
+from dash_extensions.enrich import DashBlueprint, html
+from blueprints.form.form_blueprint import get_form_blueprint
 
 from utils.graphics import loading_wrapper
 from utils.handle_inputs import get_available_versions, DEFAULT_VALUES
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 
-dash.register_page(__name__, path='/ai')
+# dash.register_page(__name__, path='/ai')
+
+AI_PAGE = DashBlueprint()
+
+TRAINING_ID_PREFIX = 'training'
+training_form = get_form_blueprint(
+    id_prefix=TRAINING_ID_PREFIX,
+    title='TRAINING',
+    subtitle=html.P('How to fill in training form'),
+)
+
+INFERENCE_ID_PREFIX = 'inference'
+inference_form = get_form_blueprint(
+    id_prefix=INFERENCE_ID_PREFIX,
+    title='INFERENCE',
+    subtitle=html.P('How to fill in inference form'),
+)
 
 
 ###################################################
@@ -21,32 +37,23 @@ image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
 
 appVersions_options = get_available_versions()
-form_ids = GreenAlgoFormIDS()
 
 
 ###################################################
 # DEFINE APP LAYOUT
 
 
-def layout():
+def get_ai_page_layout():
     page_layout = html.Div(
         [
 
             #### TRAINING FORM ####
 
-            GreenAlgoFormAIO(
-                    TRAINING_FORM_ID,
-                    'TRAINING',
-                    html.P('How to fill in training form')
-                ),
+            training_form.embed(AI_PAGE),
 
             #### INFERENCE FORM ####
 
-            GreenAlgoFormAIO(
-                    INFERENCE_FORM_ID,
-                    'INFERENCE',
-                    html.P('How to fill in inference form')
-                ),
+            inference_form.embed(AI_PAGE),
 
             #### RESULTS ####
 
@@ -208,70 +215,71 @@ def layout():
         ],
         className='fullPage'
     )
+
     return page_layout
 
 
-def is_training_callback_fired(triggered_prop_ids):
-    for prop_id in triggered_prop_ids.keys():
-        if TRAINING_FORM_ID in prop_id:
-            return True
-    return False
-
-def is_inference_callback_fired(triggered_prop_ids):
-    for prop_id in triggered_prop_ids.keys():
-        if INFERENCE_FORM_ID in prop_id:
-            return True
-    return False
-
-
+AI_PAGE.layout = get_ai_page_layout()
 
 ###################################################
 # DEFINE CALLBACKS
 
 
+# def is_training_callback_fired(triggered_prop_ids):
+#     for prop_id in triggered_prop_ids.keys():
+#         if TRAINING_FORM_ID in prop_id:
+#             return True
+#     return False
+
+# def is_inference_callback_fired(triggered_prop_ids):
+#     for prop_id in triggered_prop_ids.keys():
+#         if INFERENCE_FORM_ID in prop_id:
+#             return True
+#     return False
+
 ################## LOAD PAGE AND INPUTS
 
-@callback(
+@AI_PAGE.callback(
     [
         ##################################################################
         ## WARNING: do not modify the order, unless modifying the order
         ## of the DEFAULT_VALUES accordingly
-        Output(form_ids.runTime_hour_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.runTime_min_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.coreType_dropdown(TRAINING_FORM_ID),'value'),
-        Output(form_ids.numberCPUs_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.CPUmodel_dropdown(TRAINING_FORM_ID), 'value'),
-        Output(form_ids.tdpCPU_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.numberGPUs_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.GPUmodel_dropdown(TRAINING_FORM_ID), 'value'),
-        Output(form_ids.tdpGPU_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.memory_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.platformType_dropdown(TRAINING_FORM_ID),'value'),
-        Output(form_ids.usageCPU_radio(TRAINING_FORM_ID),'value'),
-        Output(form_ids.usageCPU_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.usageGPU_radio(TRAINING_FORM_ID),'value'),
-        Output(form_ids.usageGPU_input(TRAINING_FORM_ID),'value'),
-        Output(form_ids.pue_radio(TRAINING_FORM_ID),'value'),
-        Output(form_ids.PSF_radio(TRAINING_FORM_ID), 'value'),
-        Output(form_ids.PSF_input(TRAINING_FORM_ID), 'value'),
-        Output(form_ids.runTime_hour_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.runTime_min_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.coreType_dropdown(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.numberCPUs_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.CPUmodel_dropdown(INFERENCE_FORM_ID), 'value'),
-        Output(form_ids.tdpCPU_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.numberGPUs_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.GPUmodel_dropdown(INFERENCE_FORM_ID), 'value'),
-        Output(form_ids.tdpGPU_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.memory_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.platformType_dropdown(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.usageCPU_radio(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.usageCPU_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.usageGPU_radio(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.usageGPU_input(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.pue_radio(INFERENCE_FORM_ID),'value'),
-        Output(form_ids.PSF_radio(INFERENCE_FORM_ID), 'value'),
-        Output(form_ids.PSF_input(INFERENCE_FORM_ID), 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-runTime_hour_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-runTime_min_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-coreType_dropdown','value'),
+        Output(f'{TRAINING_ID_PREFIX}-numberCPUs_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-CPUmodel_dropdown', 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-tdpCPU_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-numberGPUs_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-GPUmodel_dropdown', 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-tdpGPU_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-memory_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-platformType_dropdown','value'),
+        Output(f'{TRAINING_ID_PREFIX}-usageCPU_radio','value'),
+        Output(f'{TRAINING_ID_PREFIX}-usageCPU_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-usageGPU_radio','value'),
+        Output(f'{TRAINING_ID_PREFIX}-usageGPU_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-pue_radio','value'),
+        Output(f'{TRAINING_ID_PREFIX}-PSF_radio', 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-PSF_input', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-runTime_hour_input','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-runTime_min_input','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-coreType_dropdown','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-numberCPUs_input','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-CPUmodel_dropdown', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-tdpCPU_input','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-numberGPUs_input','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-GPUmodel_dropdown', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-tdpGPU_input', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-memory_input', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-platformType_dropdown','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-usageCPU_radio', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-usageCPU_input', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-usageGPU_radio', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-usageGPU_input', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-pue_radio','value'),
+        Output(f'{INFERENCE_ID_PREFIX}-PSF_radio', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-PSF_input', 'value'),
     ],
     [
         Input('url_content','pathname'),
@@ -294,61 +302,34 @@ def filling_from_inputs(_, __):
 
 
 
-@callback(
-    Output(form_ids.provider_dropdown(TRAINING_FORM_ID),'value'),
-    Output(form_ids.provider_dropdown(INFERENCE_FORM_ID),'value'),
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}-provider_dropdown','value'),
     [
-        Input(form_ids.platformType_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.platformType_dropdown(INFERENCE_FORM_ID), 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-platformType_dropdown', 'value'),
         Input('versioned_data','data'),
     ],
 )
-def set_provider(_, __, versioned_data):
+def set_provider(_, versioned_data):
     '''
     Sets the provider value, either from the csv content of as a default value.
     TODO: improve the choice of the default value.
     '''           
-    return 'gcp', 'gcp'
-    
+    return 'gcp'
 
-@callback(
-    Output(form_ids.server_continent_dropdown(TRAINING_FORM_ID),'value'),
-    Output(form_ids.server_continent_dropdown(INFERENCE_FORM_ID),'value'),
+@AI_PAGE.callback(
+    Output(f'{INFERENCE_ID_PREFIX}-provider_dropdown','value'),
     [
-        Input(form_ids.provider_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.provider_dropdown(INFERENCE_FORM_ID), 'value'),
+        Input(f'{INFERENCE_ID_PREFIX}-platformType_dropdown', 'value'),
         Input('versioned_data','data'),
     ],
-    [
-        State(form_ids.server_continent_dropdown(TRAINING_FORM_ID), 'value'),
-        State(form_ids.server_continent_dropdown(INFERENCE_FORM_ID), 'value'),
-    ]
 )
-def set_server_continent_value(
-        train_selected_provider,
-        inference_selected_provider,
-        versioned_data, 
-        train_prev_server_continent,
-        inference_prev_server_continent
-    ):
+def set_provider(_, versioned_data):
     '''
-    Sets the value for server's continent, depending on the provider.
-    We want to display a value selected previously by 
-    the user or to choose a relevant default value.
-    '''
-
-    triggered_prop_ids = ctx.triggered_prop_ids
-    triggered_id = ctx.triggered_id
-
-    new_train_server_continent = dash.no_update
-    new_inference_server_continent = dash.no_update
-
-    if is_training_callback_fired(triggered_prop_ids):
-        new_train_server_continent = update_server_continent_value(versioned_data, train_selected_provider, train_prev_server_continent)
-    if is_inference_callback_fired(triggered_prop_ids):
-        new_inference_server_continent = update_server_continent_value(versioned_data, inference_selected_provider, inference_prev_server_continent)
-    return new_train_server_continent, new_inference_server_continent
-  
+    Sets the provider value, either from the csv content of as a default value.
+    TODO: improve the choice of the default value.
+    '''           
+    return 'gcp'
+    
 
 def update_server_continent_value(versioned_data, selected_provider, previous_value):
     available_options = availableLocations_continent(selected_provider, versioned_data)
@@ -361,46 +342,50 @@ def update_server_continent_value(versioned_data, selected_provider, previous_va
             defaultValue = None
     return defaultValue
 
-
-
-@callback(
-    Output(form_ids.server_dropdown(TRAINING_FORM_ID),'value'),
-    Output(form_ids.server_dropdown(INFERENCE_FORM_ID),'value'),
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}-server_continent_dropdown','value'),
     [
-        Input(form_ids.provider_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.provider_dropdown(INFERENCE_FORM_ID), 'value'),
-        Input(form_ids.server_continent_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.server_continent_dropdown(INFERENCE_FORM_ID), 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-provider_dropdown', 'value'),
         Input('versioned_data','data'),
     ],
     [
-        State(form_ids.server_dropdown(TRAINING_FORM_ID),'value'),
-        State(form_ids.server_dropdown(INFERENCE_FORM_ID),'value'),
+        State(f'{TRAINING_ID_PREFIX}-server_continent_dropdown', 'value'),
     ]
 )
-def set_server_value(
+def set_server_continent_value(
         train_selected_provider,
-        inference_selected_provider,
-        train_selected_continent,
-        inference_selected_continent,
-        versioned_data,
-        train_prev_server_value,
-        inference_prev_server_value
+        versioned_data, 
+        train_prev_server_continent,
     ):
     '''
-    Sets the value for servers, based on provider and continent.
-    Here again we want to display a default value, to 
-    fecth the value from a csv or to show a value previously selected by the user.
+    Sets the value for server's continent, depending on the provider.
+    We want to display a value selected previously by 
+    the user or to choose a relevant default value.
     '''
-    triggered_prop_ids = ctx.triggered_prop_ids
-    new_train_server = dash.no_update
-    new_inference_server = dash.no_update
+    return  update_server_continent_value(versioned_data, train_selected_provider, train_prev_server_continent)
 
-    if is_training_callback_fired(triggered_prop_ids):
-        new_train_server = update_server_value(train_selected_continent, train_selected_provider, train_prev_server_value,  versioned_data)
-    if is_inference_callback_fired(triggered_prop_ids):
-        new_inference_server = update_server_value(inference_selected_continent, inference_selected_provider, inference_prev_server_value, versioned_data)
-    return new_train_server, new_inference_server
+@AI_PAGE.callback(
+    Output(f'{INFERENCE_ID_PREFIX}-server_continent_dropdown','value'),
+    [
+        Input(f'{INFERENCE_ID_PREFIX}-provider_dropdown', 'value'),
+        Input('versioned_data','data'),
+    ],
+    [
+        State(f'{INFERENCE_ID_PREFIX}-server_continent_dropdown', 'value'),
+    ]
+)
+def set_server_continent_value(
+        inference_selected_provider,
+        versioned_data, 
+        inference_prev_server_continent,
+    ):
+    '''
+    Sets the value for server's continent, depending on the provider.
+    We want to display a value selected previously by 
+    the user or to choose a relevant default value.
+    '''
+    return  update_server_continent_value(versioned_data, inference_selected_provider, inference_prev_server_continent)
+
 
 def update_server_value(selected_continent, selected_provider, previous_value, versioned_data):
     # Handles special case
@@ -418,42 +403,54 @@ def update_server_value(selected_continent, selected_provider, previous_value, v
         defaultValue = None
     return defaultValue
 
-
-@callback(
-    Output(form_ids.location_continent_dropdown(TRAINING_FORM_ID), 'value'),
-    Output(form_ids.location_continent_dropdown(INFERENCE_FORM_ID), 'value'),
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}server_dropdown','value'),
     [
-        Input(form_ids.server_continent_dropdown(TRAINING_FORM_ID),'value'),
-        Input(form_ids.server_continent_dropdown(INFERENCE_FORM_ID),'value'),
-        Input(form_ids.server_div(TRAINING_FORM_ID), 'style'),
-        Input(form_ids.server_div(INFERENCE_FORM_ID), 'style'),
+        Input(f'{TRAINING_ID_PREFIX}provider_dropdown', 'value'),
+        Input(f'{TRAINING_ID_PREFIX}server_continent_dropdown', 'value'),
+        Input('versioned_data','data'),
     ],
     [
-        State(form_ids.location_continent_dropdown(TRAINING_FORM_ID), 'value'),
-        State(form_ids.location_continent_dropdown(INFERENCE_FORM_ID), 'value'),
+        State(f'{TRAINING_ID_PREFIX}server_dropdown','value'),
     ]
 )
-def set_location_continent_value(
-        train_selected_serverContinent,
-        inference_selected_serverContinent,
-        train_display_server,
-        inference_display_server,
-        train_prev_locationContinent,
-        inference_prev_locationContinent,
+def set_server_value(
+        train_selected_provider,
+        train_selected_continent,
+        versioned_data,
+        train_prev_server_value,
     ):
     '''
-    Sets the value for location continent.
-    Same as for server and server continent regarding the different inputs.
+    Sets the value for servers, based on provider and continent.
+    Here again we want to display a default value, to 
+    fecth the value from a csv or to show a value previously selected by the user.
     '''
-    triggered_prop_ids = ctx.triggered_prop_ids
-    new_train_continent = dash.no_update
-    new_inference_continent = dash.no_update
+    return update_server_value(train_selected_continent, train_selected_provider, train_prev_server_value,  versioned_data)
 
-    if is_training_callback_fired(triggered_prop_ids):
-        new_train_continent = update_continent_value(train_prev_locationContinent, train_selected_serverContinent, train_display_server)
-    if is_inference_callback_fired(triggered_prop_ids):
-        new_inference_continent = update_continent_value(inference_prev_locationContinent, inference_selected_serverContinent, inference_display_server)
-    return new_train_continent, new_inference_continent
+@AI_PAGE.callback(
+    Output(f'{INFERENCE_ID_PREFIX}server_dropdown','value'),
+    [
+        Input(f'{INFERENCE_ID_PREFIX}provider_dropdown', 'value'),
+        Input(f'{INFERENCE_ID_PREFIX}server_continent_dropdown', 'value'),
+        Input('versioned_data','data'),
+    ],
+    [
+        State(f'{INFERENCE_ID_PREFIX}server_dropdown','value'),
+    ]
+)
+def set_server_value(
+        inference_selected_provider,
+        inference_selected_continent,
+        versioned_data,
+        inference_prev_server_value,
+    ):
+    '''
+    Sets the value for servers, based on provider and continent.
+    Here again we want to display a default value, to 
+    fecth the value from a csv or to show a value previously selected by the user.
+    '''
+    return update_server_value(inference_selected_continent, inference_selected_provider, inference_prev_server_value,  versioned_data)
+
 
 def update_continent_value(prev_location_continent, selected_server_continent, display_server):
     # handles the case when the continent value had previously been set by the user
@@ -464,48 +461,49 @@ def update_continent_value(prev_location_continent, selected_server_continent, d
         return selected_server_continent
     return 'Europe'
 
-
-@callback(
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}-location_continent_dropdown', 'value'),
     [
-        Output(form_ids.location_country_dropdown(TRAINING_FORM_ID), 'options'),
-        Output(form_ids.location_country_dropdown(INFERENCE_FORM_ID), 'options'),
-        Output(form_ids.location_country_dropdown(TRAINING_FORM_ID), 'value'),
-        Output(form_ids.location_country_dropdown(INFERENCE_FORM_ID), 'value'),
-        Output(form_ids.location_country_dropdown_div(TRAINING_FORM_ID), 'style'),
-        Output(form_ids.location_country_dropdown_div(INFERENCE_FORM_ID), 'style'),
+        Input(f'{TRAINING_ID_PREFIX}-server_continent_dropdown','value'),
+        Input(f'{TRAINING_ID_PREFIX}-server_div', 'style'),
     ],
     [
-        Input(form_ids.location_continent_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.location_continent_dropdown(INFERENCE_FORM_ID), 'value'),
-        Input('versioned_data','data'),
-    ],
-    [
-        State(form_ids.location_country_dropdown(TRAINING_FORM_ID), 'value'),
-        State(form_ids.location_country_dropdown(INFERENCE_FORM_ID), 'value')
+        State(f'{TRAINING_ID_PREFIX}-location_continent_dropdown', 'value'),
     ]
 )
-def set_countries_options(
-        train_selected_continent,
-        inference_selected_continent,
-        versioned_data,
-        train_prev_country,
-        inference_prev_country,
+def set_location_continent_value(
+        train_selected_serverContinent,
+        train_display_server,
+        train_prev_locationContinent,
     ):
     '''
-    List of options and value for countries.
-    Hides country dropdown if continent=World is selected.
-    Must fetch the value from a csv as well.
+    Sets the value for location continent.
+    Same as for server and server continent regarding the different inputs.
     '''
-    triggered_prop_ids = ctx.triggered_prop_ids
-    new_train_options, new_train_value, new_train_div_style = dash.no_update, dash.no_update, dash.no_update
-    new_inference_options, new_inference_value, new_inference_div_style = dash.no_update, dash.no_update, dash.no_update
+    return update_continent_value(train_prev_locationContinent, train_selected_serverContinent, train_display_server)
 
-    if is_training_callback_fired(triggered_prop_ids):
-        new_train_options, new_train_value, new_train_div_style = update_countries_options_and_value(train_selected_continent, train_prev_country, versioned_data)
-    if is_inference_callback_fired(triggered_prop_ids):
-        new_inference_options, new_inference_value, new_inference_div_style = update_countries_options_and_value(inference_selected_continent, inference_prev_country, versioned_data)
+@AI_PAGE.callback(
+    Output(f'{INFERENCE_ID_PREFIX}-location_continent_dropdown', 'value'),
+    [
+        Input(f'{INFERENCE_ID_PREFIX}-server_continent_dropdown','value'),
+        Input(f'{INFERENCE_ID_PREFIX}-server_div', 'style'),
+    ],
+    [
+        State(f'{INFERENCE_ID_PREFIX}-location_continent_dropdown', 'value'),
+    ]
+)
+def set_location_continent_value(
+        inference_selected_serverContinent,
+        inference_display_server,
+        inference_prev_locationContinent,
+    ):
+    '''
+    Sets the value for location continent.
+    Same as for server and server continent regarding the different inputs.
+    '''
+    return update_continent_value(inference_prev_locationContinent, inference_selected_serverContinent, inference_display_server)
 
-    return new_train_options, new_inference_options, new_train_value, new_inference_value, new_train_div_style, new_inference_div_style
+
 
 def update_countries_options_and_value(selected_continent, previous_country, versioned_data):
     availableOptions = availableOptions_country(selected_continent, data=versioned_data)
@@ -527,51 +525,57 @@ def update_countries_options_and_value(selected_continent, previous_country, ver
 
     return listOptions, defaultValue, country_style
 
-@callback(
+@AI_PAGE.callback(
     [
-        Output(form_ids.location_region_dropdown(TRAINING_FORM_ID), 'options'),
-        Output(form_ids.location_region_dropdown(INFERENCE_FORM_ID), 'options'),
-        Output(form_ids.location_region_dropdown(TRAINING_FORM_ID), 'value'),
-        Output(form_ids.location_region_dropdown(INFERENCE_FORM_ID), 'value'),
-        Output(form_ids.location_region_dropdown_div(TRAINING_FORM_ID), 'style'),
-        Output(form_ids.location_region_dropdown_div(INFERENCE_FORM_ID), 'style'),
+        Output(f'{TRAINING_ID_PREFIX}-location_country_dropdown', 'options'),
+        Output(f'{TRAINING_ID_PREFIX}-location_country_dropdown', 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-location_country_dropdown_div', 'style'),
     ],
     [
-        Input(form_ids.location_continent_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.location_continent_dropdown(INFERENCE_FORM_ID), 'value'),
-        Input(form_ids.location_country_dropdown(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.location_country_dropdown(INFERENCE_FORM_ID), 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-location_continent_dropdown', 'value'),
         Input('versioned_data','data'),
     ],
     [
-        State(form_ids.location_region_dropdown(TRAINING_FORM_ID), 'value'),
-        State(form_ids.location_region_dropdown(INFERENCE_FORM_ID), 'value'),
+        State(f'{TRAINING_ID_PREFIX}-location_country_dropdown', 'value'),
     ]
-
 )
-def set_regions_options(
+def set_countries_options(
         train_selected_continent,
-        inference_selected_continent,
-        train_selected_country,
-        inference_selected_country,
         versioned_data,
-        train_prev_region,
-        inference_prev_region,
+        train_prev_country,
     ):
     '''
-    List of options and value for regions.
-    Hides region dropdown if only one possible region (or continent=World)
+    List of options and value for countries.
+    Hides country dropdown if continent=World is selected.
+    Must fetch the value from a csv as well.
     '''
-    triggered_prop_ids = ctx.triggered_prop_ids
-    new_train_options, new_train_value, new_train_div_style = dash.no_update, dash.no_update, dash.no_update
-    new_inference_options, new_inference_value, new_inference_div_style = dash.no_update, dash.no_update, dash.no_update
+    return update_countries_options_and_value(train_selected_continent, train_prev_country, versioned_data)
 
-    if is_training_callback_fired(triggered_prop_ids):
-        new_train_options, new_train_value, new_train_div_style = update_regions_options_and_value(train_selected_continent, train_selected_country, train_prev_region, versioned_data)
-    if is_inference_callback_fired(triggered_prop_ids):
-        new_inference_options, new_inference_value, new_inference_div_style = update_regions_options_and_value(inference_selected_continent, inference_selected_country, inference_prev_region, versioned_data)
-
-    return new_train_options, new_inference_options, new_train_value, new_inference_value, new_train_div_style, new_inference_div_style
+@AI_PAGE.callback(
+    [
+        Output(f'{INFERENCE_ID_PREFIX}-location_country_dropdown', 'options'),
+        Output(f'{INFERENCE_ID_PREFIX}-location_country_dropdown', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-location_country_dropdown_div', 'style'),
+    ],
+    [
+        Input(f'{INFERENCE_ID_PREFIX}-location_continent_dropdown', 'value'),
+        Input('versioned_data','data'),
+    ],
+    [
+        State(f'{INFERENCE_ID_PREFIX}-location_country_dropdown', 'value'),
+    ]
+)
+def set_countries_options(
+        inference_selected_continent,
+        versioned_data,
+        inference_prev_country,
+    ):
+    '''
+    List of options and value for countries.
+    Hides country dropdown if continent=World is selected.
+    Must fetch the value from a csv as well.
+    '''
+    return update_countries_options_and_value(inference_selected_continent, inference_prev_country, versioned_data)
 
 
 def update_regions_options_and_value(selected_continent, selected_country, previous_region, versioned_data):
@@ -597,29 +601,62 @@ def update_regions_options_and_value(selected_continent, selected_country, previ
 
     return listOptions, defaultValue, region_style
 
-
-@callback(
-    Output(form_ids.PUE_input(TRAINING_FORM_ID),'value'),
-    Output(form_ids.PUE_input(INFERENCE_FORM_ID),'value'),
+@AI_PAGE.callback(
     [
-        Input(form_ids.pue_radio(TRAINING_FORM_ID), 'value'),
-        Input(form_ids.pue_radio(INFERENCE_FORM_ID), 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-location_region_dropdown', 'options'),
+        Output(f'{TRAINING_ID_PREFIX}-location_region_dropdown', 'value'),
+        Output(f'{TRAINING_ID_PREFIX}-location_region_dropdown_div', 'style'),
+    ],
+    [
+        Input(f'{TRAINING_ID_PREFIX}-location_continent_dropdown', 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-location_country_dropdown', 'value'),
         Input('versioned_data','data'),
     ],
-)
-def set_PUE(_, __, versioned_data):
-    '''
-    Sets the PUE value, either from csv input or as a default value.
-    '''
-    triggered_prop_ids = ctx.triggered_prop_ids
-    new_train_pue = dash.no_update
-    new_inference_pue = dash.no_update
+    [
+        State(f'{TRAINING_ID_PREFIX}-location_region_dropdown', 'value'),
+    ]
 
-    if is_training_callback_fired(triggered_prop_ids):
-        new_train_pue = update_pue_value(versioned_data)
-    if is_inference_callback_fired(triggered_prop_ids):
-        new_inference_pue = update_pue_value(versioned_data)
-    return new_train_pue, new_inference_pue
+)
+def set_regions_options(
+        train_selected_continent,
+        train_selected_country,
+        versioned_data,
+        train_prev_region,
+    ):
+    '''
+    List of options and value for regions.
+    Hides region dropdown if only one possible region (or continent=World)
+    '''
+    return update_regions_options_and_value(train_selected_continent, train_selected_country, train_prev_region, versioned_data)
+
+@AI_PAGE.callback(
+    [
+        Output(f'{INFERENCE_ID_PREFIX}-location_region_dropdown', 'options'),
+        Output(f'{INFERENCE_ID_PREFIX}-location_region_dropdown', 'value'),
+        Output(f'{INFERENCE_ID_PREFIX}-location_region_dropdown_div', 'style'),
+    ],
+    [
+        Input(f'{INFERENCE_ID_PREFIX}-location_continent_dropdown', 'value'),
+        Input(f'{INFERENCE_ID_PREFIX}-location_country_dropdown', 'value'),
+        Input('versioned_data','data'),
+    ],
+    [
+        State(f'{INFERENCE_ID_PREFIX}-location_region_dropdown', 'value'),
+    ]
+
+)
+def set_regions_options(
+        inference_selected_continent,
+        inference_selected_country,
+        versioned_data,
+        inference_prev_region,
+    ):
+    '''
+    List of options and value for regions.
+    Hides region dropdown if only one possible region (or continent=World)
+    '''
+    return update_regions_options_and_value(inference_selected_continent, inference_selected_country, inference_prev_region, versioned_data)
+
 
 def update_pue_value(versioned_data):
     if versioned_data is not None:
@@ -628,3 +665,30 @@ def update_pue_value(versioned_data):
     else:
         defaultPUE = 0
     return defaultPUE
+
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}-PUE_input','value'),
+    [
+        Input(f'{TRAINING_ID_PREFIX}-pue_radio', 'value'),
+        Input('versioned_data','data'),
+    ],
+)
+def set_PUE(_, versioned_data):
+    '''
+    Sets the PUE value, either from csv input or as a default value.
+    '''
+    return update_pue_value(versioned_data)
+
+@AI_PAGE.callback(
+    Output(f'{INFERENCE_ID_PREFIX}-PUE_input','value'),
+    [
+        Input(f'{INFERENCE_ID_PREFIX}-pue_radio', 'value'),
+        Input('versioned_data','data'),
+    ],
+)
+def set_PUE(_, versioned_data):
+    '''
+    Sets the PUE value, either from csv input or as a default value.
+    '''
+    return update_pue_value(versioned_data)
+
