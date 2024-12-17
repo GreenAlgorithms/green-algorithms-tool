@@ -1,12 +1,9 @@
 import os
 import dash
-import datetime
 
-import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.graph_objects as go
 
-from dash import ctx, html, dcc, callback, Input, Output, State
+from dash import ctx, html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 from types import SimpleNamespace
 
@@ -19,6 +16,8 @@ from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_g
 from dash_extensions.enrich import DashBlueprint, html
 from blueprints.form.form_blueprint import get_form_blueprint
 from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
+from blueprints.results.results_blueprint import get_results_blueprint
+from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 
 
 # dash.register_page(__name__, path='/', title='Green Algorithms')
@@ -44,6 +43,10 @@ form = get_form_blueprint(
 )
 
 methodology_content = get_methodology_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
+
+results = get_results_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
+
+import_export = get_import_expot_blueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
 
 
 ###################################################
@@ -71,215 +74,12 @@ def get_home_page_layout():
 
             html.Div(
                 [
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.Div(
-                                        [
-                                            html.Div(
-                                                [
-                                                    html.Div(
-                                                        [
-                                                            html.B("Share your results "),
-                                                            html.A(html.B('as a csv file!'), id='btn-download_csv'),
-                                                            dcc.Download(id="aggregate-data-csv"),
-                                                        ],
-                                                    )
-                                                ],
-                                                className='container footer import-export',
-                                                id='export-result',
-                                            ),
+                    import_export.embed(HOME_PAGE),
 
-                                            html.Div(
-                                                dcc.Upload(
-                                                    html.Div(
-                                                        [
-                                                            html.B("Import resuts"),
-                                                            html.Div(
-                                                                [
-                                                                    html.A("Drag and drop or click to select your .csv file.")
-                                                                ],
-                                                                style={'font-size': '12px', 'margin-top': '3px', 'text-decoration': 'underline'}
-                                                            )
-                                                        ]
-                                                    ),
-                                                    id='upload-data',
-                                                ),
-                                                className='container footer import-export',
-                                                id='import-result',
-                                            ),
-                                        ],
-                                        id='import-export-buttons'
-                                    ),
+                    results.embed(HOME_PAGE),
 
-                                    dbc.Alert(
-                                        [
-                                            html.B('Filling values from csv: error'),
-                                            html.Div(id='log-error-subtitle'),
-                                            html.Div(id='log-error-content'),
-                                        ],
-                                        className = 'container footer import-export',
-                                        id='import-error-message',
-                                        is_open=False,
-                                        duration=60000,
-                                    ),
-
-                                ],
-                                id='import-export'
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_co2.svg'),
-                                        id="logo_co2",
-                                        className="style-icon",
-                                        style={
-                                            'margin-top': '-7px',
-                                            'margin-bottom': '7px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="carbonEmissions_text",
-                                            )),
-
-                                            html.P(
-                                                "Carbon footprint",
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_power_1.svg'),
-                                        id="logo_power",
-                                        className="style-icon",
-                                        style={
-                                            'margin': '0px',
-                                            'padding': '15px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="energy_text",
-                                            )),
-
-                                            html.P(
-                                                "Energy needed",
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_tree_1.svg'),
-                                        id="logo_tree",
-                                        className="style-icon",
-                                        style={
-                                            'padding': '15px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="treeMonths_text",
-                                            )),
-
-                                            html.P(
-                                                "Carbon sequestration"
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_car_3.svg'),
-                                        id="logo_car",
-                                        className="style-icon",
-                                        style={
-                                            'padding': '13px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="driving_text",
-                                            )),
-
-                                            html.P(
-                                                "in a passenger car",
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_plane_1.svg'),
-                                        id="logo_plane",
-                                        className="style-icon",
-                                        style={
-                                            'padding': '4px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="flying_text",
-                                            )),
-
-                                            html.P(
-                                                id="flying_label",
-                                            ),
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-                        ],
-                        className='super-section mini-boxes'
-                    ),
-
-                    dcc.Interval(
-                        id='csv-input-timer',
-                        interval=10000, 
-                        # in milliseconds, should not be lower than 1000
-                        # otherwise the update of the upload csv content is done too soon
-                        # and there is not consistency between the state of the form and 
-                        # the content  of the csv
-                        disabled=True
-                        ),
-
+            #### DYNAMIC GRAPHS ####
+        
                     html.Div(
                         [
                             html.Div(
@@ -327,7 +127,6 @@ def get_home_page_layout():
                 ],
                 className='super-section first-output'
             ),
-
             
             #### METHODOLOGY CONTENT ####
 
@@ -387,153 +186,11 @@ def get_home_page_layout():
                 className='container core-comparison'
             ),
 
-            #### WHAT TO DO ####
-
-            # TODO rewrite the "what can you do" section
-
-            # html.Div(
-            #     [
-            #         html.H2("What can you do about it?"),
-            #
-            #         dcc.Markdown('''
-            #         The main factor impacting your footprint is the location of your servers:
-            #         the same algorithm will emit __74 times more__ CO2e
-            #         if ran in Australia compared to Switzerland.
-            #         Although it's not always the case,
-            #         many cloud providers offer the option to select a data centre.
-            #
-            #         Memory power draw is a huge source of waste,
-            #         because __the energy consumption depends on the memory available,
-            #         not the actual usage__, only requesting the needed memory
-            #         is a painless way to reduce greenhouse gas emissions.
-            #
-            #         Generally, taking the time to write optimised code that runs faster with fewer
-            #         resources saves both money and the planet.
-            #
-            #         And above all, __only run jobs that you need!__
-            #         ''')
-            #     ],
-            #     className='container to-do'
-            # ),
-
-            #### DATA AND Q ####
-
-            # TODO reorganise the footer, it doesn't look great
-
-            html.Div(
-                [
-                    html.Div(
-                        [
-                            html.H2("Data and code"),
-
-                            html.Center(
-                                html.P(["All the data and code used to run this calculator can be found on ",
-                                        html.A("GitHub",
-                                               href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                               target='_blank')
-                                        ]),
-                            ),
-                        ],
-                        className='container footer'
-                    ),
-
-                    html.Div(
-                        [
-                            html.H2('Questions / Suggestions?'),
-
-                            html.Center(
-                                html.P(["If you have questions or suggestions about the tool, you can ",
-                                        html.A("open an issue",
-                                               href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
-                                               target='_blank'),
-                                        " on the GitHub or ",
-                                        html.A("email us",
-                                               href='mailto:green.algorithms@gmail.com', ),
-                                        ]),
-                            ),
-                        ],
-                        className='container footer'
-                    )
-                ],
-                className='super-section data-questions'
-            ),
-
-            #### HOW TO CITE ####
-
-            html.Div(
-                [
-                    html.H2("How to cite this work"),
-
-                    html.Center(
-                        html.P([
-                            "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
-                            "Adv. Sci. 2021, 2100707. ",
-                            html.A("https://doi.org/10.1002/advs.202100707",
-                                   href='https://doi.org/10.1002/advs.202100707',
-                                   target='_blank')
-                        ]),
-                    ),
-                ],
-                className='container citation footer'
-            ),
-
-            #### ABOUT US ####
-
-            html.Div(
-                [
-                    html.H2("About us"),
-
-                    dcc.Markdown('''
-                    The Green Algorithms project is led by
-
-                    [Loïc Lannelongue](www.lannelongue.eu)¹ and [Michael Inouye](https://www.inouyelab.org/home/people)².
-                    ''',
-                                 className='authors'
-                                 ),
-
-                    dcc.Markdown('''
-                    (1) University of Cambridge
-
-                    (2) Baker Heart and Diabetes Institute
-                    
-                    ''',
-                                 className='affiliations'
-                                 ),
-                ],
-                className='container about-us footer'
-            ),
-
-            #### FUNDERS ####
-
-            # TODO add funders logos
-
-            #### SHOW YOUR STRIPES ####
-
-            html.Div(
-                [
-                    html.H2("#ShowYourStripes"),
-
-                    html.Center(
-                        html.P([html.P(
-                            "These coloured stripes in the background represent the change in world temperatures "
-                            "from 1850 to 2018. "
-                            "This striking design was made by Ed Hawkins from the University of Reading. "),
-                            html.P(["More on ",
-                                    html.A("ShowYourStipes.info",
-                                           href='https://showyourstripes.info',
-                                           target='_blank')]),
-                            html.P(["Additional credits for the app can be found on the ",
-                                    html.A("GitHub",
-                                           href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                           target='_blank'), ])
-                        ]),
-                    ),
-                ],
-                className='container show-stripes footer'
-            ),
-
         ],
         className='fullPage'
+        
+
+
     )
 
     return page_layout
@@ -570,16 +227,16 @@ HOME_PAGE.layout = get_home_page_layout()
         Output(f'{HOME_PAGE_ID_PREFIX}-PSF_radio', 'value'),
         Output(f'{HOME_PAGE_ID_PREFIX}-PSF_input', 'value'),
         Output('appVersions_dropdown','value'),
-        Output('import-error-message', 'is_open'),
-        Output('log-error-subtitle', 'children'),
-        Output('log-error-content', 'children'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-import-error-message', 'is_open'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-log-error-subtitle', 'children'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-log-error-content', 'children'),
     ],
     [
         Input('url_content','search'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', 'data'),
     ],
     # below line is required because the 'alert' container import-error-message is not in the layout initially
@@ -605,7 +262,7 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
         raise PreventUpdate 
     
     # only for initial call, when trigerred by the url
-    if 'upload-data.contents' not in ctx.triggered_prop_ids:
+    if 'main-upload-data.contents' not in ctx.triggered_prop_ids:
         return tuple(DEFAULT_VALUES.values()) + (False, '', '')
 
     # First we deal with the case the input_csv has just been flushed
@@ -666,10 +323,10 @@ def filling_from_inputs(_, upload_content, filename, current_app_state):
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-platformType_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown', 'value'),
     ]
 )
@@ -697,10 +354,10 @@ def set_provider(_, versioned_data, upload_content, filename, prev_provider):
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown', 'value'),
     ]
 )
@@ -748,10 +405,10 @@ def set_serverContinents_value(selected_provider, versioned_data, upload_content
         Input(f'{HOME_PAGE_ID_PREFIX}-provider_dropdown', 'value'),
         Input(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-server_dropdown','value'),
     ]
 )
@@ -802,10 +459,10 @@ def set_server_value(selected_provider, selected_continent, versioned_data, uplo
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-server_continent_dropdown','value'),
         Input(f'{HOME_PAGE_ID_PREFIX}-server_div', 'style'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
         State('versioned_data','data'),
     ]
@@ -850,10 +507,10 @@ def set_continent_value(selected_serverContinent, display_server, upload_content
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown', 'value')
     ]
 )
@@ -913,10 +570,10 @@ def set_countries_options(selected_continent, versioned_data, upload_content, fi
         Input(f'{HOME_PAGE_ID_PREFIX}-location_continent_dropdown', 'value'),
         Input(f'{HOME_PAGE_ID_PREFIX}-location_country_dropdown', 'value'),
         Input('versioned_data','data'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-location_region_dropdown', 'value'),
     ]
 
@@ -976,10 +633,10 @@ def set_regions_options(selected_continent, selected_country, versioned_data, up
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-pue_radio', 'value'),
         Input('versioned_data','data'),
-        Input('upload-data', 'contents'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'contents'),
     ],
     [
-        State('upload-data', 'filename'),
+        State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-PUE_input','value'),
     ]
 )
@@ -1008,51 +665,6 @@ def set_PUE(radio, versioned_data, upload_content, filename, prev_pue):
                 defaultPUE = target_input['PUE']
 
     return defaultPUE
-
-
-@HOME_PAGE.callback(
-    Output('csv-input-timer', 'disabled'),
-    Input('upload-data', 'contents'),
-    prevent_initial_call=True,
-)
-def trigger_timer_to_flush_input_csv(input_csv):
-    '''
-    When a csv is dropped, triggers a timer that allows to flush this csv.
-    If the input is none, this means that we just flushed it so we do not
-    trigger the timer again.
-    '''
-    if input_csv is None:
-        return True
-    return False
-
-@HOME_PAGE.callback(
-        Output('upload-data', 'contents'),
-        Input('csv-input-timer', 'n_intervals'),
-        prevent_initial_call=True,
-)
-def flush_input_csv_content(n):
-    '''
-    Flushes the input csv.
-    This is required if we want to enable the user to load again the same csv.
-    Otherwise, if not flushed, the csv content does not change so it does not trigger
-    the reading of its content.
-    '''
-    return None
-
-@HOME_PAGE.callback(
-    Output("aggregate-data-csv", "data"),
-    Input("btn-download_csv", "n_clicks"),
-    State(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
-    prevent_initial_call=True,
-)
-def export_as_csv(_, aggregate_data):
-    '''
-    Exports the aggregate_data.
-    '''
-    to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
-    return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv", index=False, sep=';')
 
 
     ##################### RESET ###
@@ -1190,45 +802,16 @@ def fillin_report_text(aggData, data):
 
         return myText
 
-@HOME_PAGE.callback(
-    [
-        Output("carbonEmissions_text", "children"),
-        Output("energy_text", "children"),
-        Output("treeMonths_text", "children"),
-        Output("driving_text", "children"),
-        Output("flying_text", "children"),
-    ],
-    [Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data")],
-)
-def update_text(data):
-    text_CE = data.get('text_CE')
-    text_energy = data.get('text_energyNeeded')
-    text_ty = data.get('text_treeYear')
-    if (data['nkm_drivingEU'] != 0) & ((data['nkm_drivingEU'] >= 1e3) | (data['nkm_drivingEU'] < 0.1)):
-        text_car = f"{data['nkm_drivingEU']:,.2e} km"
-    else:
-        text_car = f"{data['nkm_drivingEU']:,.2f} km"
-    if data['flying_context'] == 0:
-        text_fly = "0"
-    elif data['flying_context'] > 1e6:
-        text_fly = f"{data['flying_context']:,.0e}"
-    elif data['flying_context'] >= 1:
-        text_fly = f"{data['flying_context']:,.1f}"
-    elif data['flying_context'] >= 0.01:
-        text_fly = f"{data['flying_context']:,.0%}"
-    elif data['flying_context'] >= 1e-4:
-        text_fly = f"{data['flying_context']:,.2%}"
-    else:
-        text_fly = f"{data['flying_context']*100:,.0e} %"
-    return text_CE, text_energy, text_ty, text_car, text_fly
-
-@HOME_PAGE.callback(
-    Output("flying_label", "children"),
-    Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
-)
-def update_text(data):
-    if (data['flying_context'] >= 1)|(data['flying_context'] == 0):
-        foo = f"flights {data['flying_text']}"
-    else:
-        foo = f"of a flight {data['flying_text']}"
-    return foo
+# @HOME_PAGE.callback(
+#     Output(f'{HOME_PAGE_ID_PREFIX}-res_aggregate_data', 'data'),
+#     Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
+# )
+# def update_text(data):
+#     return {
+#             'text_CE': data.get('text_CE'),
+#             'text_energyNeeded': data.get('text_energyNeeded'),
+#             'text_treeYear': data.get('text_treeYear'),
+#             'nkm_drivingEU': data.get('nkm_drivingEU'),
+#             'flying_context': data.get('flying_context'),
+#             'flying_text': data.get('flying_text'),
+#     }

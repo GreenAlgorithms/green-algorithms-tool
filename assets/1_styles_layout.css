@@ -253,7 +253,7 @@ hr {
 ---------------------------------- IMPORT-EXPORT ----------------------------------------
 */
 
-#import-export{
+.import-export{
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -262,29 +262,40 @@ hr {
     margin-bottom: 6px;
 }
 
-#import-error-message {
+.import-error-message {
     margin-top: 6px;
     margin-bottom: 12px;
 }
 
-#import-result{
+.import-result{
     margin-bottom: 6px;
     border-width: 2px;
     border-style: dashed;
     border-radius: 5px;
 }
 
-#upload-data, #btn-download_csv{
+.upload-data, .btn-download_csv{
     cursor: pointer;
 }
 
-#btn-download_csv {
+.btn-download_csv {
     color: #1773D0;
     text-decoration: underline;
 }
 
-#btn-download_csv:visited{
+.btn-download_csv:visited{
     color: #653096
+}
+
+.import-export-buttons{
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+}
+
+.import-export-container{
+    width: 100%
 }
 
 

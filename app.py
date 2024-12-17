@@ -147,69 +147,172 @@ app.layout = html.Div(
         #### HEADER ####
         html.Div(
             [
-                html.Div(
-                    [
-                        html.H1("Green Algorithms calculator"),
-                        html.P("What's the carbon footprint of your computations?"),
+                html.H1("Green Algorithms calculator"),
+                html.P("What's the carbon footprint of your computations?"),
 
-                    ],
-                    className='container header'
-                ),
             ],
-            style={'justify-content': 'center', 'display': 'flex', 'flex-direction': 'row'}
+            className='container header'
         ),
 
         html.Div(
             [
+                html.H2("Some news..."), # TODO align this left?
+                html.P([
+                    html.A(
+                        "The GREENER principles",
+                        href="https://rdcu.be/dfpLM",
+                        target="_blank"
+                    ),
+                    " for environmentally sustainable computational science."
+                ]),
+                html.P([
+                    html.A(
+                        "A short primer",
+                        href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                        target="_blank"
+                    ),
+                    " discussing different options for carbon footprint estimation."
+                ]),
+                # TODO add something else there? GA4HPC?
 
                 html.Div(
                     [
-                        html.H2("Some news..."), # TODO align this left?
-                        html.P([
-                            html.A(
-                                "The GREENER principles",
-                                href="https://rdcu.be/dfpLM",
-                                target="_blank"
+                        html.A(
+                            html.Button(
+                                'More on the project website!',
+                                id='website-link-button'
                             ),
-                            " for environmentally sustainable computational science."
-                        ]),
-                        html.P([
-                            html.A(
-                                "A short primer",
-                                href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
-                                target="_blank"
-                            ),
-                            " discussing different options for carbon footprint estimation."
-                        ]),
-                        # TODO add something else there? GA4HPC?
-
-                        html.Div(
-                            [
-                                html.A(
-                                    html.Button(
-                                        'More on the project website!',
-                                        id='website-link-button'
-                                    ),
-                                    href='https://www.green-algorithms.org',
-                                    target="_blank",
-                                    className='button-container'
-                                ),
-                            ],
-                            className='buttons-row'
+                            href='https://www.green-algorithms.org',
+                            target="_blank",
+                            className='button-container'
                         ),
                     ],
-                    className='container footer'
+                    className='buttons-row'
                 ),
             ],
-            style={'justify-content': 'center', 'display': 'flex', 'flex-direction': 'row'}
+            className='container footer'
         ),
 
         #### PAGE CONTENT #####
 
-        dash.page_container
+        dash.page_container,
+
+    
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H2("Data and code"),
+
+                        html.Center(
+                            html.P(["All the data and code used to run this calculator can be found on ",
+                                    html.A("GitHub",
+                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool',
+                                            target='_blank')
+                                    ]),
+                        ),
+                    ],
+                    className='container footer'
+                ),
+
+                html.Div(
+                    [
+                        html.H2('Questions / Suggestions?'),
+
+                        html.Center(
+                            html.P(["If you have questions or suggestions about the tool, you can ",
+                                    html.A("open an issue",
+                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
+                                            target='_blank'),
+                                    " on the GitHub or ",
+                                    html.A("email us",
+                                            href='mailto:green.algorithms@gmail.com', ),
+                                    ]),
+                        ),
+                    ],
+                    className='container footer'
+                )
+            ],
+            className='super-section data-questions'
+        ),
+
+        #### HOW TO CITE ####
+
+        html.Div(
+            [
+                html.H2("How to cite this work"),
+
+                html.Center(
+                    html.P([
+                        "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
+                        "Adv. Sci. 2021, 2100707. ",
+                        html.A("https://doi.org/10.1002/advs.202100707",
+                                href='https://doi.org/10.1002/advs.202100707',
+                                target='_blank')
+                    ]),
+                ),
+            ],
+            className='container citation footer'
+        ),
+
+        #### ABOUT US ####
+
+        html.Div(
+            [
+                html.H2("About us"),
+
+                dcc.Markdown('''
+                The Green Algorithms project is led by
+
+                [Loïc Lannelongue](www.lannelongue.eu)¹ and [Michael Inouye](https://www.inouyelab.org/home/people)².
+                ''',
+                                className='authors'
+                                ),
+
+                dcc.Markdown('''
+                (1) University of Cambridge
+
+                (2) Baker Heart and Diabetes Institute
+                
+                ''',
+                                className='affiliations'
+                                ),
+            ],
+            className='container about-us footer'
+        ),
+
+        #### FUNDERS ####
+
+        # TODO add funders logos
+
+        #### SHOW YOUR STRIPES ####
+
+        html.Div(
+            [
+                html.H2("#ShowYourStripes"),
+
+                html.Center(
+                    html.P([html.P(
+                        "These coloured stripes in the background represent the change in world temperatures "
+                        "from 1850 to 2018. "
+                        "This striking design was made by Ed Hawkins from the University of Reading. "),
+                        html.P(["More on ",
+                                html.A("ShowYourStipes.info",
+                                        href='https://showyourstripes.info',
+                                        target='_blank')]),
+                        html.P(["Additional credits for the app can be found on the ",
+                                html.A("GitHub",
+                                        href='https://github.com/GreenAlgorithms/green-algorithms-tool',
+                                        target='_blank'), ])
+                    ]),
+                ),
+            ],
+            className='container show-stripes footer'
+        ),
+
+        
     ],
-    # style={'justify-content': 'space-between', 'display': 'flex', 'flex-direction': 'column'},
-    id='fullfullPage'
+    className='fullPage'
 )
 
 
