@@ -4,8 +4,7 @@ See here http://dash.plotly.com/all-in-one-components for the original conventio
 '''
 import pandas as pd
 
-# from dash import Output, Input, html, callback, MATCH
-from dash_extensions.enrich import DashBlueprint, html, Output, Input, PrefixIdTransform
+from dash_extensions.enrich import DashBlueprint, Output, Input, PrefixIdTransform
 from types import SimpleNamespace
 
 from utils.utils import put_value_first, is_shown, custom_prefix_escape
@@ -13,11 +12,6 @@ from utils.handle_inputs import availableLocations_continent, availableOptions_s
 from utils.graphics import MY_COLORS
 
 from blueprints.form.form_layout import get_green_algo_form_layout
-# from all_in_one_components.form.green_algo_form_AIO_ids import GreenAlgoFormIDS
-
-# MAIN_FORM_ID = 'main-form'
-# TRAINING_FORM_ID = 'training-form'
-# INFERENCE_FORM_ID = 'inference-form'
 
 def get_form_blueprint(id_prefix, title, subtitle):
     ''' 
