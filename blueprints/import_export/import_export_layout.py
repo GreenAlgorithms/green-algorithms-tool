@@ -4,6 +4,8 @@ import dash_bootstrap_components as dbc
 def get_green_algo_import_export_layout():
     return html.Div(
         [
+            dcc.Store(id='import-content'),
+
             html.Div(
                 [
                     html.Div(

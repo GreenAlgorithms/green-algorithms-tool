@@ -7,9 +7,12 @@ appVersions_options = get_available_versions()
 def get_green_algo_form_layout(title, subtitle):
     return html.Form(
         [
-            dcc.Store(id='aggregate_data'),
             html.H2(title),
             html.Center(subtitle),
+
+            ## BACKEND DATA
+            dcc.Store(id='aggregate_data'),
+            dcc.Store(id='from_input_data'),
 
             ## RUN TIME
             html.Div(

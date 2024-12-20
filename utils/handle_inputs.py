@@ -42,7 +42,7 @@ DEFAULT_VALUES = dict(
     PUEradio='No',
     PSFradio='No',
     PSF=1,
-    appVersion=CURRENT_VERSION,
+    # appVersion=CURRENT_VERSION,
 )
 
 # The following list should contain tke keys of aggregate_data that should not
@@ -422,6 +422,7 @@ def read_csv_input(upload_csv:pd.DataFrame):
     - show_error_mess [bool]: whether to display an error message 
     - mess_subtitle [str]: erorr message subtitle
     - mess_content [str]: error message content
+    - new_version [str]: app version to use, maybe coming from input data
     '''
     show_error_mess = False
     mess_subtitle = 'Filling in values from the input csv file.'
@@ -429,7 +430,7 @@ def read_csv_input(upload_csv:pd.DataFrame):
     
     # Loads the right dataset to validate the inputs
     appVersions_options_list = get_available_versions()
-    new_version = DEFAULT_VALUES['appVersion']
+    new_version = CURRENT_VERSION
     if 'appVersion' in upload_csv:
         new_version = unlist(upload_csv['appVersion'])
     assert new_version in (appVersions_options_list + [CURRENT_VERSION])
@@ -453,8 +454,11 @@ def read_csv_input(upload_csv:pd.DataFrame):
     # Returns the verified inputs, where wrong keys are replaced by default values,
     # hence the importance of the order of the keys
     values = copy.deepcopy(DEFAULT_VALUES)
-    values.update((k, processed_inputs[k]) for k in values.keys() & processed_inputs.keys())
-    return values, show_error_mess, mess_subtitle, mess_content
+    # adding required values that were not found as expected in the input
+    processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
+    # enforcing input values for entries that are correct
+    values.update((k, processed_inputs[k]) for k in values.keys() | processed_inputs.keys())
+    return values, show_error_mess, mess_subtitle, mess_content, new_version
 
 
 

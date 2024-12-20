@@ -1,30 +1,15 @@
-'''
-Green Algorithm form as an All-in-One component
-See here http://dash.plotly.com/all-in-one-components for the original convention.
-'''
 import pandas as pd
 
-from dash_extensions.enrich import DashBlueprint, Output, Input, PrefixIdTransform
+from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixIdTransform, ctx
 from types import SimpleNamespace
 
 from utils.utils import put_value_first, is_shown, custom_prefix_escape
-from utils.handle_inputs import availableLocations_continent, availableOptions_servers
+from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region, DEFAULT_VALUES
 from utils.graphics import MY_COLORS
 
 from blueprints.form.form_layout import get_green_algo_form_layout
 
 def get_form_blueprint(id_prefix, title, subtitle):
-    ''' 
-    An All-in-One component for the Green Algorithms Form.
-    Formally, this class is just a convention, building a convenient wrapper
-    for both the layout and the corresponding callbacks.
-    None of the class-oriented concepts are used below 
-    because we just want to make it consistent with Dash framework.
-    
-    The class inherits from the html.Form of Dash allowing native 
-    compatibility for the layout. It also contains the stateless 
-    pattern-matching callback that will apply to every instance of this component.
-    ''' 
 
     form_blueprint = DashBlueprint(
         transforms=[
@@ -43,6 +28,45 @@ def get_form_blueprint(id_prefix, title, subtitle):
 
     ##### DEFINE ITS CALLBACKS
     ##########################
+
+    ##################### INITIALIZATION ###
+
+    @form_blueprint.callback(
+        [
+            ##################################################################
+            ## WARNING: do not modify the order, unless modifying the order
+            ## of the DEFAULT_VALUES accordingly
+            Output('runTime_hour_input','value'),
+            Output('runTime_min_input','value'),
+            Output('coreType_dropdown','value'),
+            Output('numberCPUs_input','value'),
+            Output('CPUmodel_dropdown', 'value'),
+            Output('tdpCPU_input','value'),
+            Output('numberGPUs_input','value'),
+            Output('GPUmodel_dropdown', 'value'),
+            Output('tdpGPU_input','value'),
+            Output('memory_input','value'),
+            Output('platformType_dropdown','value'),
+            Output('usageCPU_radio','value'),
+            Output('usageCPU_input','value'),
+            Output('usageGPU_radio','value'),
+            Output('usageGPU_input','value'),
+            Output('pue_radio','value'),
+            Output('PSF_radio', 'value'),
+            Output('PSF_input', 'value'),
+        ],
+        [
+            # to allow initial triggering
+            Input('url_content','search'),
+            Input('from_input_data', 'data'),
+        ],
+    )
+    def filling_form(_, upload_content): 
+        if  ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            to_return = {k: upload_content[k] for k in DEFAULT_VALUES.keys()}
+            return tuple(to_return.values())
+        return tuple(DEFAULT_VALUES.values())
+    
 
     ##################### PLATFORM AND PROVIDER ###
 
@@ -108,6 +132,234 @@ def get_form_blueprint(id_prefix, title, subtitle):
         else:
             return []
         
+    @form_blueprint.callback(
+        Output('provider_dropdown','value'),
+        [
+            Input('platformType_dropdown', 'value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State('provider_dropdown', 'value'),
+        ],
+    )
+    def set_provider(platform_type, versioned_data, upload_content, prev_provider):
+        '''
+        Sets the provider value, either from the csv content of as a default value.
+        TODO: improve the choice of the default value.
+        '''
+        # reads data from input
+        if ctx.triggered_id is not None:
+            if 'from_input_data' in ctx.triggered_id:
+                return upload_content['provider']
+        
+            # by default, when changing the platform type, we return the previously selected
+            # providern, because properly handles the case when 'Cloud Computing' is selected 
+            if 'platformType_dropdown' in ctx.triggered_id and prev_provider is not None:
+                return prev_provider
+                    
+        return 'gcp'
+    
+    @form_blueprint.callback(
+        Output('server_continent_dropdown','value'),
+        [
+            Input('provider_dropdown', 'value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State('server_continent_dropdown', 'value'),
+        ]
+    )
+    def set_serverContinents_value(selected_provider, versioned_data, upload_content, prev_server_continent):
+        '''
+        Sets the value for server's continent, depending on the provider.
+        We want to fetch the value based on csv input but also to display 
+        a value selcted previously by the user.
+        '''
+        # reads data from input
+        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            return upload_content['serverContinent']
+
+        # otherwise we return a suitable default value
+        availableOptions = availableLocations_continent(selected_provider, data=versioned_data)
+        if prev_server_continent in availableOptions:
+            defaultValue = prev_server_continent
+        else:
+            try: 
+                defaultValue = availableOptions[0]
+            except:
+                defaultValue = None
+        return defaultValue
+    
+    @form_blueprint.callback(
+        Output('server_dropdown','value'),
+        [
+            Input('server_continent_dropdown', 'value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State('provider_dropdown', 'value'),
+            State('server_dropdown','value'),
+        ]
+    )
+    def set_server_value(selected_continent, versioned_data, upload_content, selected_provider, prev_server_value):
+        '''
+        Sets the value for servers, based on provider and continent.
+        Here again we want to display a default value, to 
+        fecth the value from a csv or to show a value previously selected by the user.
+        '''
+        # reads data from input
+        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            return upload_content['server']
+        
+        # handles special case
+        if selected_continent == 'other':
+            return 'other'
+
+        # Otherwise we return a suitable default value
+        availableOptions = availableOptions_servers(selected_provider, selected_continent, data=versioned_data)
+        try:
+            # when the server continent value had previously been set by the user
+            if prev_server_value in [server['name_unique'] for server in availableOptions]:
+                defaultValue = prev_server_value
+            else :
+                defaultValue = availableOptions[0]['name_unique']
+        except:
+            defaultValue = None
+        return defaultValue
+    
+
+    @form_blueprint.callback(
+        Output('location_continent_dropdown', 'value'),
+        [
+            Input('server_div', 'style'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State('server_continent_dropdown','value'),
+            State('location_continent_dropdown', 'value'),
+        ]
+    )
+    def set_continent_value(display_server, upload_content, selected_serverContinent, prev_locationContinent):
+        '''
+        Sets the value for location continent.
+        Same as for server and server continent regarding the different inputs.
+        '''
+        # reads data from input
+        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            return upload_content['locationContinent']
+        
+        # when the continent value had previously been set by the user
+        if prev_locationContinent is not None :
+            return prev_locationContinent
+        
+        # the server div is shown, so we pull the continent from there
+        if (display_server['display'] != 'none') & (selected_serverContinent != 'other'):
+            return selected_serverContinent
+        
+        return 'Europe'
+    
+    @form_blueprint.callback(
+        [
+            Output(f'location_country_dropdown', 'options'),
+            Output(f'location_country_dropdown', 'value'),
+            Output(f'location_country_dropdown_div', 'style'),
+        ],
+        [
+            Input(f'location_continent_dropdown', 'value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State(f'location_country_dropdown', 'value')
+        ]
+    )
+    def set_countries_options(selected_continent, versioned_data, upload_content, prev_selectedCountry):
+        '''
+        List of options and value for countries.
+        Hides country dropdown if continent=World is selected.
+        Must fetch the value from a csv as well.
+        '''
+        availableOptions = availableOptions_country(selected_continent, data=versioned_data)
+        listOptions = [{'label': k, 'value': k} for k in availableOptions]
+        defaultValue = None
+
+        # reads data from input
+        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            print('in set_countries, upload_content is: ', upload_content)
+            defaultValue = upload_content['locationCountry']
+
+        # otherwise we get a suitable default value    
+        if defaultValue is None:
+            # NOTE The following handles two cases: 
+            if prev_selectedCountry in availableOptions :
+                defaultValue = prev_selectedCountry
+            else:
+                try:
+                    defaultValue = availableOptions[0]
+                except:
+                    defaultValue = None
+
+        if selected_continent == 'World':
+            country_style = {'display': 'none'}
+        else:
+            country_style = {'display': 'block'}
+
+        return listOptions, defaultValue, country_style
+    
+    @form_blueprint.callback(
+        [
+            Output(f'location_region_dropdown', 'options'),
+            Output(f'location_region_dropdown', 'value'),
+            Output(f'location_region_dropdown_div', 'style'),
+        ],
+        [
+            Input(f'location_continent_dropdown', 'value'),
+            Input(f'location_country_dropdown', 'value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State(f'location_region_dropdown', 'value'),
+        ]
+
+    )
+    def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, prev_selectedRegion):
+        '''
+        List of options and value for regions.
+        Hides region dropdown if only one possible region (or continent=World)
+        '''
+        locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
+        if versioned_data is not None:
+            listOptions = [{'label': versioned_data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
+        else:
+            listOptions = []
+        defaultValue = None
+
+        # reads data from input
+        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            defaultValue = upload_content['locationRegion']
+
+        # otherwise we get a suitable default value  
+        if defaultValue is None:
+            # when the region value had previously been set by the user
+            if prev_selectedRegion in locs:
+                defaultValue = prev_selectedRegion
+            else:
+                try:
+                        defaultValue = locs[0]
+                except:
+                    defaultValue = None
+
+        if (selected_continent == 'World')|(len(listOptions) == 1):
+            region_style = {'display': 'none'}
+        else:
+            region_style = {'display': 'block'}
+
+        return listOptions, defaultValue, region_style
+        
 
     ##################### COMPUTING CORES ###
 
@@ -129,8 +381,10 @@ def get_form_blueprint(id_prefix, title, subtitle):
 
             availableOptions = data_dict.cores_dict.keys()
             listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
+
             return listOptions
         else:
+            print('return nothing')
             return []
         
     @form_blueprint.callback(
@@ -408,6 +662,37 @@ def get_form_blueprint(id_prefix, title, subtitle):
             out['background-color'] = MY_COLORS['boxesColor']
 
         return out
+    
+    
+    @form_blueprint.callback(
+        Output(f'PUE_input','value'),
+        [
+            Input(f'pue_radio', 'value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ],
+        [
+            State(f'PUE_input','value'),
+        ]
+    )
+    def set_PUE(radio, versioned_data, upload_content, prev_pue):
+        '''
+        Sets the PUE value, either from csv input or as a default value.
+        '''
+        if versioned_data is not None:
+            data_dict = SimpleNamespace(**versioned_data)
+            defaultPUE = data_dict.pueDefault_dict['Unknown']
+        else:
+            defaultPUE = 0
+
+        if radio == 'No':
+            return defaultPUE
+        
+        # reads data from input
+        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+            return upload_content['PUE']
+
+        return defaultPUE
     
 
     ##################### PSF INPUTS ###

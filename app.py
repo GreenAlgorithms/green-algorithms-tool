@@ -48,7 +48,6 @@ server = app.server
 HOME_PAGE.register(app, module='home', path='/')
 AI_PAGE.register(app, module='ai', path='/ai')
 
-
 appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
 
 
@@ -324,10 +323,11 @@ app.layout = html.Div(
 @app.callback(
     Output("versioned_data", "data"),
     [
+        Input('url_content','search'),
         Input('appVersions_dropdown','value')
     ],
 )
-def loadDataFromVersion(newVersion):
+def loadDataFromVersion(_, newVersion):
     '''
     Loads all the backend data required to propose consistent options to the user.
     '''
