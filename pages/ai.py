@@ -1,7 +1,7 @@
 import os
 import dash
 
-from dash import html, ctx, callback, Input, Output, State
+from dash import html, ctx, callback, Input, Output, State, dcc
 from types import SimpleNamespace
 
 from dash_extensions.enrich import DashBlueprint, html
@@ -9,7 +9,7 @@ from blueprints.form.form_blueprint import get_form_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 
 from utils.graphics import loading_wrapper
-from utils.handle_inputs import get_available_versions, DEFAULT_VALUES
+from utils.handle_inputs import get_available_versions, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 
 
@@ -51,9 +51,9 @@ def get_ai_page_layout():
     page_layout = html.Div(
         [
 
-            #### PAGE VARIABLES ####
+            #### PAGE DATA ####
 
-            
+            dcc.Store(id=f'{AI_PAGE_ID_PREFIX}-aggregate_data'),
 
             #### OVERALL EXPLAINATION ####
 
@@ -248,6 +248,85 @@ AI_PAGE.layout = get_ai_page_layout()
 
 
 ################## LOAD PAGE AND INPUTS
+
+@AI_PAGE.callback(
+    [
+        Output(f'{TRAINING_ID_PREFIX}-from_input_data', 'data'),
+        Output(f'{INFERENCE_ID_PREFIX}-from_input_data', 'data'),
+        Output(f'{AI_PAGE_ID_PREFIX}-import-error-message', 'is_open'),
+        Output(f'{AI_PAGE_ID_PREFIX}-log-error-subtitle', 'children'),
+        Output(f'{AI_PAGE_ID_PREFIX}-log-error-content', 'children'),
+        Output(f"{AI_PAGE_ID_PREFIX}-version_from_input",'data'),
+    ],
+    [
+        Input(f'{AI_PAGE_ID_PREFIX}-import-content', 'data'),
+    ],
+    [
+        State(f'{AI_PAGE_ID_PREFIX}-upload-data', 'filename'),
+        State(f'{TRAINING_ID_PREFIX}-form_aggregate_data', 'data'),
+        State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
+        State('appVersions_dropdown','value'),
+    ]
+)
+def forward_imported_content_to_form(import_data, filename, current_training_form_data, current_inference_form_data, current_app_version):
+    '''
+    Read input, split data between training and inference forms.
+    Then process and check content.
+    '''
+    show_err_mess = False
+    input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
+
+    # The input file could not be opened correctly
+    if not input_data:
+        show_err_mess = True
+        return current_training_form_data, current_inference_form_data, show_err_mess, mess_subtitle, mess_content, current_app_version
+    
+    # If input data could be read, we check its validity and consistency
+    else:
+        app_version = input_data['appVersion']
+        mess_subtitle = ''
+        # Processing training data
+        training_input_data = {key.replace(f'{TRAINING_ID_PREFIX}-', ''): value for key, value in input_data.items() if TRAINING_ID_PREFIX in key}
+        clean_training_input_data, invalid_training_inputs, _ = read_csv_input(training_input_data)
+        # Processing inference data
+        inference_input_data = {key.replace(f'{INFERENCE_ID_PREFIX}-', ''): value for key, value in input_data.items() if INFERENCE_ID_PREFIX in key}
+        clean_inference_input_data, invalid_inference_inputs, _ = read_csv_input(inference_input_data)
+        # Building error message
+        if len(invalid_training_inputs) or len(invalid_inference_inputs):
+            show_err_mess = True
+            mess_subtitle += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values. ' \
+                            f'We use default values for the following fields. \n' 
+            if len(invalid_training_inputs):
+                mess_content += 'For the training form:'
+                mess_content += f"{', '.join(list(invalid_training_inputs.keys()))}."
+            if len(invalid_inference_inputs):
+                mess_content += 'For the inference form:'
+                mess_content += f"{', '.join(list(invalid_inference_inputs.keys()))}."
+        return clean_training_input_data, clean_inference_input_data, show_err_mess, mess_subtitle, mess_content, app_version
+
+
+
+################## EXPORT RESULTS
+
+@AI_PAGE.callback(
+        Input(f'{TRAINING_ID_PREFIX}-form_aggregate_data', 'data'),
+        Input(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
+        Output(f'{AI_PAGE_ID_PREFIX}-aggregate_data', 'data')
+)
+def forward_form_input_to_export_module(training_form_agg_data, inference_form_agg_data):
+    '''
+    Intermediate processing specific to the AI page before exporting data.
+    We concatenate the content of the training form and inference form into a single dictionnary to be exported.
+    '''
+    # Add prefix to differentiate between training and inference
+    training_data = {f'training-{key}': value for key, value in training_form_agg_data.items() if key != 'appVersion'}
+    inference_data = {f'inference-{key}': value for key, value in inference_form_agg_data.items() if key != 'appVersion'}
+    # Concatenate data
+    form_aggregate_data = dict()
+    form_aggregate_data['appVersion'] = training_form_agg_data['appVersion']
+    form_aggregate_data.update(training_data)
+    form_aggregate_data.update(inference_data)
+    return form_aggregate_data
 
 # @AI_PAGE.callback(
 #     [

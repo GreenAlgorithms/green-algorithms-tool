@@ -11,8 +11,9 @@ def get_green_algo_form_layout(title, subtitle):
             html.Center(subtitle),
 
             ## BACKEND DATA
-            dcc.Store(id='aggregate_data'),
             dcc.Store(id='from_input_data'),
+            dcc.Store(id='form_aggregate_data'),
+            dcc.Store(id='form_output_metrics'),
 
             ## RUN TIME
             html.Div(

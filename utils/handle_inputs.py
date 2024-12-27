@@ -23,7 +23,7 @@ APP_VERSION_OPTIONS_LIST.sort(reverse=True)
 # WARNING: do not modify the order unless modifying the order of the outputs of 
 # the fillin_from_inputs callback accordingly
 # TODO: make it more robust
-DEFAULT_VALUES = dict(
+DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,
     runTime_min=0,
     coreType='CPU',
@@ -42,7 +42,19 @@ DEFAULT_VALUES = dict(
     PUEradio='No',
     PSFradio='No',
     PSF=1,
-    # appVersion=CURRENT_VERSION,
+)
+
+DEFAULT_VALUES = DEFAULT_VALUES_FOR_PAGE_LOAD.copy()
+DEFAULT_VALUES.update(
+    {
+        'locationContinent': 'North America',
+        'locationCountry': 'Canada', 
+        'locationRegion': 'Ontario', 
+        'provider': 'gcp', 
+        'serverContinent': 'Europe',
+        'server': 'gcp--europe-west1',
+        'PUE': 1.67
+    }
 )
 
 # The following list should contain tke keys of aggregate_data that should not
@@ -282,9 +294,9 @@ def validateInput(input_dict, data_dict, keysOfInterest):
         - data_dict: backend data used to check consistency between provided values.
         - keyOfInterest [list]: a list of keys to process.
     returns: 
-        - new_dict: a curated subset of input_dict with clean inputs. Its keys
+        - new_dict [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
-        - wrong_imputs: a subset of the input_dict containing inputs
+        - wrong_imputs [dict]: a subset of the input_dict containing inputs
         either raising erorrs either not corresponding to keysOfInterest.
     '''
     if type(data_dict) == dict:
@@ -384,11 +396,9 @@ def validateInput(input_dict, data_dict, keysOfInterest):
     for key in keysOfInterest:
         if key not in INPUT_KEYS_TO_IGNORE:
             new_value = unlist(input_dict[key])
-            # validateKey(key, new_value) # DEBUGONLY 
             try:
                 new_dict[key] = validateKey(key, new_value)
             except Exception as e:
-                # print(f'Wrong input for {key}: {new_value}') # DEBUGONLY
                 wrong_imputs[key] = new_value
 
     return new_dict, wrong_imputs
@@ -413,21 +423,15 @@ def open_input_csv_and_comment(upload_csv_content, filename):
     # TODO : raise a warning if there are several rows in the input csv
     return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
 
-def read_csv_input(upload_csv:pd.DataFrame):
+def read_csv_input(upload_csv:dict):
     '''
     Reads the input dataframe to extract all the keys supposed to be verified.
     When an input raises an error, it is replaced by its corresponding default value.
     Returns:
-    - values: curated inputs
-    - show_error_mess [bool]: whether to display an error message 
-    - mess_subtitle [str]: erorr message subtitle
-    - mess_content [str]: error message content
+    - values [dict]: curated inputs
+    - invalid_inputs [dict]: inputs that could not be read properly
     - new_version [str]: app version to use, maybe coming from input data
     '''
-    show_error_mess = False
-    mess_subtitle = 'Filling in values from the input csv file.'
-    mess_content = ''
-    
     # Loads the right dataset to validate the inputs
     appVersions_options_list = get_available_versions()
     new_version = CURRENT_VERSION
@@ -445,20 +449,14 @@ def read_csv_input(upload_csv:pd.DataFrame):
         data_dict=newData,
         keysOfInterest=list(upload_csv.keys())
     )
-    if len(invalid_inputs) > 0:
-        show_error_mess = True
-        mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
-                        f'so we use default values for the following fields: \n'
-        mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
-
-    # Returns the verified inputs, where wrong keys are replaced by default values,
-    # hence the importance of the order of the keys
+    # Returns the verified inputs, where wrong keys are replaced
+    #  by default values, hence the importance of the order of the keys
     values = copy.deepcopy(DEFAULT_VALUES)
     # adding required values that were not found as expected in the input
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
     # enforcing input values for entries that are correct
-    values.update((k, processed_inputs[k]) for k in values.keys() | processed_inputs.keys())
-    return values, show_error_mess, mess_subtitle, mess_content, new_version
+    values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
+    return values, invalid_inputs, new_version
 
 
 

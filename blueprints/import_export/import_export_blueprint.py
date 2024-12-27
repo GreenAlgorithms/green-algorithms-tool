@@ -1,8 +1,7 @@
-import dash_bootstrap_components as dcc
 import pandas as pd
 import datetime
 
-from dash import ctx
+from dash import ctx, dcc
 from dash_extensions.enrich import DashBlueprint, PrefixIdTransform, Output, Input, State
 from dash.exceptions import PreventUpdate
 
@@ -34,7 +33,7 @@ def get_import_expot_blueprint(id_prefix):
     @import_export_blueprint.callback(
         Output("aggregate-data-csv", "data"),
         Input("btn-download_csv", "n_clicks"),
-        State('aggregate_data', "data"),
+        State("aggregate_data", "data"),
         prevent_initial_call=True,
     )
     def export_as_csv(_, aggregate_data):
@@ -50,15 +49,9 @@ def get_import_expot_blueprint(id_prefix):
     ################## IMPORT DATA
 
     @import_export_blueprint.callback(
-            [
-                Output('import-content', 'data'),
-            ],
-            [
-                Input('upload-data', 'contents'),
-            ],
-            [
-                State('import-content', 'data'),
-            ],
+        Output('import-content', 'data'),
+        Input('upload-data', 'contents'),
+        State('import-content', 'data'),
     )
     def read_input(upload_content, current_import_data):
         '''
@@ -88,7 +81,7 @@ def get_import_expot_blueprint(id_prefix):
     def flush_input_csv_content(n):
         '''
         Flushes the input csv.
-        This is required if we want to enable the user to load again the same csv.
+        This is required if we want to enable the user to load the same csv again.
         Otherwise, if not flushed, the csv content does not change so it does not trigger
         the reading of its content.
         '''

@@ -4,7 +4,7 @@ from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixId
 from types import SimpleNamespace
 
 from utils.utils import put_value_first, is_shown, custom_prefix_escape
-from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region, DEFAULT_VALUES
+from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region, DEFAULT_VALUES_FOR_PAGE_LOAD
 from utils.graphics import MY_COLORS
 
 from blueprints.form.form_layout import get_green_algo_form_layout
@@ -63,9 +63,9 @@ def get_form_blueprint(id_prefix, title, subtitle):
     )
     def filling_form(_, upload_content): 
         if  ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
-            to_return = {k: upload_content[k] for k in DEFAULT_VALUES.keys()}
+            to_return = {k: upload_content[k] for k in DEFAULT_VALUES_FOR_PAGE_LOAD.keys()}
             return tuple(to_return.values())
-        return tuple(DEFAULT_VALUES.values())
+        return tuple(DEFAULT_VALUES_FOR_PAGE_LOAD.values())
     
 
     ##################### PLATFORM AND PROVIDER ###
@@ -288,7 +288,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
 
         # reads data from input
         if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
-            print('in set_countries, upload_content is: ', upload_content)
             defaultValue = upload_content['locationCountry']
 
         # otherwise we get a suitable default value    
@@ -384,7 +383,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
 
             return listOptions
         else:
-            print('return nothing')
             return []
         
     @form_blueprint.callback(
@@ -722,7 +720,8 @@ def get_form_blueprint(id_prefix, title, subtitle):
     ##################### PROCESS INPUTS ###
     
     @form_blueprint.callback(
-        Output('aggregate_data', "data"),
+        Output('form_aggregate_data', "data"),
+        Output('form_output_metrics', "data"),
         [
             Input('versioned_data','data'),
             Input('coreType_dropdown', "value"),
@@ -766,6 +765,7 @@ def get_form_blueprint(id_prefix, title, subtitle):
         Computes all the metrics and gathers the information provided by the inputs of the form.
         '''
         output = dict()
+        metrics = dict()
 
         #############################################
         ### PREPROCESS: check if computations can be performed
@@ -848,21 +848,14 @@ def get_form_blueprint(id_prefix, title, subtitle):
             output['PUEradio'] = None
             output['PSF'] = None
             output['PSFradio'] = None
-            output['carbonEmissions'] = 0
-            output['CE_CPU'] = 0
-            output['CE_GPU'] = 0
-            output['CE_core'] = 0
-            output['CE_memory'] = 0
-            output['n_treeMonths'] = 0
-            output['flying_context'] = 0
-            output['nkm_drivingUS'] = 0
-            output['nkm_drivingEU'] = 0
-            output['nkm_train'] = 0
-            output['energy_needed'] = 0
-            output['power_needed'] = 0
-            output['flying_text'] = None
-            output['text_CE'] = '... g CO2e'
             output['appVersion'] = version
+            metrics['carbonEmissions'] = 0
+            metrics['CE_CPU'] = 0
+            metrics['CE_GPU'] = 0
+            metrics['CE_core'] = 0
+            metrics['CE_memory'] = 0
+            metrics['energy_needed'] = 0
+            metrics['power_needed'] = 0
 
         #############################################
         ### PRE-COMPUTATIONS: update variables used in the calcul based on inputs
@@ -994,74 +987,75 @@ def get_form_blueprint(id_prefix, title, subtitle):
             output['PUEradio'] = PUEradio
             output['PSF'] = PSF_used
             output['PSFradio'] = PSFradio
-            output['carbonEmissions'] = carbonEmissions
-            output['CE_CPU'] = CE_CPU
-            output['CE_GPU'] = CE_GPU
-            output['CE_core'] = CE_core
-            output['CE_memory'] = CE_memory
-            output['energy_needed'] = energyNeeded
-            output['power_needed'] = powerNeeded
             output['appVersion'] = version
+            metrics['carbonEmissions'] = carbonEmissions
+            metrics['CE_CPU'] = CE_CPU
+            metrics['CE_GPU'] = CE_GPU
+            metrics['CE_core'] = CE_core
+            metrics['CE_memory'] = CE_memory
+            metrics['energy_needed'] = energyNeeded
+            metrics['power_needed'] = powerNeeded
 
-            ### Context
-            output['n_treeMonths'] = carbonEmissions / data_dict.refValues_dict['treeYear'] * 12
-            output['nkm_drivingUS'] = carbonEmissions / data_dict.refValues_dict['passengerCar_US_perkm']
-            output['nkm_drivingEU'] = carbonEmissions / data_dict.refValues_dict['passengerCar_EU_perkm']
-            output['nkm_train'] = carbonEmissions / data_dict.refValues_dict['train_perkm']
+            # ### Context
+            # output['n_treeMonths'] = carbonEmissions / data_dict.refValues_dict['treeYear'] * 12
+            # output['nkm_drivingUS'] = carbonEmissions / data_dict.refValues_dict['passengerCar_US_perkm']
+            # output['nkm_drivingEU'] = carbonEmissions / data_dict.refValues_dict['passengerCar_EU_perkm']
+            # output['nkm_train'] = carbonEmissions / data_dict.refValues_dict['train_perkm']
 
-            ### Text plane trips
-            if carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NY-SF']:
-                output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_PAR-LON']
-                output['flying_text'] = "Paris-London"
-            elif carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NYC-MEL']:
-                output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NY-SF']
-                output['flying_text'] = "NYC-San Francisco"
-            else:
-                output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NYC-MEL']
-                output['flying_text'] = "NYC-Melbourne"
+            # ### Text plane trips
+            # if carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NY-SF']:
+            #     output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_PAR-LON']
+            #     output['flying_text'] = "Paris-London"
+            # elif carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NYC-MEL']:
+            #     output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NY-SF']
+            #     output['flying_text'] = "NYC-San Francisco"
+            # else:
+            #     output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NYC-MEL']
+            #     output['flying_text'] = "NYC-Melbourne"
 
-            ### Text carbon emissions
-            carbonEmissions_value = carbonEmissions  # in g CO2e
-            carbonEmissions_unit = "g"
-            if carbonEmissions_value >= 1e6:
-                carbonEmissions_value /= 1e6
-                carbonEmissions_unit = "T"
-            elif carbonEmissions_value >= 1e3:
-                carbonEmissions_value /= 1e3
-                carbonEmissions_unit = "kg"
-            elif carbonEmissions_value < 1:
-                carbonEmissions_value *= 1e3
-                carbonEmissions_unit = "mg"
-            if (carbonEmissions_value != 0)&((carbonEmissions_value >= 1e3)|(carbonEmissions_value < 1)):
-                output['text_CE'] = f"{carbonEmissions_value:,.2e} {carbonEmissions_unit} CO2e"
-            else:
-                output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
+            # ### Text carbon emissions
+            # carbonEmissions_value = carbonEmissions  # in g CO2e
+            # carbonEmissions_unit = "g"
+            # if carbonEmissions_value >= 1e6:
+            #     carbonEmissions_value /= 1e6
+            #     carbonEmissions_unit = "T"
+            # elif carbonEmissions_value >= 1e3:
+            #     carbonEmissions_value /= 1e3
+            #     carbonEmissions_unit = "kg"
+            # elif carbonEmissions_value < 1:
+            #     carbonEmissions_value *= 1e3
+            #     carbonEmissions_unit = "mg"
+            # if (carbonEmissions_value != 0)&((carbonEmissions_value >= 1e3)|(carbonEmissions_value < 1)):
+            #     output['text_CE'] = f"{carbonEmissions_value:,.2e} {carbonEmissions_unit} CO2e"
+            # else:
+            #     output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
 
-            ### Text energy
-            energyNeeded_value = energyNeeded  # in kWh
-            energyNeeded_unit = "kWh"
-            if energyNeeded_value >= 1e3:
-                energyNeeded_value /= 1e3
-                energyNeeded_unit = "MWh"
-            elif energyNeeded_value < 1:
-                energyNeeded_value *= 1e3
-                energyNeeded_unit = "Wh"
-            if (energyNeeded_value != 0) & ((energyNeeded_value >= 1e3) | (energyNeeded_value < 1)):
-                output['text_energyNeeded'] = f"{energyNeeded_value:,.2e} {energyNeeded_unit}"
-            else:
-                output['text_energyNeeded'] = f"{energyNeeded_value:,.2f} {energyNeeded_unit}"
+            # ### Text energy
+            # energyNeeded_value = energyNeeded  # in kWh
+            # energyNeeded_unit = "kWh"
+            # if energyNeeded_value >= 1e3:
+            #     energyNeeded_value /= 1e3
+            #     energyNeeded_unit = "MWh"
+            # elif energyNeeded_value < 1:
+            #     energyNeeded_value *= 1e3
+            #     energyNeeded_unit = "Wh"
+            # if (energyNeeded_value != 0) & ((energyNeeded_value >= 1e3) | (energyNeeded_value < 1)):
+            #     output['text_energyNeeded'] = f"{energyNeeded_value:,.2e} {energyNeeded_unit}"
+            # else:
+            #     output['text_energyNeeded'] = f"{energyNeeded_value:,.2f} {energyNeeded_unit}"
 
-            ### Text tree-months
-            treeTime_value = output['n_treeMonths']  # in tree-months
-            treeTime_unit = "tree-months"
-            if treeTime_value >= 24:
-                treeTime_value /= 12
-                treeTime_unit = "tree-years"
-            if (treeTime_value != 0) & ((treeTime_value >= 1e3) | (treeTime_value < 0.1)):
-                output['text_treeYear'] = f"{treeTime_value:,.2e} {treeTime_unit}"
-            else:
-                output['text_treeYear'] = f"{treeTime_value:,.2f} {treeTime_unit}"
+            # ### Text tree-months
+            # treeTime_value = output['n_treeMonths']  # in tree-months
+            # treeTime_unit = "tree-months"
+            # if treeTime_value >= 24:
+            #     treeTime_value /= 12
+            #     treeTime_unit = "tree-years"
+            # if (treeTime_value != 0) & ((treeTime_value >= 1e3) | (treeTime_value < 0.1)):
+            #     output['text_treeYear'] = f"{treeTime_value:,.2e} {treeTime_unit}"
+            # else:
+            #     output['text_treeYear'] = f"{treeTime_value:,.2f} {treeTime_unit}"
 
-        return output
+        return output, metrics
+
     
     return form_blueprint

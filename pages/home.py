@@ -8,7 +8,7 @@ from dash.exceptions import PreventUpdate
 from types import SimpleNamespace
 
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import get_available_versions, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
 
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
@@ -63,6 +63,10 @@ appVersions_options = get_available_versions()
 def get_home_page_layout():
     page_layout = html.Div(
         [
+            
+            #### PAGE DATA ####
+
+            dcc.Store(id=f'{HOME_PAGE_ID_PREFIX}-aggregate_data'),
 
             #### INPUT FORM ####
 
@@ -207,14 +211,14 @@ HOME_PAGE.layout = get_home_page_layout()
         Output(f'{HOME_PAGE_ID_PREFIX}-import-error-message', 'is_open'),
         Output(f'{HOME_PAGE_ID_PREFIX}-log-error-subtitle', 'children'),
         Output(f'{HOME_PAGE_ID_PREFIX}-log-error-content', 'children'),
-        Output('appVersions_dropdown','value'),
+        Output(f"{HOME_PAGE_ID_PREFIX}-version_from_input",'data'),
     ],
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-import-content', 'data'),
     ],
     [
         State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
-        State(f'{HOME_PAGE_ID_PREFIX}-from_input_data', 'data'),
+        State(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', 'data'),
         State('appVersions_dropdown','value'),
     ]
 )
@@ -235,7 +239,30 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
     
     # If input data could be read, we check its validity and consistency
     else:
-        return read_csv_input(input_data)
+        clean_inputs, invalid_inputs, app_version = read_csv_input(input_data)
+        mess_subtitle = 'Filling in values from the input csv file.'
+        mess_content = ''
+        if len(invalid_inputs) > 0:
+            show_error_mess = True
+            mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
+                            f'so we use default values for the following fields: \n'
+            mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
+        return clean_inputs, show_error_mess, mess_subtitle, mess_content, app_version
+    
+
+################## EXPORT RESULTS
+
+@HOME_PAGE.callback(
+        Input(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', 'data'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', 'data')
+)
+def forward_form_input_to_export_module(form_aggregate_data):
+    '''
+    Intermediate processing specific to the HOME page before exporting data.
+    So far, we just forward the inputs of the form to the export file. 
+    '''
+    return form_aggregate_data
+
 
 
 

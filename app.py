@@ -4,7 +4,7 @@
 import os
 import dash
 
-from dash import html, dcc
+from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 
 from flask import send_file # Integrating Loader IO
@@ -14,8 +14,8 @@ import dash_bootstrap_components as dbc
 from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR
 from utils.handle_inputs import APP_VERSION_OPTIONS_LIST
 
-from pages.home import HOME_PAGE
-from pages.ai import AI_PAGE
+from pages.home import HOME_PAGE, HOME_PAGE_ID_PREFIX
+from pages.ai import AI_PAGE, AI_PAGE_ID_PREFIX
 
 
 ###################################################
@@ -136,6 +136,8 @@ app.layout = html.Div(
         
         #### BACKEND PURPOSE ####
         
+        dcc.Store(id=f"{HOME_PAGE_ID_PREFIX}-version_from_input"),
+        dcc.Store(id=f"{AI_PAGE_ID_PREFIX}-version_from_input"),
         dcc.Store(id="versioned_data"),
         dcc.Location(id='url_content', refresh='callback-nav'), 
         
@@ -319,31 +321,51 @@ app.layout = html.Div(
 ###################################################
 # CALLBACKS #
 
+
+################## APP VERSIONING
+
+@app.callback(
+    Output('appVersions_dropdown','value'),
+    [
+        Input(f"{HOME_PAGE_ID_PREFIX}-version_from_input",'data'),
+        Input(f"{AI_PAGE_ID_PREFIX}-version_from_input",'data'),
+    ]
+)
+def set_version_from_csv_inputs(version_from_home_input, version_from_ai_input):
+    '''
+    Set the app version based on csv inputs 
+    dropped either from the home page or the ai page.
+    '''
+    new_version = None
+    if HOME_PAGE_ID_PREFIX in ctx.triggered_id:
+        new_version = version_from_home_input
+    elif AI_PAGE_ID_PREFIX in ctx.triggered_id:
+        new_version = version_from_ai_input
+    return new_version
+
     
 @app.callback(
     Output("versioned_data", "data"),
     [
         Input('url_content','search'),
-        Input('appVersions_dropdown','value')
+        Input('appVersions_dropdown','value'),
     ],
 )
-def loadDataFromVersion(_, newVersion):
+def load_data_from_version(_, new_version):
     '''
     Loads all the backend data required to propose consistent options to the user.
     '''
-    if newVersion is None:
-        newVersion = CURRENT_VERSION
-    assert newVersion in APP_VERSION_OPTIONS_LIST + [CURRENT_VERSION]
+    # Collect input version and check validity
+    if new_version is None:
+        new_version = CURRENT_VERSION
+    assert new_version in APP_VERSION_OPTIONS_LIST + [CURRENT_VERSION]
 
-    if newVersion == CURRENT_VERSION:
-        newData = load_data(os.path.join(DATA_DIR, 'latest'), version = CURRENT_VERSION)
-        # print('Loading latest data') # DEBUGONLY
+    # Load corresponding backend data
+    if new_version == CURRENT_VERSION:
+        new_data = load_data(os.path.join(DATA_DIR, 'latest'), version = CURRENT_VERSION)
     else:
-        newData = load_data(os.path.join(DATA_DIR, newVersion), version=newVersion)
-        # print(f'Loading {newVersion} data') # DEBUGONLY
-    # print(f"CI FR: {newData.CI_dict_byLoc['FR']['carbonIntensity']}") # DEBUGONLY
-    # print(f"TPUv3 TDP: {newData.cores_dict['GPU']['TPU v3']}")  # DEBUGONLY
-    return vars(newData)
+        new_data = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+    return vars(new_data)
 
 
 @app.callback(
