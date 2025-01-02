@@ -32,18 +32,22 @@ def get_import_expot_blueprint(id_prefix):
 
     @import_export_blueprint.callback(
         Output("aggregate-data-csv", "data"),
-        Input("btn-download_csv", "n_clicks"),
-        State("aggregate_data", "data"),
+        Input("export-content", "data"),
         prevent_initial_call=True,
     )
-    def export_as_csv(_, aggregate_data):
+    def export_as_csv(aggregate_data):
         '''
         Exports the aggregate_data.
+        TODO: modify the suffixe strategy because not robust with
+        respect to the prefix of the AI page's components
         '''
+        file_suffixe = ''
+        if ctx.triggered_id is not None and 'ai-' in ctx.triggered_id:
+            file_suffixe = 'AI'
         to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
-        return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{now}.csv", index=False, sep=';')
+        return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{file_suffixe}_{now}.csv", index=False, sep=';')
 
 
     ################## IMPORT DATA

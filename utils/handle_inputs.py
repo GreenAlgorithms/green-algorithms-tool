@@ -458,6 +458,77 @@ def read_csv_input(upload_csv:dict):
     values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
     return values, invalid_inputs, new_version
 
+def clean_non_used_inputs_for_export(form_aggregate_data: dict):
+    """
+    Sets non-used fields of the form to standardized values (typically 0)
+    so the csv downloaded from the web page is less confusing for the user.
+
+    Args:
+        form_aggregate_data (dict): the form aggregate data, containing all its fields
+    """
+    ### Cores processing
+    if form_aggregate_data['coreType'] == 'CPU':
+        form_aggregate_data['GPUmodel'] = None
+        form_aggregate_data['numberGPUs'] = 0
+        form_aggregate_data['usageGPU'] = 1
+        form_aggregate_data['usageGPUradio'] = 'No'
+        form_aggregate_data['tdpGPU'] = 0
+    elif form_aggregate_data['coreType'] == 'GPU':
+        form_aggregate_data['CPUmodel'] = None
+        form_aggregate_data['numberCPUs'] = 0
+        form_aggregate_data['usageCPU'] = 1
+        form_aggregate_data['usageCPUradio'] = 'No'
+        form_aggregate_data['tdpCPU'] = 0
+    ### Platform related processing
+    if form_aggregate_data['platformType'] == 'cloudComputing':
+        form_aggregate_data['locationContinent'] = None
+        form_aggregate_data['locationCountry'] = None
+        form_aggregate_data['locationRegion'] = None
+    else:
+        form_aggregate_data['provider'] = None
+        form_aggregate_data['serverContinent'] = None
+        form_aggregate_data['server'] = None
+    return form_aggregate_data
+
+
+def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict):
+    # the pop method is used with None arg to avoid KeyError
+    """
+    Removes some items from the wrong inputs list.
+    For instance, we do not want to raise alerts to the user about
+    the 'GPUmodel' field if the 'coreType' field equals 'CPU'.
+
+    Args:
+        clean_inputs_from_csv (dict): the processed inputs from the csv.
+        wrong_inputs_from_csv (dict): the raw wrong inputs as returned by the checking function.
+
+    Returns:
+        dict: filtered wrong inputs.
+    """
+    ### Cores processing
+    if clean_inputs_from_csv['coreType'] == 'CPU':
+        wrong_inputs_from_csv.pop('GPUmodel', None)
+        wrong_inputs_from_csv.pop('numberGPUs', None)
+        wrong_inputs_from_csv.pop('usageGPU', None)
+        wrong_inputs_from_csv.pop('usageGPUradio', None)
+        wrong_inputs_from_csv.pop('tdpGPU', None)
+    elif clean_inputs_from_csv['coreType'] == 'GPU':
+        wrong_inputs_from_csv.pop('CPUmodel', None)
+        wrong_inputs_from_csv.pop('numberCPUs', None)
+        wrong_inputs_from_csv.pop('usageCPU', None)
+        wrong_inputs_from_csv.pop('usageCPUradio', None)
+        wrong_inputs_from_csv.pop('tdpCPU', None)
+    ### Platform related processing
+    if clean_inputs_from_csv['platformType'] == 'cloudComputing':
+        wrong_inputs_from_csv.pop('locationContinent', None)
+        wrong_inputs_from_csv.pop('locationCountry', None)
+        wrong_inputs_from_csv.pop('locationRegion', None)
+    else:
+        wrong_inputs_from_csv.pop('provider', None)
+        wrong_inputs_from_csv.pop('serverContinent', None)
+        wrong_inputs_from_csv.pop('server', None)
+    return wrong_inputs_from_csv
+
 
 
 

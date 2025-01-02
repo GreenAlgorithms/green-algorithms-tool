@@ -720,8 +720,10 @@ def get_form_blueprint(id_prefix, title, subtitle):
     ##################### PROCESS INPUTS ###
     
     @form_blueprint.callback(
-        Output('form_aggregate_data', "data"),
-        Output('form_output_metrics', "data"),
+        [
+            Output('form_aggregate_data', "data"),
+            Output('form_output_metrics', "data"),
+        ],
         [
             Input('versioned_data','data'),
             Input('coreType_dropdown', "value"),
@@ -840,7 +842,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
             output['memory'] = None
             output['runTime_hour'] = None
             output['runTime_min'] = None
-            output['runTime'] = None
             output['platformType'] = None
             output['location'] = None
             output['carbonIntensity'] = None
@@ -849,6 +850,7 @@ def get_form_blueprint(id_prefix, title, subtitle):
             output['PSF'] = None
             output['PSFradio'] = None
             output['appVersion'] = version
+            metrics['runTime'] = None
             metrics['carbonEmissions'] = 0
             metrics['CE_CPU'] = 0
             metrics['CE_GPU'] = 0
@@ -895,10 +897,11 @@ def get_form_blueprint(id_prefix, title, subtitle):
                     # we asked the question about TDP
                     CPUpower = tdpCPU
                 else:
-                    if CPUmodel == 'other':
-                        CPUpower = tdpCPU
-                    else:
-                        CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
+                    # if CPUmodel == 'other':
+                    #     CPUpower = tdpCPU
+                    # else:
+                    # CPUmodel cannot be "other"
+                    CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
                 if usageCPUradio == 'Yes':
                     usageCPU_used = usageCPU
                 else:
@@ -913,10 +916,11 @@ def get_form_blueprint(id_prefix, title, subtitle):
                 if is_shown(tdpGPUstyle):
                     GPUpower = tdpGPU
                 else:
-                    if GPUmodel == 'other':
-                        GPUpower = tdpGPU
-                    else:
-                        GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
+                    # if GPUmodel == 'other':
+                    #     GPUpower = tdpGPU
+                    # else:
+                    # GPUmodel cannot be "other"
+                    GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
                 if usageGPUradio == 'Yes':
                     usageGPU_used = usageGPU
                 else:
@@ -973,7 +977,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
             output['memory'] = memory
             output['runTime_hour'] = actual_runTime_hours
             output['runTime_min'] = actual_runTime_min
-            output['runTime'] = runTime
             output['platformType'] = selected_platform
             output['locationContinent'] = locationContinent
             output['locationCountry'] = locationCountry
@@ -988,6 +991,7 @@ def get_form_blueprint(id_prefix, title, subtitle):
             output['PSF'] = PSF_used
             output['PSFradio'] = PSFradio
             output['appVersion'] = version
+            metrics['runTime'] = runTime
             metrics['carbonEmissions'] = carbonEmissions
             metrics['CE_CPU'] = CE_CPU
             metrics['CE_GPU'] = CE_GPU
