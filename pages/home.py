@@ -188,7 +188,7 @@ def get_home_page_layout():
             ),
 
         ],
-        className='fullPage'
+        className='page_content'
 
     )
 

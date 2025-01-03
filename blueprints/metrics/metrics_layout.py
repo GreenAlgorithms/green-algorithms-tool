@@ -180,9 +180,9 @@ def get_metric_per_form_layout(training_id, inference_id):
     return html.P(
         [
             html.B('Training:'),
-            loading_wrapper(html.B(id=training_id, className='metric-per-form-value')),
-            html.B('Inference:'),
-            loading_wrapper(html.B(id=inference_id, className='metric-per-form-value')),
+            html.B(id=training_id, className='metric-per-form-value'),
+            html.B('Inference:', style={'padding-left': '10px'}),
+            html.B(id=inference_id, className='metric-per-form-value'),
         ],
         className='detailed-metric-container'
     )

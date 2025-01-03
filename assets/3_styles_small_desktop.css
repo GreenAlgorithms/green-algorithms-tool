@@ -10,6 +10,14 @@
         margin: 0 auto;
     }
 
+    .page_content{
+        width: 1000px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: unset;
+    }
+
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
     */
@@ -17,6 +25,21 @@
     .input-form {
         margin-right: 12px;
         width: calc((33.3%) - (6px));
+    }
+
+    .ai-input-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: row; 
+    }
+
+    .ai-input-form .input-form {
+        width: calc((50%) - (6px));
+    }
+
+    .ai-input-form form:last-of-type{
+        margin-right: 0px;
     }
 
     .form-row .box-fields,
@@ -40,14 +63,14 @@
     ---------------------------------- IMPORT-EXPORT ----------------------------------------
     */
     
-        #import-export-buttons {
-            display: flex;
-            flex-direction: row;
-        }
-     
-        #import-result {
-            margin-left: 6px
-        }
+    #import-export-buttons {
+        display: flex;
+        flex-direction: row;
+    }
+    
+    #import-result {
+        margin-left: 6px
+    }
 
 
     
@@ -65,7 +88,6 @@
         height: 170px;
     }    
 
-    /* The import-export section has index 1 */
     /* We target the extreme right mini-box(s) */
     .mini-box:nth-of-type(2), .mini-box:nth-of-type(5) {
         margin-right: 0;
@@ -96,9 +118,6 @@
         flex-grow: 1;
     }
 
-    /*.one-of-two-graphs {*/
-    /*    width: calc((50%) - (10px));*/
-    /*}*/
 
     .one-of-two-graphs:last-of-type {
         padding-right: 80px;
@@ -106,9 +125,6 @@
         /*margin-bottom: 0;*/
     }
 
-    /*.pie-graph {*/
-    /*    margin-top: 70px;*/
-    /*}*/
 
     /*
     ---------------------------------- FORMULA AND DEFINITIONS ----------------------------------------
@@ -119,10 +135,6 @@
         width: calc((60%) - (6px));
     }
 
-    /*.formula .graph-container {*/
-    /*    margin-top: 30px;*/
-    /*}*/
-
     .definitions {
         width: calc((40%) - (6px));
     }
@@ -131,12 +143,20 @@
         height: calc((50%) - (12px));
     }
 
+    .methodology-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+    }
+
+
     /*
     ---------------------------------- REPORT and CORES COMPARISON ----------------------------------------
     */
-
+    
     .report {
         order: 1;
+        margin-right: 10px;
         width: calc((45%) - (6px));
     }
 

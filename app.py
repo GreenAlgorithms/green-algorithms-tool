@@ -22,7 +22,7 @@ from pages.ai import AI_PAGE, AI_PAGE_ID_PREFIX
 ## CREATE APP
 
 external_stylesheets = [
-    dbc.themes.BOOTSTRAP,
+    # dbc.themes.BOOTSTRAP,
     dict(
         href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
         rel="stylesheet"

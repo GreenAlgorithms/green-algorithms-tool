@@ -88,5 +88,5 @@ def get_green_algo_methodology_layout():
                 className='super-section definitions'
             ),
         ],
-        className='methodolgy-container'
+        className='methodology-container'
     )

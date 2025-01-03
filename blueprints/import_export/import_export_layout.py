@@ -39,11 +39,10 @@ def get_green_algo_import_export_layout():
                             id='upload-data',
                             className='upload-data',
                         ),
-                        className='container footer import-result',
+                        className='container footer import-export import-result',
                         id='import-result',
                     ),
                 ],
-                # id='import-export-buttons',
                 className='import-export-buttons',
             ),
 

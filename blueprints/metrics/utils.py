@@ -34,9 +34,9 @@ def format_CE_text(carbon_emissions: float):
         carbon_emissions *= 1e3
         carbonEmissions_unit = "mg"
     if (carbon_emissions != 0)&((carbon_emissions >= 1e3)|(carbon_emissions < 1)):
-        text_CE = f"{carbon_emissions:,.2e} {carbonEmissions_unit} CO2e"
+        text_CE = f"{carbon_emissions:,.2e} {carbonEmissions_unit}CO2e"
     else:
-        text_CE = f"{carbon_emissions:,.2f} {carbonEmissions_unit} CO2e"
+        text_CE = f"{carbon_emissions:,.2f} {carbonEmissions_unit}CO2e"
     return text_CE
 
 def write_tree_months_equivalent(carbon_emissions: float, ref_values: dict):

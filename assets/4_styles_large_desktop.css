@@ -10,6 +10,14 @@
         margin: 0 auto;
     }
 
+    .page_content{
+        width: 1280px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: unset;
+    }
+
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
     */
@@ -65,23 +73,6 @@
         height: 240px;
     }
 
-    .mini-box {
-        flex-direction: column;
-        display: flex;
-        /* align-items: center; */
-    } 
-
-    .caption-icons {
-        width: 100%;
-        justify-content: center;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .detailed-metric-container {
-        display: flex;
-        flex-direction: row;
-    }
 
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------

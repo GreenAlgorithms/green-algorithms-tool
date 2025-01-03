@@ -152,7 +152,7 @@ def get_green_algo_form_layout(title, subtitle):
                                 min=0,
                             )
                         ],
-                        className='form-row',
+                        className='form-row TDP',
                         id='tdpCPU_div',
                         style=dict(display='none')
                     ),
@@ -235,7 +235,7 @@ def get_green_algo_form_layout(title, subtitle):
                                 min=0,
                             )
                         ],
-                        className='form-row',
+                        className='form-row TDP',
                         id='tdpGPU_div',
                         style=dict(display='none')
                     ),
@@ -323,7 +323,7 @@ def get_green_algo_form_layout(title, subtitle):
                         id='provider_dropdown_div',
                     ),
                 ],
-                className='form-row'
+                className='form-row long-input'
             ),
 
 
@@ -349,7 +349,7 @@ def get_green_algo_form_layout(title, subtitle):
                     )
                 ],
                 id='server_div',
-                className='form-row',
+                className='form-row long-input',
                 style={'display': 'none'}
             ),
 
@@ -404,7 +404,7 @@ def get_green_algo_form_layout(title, subtitle):
                     ),
                 ],
                 id='location_div',
-                className='form-row',
+                className='form-row long-input',
                 style={'display': 'flex'}
             ),
 

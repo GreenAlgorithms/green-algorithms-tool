@@ -103,7 +103,7 @@ def get_ai_page_layout():
             metrics.embed(AI_PAGE),
 
         ],
-        className='fullPage'
+        className='page_content'
     )
 
     return page_layout
