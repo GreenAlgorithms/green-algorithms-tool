@@ -170,7 +170,7 @@ def get_cores_bar_layout():
     )
     return layout_bar
 
-def create_cores_bar_chart_graphic(aggregated_data, data_dict):
+def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     
     layout_bar = get_cores_bar_layout()
 
@@ -187,7 +187,7 @@ def create_cores_bar_chart_graphic(aggregated_data, data_dict):
             'NVIDIA Tesla P100 PCIe',
             'NVIDIA Tesla V100'
         ]
-        list_cores = [x for x in list_cores0 if x in data_dict.cores_dict['GPU']]
+        list_cores = [x for x in list_cores0 if x in versioned_data.cores_dict['GPU']]
 
         coreModel = aggregated_data['GPUmodel']
 
@@ -208,7 +208,7 @@ def create_cores_bar_chart_graphic(aggregated_data, data_dict):
             'Core i3-10320',
             'Xeon X3430'
         ]
-        list_cores = [x for x in list_cores0 if x in data_dict.cores_dict['CPU']]
+        list_cores = [x for x in list_cores0 if x in versioned_data.cores_dict['CPU']]
 
         coreModel = aggregated_data['CPUmodel']
 
@@ -223,13 +223,13 @@ def create_cores_bar_chart_graphic(aggregated_data, data_dict):
             if gpu == 'other':
                 power_list.append(aggregated_data['tdpGPU'])
             else:
-                power_list.append(data_dict.cores_dict['GPU'][gpu])
+                power_list.append(versioned_data.cores_dict['GPU'][gpu])
     else:
         for cpu in list_cores:
             if cpu == 'other':
                 power_list.append(aggregated_data['tdpCPU'])
             else:
-                power_list.append(data_dict.cores_dict['CPU'][cpu])
+                power_list.append(versioned_data.cores_dict['CPU'][cpu])
 
     power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
     power_df.sort_values(by=['corePower'], inplace=True)
@@ -286,7 +286,7 @@ def get_ci_bar_chart_layout():
     )
     return layout_bar
 
-def create_ci_bar_chart_graphic(aggregated_data, data_dict):
+def create_ci_bar_chart_graphic(form_metrics, versioned_data):
 
     # list of countries displayed
     loc_ref = {
@@ -303,13 +303,13 @@ def create_ci_bar_chart_graphic(aggregated_data, data_dict):
 
     # calculate carbon emissions for each location
     for countryCode in loc_ref.keys():
-        loc_ref[countryCode]['carbonEmissions'] = aggregated_data['energy_needed'] * data_dict.CI_dict_byLoc[countryCode]['carbonIntensity']
+        loc_ref[countryCode]['carbonEmissions'] = form_metrics['energy_needed'] * versioned_data.CI_dict_byLoc[countryCode]['carbonIntensity']
         loc_ref[countryCode]['opacity'] = 0.2
 
     # adapt the final dataframe
     loc_ref['You'] = dict(
         name='Your algorithm',
-        carbonEmissions=aggregated_data['carbonEmissions'],
+        carbonEmissions=form_metrics['carbonEmissions'],
         opacity=1
     )
     loc_df = pd.DataFrame.from_dict(loc_ref, orient='index')
@@ -360,17 +360,17 @@ def get_cores_memory_pie_chart_layout(aggregated_data):
     return layout_pie
 
 
-def create_cores_memory_pie_graphic(aggregated_data):
+def create_cores_memory_pie_graphic(form_agg_data, form_metrics):
     labels = ['Memory']
-    values = [aggregated_data['CE_memory']]
+    values = [form_metrics['CE_memory']]
 
-    if aggregated_data['coreType'] in ['CPU', 'Both']:
+    if form_agg_data['coreType'] in ['CPU', 'Both']:
         labels.append('CPU')
-        values.append(aggregated_data['CE_CPU'])
+        values.append(form_metrics['CE_CPU'])
 
-    if aggregated_data['coreType'] in ['GPU', 'Both']:
+    if form_agg_data['coreType'] in ['GPU', 'Both']:
         labels.append('GPU')
-        values.append(aggregated_data['CE_GPU'])
+        values.append(form_metrics['CE_GPU'])
     annotations = []
     percentages = [x/sum(values) if sum(values)!=0 else 0 for x in values]
     to_del = []
@@ -410,7 +410,7 @@ def create_cores_memory_pie_graphic(aggregated_data):
                 )
             )
         ],
-        layout=get_cores_memory_pie_chart_layout(aggregated_data)
+        layout=get_cores_memory_pie_chart_layout(form_agg_data)
     )
 
     fig.update_layout(

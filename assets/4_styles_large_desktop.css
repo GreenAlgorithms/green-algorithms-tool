@@ -65,6 +65,24 @@
         height: 240px;
     }
 
+    .mini-box {
+        flex-direction: column;
+        display: flex;
+        /* align-items: center; */
+    } 
+
+    .caption-icons {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .detailed-metric-container {
+        display: flex;
+        flex-direction: row;
+    }
+
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------
     */

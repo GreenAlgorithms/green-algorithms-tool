@@ -16,7 +16,7 @@ from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_g
 from dash_extensions.enrich import DashBlueprint, html
 from blueprints.form.form_blueprint import get_form_blueprint
 from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
-from blueprints.results.results_blueprint import get_results_blueprint
+from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 
 
@@ -42,7 +42,7 @@ form = get_form_blueprint(
 
 methodology_content = get_methodology_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
-results = get_results_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
+metrics = get_metrics_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
 import_export = get_import_expot_blueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
 
@@ -78,7 +78,7 @@ def get_home_page_layout():
                 [
                     import_export.embed(HOME_PAGE),
 
-                    results.embed(HOME_PAGE),
+                    metrics.embed(HOME_PAGE),
 
             #### DYNAMIC GRAPHS ####
         
@@ -152,7 +152,6 @@ def get_home_page_layout():
                     dcc.Markdown(id='report_markdown'),
 
                     dcc.Markdown(
-                        # '\[1\] see citation below',
                         '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
                         className='footnote citation-report'
                     ),
@@ -190,8 +189,6 @@ def get_home_page_layout():
 
         ],
         className='fullPage'
-        
-
 
     )
 
@@ -240,18 +237,18 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
     # If input data could be read, we check its validity and consistency
     else:
         clean_inputs, invalid_inputs, app_version = read_csv_input(input_data)
-        invalid_inputs = filter_wrong_inputs(invalid_inputs)
+        invalid_inputs = filter_wrong_inputs(clean_inputs, invalid_inputs)
         mess_subtitle = 'Filling in values from the input csv file.'
         mess_content = ''
         if len(invalid_inputs) > 0:
-            show_error_mess = True
+            show_err_mess = True
             mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
                             f'so we use default values for the following fields: \n'
             mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
-        return clean_inputs, show_error_mess, mess_subtitle, mess_content, app_version
+        return clean_inputs, show_err_mess, mess_subtitle, mess_content, app_version
     
 
-################## EXPORT RESULTS
+################## EXPORT DATA
 
 @HOME_PAGE.callback(
         Output(f'{HOME_PAGE_ID_PREFIX}-export-content', 'data'),
@@ -262,13 +259,13 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
 def forward_form_input_to_export_module(_, form_aggregate_data):
     '''
     Intermediate processing specific to the HOME page before exporting data.
-    So far, we just forward the inputs of the form to the export file. 
+    We forward the inputs of the form to the export file. 
     '''
     form_aggregate_data = clean_non_used_inputs_for_export(form_aggregate_data)
     return form_aggregate_data
 
 
-##################### RESET ###
+##################### RESET 
 
 @HOME_PAGE.callback(
     Output(f'{HOME_PAGE_ID_PREFIX}-confirm_reset','displayed'),
@@ -285,73 +282,88 @@ def display_confirm(clicks):
     return False
 
 
+################## RESULTS AND METRICS 
+
+@HOME_PAGE.callback(
+    Output(f'{HOME_PAGE_ID_PREFIX}-base_results', 'data'),
+    Input(f'{HOME_PAGE_ID_PREFIX}-form_output_metrics', 'data')
+)
+def forward_results_from_form_to_metrics(form_metrics):
+    return {
+        'energy_needed': form_metrics['energy_needed'],
+        'carbonEmissions': form_metrics['carbonEmissions'],
+    }
+
+
 ## OUTPUT GRAPHICS
-#################
 
 @HOME_PAGE.callback(
     Output("pie_graph", "figure"),
-    Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
+    [
+        Input(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', "data"),
+        Input(f'{HOME_PAGE_ID_PREFIX}-form_output_metrics', "data"),
+    ]
 )
-def create_pie_graph(aggData):
-    return create_cores_memory_pie_graphic(aggData)
+def create_pie_graph(form_agg_data, form_metrics):
+    return create_cores_memory_pie_graphic(form_agg_data, form_metrics)
 
-### UPDATE BAR CHART COMPARISON
 # FIXME: looks weird with 0 emissions
 @HOME_PAGE.callback(
     Output("barPlotComparison", "figure"),
     [
-        Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
+        Input(f'{HOME_PAGE_ID_PREFIX}-form_output_metrics', "data"),
         Input('versioned_data','data')
     ],
 )
-def create_bar_chart(aggData, data):
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
-        return create_ci_bar_chart_graphic(aggData, data_dict)
+def create_bar_chart(form_metrics, versioned_data):
+    if versioned_data is not None:
+        versioned_data = SimpleNamespace(**versioned_data)
+        return create_ci_bar_chart_graphic(form_metrics, versioned_data)
     return None
 
-### UPDATE BAR CHARTCPU
 @HOME_PAGE.callback(
     Output("barPlotComparison_cores", "figure"),
     [
-        Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
+        Input(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', "data"),
         Input('versioned_data','data')
     ],
 )
-def create_bar_chart_cores(aggData, data):
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
-        if aggData['coreType'] is None:
+def create_bar_chart_cores(form_agg_data, versioned_data):
+    if versioned_data is not None:
+        versioned_data = SimpleNamespace(**versioned_data)
+        if form_agg_data['coreType'] is None:
             return go.Figure()
-        return create_cores_bar_chart_graphic(aggData, data_dict)
+        return create_cores_bar_chart_graphic(form_agg_data, versioned_data)
     return None
 
 
 ## OUTPUT SUMMARY
-#################
 
 @HOME_PAGE.callback(
     Output('report_markdown', 'children'),
     [
-        Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
-        Input('versioned_data','data')
+        Input(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', "data"),
+        Input('versioned_data','data'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-energy_text', 'children'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-carbonEmissions_text', 'children'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-treeMonths_text', 'children'),
     ],
 )
-def fillin_report_text(aggData, data):
+def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text_ty):
     '''
     Writes a summary text of the current computation that is shown as an example
     for the user on how to report its impact.
     '''
-    if (aggData['numberCPUs'] is None)&(aggData['numberGPUs'] is None):
+    if (form_agg_data['numberCPUs'] is None)&(form_agg_data['numberGPUs'] is None):
         return('')
-    elif data is None:
+    elif versioned_data is None:
         return ('')
     else:
-        data_dict = SimpleNamespace(**data)
+        versioned_data = SimpleNamespace(**versioned_data)
 
         # Text runtime
-        minutes = aggData['runTime_min']
-        hours = aggData['runTime_hour']
+        minutes = form_agg_data['runTime_min']
+        hours = form_agg_data['runTime_hour']
         if (minutes > 0)&(hours>0):
             textRuntime = "{}h and {}min".format(hours, minutes)
         elif (hours > 0):
@@ -361,23 +373,23 @@ def fillin_report_text(aggData, data):
 
         # text cores
         textCores = ""
-        if aggData['coreType'] in ['GPU','Both']:
-            if aggData['numberGPUs'] > 1:
+        if form_agg_data['coreType'] in ['GPU','Both']:
+            if form_agg_data['numberGPUs'] > 1:
                 suffixProcessor = 's'
             else:
                 suffixProcessor = ''
-            textCores += f"{aggData['numberGPUs']} GPU{suffixProcessor} {aggData['GPUmodel']}"
-        if aggData['coreType'] == 'Both':
+            textCores += f"{form_agg_data['numberGPUs']} GPU{suffixProcessor} {form_agg_data['GPUmodel']}"
+        if form_agg_data['coreType'] == 'Both':
             textCores += " and "
-        if aggData['coreType'] in ['CPU','Both']:
-            if aggData['numberCPUs'] > 1:
+        if form_agg_data['coreType'] in ['CPU','Both']:
+            if form_agg_data['numberCPUs'] > 1:
                 suffixProcessor = 's'
             else:
                 suffixProcessor = ''
-            textCores += f"{aggData['numberCPUs']} CPU{suffixProcessor} {aggData['CPUmodel']}"
+            textCores += f"{form_agg_data['numberCPUs']} CPU{suffixProcessor} {form_agg_data['CPUmodel']}"
 
-        country = data_dict.CI_dict_byLoc[aggData['location']]['countryName']
-        region = data_dict.CI_dict_byLoc[aggData['location']]['regionName']
+        country = versioned_data.CI_dict_byLoc[form_agg_data['location']]['countryName']
+        region = versioned_data.CI_dict_byLoc[form_agg_data['location']]['regionName']
 
         if region == 'Any':
             textRegion = ''
@@ -389,30 +401,17 @@ def fillin_report_text(aggData, data):
         else:
             prefixCountry = ''
 
-        if aggData['PSF'] > 1:
-            textPSF = ' and ran {} times in total,'.format(aggData['PSF'])
+        if form_agg_data['PSF'] > 1:
+            textPSF = ' and ran {} times in total,'.format(form_agg_data['PSF'])
         else:
             textPSF = ''
 
         myText = f'''
         > This algorithm runs in {textRuntime} on {textCores},
-        > and draws {aggData['text_energyNeeded']}. 
-        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {aggData['text_CE']}, which is equivalent to {aggData['text_treeYear']}
-        (calculated using green-algorithms.org {CURRENT_VERSION} \[1\]).
+        > and draws {text_energy}. 
+        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
+        (calculated using green-algorithms.org {form_agg_data['appVersion']} \[1\]).
         '''
 
         return myText
 
-# @HOME_PAGE.callback(
-#     Output(f'{HOME_PAGE_ID_PREFIX}-res_aggregate_data', 'data'),
-#     Input(f'{HOME_PAGE_ID_PREFIX}-aggregate_data', "data"),
-# )
-# def update_text(data):
-#     return {
-#             'text_CE': data.get('text_CE'),
-#             'text_energyNeeded': data.get('text_energyNeeded'),
-#             'text_treeYear': data.get('text_treeYear'),
-#             'nkm_drivingEU': data.get('nkm_drivingEU'),
-#             'flying_context': data.get('flying_context'),
-#             'flying_text': data.get('flying_text'),
-#     }

@@ -897,9 +897,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
                     # we asked the question about TDP
                     CPUpower = tdpCPU
                 else:
-                    # if CPUmodel == 'other':
-                    #     CPUpower = tdpCPU
-                    # else:
                     # CPUmodel cannot be "other"
                     CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
                 if usageCPUradio == 'Yes':
@@ -916,9 +913,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
                 if is_shown(tdpGPUstyle):
                     GPUpower = tdpGPU
                 else:
-                    # if GPUmodel == 'other':
-                    #     GPUpower = tdpGPU
-                    # else:
                     # GPUmodel cannot be "other"
                     GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
                 if usageGPUradio == 'Yes':
@@ -1000,66 +994,6 @@ def get_form_blueprint(id_prefix, title, subtitle):
             metrics['energy_needed'] = energyNeeded
             metrics['power_needed'] = powerNeeded
 
-            # ### Context
-            # output['n_treeMonths'] = carbonEmissions / data_dict.refValues_dict['treeYear'] * 12
-            # output['nkm_drivingUS'] = carbonEmissions / data_dict.refValues_dict['passengerCar_US_perkm']
-            # output['nkm_drivingEU'] = carbonEmissions / data_dict.refValues_dict['passengerCar_EU_perkm']
-            # output['nkm_train'] = carbonEmissions / data_dict.refValues_dict['train_perkm']
-
-            # ### Text plane trips
-            # if carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NY-SF']:
-            #     output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_PAR-LON']
-            #     output['flying_text'] = "Paris-London"
-            # elif carbonEmissions < 0.5 * data_dict.refValues_dict['flight_NYC-MEL']:
-            #     output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NY-SF']
-            #     output['flying_text'] = "NYC-San Francisco"
-            # else:
-            #     output['flying_context'] = carbonEmissions / data_dict.refValues_dict['flight_NYC-MEL']
-            #     output['flying_text'] = "NYC-Melbourne"
-
-            # ### Text carbon emissions
-            # carbonEmissions_value = carbonEmissions  # in g CO2e
-            # carbonEmissions_unit = "g"
-            # if carbonEmissions_value >= 1e6:
-            #     carbonEmissions_value /= 1e6
-            #     carbonEmissions_unit = "T"
-            # elif carbonEmissions_value >= 1e3:
-            #     carbonEmissions_value /= 1e3
-            #     carbonEmissions_unit = "kg"
-            # elif carbonEmissions_value < 1:
-            #     carbonEmissions_value *= 1e3
-            #     carbonEmissions_unit = "mg"
-            # if (carbonEmissions_value != 0)&((carbonEmissions_value >= 1e3)|(carbonEmissions_value < 1)):
-            #     output['text_CE'] = f"{carbonEmissions_value:,.2e} {carbonEmissions_unit} CO2e"
-            # else:
-            #     output['text_CE'] = f"{carbonEmissions_value:,.2f} {carbonEmissions_unit} CO2e"
-
-            # ### Text energy
-            # energyNeeded_value = energyNeeded  # in kWh
-            # energyNeeded_unit = "kWh"
-            # if energyNeeded_value >= 1e3:
-            #     energyNeeded_value /= 1e3
-            #     energyNeeded_unit = "MWh"
-            # elif energyNeeded_value < 1:
-            #     energyNeeded_value *= 1e3
-            #     energyNeeded_unit = "Wh"
-            # if (energyNeeded_value != 0) & ((energyNeeded_value >= 1e3) | (energyNeeded_value < 1)):
-            #     output['text_energyNeeded'] = f"{energyNeeded_value:,.2e} {energyNeeded_unit}"
-            # else:
-            #     output['text_energyNeeded'] = f"{energyNeeded_value:,.2f} {energyNeeded_unit}"
-
-            # ### Text tree-months
-            # treeTime_value = output['n_treeMonths']  # in tree-months
-            # treeTime_unit = "tree-months"
-            # if treeTime_value >= 24:
-            #     treeTime_value /= 12
-            #     treeTime_unit = "tree-years"
-            # if (treeTime_value != 0) & ((treeTime_value >= 1e3) | (treeTime_value < 0.1)):
-            #     output['text_treeYear'] = f"{treeTime_value:,.2e} {treeTime_unit}"
-            # else:
-            #     output['text_treeYear'] = f"{treeTime_value:,.2f} {treeTime_unit}"
-
         return output, metrics
 
-    
     return form_blueprint

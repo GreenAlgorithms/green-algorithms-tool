@@ -308,9 +308,15 @@ hr {
 }
 
 .mini-box {
-    /*height: 200px;*/
     flex-direction: row;
+} 
+
+.mini-box-main-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }
+
 
 .style-icon {
     height: 100px;

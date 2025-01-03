@@ -163,9 +163,12 @@ input, select, .Select, textarea {
 
 .caption-icons p:last-of-type {
     font-weight: 400;
-    /*font-style: italic;
-    font-size: 20px;
-    font-size: 2rem;*/
+}
+
+.metric-per-form-value {
+    font-weight: 600;
+    margin-right: 20px;
+    margin-left: 6px;
 }
 
 

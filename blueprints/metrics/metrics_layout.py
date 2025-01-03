@@ -7,62 +7,86 @@ import dash_bootstrap_components as dbc
 
 image_dir = os.path.join('assets/images')
 
-def get_green_algo_results_layout():
+def get_green_algo_metrics_layout(
+        carbon_footprint_details: html.Div,
+        energy_needed_details: html.Div,
+):
     return html.Div(
         [
-            dcc.Store(id='res_aggregate_data'),
+            #### BACKEND DATA ####
+
+            dcc.Store(id='base_results'),
+
+            #### METRICS AND EQUIVALENTS BOXES ####
+            
             html.Div(
                 [
-                    html.Img(
-                        src=os.path.join(image_dir, 'logo_co2.svg'),
-                        id="logo_co2",
-                        className="style-icon",
-                        style={
-                            'margin-top': '-7px',
-                            'margin-bottom': '7px'
-                        },
-                    ),
-
                     html.Div(
                         [
-                            loading_wrapper(html.Div(
-                                id="carbonEmissions_text",
-                            )),
 
-                            html.P(
-                                "Carbon footprint",
-                            )
+                            html.Img(
+                                src=os.path.join(image_dir, 'logo_co2.svg'),
+                                id="logo_co2",
+                                className="style-icon",
+                                style={
+                                    'margin-top': '-7px',
+                                    'margin-bottom': '7px'
+                                },
+                            ),
+
+                            html.Div(
+                                [
+                                    loading_wrapper(html.Div(
+                                        id="carbonEmissions_text",
+                                    )),
+
+                                    html.P(
+                                        "Carbon footprint",
+                                    )
+                                ],
+                                className='caption-icons'
+                            ),
                         ],
-                        className='caption-icons'
-                    )
+                        className='mini-box-main-content'
+
+                    ),
+
+                    carbon_footprint_details,
                 ],
                 className="container mini-box"
             ),
 
             html.Div(
                 [
-                    html.Img(
-                        src=os.path.join(image_dir, 'logo_power_1.svg'),
-                        id="logo_power",
-                        className="style-icon",
-                        style={
-                            'margin': '0px',
-                            'padding': '15px'
-                        },
-                    ),
-
                     html.Div(
                         [
-                            loading_wrapper(html.Div(
-                                id="energy_text",
-                            )),
+                            html.Img(
+                                src=os.path.join(image_dir, 'logo_power_1.svg'),
+                                id="logo_power",
+                                className="style-icon",
+                                style={
+                                    'margin': '0px',
+                                    'padding': '15px'
+                                },
+                            ),
 
-                            html.P(
-                                "Energy needed",
-                            )
+                            html.Div(
+                                [
+                                    loading_wrapper(html.Div(
+                                        id="energy_text",
+                                    )),
+
+                                    html.P(
+                                        "Energy needed",
+                                    )
+                                ],
+                                className='caption-icons'
+                            ),
                         ],
-                        className='caption-icons'
-                    )
+                        className='mini-box-main-content'
+                    ),
+                    
+                    energy_needed_details,
                 ],
                 className="container mini-box"
             ),
@@ -150,4 +174,15 @@ def get_green_algo_results_layout():
             ),
         ],
         className='super-section mini-boxes'
+    )
+
+def get_metric_per_form_layout(training_id, inference_id):
+    return html.P(
+        [
+            html.B('Training:'),
+            loading_wrapper(html.B(id=training_id, className='metric-per-form-value')),
+            html.B('Inference:'),
+            loading_wrapper(html.B(id=inference_id, className='metric-per-form-value')),
+        ],
+        className='detailed-metric-container'
     )

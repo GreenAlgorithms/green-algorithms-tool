@@ -7,6 +7,10 @@ from types import SimpleNamespace
 from dash_extensions.enrich import DashBlueprint, html
 from blueprints.form.form_blueprint import get_form_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
+from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
+
+import blueprints.metrics.metrics_layout as metrics_layout
+import blueprints.metrics.utils as metrics_utils
 
 from utils.graphics import loading_wrapper
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
@@ -32,6 +36,18 @@ inference_form = get_form_blueprint(
 )
 
 import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX) 
+
+metrics = get_metrics_blueprint(
+    id_prefix=AI_PAGE_ID_PREFIX,
+    energy_needed_details=metrics_layout.get_metric_per_form_layout(
+        training_id=f'{TRAINING_ID_PREFIX}-energy_needed',
+        inference_id= f'{INFERENCE_ID_PREFIX}-energy_needed',
+    ),
+    carbon_footprint_details=metrics_layout.get_metric_per_form_layout(
+        training_id=f'{TRAINING_ID_PREFIX}-carbon_emissions',
+        inference_id= f'{INFERENCE_ID_PREFIX}-carbon_emissions',
+    )
+)
 
 
 ###################################################
@@ -69,170 +85,22 @@ def get_ai_page_layout():
 
             import_export.embed(AI_PAGE),
 
-            #### TRAINING FORM ####
+            html.Div(
+                [
+                    #### TRAINING FORM ####
 
-            training_form.embed(AI_PAGE),
+                    training_form.embed(AI_PAGE),
 
-            #### INFERENCE FORM ####
+                    #### INFERENCE FORM ####
 
-            inference_form.embed(AI_PAGE),
+                    inference_form.embed(AI_PAGE),
+                ],
+                className=f'ai-input-form'
+            ),
 
             #### RESULTS ####
 
-            html.Div(
-                [
-                    html.Div(
-                        [
-                            html.Div(
-                                [
-                                    html.H2('RESULTS')
-                                ],
-                                id='result-title'
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_co2.svg'),
-                                        id="logo_co2",
-                                        className="style-icon",
-                                        style={
-                                            'margin-top': '-7px',
-                                            'margin-bottom': '7px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="carbonEmissions_text",
-                                            )),
-
-                                            html.P(
-                                                "Carbon footprint",
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_power_1.svg'),
-                                        id="logo_power",
-                                        className="style-icon",
-                                        style={
-                                            'margin': '0px',
-                                            'padding': '15px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="energy_text",
-                                            )),
-
-                                            html.P(
-                                                "Energy needed",
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_tree_1.svg'),
-                                        id="logo_tree",
-                                        className="style-icon",
-                                        style={
-                                            'padding': '15px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="treeMonths_text",
-                                            )),
-
-                                            html.P(
-                                                "Carbon sequestration"
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_car_3.svg'),
-                                        id="logo_car",
-                                        className="style-icon",
-                                        style={
-                                            'padding': '13px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="driving_text",
-                                            )),
-
-                                            html.P(
-                                                "in a passenger car",
-                                            )
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Img(
-                                        src=os.path.join(image_dir, 'logo_plane_1.svg'),
-                                        id="logo_plane",
-                                        className="style-icon",
-                                        style={
-                                            'padding': '4px'
-                                        },
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            loading_wrapper(html.Div(
-                                                id="flying_text",
-                                            )),
-
-                                            html.P(
-                                                id="flying_label",
-                                            ),
-                                        ],
-                                        className='caption-icons'
-                                    )
-                                ],
-                                className="container mini-box"
-                            ),
-                        ],
-                        className='super-section'
-                    ),
-                ],
-                className='result-section container'
-            )
+            metrics.embed(AI_PAGE),
 
         ],
         className='fullPage'
@@ -308,7 +176,7 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
 
 
 
-################## EXPORT RESULTS
+################## EXPORT DATA
 
 @AI_PAGE.callback(
         Output(f'{AI_PAGE_ID_PREFIX}-export-content', 'data'),
@@ -335,3 +203,53 @@ def forward_form_input_to_export_module(_, training_form_agg_data, inference_for
     form_aggregate_data.update(training_data)
     form_aggregate_data.update(inference_data)
     return form_aggregate_data
+
+
+################## RESULTS AND METRICS 
+
+@AI_PAGE.callback(
+    Output(f'{AI_PAGE_ID_PREFIX}-base_results', 'data'),
+    [ 
+        Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+        Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
+    ]
+)
+def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, inference_form_metrics):
+    tot_energy_needed = training_form_metrics['energy_needed'] + inference_form_metrics['energy_needed']
+    tot_carbon_emissions = training_form_metrics['carbonEmissions'] + inference_form_metrics['carbonEmissions']
+    return {
+        'energy_needed': tot_energy_needed,
+        'carbonEmissions': tot_carbon_emissions,
+    }
+
+### DETAILED METRICS PER FORM
+
+# Energy
+@AI_PAGE.callback(
+    Output(f'{AI_PAGE_ID_PREFIX}-{TRAINING_ID_PREFIX}-energy_needed', 'children'),
+    Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+)
+def get_training_needed_energy(training_form_metrics):
+    return metrics_utils.format_energy_text(training_form_metrics['energy_needed'])
+
+@AI_PAGE.callback(
+    Output(f'{AI_PAGE_ID_PREFIX}-{INFERENCE_ID_PREFIX}-energy_needed', 'children'),
+    Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
+)
+def get_training_needed_energy(inference_form_metrics):
+    return metrics_utils.format_energy_text(inference_form_metrics['energy_needed'])
+
+# Carbon emissions
+@AI_PAGE.callback(
+    Output(f'{AI_PAGE_ID_PREFIX}-{TRAINING_ID_PREFIX}-carbon_emissions', 'children'),
+    Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+)
+def get_training_needed_energy(training_form_metrics):
+    return metrics_utils.format_CE_text(training_form_metrics['carbonEmissions'])
+
+@AI_PAGE.callback(
+    Output(f'{AI_PAGE_ID_PREFIX}-{INFERENCE_ID_PREFIX}-carbon_emissions', 'children'),
+    Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
+)
+def get_training_needed_energy(inference_form_metrics):
+    return metrics_utils.format_CE_text(inference_form_metrics['carbonEmissions'])
