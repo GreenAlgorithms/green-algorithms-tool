@@ -76,7 +76,11 @@ def get_ai_page_layout():
             html.Div(
                 [
                     html.H2('Artificial intelligence dedicated page'),
-                    html.P('Some explainations')
+                    html.P(
+                            'This new page is especially dedicated to AI-related computations, namely training and inference phases. ' \
+                            "It is intended to ease the reporting of AI systems' environmental impacts over a fixed time lenght, typically one year. " \
+                            'The formula applied to your inputs is exactly the same as the one used in the main page calculator.'
+                        )
                 ],
                 className='container'
             ),

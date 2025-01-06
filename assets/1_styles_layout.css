@@ -224,6 +224,36 @@ hr {
 }
 
 
+
+/*
+---------------------------------- Tooltip ----------------------------------------
+*/
+
+.tooltip-text {
+    visibility: hidden;
+    width: 12em;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    font-style: normal;
+    /* Position of the text */
+    position: absolute;
+    right: 1em;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltip-text, .tooltip:active .tooltip-text {
+    visibility: visible;
+}
+
+.tooltip:hover .tooltip-icon, .tooltip:active .tooltip-icon {
+    color: rgb(60, 60, 60);
+    border-color: rgb(60, 60, 60);
+}
+
+
 /*
 ---------------------------------- IMPORT-EXPORT ----------------------------------------
 */

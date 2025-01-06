@@ -59,11 +59,6 @@
         margin-left: 0em;
         margin-right: -1em;
     }
-
-    .tooltip-text {
-        position: absolute;
-        left: 1em
-    }
     
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
@@ -71,6 +66,10 @@
 
     .mini-box:nth-of-type(n+3) {
         height: 240px;
+    }
+
+    .training-metric {
+        margin-right: 50px;
     }
 
 

@@ -48,6 +48,11 @@
         width: 91%;
     }
     
+    
+    /*
+    ---------------------------------- Tooltip ----------------------------------------
+    */
+
     .form-row .tooltip {
         width: 4%;
         margin-left: -0.5em;
@@ -55,7 +60,15 @@
 
     .tooltip-text {
         position: absolute;
-        left: 1em
+        right: 0.1em
+    }
+        
+    
+    .tooltip-icon {
+        /* Position of the icon */
+        position: relative;
+        left: 0.3em;
+        top: 0.05em;       
     }
     
         

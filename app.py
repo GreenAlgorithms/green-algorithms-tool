@@ -45,8 +45,8 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
-HOME_PAGE.register(app, module='home', path='/')
-AI_PAGE.register(app, module='ai', path='/ai')
+HOME_PAGE.register(app, module='home', path='/', title='Green Algorithms - Home')
+AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI')
 
 appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
 
