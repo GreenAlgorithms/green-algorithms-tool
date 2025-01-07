@@ -91,6 +91,65 @@ def get_ai_page_layout():
 
             html.Div(
                 [
+                    ## REPORTING SCOPE
+                    html.Div(
+                        [
+                            html.H3("Reporting time scope"),
+
+                            html.P(
+                                [
+                                    'Your reporting time scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
+                                    'Typical values might be one year or the whole estimated lifespan of your system. ' ,
+                                    html.B(
+                                            'To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' \
+                                            "Regarding continuous inference, your computations' impacts will be automatically scaled to the reporting scope based on your 'knowledge time scope'. "
+                                        ),
+                                ],
+                                className='reporting_scope_text'
+                            ),
+                                  
+                            html.Div(
+                                [
+                                    dcc.Input(
+                                        type='number',
+                                        id='reporting_time_scope_input',
+                                        min=0,
+                                        value=1,
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id='reporting_time_scope_dropdown',
+                                                options=[
+                                                        {'label': 'Month', 'value': 'month'},
+                                                        {'label': 'Year', 'value': 'year'},
+                                                    ],
+                                                value='year',
+                                                className='dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className='box-fields'
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className="reporting-row form-row short-input"
+                            ),
+                        ],
+                        className='container',
+                    ),
+
                     #### TRAINING FORM ####
 
                     training_form.embed(AI_PAGE),

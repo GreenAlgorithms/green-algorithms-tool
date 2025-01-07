@@ -93,7 +93,7 @@ input, select, .Select, textarea {
     font-size: 1.5rem;
 }
 
-.form-row input[type='number'] {
+.form-row input[type='number'], .form-row .box-fields {
     text-align: center;
 }
 
