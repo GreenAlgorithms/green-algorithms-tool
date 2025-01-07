@@ -80,8 +80,8 @@ def write_plane_trip_equivalent(carbon_emissions: float, ref_values: dict):
         ref_values (dict): a versioned dictionary containing ref values for equivalents
     """
     if carbon_emissions < 0.5 * ref_values['flight_NY-SF']:
-        trip_proportion = carbon_emissions / ref_values['flight_PAR-LON']
-        flying_label = "Paris-London"
+        trip_proportion = carbon_emissions / ref_values['flight_PAR-DUB']
+        flying_label = "Paris-Dublin"
     elif carbon_emissions < 0.5 * ref_values['flight_NYC-MEL']:
         trip_proportion = carbon_emissions / ref_values['flight_NY-SF']
         flying_label = "NYC-San Francisco"

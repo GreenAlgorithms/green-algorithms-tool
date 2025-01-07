@@ -6,12 +6,12 @@
     }
 
     .fullPage {
-        width: 1000px;
+        width: 95%;
         margin: 0 auto;
     }
 
     .page_content{
-        width: 1000px;
+        width: 100%;
         display: flex;
         flex-wrap: wrap;
         align-items: stretch;
@@ -27,18 +27,19 @@
         width: calc((33.3%) - (6px));
     }
 
-    .ai-input-form {
+    .ai-input-forms {
         display: flex;
         flex-wrap: wrap;
         align-items: stretch;
         flex-direction: row; 
+        width: 100%;
     }
 
-    .ai-input-form .input-form {
+    .ai-input-forms .input-form {
         width: calc((50%) - (6px));
     }
 
-    .ai-input-form form:last-of-type{
+    .ai-input-forms form:last-of-type{
         margin-right: 0px;
     }
 

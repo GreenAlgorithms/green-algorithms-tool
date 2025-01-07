@@ -99,7 +99,7 @@ def get_ai_page_layout():
 
                     inference_form.embed(AI_PAGE),
                 ],
-                className=f'ai-input-form'
+                className=f'ai-input-forms'
             ),
 
             #### RESULTS ####
