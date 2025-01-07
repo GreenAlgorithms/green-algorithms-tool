@@ -1,6 +1,6 @@
 import pandas as pd
 
-from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixIdTransform, ctx
+from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixIdTransform, ctx, html
 from types import SimpleNamespace
 
 from utils.utils import put_value_first, is_shown, custom_prefix_escape
@@ -9,7 +9,13 @@ from utils.graphics import MY_COLORS
 
 from blueprints.form.form_layout import get_green_algo_form_layout
 
-def get_form_blueprint(id_prefix, title, subtitle):
+def get_form_blueprint(
+    id_prefix:str,
+    title: str,
+    subtitle: html.P,
+    continuous_inf_scheme_properties: dict = {'display': 'none'}
+):
+
 
     form_blueprint = DashBlueprint(
         transforms=[
@@ -23,7 +29,7 @@ def get_form_blueprint(id_prefix, title, subtitle):
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    form_blueprint.layout = get_green_algo_form_layout(title, subtitle)
+    form_blueprint.layout = get_green_algo_form_layout(title, subtitle, continuous_inf_scheme_properties)
 
 
     ##### DEFINE ITS CALLBACKS

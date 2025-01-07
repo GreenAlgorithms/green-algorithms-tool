@@ -33,6 +33,7 @@ inference_form = get_form_blueprint(
     id_prefix=INFERENCE_ID_PREFIX,
     title='INFERENCE',
     subtitle=html.P('How to fill in inference form'),
+    continuous_inf_scheme_properties={'display': 'block'}
 )
 
 import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX) 
@@ -62,15 +63,9 @@ appVersions_options = get_available_versions()
 ###################################################
 # DEFINE APP LAYOUT
 
-
 def get_ai_page_layout():
     page_layout = html.Div(
         [
-
-            #### PAGE DATA ####
-
-            dcc.Store(id=f'{AI_PAGE_ID_PREFIX}-aggregate_data'),
-
             #### OVERALL EXPLAINATION ####
 
             html.Div(
@@ -101,9 +96,9 @@ def get_ai_page_layout():
                                     'Your reporting time scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
                                     'Typical values might be one year or the whole estimated lifespan of your system. ' ,
                                     html.B(
-                                            'To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' \
-                                            "Regarding continuous inference, your computations' impacts will be automatically scaled to the reporting scope based on your 'knowledge time scope'. "
-                                        ),
+                                        'To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' \
+                                        "Regarding continuous inference, your computations' impacts will be automatically scaled to the reporting scope based on your 'knowledge time scope'. "
+                                    ),
                                 ],
                                 className='reporting_scope_text'
                             ),
@@ -113,7 +108,8 @@ def get_ai_page_layout():
                                     dcc.Input(
                                         type='number',
                                         id='reporting_time_scope_input',
-                                        min=0,
+                                        min=0.5,
+                                        step = 0.5,
                                         value=1,
                                     ),
 
@@ -137,7 +133,7 @@ def get_ai_page_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "",
+                                                "Please, fill in your reporting time scope",
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -155,6 +151,8 @@ def get_ai_page_layout():
                     training_form.embed(AI_PAGE),
 
                     #### INFERENCE FORM ####
+
+                    dcc.Store(id='inference_processed_output_metrics'),
 
                     inference_form.embed(AI_PAGE),
                 ],
@@ -238,6 +236,17 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
         return clean_training_input_data, clean_inference_input_data, show_err_mess, mess_subtitle, mess_content, app_version
 
 
+################## CONTINUOUS INFERENCE
+
+@AI_PAGE.callback(
+    Output(f'{INFERENCE_ID_PREFIX}-knowledge_scope_section', 'style'),
+    Input(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
+)
+def display_or_hide_knowledge_scope_section(is_inference_continuous):
+    if is_inference_continuous:
+        return {'diplay': 'block'}
+    return {'display': 'none'}
+
 
 ################## EXPORT DATA
 
@@ -271,13 +280,57 @@ def forward_form_input_to_export_module(_, training_form_agg_data, inference_for
 ################## RESULTS AND METRICS 
 
 @AI_PAGE.callback(
+        Output('inference_processed_output_metrics', 'data'),
+        [
+            Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
+            Input(f'reporting_time_scope_input', 'value'),
+            Input(f'reporting_time_scope_dropdown', 'value'),
+            Input(f'{INFERENCE_ID_PREFIX}-knowledge_time_scope_input', 'value'),
+            Input(f'{INFERENCE_ID_PREFIX}-knowledge_time_scope_dropdown', 'value'),
+            Input(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
+        ],
+)
+def process_inference_form_outputs_based_on_reporting_scope(
+    inference_form_metrics: dict,
+    reporting_time_val: int,
+    reporting_time_unit: str,
+    knwoledge_time_val: int,
+    knwoledge_time_unit: str,
+    inference_continuous_activated: bool,
+):
+    # We need to process the form outputs only if continuous inference is activated
+    if inference_continuous_activated:
+        # We scale knowledge scope to month
+        knwoledge_mutiplicative_factor = 1.
+        if knwoledge_time_unit == 'day':
+            knwoledge_mutiplicative_factor *= (30/knwoledge_time_val)
+        elif knwoledge_time_unit == 'week':
+            knwoledge_mutiplicative_factor *= (4/knwoledge_time_val)
+        elif knwoledge_time_unit == 'month':
+            knwoledge_mutiplicative_factor /= (1*knwoledge_time_val)
+        elif knwoledge_time_unit == 'year':
+            knwoledge_mutiplicative_factor /= (12*knwoledge_time_val)
+        # We scale reporting scope from month
+        reporting_multiplicative_factor = 1
+        if reporting_time_unit == 'month':
+             reporting_multiplicative_factor *= (1*reporting_time_val)
+        if reporting_time_unit == 'year':
+             reporting_multiplicative_factor *= (12*reporting_time_val)
+        # We apply multiplicative coefficients to the form outputs
+        mult_coef = knwoledge_mutiplicative_factor * reporting_multiplicative_factor
+        inference_form_metrics['energy_needed'] = mult_coef * inference_form_metrics['energy_needed']
+        inference_form_metrics['carbonEmissions'] = mult_coef * inference_form_metrics['carbonEmissions']
+    return inference_form_metrics
+    
+
+@AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-base_results', 'data'),
     [ 
         Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
-        Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
-    ]
+        Input(f'inference_processed_output_metrics', 'data'),
+    ],
 )
-def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, inference_form_metrics):
+def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, inference_form_metrics,):
     tot_energy_needed = training_form_metrics['energy_needed'] + inference_form_metrics['energy_needed']
     tot_carbon_emissions = training_form_metrics['carbonEmissions'] + inference_form_metrics['carbonEmissions']
     return {
@@ -297,7 +350,7 @@ def get_training_needed_energy(training_form_metrics):
 
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{INFERENCE_ID_PREFIX}-energy_needed', 'children'),
-    Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
+    Input(f'inference_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(inference_form_metrics):
     return metrics_utils.format_energy_text(inference_form_metrics['energy_needed'])
@@ -312,7 +365,7 @@ def get_training_needed_energy(training_form_metrics):
 
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{INFERENCE_ID_PREFIX}-carbon_emissions', 'children'),
-    Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
+    Input(f'inference_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(inference_form_metrics):
     return metrics_utils.format_CE_text(inference_form_metrics['carbonEmissions'])

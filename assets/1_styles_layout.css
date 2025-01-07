@@ -221,6 +221,13 @@ hr {
 
 /* OTHER */
 
+.switcher-section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
 .reset-button {
     margin-bottom: 10px;
     margin-top: 10px;

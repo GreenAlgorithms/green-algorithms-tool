@@ -1,19 +1,107 @@
 from dash import html, dcc
+import dash_mantine_components as dmc
 from utils.utils import YES_NO_OPTIONS
 from utils.handle_inputs import get_available_versions
 
 appVersions_options = get_available_versions()
 
-def get_green_algo_form_layout(title, subtitle):
+def get_green_algo_form_layout(
+    title: str,
+    subtitle: html.P,
+    continuous_inf_scheme_properties: dict,
+):
     return html.Form(
         [
-            html.H2(title),
+            html.H3(title),
             html.Center(subtitle),
 
             ## BACKEND DATA
             dcc.Store(id='from_input_data'),
             dcc.Store(id='form_aggregate_data'),
             dcc.Store(id='form_output_metrics'),
+
+            ## CONTINUOUS INFERENCE SCHEME
+
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            dmc.Switch(
+                                size="lg",
+                                radius="sm",
+                                label="Apply continuous inference scheme",
+                                checked=False,
+                                id='continuous_inference_scheme_switcher'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Switch to continuous inference scheme if it better fits your project.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
+                        ],
+                        className='switcher-section'
+                    ),
+
+                    html.Div(
+                        [
+                            html.Label("Knowledge time scope"),
+
+                            dcc.Input(
+                                type='number',
+                                id='knowledge_time_scope_input',
+                                min=0.1,
+                                value=1,
+                            ),
+
+                            html.Div(
+                                [
+                                    dcc.Dropdown(
+                                        id='knowledge_time_scope_dropdown',
+                                        options=[
+                                                {'label': 'Day', 'value': 'day'},
+                                                {'label': 'Week', 'value': 'week'},
+                                                {'label': 'Month', 'value': 'month'},
+                                                {'label': 'Year', 'value': 'year'},
+                                            ],
+                                        value='year',
+                                        className='dropdown',
+                                        clearable=False,
+                                    ),
+                                ],
+                                className='box-fields'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The knowledge time scope is the time length over which you are able to estime your computation requirements in terms of continuous inference.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
+                        ],
+                        className="knowledge-scope-section form-row short-input",
+                        id='knowledge_scope_section'
+                    ),
+
+                    html.Div(
+                        [
+                            html.Hr(),
+                        ],
+                        className='Hr_div'
+                    ),
+                
+                ],
+                style=continuous_inf_scheme_properties,
+            ),
 
             ## RUN TIME
             html.Div(
