@@ -52,6 +52,23 @@ body {
     box-shadow: 2px 2px 2px lightgrey;
 }
 
+.tab-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    text-align:center;
+
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 6px 0;
+    padding: 25px;
+    padding-right: 0px;
+    padding-left: 0px;
+    box-shadow: 2px 2px 2px lightgrey;
+}
+
 #website-link-button {
     padding: 10px 40px;
     cursor: pointer;
@@ -105,6 +122,14 @@ body {
 .input-form {
     display: block;
     text-align:left;
+}
+
+.tab-container .container  {
+    box-shadow: 0px 0px 0px lightgrey;
+}
+
+.tab-container .input-form {
+    margin-right: 0px;
 }
 
 .Hr_div {

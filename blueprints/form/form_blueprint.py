@@ -13,9 +13,9 @@ def get_form_blueprint(
     id_prefix:str,
     title: str,
     subtitle: html.P,
-    continuous_inf_scheme_properties: dict = {'display': 'none'}
+    continuous_inf_scheme_properties: dict = {'display': 'none'},
+    additional_bottom_fields: html.Div = html.Div(),
 ):
-
 
     form_blueprint = DashBlueprint(
         transforms=[
@@ -29,7 +29,12 @@ def get_form_blueprint(
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    form_blueprint.layout = get_green_algo_form_layout(title, subtitle, continuous_inf_scheme_properties)
+    form_blueprint.layout = get_green_algo_form_layout(
+        title,
+        subtitle,
+        continuous_inf_scheme_properties,
+        additional_bottom_fields
+    )
 
 
     ##### DEFINE ITS CALLBACKS
@@ -666,7 +671,6 @@ def get_form_blueprint(
             out['background-color'] = MY_COLORS['boxesColor']
 
         return out
-    
     
     @form_blueprint.callback(
         Output(f'PUE_input','value'),

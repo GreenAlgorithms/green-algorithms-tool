@@ -77,7 +77,7 @@ p:not(:last-of-type) {
 form p {
     font-style: italic;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-size: 1.7rem;
 }
 

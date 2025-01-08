@@ -35,12 +35,17 @@
         width: 100%;
     }
 
-    .ai-input-forms .input-form {
+    .ai-input-forms .tab-container  {
         width: calc((50%) - (6px));
+        margin-right: 12px;
+    }
+    
+    .ai-input-forms .tab-container:last-of-type{
+            margin-right: 0px;
     }
 
-    .ai-input-forms form:last-of-type{
-        margin-right: 0px;
+    .ai-input-forms form  {
+        width: 100%;
     }
 
     .form-row .box-fields,

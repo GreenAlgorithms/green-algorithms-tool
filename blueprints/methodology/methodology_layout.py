@@ -90,3 +90,99 @@ def get_green_algo_methodology_layout():
         ],
         className='methodology-container'
     )
+
+
+def get_training_help_content(title: str):
+    return html.Div(
+        [
+            html.H3(title),
+
+            html.Center(
+                [
+
+                    dcc.Markdown(
+                        '''
+                        The training phase of your AI system covers `different kinds of computations: 
+                        R&D experiments, the main training of your model and potential retrainings` (more details are given below). 
+                        
+                        Ideally, we would invite / like you to quantify all these computations through the training form. 
+                        To do so, we recommend you to fill-in the form based on your main training requirements.
+                        Then use the multiplicative factors available at the bottom of the form even if, in practice, different hardware is used for the different training phases.
+                        These additional inputs enable you to give an approximative estimate of your computations share due to R&D trainings or retrainings.
+                        Some use cases are illustrated in more details below.
+
+                        We acknowledge that this way of reporting R&D trainings and retrainings is not perfect as it entails a loss of precision.
+                        Though, it appeared to be a satisfying trade-off between the reporting burden and the final estimate quality.
+                        If you wish to quantify more precisely the other computation phases, we invite you to fill a form especially for each of them. 
+                        '''
+                    ),
+
+                ]
+            ),
+
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div',
+                style = {'margin-top': '20px'}
+            ),
+
+            dcc.Markdown(
+                '''
+                - `main training`: The computations performed to achieve the final model to be deployed in your AI solution.
+                It can either correspond to the training from scrath of a custom model or to the fine-tuning of an existing model. 
+
+                - `R&D trainings`: Corresponds to the different experimental trainings and computations performed before the final training of your model. 
+                Such experiments may be useful to calibrate the final architecture or hyper-parameters set of your model.
+
+                - `retrainings`: Any additional trainings performed after the deployment of your AI system.
+                For consistent reporting, you are invited to take into account all retrainings requirements over your reporting time scope.
+                '''
+            ),
+
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div',
+                style = {'margin-top': '20px'}
+            ),
+
+            dcc.Markdown(
+                '''
+                > Ajouter des exemples de cas d'usage sur le R&D training par exemple ?
+                '''
+            ),
+        ],
+        className='form-help-container pretty-container container'
+    )
+
+def get_inference_help_content(title: str):
+    return html.Div(
+        [
+            html.H3(title),
+            html.Center(
+                dcc.Markdown(
+                    '''
+                    The inference form should enable you to quantify the environmental footprint of you AI system's inference phase over the whole reporting time scope.
+                    To do so, `we distinguish between two inference schemes: block (or one-shot) inference and continuous inference`:
+
+                    - __continuous inference__: corresponds to an AI service that is requested on demand by users or other software systems. 
+                    > In this mode, we invite you to quantify how long ...
+                    For consistent reporting, we invite you to estimate the computations requirements associated with continuous inference over a well-known time length, the so-called "knowledge time scope'.
+                    Based on this and the reporting time scope value, your total inference footprint is computed with a simple scaling factor.
+
+                    - __block (one-shot) inference__: corresponds to an AI service that is occasionally requested in a one-shot fashion. 
+                    It may be used to process a data set as a whole or to build one-day or one-week strategy.
+                    As few of them should happen during over your reporting time scope, we invite you to quantify the computation requirements for one block and then use the Pragmatic Scaling Factor.
+
+                    It is important to keep in mind that these two kind of inference have no clear border: 
+                    you may prefer to use the knowledge time scope to automatically scale your block inference computations to the reporting scope.
+                    Conversely, you can also estimate the whole continuous inference requirements as a block over the whole
+                    '''
+                )
+            )
+        ],
+        className='form-help-container container'
+    )

@@ -2,6 +2,7 @@ import os
 import dash
 
 from dash import html, ctx, callback, Input, Output, State, dcc
+import dash_mantine_components as dmc
 from types import SimpleNamespace
 
 from dash_extensions.enrich import DashBlueprint, html
@@ -11,8 +12,10 @@ from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 
 import blueprints.metrics.metrics_layout as metrics_layout
 import blueprints.metrics.utils as metrics_utils
+import blueprints.methodology.methodology_layout as methodo_layout
+import blueprints.form.form_layout as form_layout
 
-from utils.graphics import loading_wrapper
+from utils.graphics import loading_wrapper, MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 
@@ -25,14 +28,15 @@ TRAINING_ID_PREFIX = 'training'
 training_form = get_form_blueprint(
     id_prefix=TRAINING_ID_PREFIX,
     title='TRAINING',
-    subtitle=html.P('How to fill in training form'),
+    subtitle=html.P('Report your training-related computations. For more information about R&D experiments, retrainings or overall tips regarding your reporting, please refer to the Help tab.'),
+    additional_bottom_fields=form_layout.get_additional_training_fields_layout()
 )
 
 INFERENCE_ID_PREFIX = 'inference'
 inference_form = get_form_blueprint(
     id_prefix=INFERENCE_ID_PREFIX,
     title='INFERENCE',
-    subtitle=html.P('How to fill in inference form'),
+    subtitle=html.P('Report your inference-related computations. For more information about continuous inference scheme or overall tips regarding your reporting, please refer to the Help tab.'),
     continuous_inf_scheme_properties={'display': 'block'}
 )
 
@@ -84,9 +88,12 @@ def get_ai_page_layout():
 
             import_export.embed(AI_PAGE),
 
+            #### FORMS ####
+
             html.Div(
                 [
-                    ## REPORTING SCOPE
+                    #### REPORTING SCOPE ####
+
                     html.Div(
                         [
                             html.H3("Reporting time scope"),
@@ -99,6 +106,7 @@ def get_ai_page_layout():
                                         'To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' \
                                         "Regarding continuous inference, your computations' impacts will be automatically scaled to the reporting scope based on your 'knowledge time scope'. "
                                     ),
+                                    'Please refer to the inference Help tab for more information.'
                                 ],
                                 className='reporting_scope_text'
                             ),
@@ -148,13 +156,55 @@ def get_ai_page_layout():
 
                     #### TRAINING FORM ####
 
-                    training_form.embed(AI_PAGE),
+                    dcc.Store(id='training_processed_output_metrics'),
+
+                    dmc.Tabs(
+                        [
+                            dmc.TabsList(
+                                [
+                                    dmc.TabsTab(
+                                        "Form",
+                                        # leftSection=DashIconify(icon="tabler:message"),
+                                        value='form',
+                                    ),
+                                    dmc.TabsTab(
+                                        "Help",
+                                        value='help',
+                                    ),
+                                ]
+                            ),
+                            dmc.TabsPanel(children=training_form.embed(AI_PAGE), value='form'),
+                            dmc.TabsPanel(children=methodo_layout.get_training_help_content('TRAINING'), value='help'),
+                        ],
+                        value="form",
+                        className='tab-container',
+                    ),
 
                     #### INFERENCE FORM ####
 
                     dcc.Store(id='inference_processed_output_metrics'),
 
-                    inference_form.embed(AI_PAGE),
+                    dmc.Tabs(
+                        [
+                            dmc.TabsList(
+                                [
+                                    dmc.TabsTab(
+                                        "Form",
+                                        # leftSection=DashIconify(icon="tabler:message"),
+                                        value='form',
+                                    ),
+                                    dmc.TabsTab(
+                                        "Help",
+                                        value='help',
+                                    ),
+                                ]
+                            ),
+                            dmc.TabsPanel(children=inference_form.embed(AI_PAGE), value='form'),
+                            dmc.TabsPanel(children=methodo_layout.get_inference_help_content('INFERENCE'), value='help'),
+                        ],
+                        value="form",
+                        className='tab-container',
+                    ),
                 ],
                 className=f'ai-input-forms'
             ),
@@ -246,6 +296,69 @@ def display_or_hide_knowledge_scope_section(is_inference_continuous):
     if is_inference_continuous:
         return {'diplay': 'block'}
     return {'display': 'none'}
+
+
+################## ADDITIONAL TRAININGS COMPUTATIONS
+
+@AI_PAGE.callback(
+    [
+        Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio','value'),
+        Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','value'),
+        Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio','value'),
+        Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','value'),
+    ],
+    [
+        # to allow initial triggering
+        Input('url_content','search'),
+        Input(f'{TRAINING_ID_PREFIX}-from_input_data', 'data'),
+    ],
+)
+def fill_in_from_inputs(_, input_data):
+    return 'No', 1, 'No', 1
+
+
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','style'),
+    [
+        Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','disabled')
+    ]
+)
+def display_RandD_trainings_input(RandD_trainings_radio, disabled):
+    '''
+    Shows or hides the  R&D trainings input box
+    '''
+    if RandD_trainings_radio == 'No':
+        out = {'display': 'none'}
+    else:
+        out = {'display': 'block'}
+
+    if disabled:
+        out['background-color'] = MY_COLORS['boxesColor']
+
+    return out
+
+
+@AI_PAGE.callback(
+    Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','style'),
+    [
+        Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','disabled')
+    ]
+)
+def display_RandD_trainings_input(retrainings_radio, disabled):
+    '''
+    Shows or hides the  R&D trainings input box
+    '''
+    if retrainings_radio == 'No':
+        out = {'display': 'none'}
+    else:
+        out = {'display': 'block'}
+
+    if disabled:
+        out['background-color'] = MY_COLORS['boxesColor']
+
+    return out
 
 
 ################## EXPORT DATA
