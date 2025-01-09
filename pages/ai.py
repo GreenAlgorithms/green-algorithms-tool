@@ -27,7 +27,7 @@ AI_PAGE_ID_PREFIX = 'ai'
 TRAINING_ID_PREFIX = 'training'
 training_form = get_form_blueprint(
     id_prefix=TRAINING_ID_PREFIX,
-    title='TRAINING',
+    title='',
     subtitle=html.P('Report your training-related computations. For more information about R&D experiments, retrainings or overall tips regarding your reporting, please refer to the Help tab.'),
     additional_bottom_fields=form_layout.get_additional_training_fields_layout()
 )
@@ -35,7 +35,7 @@ training_form = get_form_blueprint(
 INFERENCE_ID_PREFIX = 'inference'
 inference_form = get_form_blueprint(
     id_prefix=INFERENCE_ID_PREFIX,
-    title='INFERENCE',
+    title='',
     subtitle=html.P('Report your inference-related computations. For more information about continuous inference scheme or overall tips regarding your reporting, please refer to the Help tab.'),
     continuous_inf_scheme_properties={'display': 'block'}
 )
@@ -100,15 +100,11 @@ def get_ai_page_layout():
 
                             html.P(
                                 [
-                                    'Your reporting time scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
+                                    'Your reporting (time) scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
                                     'Typical values might be one year or the whole estimated lifespan of your system. ' ,
-                                    html.B(
-                                        'To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' \
-                                        "Regarding continuous inference, your computations' impacts will be automatically scaled to the reporting scope based on your 'knowledge time scope'. "
-                                    ),
-                                    'Please refer to the inference Help tab for more information.'
+                                    html.B('To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' ),
                                 ],
-                                className='reporting_scope_text'
+                                className='reporting-scope-text'
                             ),
                                   
                             html.Div(
@@ -150,6 +146,15 @@ def get_ai_page_layout():
                                 ],
                                 className="reporting-row form-row short-input"
                             ),
+
+                            html.P(
+                                [
+                                    'The above field is mostly declarative. It should help you to correctly quantify your computations and then easily communicate about your reporting. It has no impact on the calculator outputs ',
+                                    html.B('except when choosing the continuous inference scheme. Please refer to the inference Help tab for more information.'),
+                                ],
+                                className='reporting-scope-text'
+                            )
+
                         ],
                         className='container',
                     ),
@@ -160,6 +165,8 @@ def get_ai_page_layout():
 
                     dmc.Tabs(
                         [
+                            html.H3('TRAINING'),
+
                             dmc.TabsList(
                                 [
                                     dmc.TabsTab(
@@ -174,7 +181,7 @@ def get_ai_page_layout():
                                 ]
                             ),
                             dmc.TabsPanel(children=training_form.embed(AI_PAGE), value='form'),
-                            dmc.TabsPanel(children=methodo_layout.get_training_help_content('TRAINING'), value='help'),
+                            dmc.TabsPanel(children=methodo_layout.get_training_help_content(''), value='help'),
                         ],
                         value="form",
                         className='tab-container',
@@ -186,6 +193,8 @@ def get_ai_page_layout():
 
                     dmc.Tabs(
                         [
+                            html.H3('INFERENCE'),
+
                             dmc.TabsList(
                                 [
                                     dmc.TabsTab(
@@ -200,7 +209,7 @@ def get_ai_page_layout():
                                 ]
                             ),
                             dmc.TabsPanel(children=inference_form.embed(AI_PAGE), value='form'),
-                            dmc.TabsPanel(children=methodo_layout.get_inference_help_content('INFERENCE'), value='help'),
+                            dmc.TabsPanel(children=methodo_layout.get_inference_help_content(''), value='help'),
                         ],
                         value="form",
                         className='tab-container',
@@ -289,10 +298,10 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
 ################## CONTINUOUS INFERENCE
 
 @AI_PAGE.callback(
-    Output(f'{INFERENCE_ID_PREFIX}-knowledge_scope_section', 'style'),
+    Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_section', 'style'),
     Input(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
 )
-def display_or_hide_knowledge_scope_section(is_inference_continuous):
+def display_or_hide_input_data_time_scope_section(is_inference_continuous):
     if is_inference_continuous:
         return {'diplay': 'block'}
     return {'display': 'none'}
@@ -398,8 +407,8 @@ def forward_form_input_to_export_module(_, training_form_agg_data, inference_for
             Input(f'{INFERENCE_ID_PREFIX}-form_output_metrics', 'data'),
             Input(f'reporting_time_scope_input', 'value'),
             Input(f'reporting_time_scope_dropdown', 'value'),
-            Input(f'{INFERENCE_ID_PREFIX}-knowledge_time_scope_input', 'value'),
-            Input(f'{INFERENCE_ID_PREFIX}-knowledge_time_scope_dropdown', 'value'),
+            Input(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_input', 'value'),
+            Input(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_dropdown', 'value'),
             Input(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
         ],
 )
@@ -413,7 +422,7 @@ def process_inference_form_outputs_based_on_reporting_scope(
 ):
     # We need to process the form outputs only if continuous inference is activated
     if inference_continuous_activated:
-        # We scale knowledge scope to month
+        # We scale input_data_time scope to month
         knwoledge_mutiplicative_factor = 1.
         if knwoledge_time_unit == 'day':
             knwoledge_mutiplicative_factor *= (30/knwoledge_time_val)

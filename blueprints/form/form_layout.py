@@ -39,7 +39,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Please see the Help tab for more information about continuous inference. If chosen, then, only report the computations falling within your knowledge time scope. Scaling to the reporting time scope is done automatically.",
+                                        "Please see the Help tab for more information about continuous inference. If chosen, then, only report the computations falling within your ‘input data time span’. Scaling to the reporting time scope is done automatically.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -51,11 +51,11 @@ def get_green_algo_form_layout(
 
                     html.Div(
                         [
-                            html.Label("Knowledge time scope"),
+                            html.Label("Input data time span"),
 
                             dcc.Input(
                                 type='number',
-                                id='knowledge_time_scope_input',
+                                id='input_data_time_scope_input',
                                 min=0.5,
                                 value=1,
                                 step=0.5,
@@ -64,7 +64,7 @@ def get_green_algo_form_layout(
                             html.Div(
                                 [
                                     dcc.Dropdown(
-                                        id='knowledge_time_scope_dropdown',
+                                        id='input_data_time_scope_dropdown',
                                         options=[
                                                 {'label': 'Day', 'value': 'day'},
                                                 {'label': 'Week', 'value': 'week'},
@@ -83,15 +83,15 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "The knowledge time scope is the time length over which you are able to estime your computation requirements in terms of continuous inference.",
+                                        "The input data time span is the time length over which you are able to estimate your computation requirements in terms of continuous inference.",
                                         className='tooltip-text'
                                     ),
                                 ],
                                 className='tooltip',
                             ),
                         ],
-                        className="knowledge-scope-section form-row short-input",
-                        id='knowledge_scope_section'
+                        className="input_data_time-section form-row short-input",
+                        id='input_data_time_scope_section'
                     ),
 
                     html.Div(
@@ -727,7 +727,7 @@ def get_additional_training_fields_layout():
             
             html.Div(
                 [
-                    html.Label("Do you want to apply a multiplicative factor to take R&D trainings into account?"),
+                    html.Label("Do you want to add retrainings compute time?"),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -751,7 +751,8 @@ def get_additional_training_fields_layout():
                             html.Div('i', className='tooltip-icon'),
                             html.P(
                                 "If your R&D trainings represent twice the computations requirements of your main training, you should fill in '2'. " \
-                                "The resulting value will be summed up to your main training footprint.",
+                                "If they represent only 50% of your main training compute time, then fill in '0.5'. "
+                                "The resulting value will be added to your main training footprint.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -778,7 +779,7 @@ def get_additional_training_fields_layout():
 
             html.Div(
                 [
-                    html.Label("Do you want to apply a multiplicative factor to take retrainings into account?"),
+                    html.Label("Do you want to add R&D compute time?"),
                     html.Div(
                         [
                             dcc.RadioItems(

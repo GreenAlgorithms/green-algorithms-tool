@@ -111,7 +111,7 @@ def get_training_help_content(title: str):
                         These additional inputs enable you to give an approximative estimate of your computations share due to R&D trainings or retrainings.
                         Some use cases are illustrated in more details below.
 
-                        We acknowledge that this way of reporting R&D trainings and retrainings is not perfect as it entails a loss of precision.
+                        We acknowledge that this way of reporting R&D trainings and retrainings is not perfect as it entails a loss of granularity and precision.
                         Though, it appeared to be a satisfying trade-off between the reporting burden and the final estimate quality.
                         If you wish to quantify more precisely the other computation phases, we invite you to fill a form especially for each of them. 
                         '''
