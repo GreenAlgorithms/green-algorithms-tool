@@ -729,7 +729,7 @@ def get_additional_training_fields_layout():
             
             html.Div(
                 [
-                    html.Label("Do you want to add retrainings compute time?"),
+                    html.Label("Do you want to add R&D compute time?"),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -739,7 +739,8 @@ def get_additional_training_fields_layout():
                             ),
 
                             dcc.Input(
-                                min=1,
+                                min=0,
+                                step=0.1,
                                 type='number',
                                 id='RandD_PSF_input',
                                 style=dict(display='none'),
@@ -781,7 +782,7 @@ def get_additional_training_fields_layout():
 
             html.Div(
                 [
-                    html.Label("Do you want to add R&D compute time?"),
+                    html.Label("Do you want to add retrainings compute time?"),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -791,7 +792,8 @@ def get_additional_training_fields_layout():
                             ),
 
                             dcc.Input(
-                                min=1,
+                                min=0,
+                                step=0.1,
                                 type='number',
                                 id='retrainings_PSF_input',
                                 style=dict(display='none'),

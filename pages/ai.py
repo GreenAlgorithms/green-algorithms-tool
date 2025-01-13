@@ -418,22 +418,28 @@ def process_inference_form_outputs_based_on_reporting_scope(
     inference_form_metrics: dict,
     reporting_time_val: int,
     reporting_time_unit: str,
-    knwoledge_time_val: int,
-    knwoledge_time_unit: str,
+    input_data_time_scope_val: int,
+    input_data_time_scope_unit: str,
     inference_continuous_activated: bool,
 ):
+    '''
+    The purpose of this callback is to take into account the reporting scope
+    in case continuous inference scheme is selected by the user.
+    It automatically scales the end electricity consumption based on reporting scope and
+    and the input data time scope.
+    '''
     # We need to process the form outputs only if continuous inference is activated
     if inference_continuous_activated:
         # We scale input_data_time scope to month
-        knwoledge_mutiplicative_factor = 1.
-        if knwoledge_time_unit == 'day':
-            knwoledge_mutiplicative_factor *= (30/knwoledge_time_val)
-        elif knwoledge_time_unit == 'week':
-            knwoledge_mutiplicative_factor *= (4/knwoledge_time_val)
-        elif knwoledge_time_unit == 'month':
-            knwoledge_mutiplicative_factor /= (1*knwoledge_time_val)
-        elif knwoledge_time_unit == 'year':
-            knwoledge_mutiplicative_factor /= (12*knwoledge_time_val)
+        input_scope_mutiplicative_factor = 1.
+        if input_data_time_scope_unit == 'day':
+            input_scope_mutiplicative_factor *= (30/input_data_time_scope_val)
+        elif input_data_time_scope_unit == 'week':
+            input_scope_mutiplicative_factor *= (4/input_data_time_scope_val)
+        elif input_data_time_scope_unit == 'month':
+            input_scope_mutiplicative_factor /= (1*input_data_time_scope_val)
+        elif input_data_time_scope_unit == 'year':
+            input_scope_mutiplicative_factor /= (12*input_data_time_scope_val)
         # We scale reporting scope from month
         reporting_multiplicative_factor = 1
         if reporting_time_unit == 'month':
@@ -441,16 +447,51 @@ def process_inference_form_outputs_based_on_reporting_scope(
         if reporting_time_unit == 'year':
              reporting_multiplicative_factor *= (12*reporting_time_val)
         # We apply multiplicative coefficients to the form outputs
-        mult_coef = knwoledge_mutiplicative_factor * reporting_multiplicative_factor
+        mult_coef = input_scope_mutiplicative_factor * reporting_multiplicative_factor
         inference_form_metrics['energy_needed'] = mult_coef * inference_form_metrics['energy_needed']
         inference_form_metrics['carbonEmissions'] = mult_coef * inference_form_metrics['carbonEmissions']
     return inference_form_metrics
     
 
 @AI_PAGE.callback(
+        Output('training_processed_output_metrics', 'data'),
+        [
+            Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+            Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_input', 'value'),
+        ]
+)
+def add_retrainings_and_RandD_to_training_outputs(
+    training_form_metrics: dict,
+    retraining_PSF_radio: str,
+    retraining_PSF_val: float,
+    RandD_PSF_radio: str,
+    RandD_PSF_val: float,
+):
+    ''' 
+    The purpose of this callback is to take into account retrainings and R&D inputs.
+    The main training form outputs (energy consumption and crbon emissions) are 
+    multiplied by the corresponding PSF for both retrainings and R&D 
+    before they are added to the total.
+    '''
+    # Checking is values should be added from retrainings or RandD
+    if retraining_PSF_radio == 'No':
+        retraining_PSF_val = 0
+    if RandD_PSF_radio == 'No':
+        RandD_PSF_val = 0
+    # Add values to main training metrics
+    training_form_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_PSF_val + retraining_PSF_val)
+    training_form_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_PSF_val + retraining_PSF_val)
+    return training_form_metrics
+
+
+
+@AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-base_results', 'data'),
     [ 
-        Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+        Input(f'training_processed_output_metrics', 'data'),
         Input(f'inference_processed_output_metrics', 'data'),
     ],
 )
@@ -467,7 +508,7 @@ def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, infer
 # Energy
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{TRAINING_ID_PREFIX}-energy_needed', 'children'),
-    Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+    Input(f'training_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(training_form_metrics):
     return metrics_utils.format_energy_text(training_form_metrics['energy_needed'])
@@ -482,7 +523,7 @@ def get_training_needed_energy(inference_form_metrics):
 # Carbon emissions
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{TRAINING_ID_PREFIX}-carbon_emissions', 'children'),
-    Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
+    Input(f'training_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(training_form_metrics):
     return metrics_utils.format_CE_text(training_form_metrics['carbonEmissions'])
