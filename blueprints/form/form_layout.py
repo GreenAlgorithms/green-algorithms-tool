@@ -9,6 +9,7 @@ def get_green_algo_form_layout(
     title: str,
     subtitle: html.P,
     continuous_inf_scheme_properties: dict,
+    PSF_properties: dict,
     additional_bottom_fields: html.Div,
 ):
     return html.Form(
@@ -649,6 +650,7 @@ def get_green_algo_form_layout(
 
                 ],
                 className='form-row radio-row',
+                style=PSF_properties,
             ),
 
             dcc.ConfirmDialog(
@@ -803,7 +805,7 @@ def get_additional_training_fields_layout():
                             html.Div('i', className='tooltip-icon'),
                             html.P(
                                 "If your retrainings represent half the computations requirements of your main training, you should fill in '0.5'. " \
-                                "The resulting value will be summed up to your main training footprint.",
+                                "The resulting value will be added to your main training footprint.",
                                 className='tooltip-text'
                             ),
                         ],

@@ -14,6 +14,7 @@ def get_form_blueprint(
     title: str,
     subtitle: html.P,
     continuous_inf_scheme_properties: dict = {'display': 'none'},
+    PSF_properties: dict = {},
     additional_bottom_fields: html.Div = html.Div(),
 ):
 
@@ -33,6 +34,7 @@ def get_form_blueprint(
         title,
         subtitle,
         continuous_inf_scheme_properties,
+        PSF_properties,
         additional_bottom_fields
     )
 

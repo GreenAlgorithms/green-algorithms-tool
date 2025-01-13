@@ -29,6 +29,7 @@ training_form = get_form_blueprint(
     id_prefix=TRAINING_ID_PREFIX,
     title='',
     subtitle=html.P('Report your training-related computations. For more information about R&D experiments, retrainings or overall tips regarding your reporting, please refer to the Help tab.'),
+    PSF_properties={'display': 'none'},
     additional_bottom_fields=form_layout.get_additional_training_fields_layout()
 )
 
@@ -103,6 +104,7 @@ def get_ai_page_layout():
                                     'Your reporting (time) scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
                                     'Typical values might be one year or the whole estimated lifespan of your system. ' ,
                                     html.B('To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' ),
+                                    'This period must correspond to a period of stabilized inference (constant inference or known growth).',
                                 ],
                                 className='reporting-scope-text'
                             ),
