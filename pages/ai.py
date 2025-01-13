@@ -16,7 +16,7 @@ import blueprints.methodology.methodology_layout as methodo_layout
 import blueprints.form.form_layout as form_layout
 
 from utils.graphics import loading_wrapper, MY_COLORS
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 
 
@@ -88,6 +88,7 @@ def get_ai_page_layout():
             #### IMPORT AND EXPORT ####
 
             import_export.embed(AI_PAGE),
+            dcc.Store(id='specific_ai_page_inputs'),
 
             #### FORMS ####
 
@@ -247,6 +248,7 @@ AI_PAGE.layout = get_ai_page_layout()
         Output(f'{AI_PAGE_ID_PREFIX}-log-error-subtitle', 'children'),
         Output(f'{AI_PAGE_ID_PREFIX}-log-error-content', 'children'),
         Output(f"{AI_PAGE_ID_PREFIX}-version_from_input",'data'),
+        Output('specific_ai_page_inputs', 'data'),
     ],
     [
         Input(f'{AI_PAGE_ID_PREFIX}-import-content', 'data'),
@@ -261,7 +263,8 @@ AI_PAGE.layout = get_ai_page_layout()
 def forward_imported_content_to_form(import_data, filename, current_training_form_data, current_inference_form_data, current_app_version):
     '''
     Read input, split data between training and inference forms.
-    Then process and check content.
+    Process specific inputs such as etrainings, R&D training and continuous inference related fields
+    Then process and check content, filtering wrong inputs and displayling error message if required.
     '''
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
@@ -269,7 +272,15 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
     # The input file could not be opened correctly
     if not input_data:
         show_err_mess = True
-        return current_training_form_data, current_inference_form_data, show_err_mess, mess_subtitle, mess_content, current_app_version
+        return (
+            current_training_form_data,
+            current_inference_form_data,
+            show_err_mess,
+            mess_subtitle,
+            mess_content,
+            current_app_version,
+            {}
+        )
     
     # If input data could be read, we check its validity and consistency
     else:
@@ -290,11 +301,85 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
                             f'We use default values for the following fields. \n' 
             if len(invalid_training_inputs):
                 mess_content += 'For the training form:'
-                mess_content += f"{', '.join(list(invalid_training_inputs.keys()))}."
+                mess_content += f"{', '.join(list(invalid_training_inputs.keys()))}. \n"
             if len(invalid_inference_inputs):
                 mess_content += 'For the inference form:'
                 mess_content += f"{', '.join(list(invalid_inference_inputs.keys()))}."
-        return clean_training_input_data, clean_inference_input_data, show_err_mess, mess_subtitle, mess_content, app_version
+        return (
+            clean_training_input_data, 
+            clean_inference_input_data, 
+            show_err_mess, 
+            mess_subtitle, 
+            mess_content, 
+            app_version,
+            input_data
+        )  
+
+@AI_PAGE.callback(
+        [
+            Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio','value'),
+            Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','value'),
+            Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio','value'),
+            Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','value'),
+        ],
+        [
+            # to allow initial triggering
+            Input('url_content','search'),
+            Input('specific_ai_page_inputs', 'data'),
+        ]
+)
+def load_RandD_and_retrainings_inputs(_, specific_ai_inputs: dict):
+    '''
+    Forward inputs from the csv to retrainings and R&D fields.
+    If not, fill in with default values, for instance when loading the page.
+    '''
+    if specific_ai_inputs:
+        return (
+            specific_ai_inputs['R&D_PSF_radio'],
+            specific_ai_inputs['R&D_PSF_value'],
+            specific_ai_inputs['retrainings_PSF_radio'],
+            specific_ai_inputs['retrainings_PSF_value'],
+        )
+    else:
+        # otherwise we return default values
+        return (
+            AI_PAGE_DEFAULT_VALUES['R&D_PSF_radio'],
+            AI_PAGE_DEFAULT_VALUES['R&D_PSF_value'],
+            AI_PAGE_DEFAULT_VALUES['retrainings_PSF_radio'],
+            AI_PAGE_DEFAULT_VALUES['retrainings_PSF_value'], 
+        )
+
+@AI_PAGE.callback(
+        [
+            Output(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
+            Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_dropdown', 'value'),
+            Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_input', 'value'),
+        ],
+        [
+            # to allow initial triggering
+            Input('url_content','search'),
+            Input('specific_ai_page_inputs', 'data'),
+        ]
+)
+def load_inference_specific_inputs(_, specific_ai_inputs: dict):
+    '''
+    Forward inputs from the csv to input data time scope and continuous inference field.
+    If not, fill in with default values, for instance when loading the page.
+    '''
+    if specific_ai_inputs:
+        return (
+            specific_ai_inputs['continuous_inference_switcher'],
+            specific_ai_inputs['input_data_time_scope_unit'],
+            specific_ai_inputs['input_data_time_scope_val'],
+        )
+    else:
+        # otherwise we return default values
+        return (
+            AI_PAGE_DEFAULT_VALUES['continuous_inference_switcher'],
+            AI_PAGE_DEFAULT_VALUES['input_data_time_scope_unit'],
+            AI_PAGE_DEFAULT_VALUES['input_data_time_scope_val'],
+        )
+
 
 
 ################## CONTINUOUS INFERENCE
@@ -309,24 +394,7 @@ def display_or_hide_input_data_time_scope_section(is_inference_continuous):
     return {'display': 'none'}
 
 
-################## ADDITIONAL TRAININGS COMPUTATIONS
-
-@AI_PAGE.callback(
-    [
-        Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio','value'),
-        Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','value'),
-        Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio','value'),
-        Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','value'),
-    ],
-    [
-        # to allow initial triggering
-        Input('url_content','search'),
-        Input(f'{TRAINING_ID_PREFIX}-from_input_data', 'data'),
-    ],
-)
-def fill_in_from_inputs(_, input_data):
-    return 'No', 1, 'No', 1
-
+################## ADDITIONAL TRAININGS FIELDS
 
 @AI_PAGE.callback(
     Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','style'),
@@ -377,28 +445,69 @@ def display_RandD_trainings_input(retrainings_radio, disabled):
 @AI_PAGE.callback(
         Output(f'{AI_PAGE_ID_PREFIX}-export-content', 'data'),
         Input(f"{AI_PAGE_ID_PREFIX}-btn-download_csv", "n_clicks"),
-        State(f'{TRAINING_ID_PREFIX}-form_aggregate_data', 'data'),
-        State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
+        [
+            State(f'reporting_time_scope_input', 'value'),
+            State(f'reporting_time_scope_dropdown', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-form_aggregate_data', 'data'),
+            State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
+            State(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-RandD_PSF_input', 'value'),
+            State(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_input', 'value'),
+            State(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_dropdown', 'value'),
+            State(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
+        ],
         prevent_initial_call=True,
 )
-def forward_form_input_to_export_module(_, training_form_agg_data, inference_form_agg_data):
+def forward_form_input_to_export_module(
+    _,
+    reporting_time_val: int,
+    reporting_time_unit: str,
+    training_form_agg_data:dict,
+    inference_form_agg_data:dict,
+    retraining_PSF_radio: str,
+    retraining_PSF_val: float,
+    RandD_PSF_radio: str,
+    RandD_PSF_val: float,
+    input_data_time_scope_val: int,
+    input_data_time_scope_unit: str,
+    inference_continuous_activated: bool,
+):
     '''
     Intermediate processing specific to the AI page before exporting data.
     Cleans content to export by standardizing non-used inputs.
     We concatenate the content of the training form and inference form into a single dictionnary to be exported.
     '''
+    forms_aggregate_data = dict()
+    # Forward global inputs
+    forms_aggregate_data['appVersion'] = training_form_agg_data['appVersion']
+    forms_aggregate_data['reporting_time_scope_unit'] = reporting_time_unit
+    forms_aggregate_data['reporting_time_scope_value'] = reporting_time_val
     # Clean non-used inputs
     training_data = clean_non_used_inputs_for_export(training_form_agg_data)
     inference_data = clean_non_used_inputs_for_export(inference_form_agg_data)
     # Add prefix to differentiate between training and inference
     training_data = {f'training-{key}': value for key, value in training_data.items() if key != 'appVersion'}
     inference_data = {f'inference-{key}': value for key, value in inference_data.items() if key != 'appVersion'}
-    # Concatenate data
-    form_aggregate_data = dict()
-    form_aggregate_data['appVersion'] = training_form_agg_data['appVersion']
-    form_aggregate_data.update(training_data)
-    form_aggregate_data.update(inference_data)
-    return form_aggregate_data
+    # Add training additional fields - retrainings and R&D trainings
+    if retraining_PSF_radio == 'No':
+        retraining_PSF_val = 0
+    ### WARNING: should not put the word 'training' in the key of the retraining items
+    training_data['retrainings_PSF_radio'] = retraining_PSF_radio
+    training_data['retrainings_PSF_value'] = retraining_PSF_val
+    if RandD_PSF_radio == 'No':
+        RandD_PSF_val = 0
+    training_data['R&D_PSF_radio'] = RandD_PSF_radio
+    training_data['R&D_PSF_value'] = RandD_PSF_val
+    # Add inference additional fields - continuous inference scheme
+    inference_data['continuous_inference_switcher'] = inference_continuous_activated
+    inference_data['input_data_time_scope_unit'] = input_data_time_scope_unit
+    inference_data['input_data_time_scope_val'] = input_data_time_scope_val
+    # Concatenate training and inference data
+    forms_aggregate_data.update(training_data)
+    forms_aggregate_data.update(inference_data)
+    return forms_aggregate_data
 
 
 ################## RESULTS AND METRICS 

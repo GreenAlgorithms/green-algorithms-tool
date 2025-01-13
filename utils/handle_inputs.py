@@ -53,9 +53,19 @@ DEFAULT_VALUES.update(
         'provider': 'gcp', 
         'serverContinent': 'Europe',
         'server': 'gcp--europe-west1',
-        'PUE': 1.67
+        'PUE': 1.67,
     }
 )
+
+AI_PAGE_DEFAULT_VALUES = {
+        'R&D_PSF_radio': 'No',
+        'R&D_PSF_value': 0,
+        'retrainings_PSF_radio': 'No',
+        'retrainings_PSF_value': 0,
+        'continuous_inference_switcher': False,
+        'input_data_time_scope_unit': 'month',
+        'input_data_time_scope_val': 1,
+    }
 
 # The following list should contain tke keys of aggregate_data that should not
 # raise an message error because they are not intended to be processed as inputs
@@ -527,6 +537,14 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         wrong_inputs_from_csv.pop('provider', None)
         wrong_inputs_from_csv.pop('serverContinent', None)
         wrong_inputs_from_csv.pop('server', None)
+    ### For consistency with AI page utilities
+    wrong_inputs_from_csv.pop('R&D_PSF_radio', None)
+    wrong_inputs_from_csv.pop('R&D_PSF_value', None)
+    wrong_inputs_from_csv.pop('retrainings_PSF_radio', None)
+    wrong_inputs_from_csv.pop('retrainings_PSF_value', None)
+    wrong_inputs_from_csv.pop('continuous_inference_switcher', None)
+    wrong_inputs_from_csv.pop('input_data_time_scope_unit', None)
+    wrong_inputs_from_csv.pop('input_data_time_scope_val', None)
     return wrong_inputs_from_csv
 
 
