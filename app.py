@@ -17,6 +17,8 @@ from utils.handle_inputs import APP_VERSION_OPTIONS_LIST
 from pages.home import HOME_PAGE, HOME_PAGE_ID_PREFIX
 from pages.ai import AI_PAGE, AI_PAGE_ID_PREFIX
 
+from blueprints.translation.translatable_text_blueprint import translatable_text
+
 
 ###################################################
 ## CREATE APP
@@ -124,6 +126,28 @@ navbar = dbc.Navbar(
             ),
 
             pages_dropdown,
+
+            html.Div(
+                [
+                    html.Label("Language"),
+
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                id="language_dropdown",
+                                options=[
+                                {"label": "English", "value": "en"},
+                                {"label": "Français", "value": "fr"},
+                            ],
+                                value='en',
+                                persistence=True,
+                                clearable=False,
+                            ),
+                        ],
+                        className="language-box-field"
+                        ),
+                ],
+            ),  
         ],
         fluid=True,
     ),

@@ -15,6 +15,8 @@ import blueprints.metrics.utils as metrics_utils
 import blueprints.methodology.methodology_layout as methodo_layout
 import blueprints.form.form_layout as form_layout
 
+from blueprints.translation.translatable_text_blueprint import translatable_text
+
 from utils.graphics import loading_wrapper, MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
@@ -75,7 +77,8 @@ def get_ai_page_layout():
 
             html.Div(
                 [
-                    html.H2('Artificial intelligence dedicated page'),
+                    # html.H2('Artificial intelligence dedicated page'),
+                    html.H2(translatable_text('Artificial intelligence dedicated page').embed(AI_PAGE)),
                     html.P(
                             'This new page is especially dedicated to AI-related computations, namely training and inference phases. ' \
                             "It is intended to ease the reporting of AI systems' environmental impacts over a fixed time lenght, typically one year. " \
