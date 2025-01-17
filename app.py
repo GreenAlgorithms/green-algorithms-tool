@@ -33,6 +33,7 @@ current_version = 'v2.2'
 
 data_dir = os.path.join(os.path.abspath(''),'data')
 image_dir = os.path.join('assets/images')
+assets_dir = os.path.join('assets')
 static_image_route = '/static/'
 
 # We download each csv and store it in a pd.DataFrame
@@ -338,8 +339,9 @@ layout_map['geo'] = dict(
 
 mapCI = go.Figure(
     data=go.Choropleth(
-        geojson=os.path.join(data_dir, 'world.geo.json'),
+        geojson=os.path.join(assets_dir, 'world.geo.json'),
         locations = map_df.ISO3,
+        featureidkey="properties.ISO_A3",
         locationmode='geojson-id',
         z=map_df.carbonIntensity.astype(float),
         colorscale=myColors['map1'],
