@@ -112,6 +112,10 @@ body {
     margin-bottom: 10px
 }
 
+.reporting-row {
+    margin-bottom: 6px;
+}
+
 .reporting-row .box-fields,
 .reporting-row input[type='number'] {
     height: 100%;
@@ -248,9 +252,14 @@ hr {
 
 .switcher-section {
     margin-bottom: 20px;
+    margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: start;
+}
+
+.input_data_time-section input:first-of-type {
+    margin-right:4px;
 }
 
 .reset-button {

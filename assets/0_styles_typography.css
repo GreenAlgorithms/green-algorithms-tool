@@ -115,6 +115,18 @@ input, select, .Select, textarea {
     color: rgb(80, 80, 80);
 }
 
+.tab-label {
+    font-size: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.mantine-Switch-label{
+    font-size: 1.7rem;
+    margin-left: 6px;
+}
+
+
 /*
 ---------------------------------- Tooltip ----------------------------------------
 */

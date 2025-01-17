@@ -30,10 +30,11 @@ def get_green_algo_form_layout(
                         [
                             dmc.Switch(
                                 size="lg",
-                                radius="sm",
+                                radius="xl",
                                 label="Apply continuous inference scheme",
                                 checked=False,
-                                id='continuous_inference_scheme_switcher'
+                                id='continuous_inference_scheme_switcher',
+                                className = 'continuous-switcher'
                             ),
 
                             html.Div(

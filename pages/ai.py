@@ -3,6 +3,8 @@ import dash
 
 from dash import html, ctx, callback, Input, Output, State, dcc
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
+
 from types import SimpleNamespace
 
 from dash_extensions.enrich import DashBlueprint, html
@@ -155,7 +157,8 @@ def get_ai_page_layout():
                                     'The above field is mostly declarative. It should help you to correctly quantify your computations and then easily communicate about your reporting. It has no impact on the calculator outputs ',
                                     html.B('except when choosing the continuous inference scheme. Please refer to the inference Help tab for more information.'),
                                 ],
-                                className='reporting-scope-text'
+                                className='reporting-scope-text',
+                                style={'margin-top': '10px'},
                             )
 
                         ],
@@ -174,12 +177,15 @@ def get_ai_page_layout():
                                 [
                                     dmc.TabsTab(
                                         "Form",
-                                        # leftSection=DashIconify(icon="tabler:message"),
+                                        leftSection=DashIconify(icon="simple-line-icons:calculator"),
                                         value='form',
+                                        className = 'tab-label',
                                     ),
                                     dmc.TabsTab(
                                         "Help",
+                                        leftSection=DashIconify(icon="streamline:help-question-1"),
                                         value='help',
+                                        className = 'tab-label',
                                     ),
                                 ]
                             ),
@@ -202,12 +208,15 @@ def get_ai_page_layout():
                                 [
                                     dmc.TabsTab(
                                         "Form",
-                                        # leftSection=DashIconify(icon="tabler:message"),
+                                        leftSection=DashIconify(icon="simple-line-icons:calculator"),
                                         value='form',
+                                        className = 'tab-label',
                                     ),
                                     dmc.TabsTab(
                                         "Help",
+                                        leftSection=DashIconify(icon="streamline:help-question-1"),
                                         value='help',
+                                        className = 'tab-label',
                                     ),
                                 ]
                             ),
