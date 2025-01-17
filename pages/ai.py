@@ -80,8 +80,7 @@ def get_ai_page_layout():
                     html.H2('Artificial intelligence dedicated page'),
                     html.P(
                             'This new page is especially dedicated to AI-related computations, namely training and inference phases. ' \
-                            "It is intended to ease the reporting of AI systems' environmental impacts over a fixed time lenght, typically one year. " \
-                            'The formula applied to your inputs is exactly the same as the one used in the main page calculator.'
+                            "Based on the same formula as in the main page, it is intended to ease the reporting of AI systems' environmental impacts over a fixed time lenght, typically one year. " \
                         )
                 ],
                 className='container'
@@ -106,8 +105,7 @@ def get_ai_page_layout():
                                 [
                                     'Your reporting (time) scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
                                     'Typical values might be one year or the whole estimated lifespan of your system. ' ,
-                                    html.B('To consistently report the impacts of your project, you are invited to take into account all the computations happening during / falling within the scope. ' ),
-                                    'This period must correspond to a period of stabilized inference (constant inference or known growth).',
+                                    html.B('To consistently report the impacts of your project, you are invited to take into account all the computations falling within the scope. ' ),
                                 ],
                                 className='reporting-scope-text'
                             ),
@@ -154,8 +152,8 @@ def get_ai_page_layout():
 
                             html.P(
                                 [
-                                    'The above field is mostly declarative. It should help you to correctly quantify your computations and then easily communicate about your reporting. It has no impact on the calculator outputs ',
-                                    html.B('except when choosing the continuous inference scheme. Please refer to the inference Help tab for more information.'),
+                                    'The above field is mostly declarative. It should help you to correctly quantify your computations and then easily communicate about your reporting. ',
+                                    html.B('It will only have an impact when choosing the continuous inference scheme. Please refer to the inference Help tab for more information.'),
                                 ],
                                 className='reporting-scope-text',
                                 style={'margin-top': '10px'},

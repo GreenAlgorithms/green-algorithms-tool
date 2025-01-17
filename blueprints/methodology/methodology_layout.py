@@ -102,17 +102,16 @@ def get_training_help_content(title: str):
 
                     dcc.Markdown(
                         '''
-                        The training phase of your AI system covers `different kinds of computations: 
-                        R&D experiments, the main training of your model and potential retrainings` (more details are given below). 
+                        The training phase of your AI system covers different kinds of computations:
+                        __R&D experiments, the main training of your model and potential retrainings__ (more details are given below).
                         
-                        Ideally, we would invite / like you to quantify all these computations through the training form. 
+                        We invite you to quantify all these computations through the training form. 
                         To do so, we recommend you to fill-in the form based on your main training requirements.
-                        Then use the multiplicative factors available at the bottom of the form even if, in practice, different hardware is used for the different training phases.
-                        These additional inputs enable you to give an approximative estimate of your computations share due to R&D trainings or retrainings.
+                        Then use the input fields available at the bottom of the form to give an approximative 
+                        estimate of your computations share due to R&D trainings or retrainings.
                         Some use cases are illustrated in more details below.
 
-                        We acknowledge that this way of reporting R&D trainings and retrainings is not perfect as it entails a loss of granularity and precision.
-                        Though, it appeared to be a satisfying trade-off between the reporting burden and the final estimate quality.
+                        This approach has limitations because different hardware might be used for different training phases but offers a trade-off between the reporting effort and the final estimate quality.
                         If you wish to quantify more precisely the other computation phases, we invite you to fill a form especially for each of them. 
                         '''
                     ),
