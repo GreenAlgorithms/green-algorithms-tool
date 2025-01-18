@@ -339,7 +339,7 @@ layout_map['geo'] = dict(
 
 mapCI = go.Figure(
     data=go.Choropleth(
-        geojson=os.path.join(assets_dir, 'world.geo.json'),
+        geojson='data/world-geo-json',
         locations = map_df.ISO3,
         featureidkey="properties.ISO_A3",
         locationmode='geojson-id',
@@ -2250,10 +2250,13 @@ def fillin_report_text(aggData, data):
 # Loader IO
 @app.server.route('/loaderio-1360e50f4009cc7a15a00c7087429524/')
 def download_loader():
-    return send_file('assets/loaderio-1360e50f4009cc7a15a00c7087429524.txt',
-                     mimetype='text/plain',
-                     attachment_filename='loaderio-1360e50f4009cc7a15a00c7087429524.txt',
+    return send_file(os.path.join(assets_dir, 'loaderio-1360e50f4009cc7a15a00c7087429524.txt'),
                      as_attachment=True)
+# world.geo.json
+@app.server.route('/data/world-geo-json')
+def download_world_geo_json():
+    return send_file(os.path.join(data_dir, 'world.geo.json'))
+
 
 if __name__ == '__main__':
     # allows app to update when code is changed!
