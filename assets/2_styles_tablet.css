@@ -31,6 +31,19 @@
         width: 50%;
     }
 
+    
+    /* This one is used to match the height of both the input and box fields of the repoting scope */
+    .reporting-row input[type='number']{
+        padding: 8px;
+    }
+
+    /* This one is used to cancel the effet of the .short-input related properties (defined above)*/
+    .reporting-row input[type='number'] ,
+    .reporting-row .box-fields{
+        height: 100%;
+        width: 42%;
+    }
+
     /* The following one is used for location and cloud computing */
     .long-input .box-fields {
         width: 95%;

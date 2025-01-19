@@ -106,21 +106,6 @@ body {
 */
 
 
-/* REPORTING SCOPE */
-
-.reporting_scope_text {
-    margin-bottom: 10px
-}
-
-.reporting-row {
-    margin-bottom: 6px;
-}
-
-.reporting-row .box-fields,
-.reporting-row input[type='number'] {
-    height: 100%;
-}
-
 /* GENERAL */
 
 .input-form {
@@ -198,6 +183,45 @@ hr {
 .bottom-dropdown {
     margin-top: 5px;
 }
+
+
+/* REPORTING SCOPE */
+
+.reporting_scope_text {
+    margin-bottom: 10px
+}
+
+.reporting-row {
+    /* Below fields are inspired from those of the .form-row class. */
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.reporting-row input[type='number'],
+.reporting-row .Select-control{
+    background-color: #FFFFFF;
+    border: 1px solid #D6D9DC;
+    border-radius: 3px;
+}
+
+.reporting-row input[type='number']{
+    padding: 9px;
+}
+
+
+.reporting-row input[type='number'] ,
+.reporting-row .box-fields{
+    margin-right: 2px;
+    text-align: center;
+    height: 100%;
+    width: 42%;
+}
+
 
 /* RUNTIME */
 

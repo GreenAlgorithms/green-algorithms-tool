@@ -140,14 +140,14 @@ def get_ai_page_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Please, fill in your reporting time scope",
+                                                "Please, fill in your reporting time scope.",
                                                 className='tooltip-text'
                                             ),
                                         ],
                                         className='tooltip',
                                     ),
                                 ],
-                                className="reporting-row form-row short-input"
+                                className="reporting-row short-input"
                             ),
 
                             html.P(
