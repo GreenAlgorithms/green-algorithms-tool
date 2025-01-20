@@ -60,7 +60,7 @@ def get_green_algo_import_export_layout():
 
             dcc.Interval(
                 id='csv-input-timer',
-                interval=2000, 
+                interval=1500, 
                 # in milliseconds, should not be lower than 1000
                 # otherwise the update of the upload csv content is done too soon
                 # and there is not consistency between the state of the form and 

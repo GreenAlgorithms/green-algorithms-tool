@@ -456,7 +456,9 @@ def display_RandD_trainings_input(retrainings_radio, disabled):
             State(f'reporting_time_scope_input', 'value'),
             State(f'reporting_time_scope_dropdown', 'value'),
             State(f'{TRAINING_ID_PREFIX}-form_aggregate_data', 'data'),
+            State(f'training_processed_output_metrics', 'data'),
             State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
+            State(f'inference_processed_output_metrics', 'data'),
             State(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
             State(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input', 'value'),
             State(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
@@ -472,7 +474,9 @@ def forward_form_input_to_export_module(
     reporting_time_val: int,
     reporting_time_unit: str,
     training_form_agg_data:dict,
+    training_form_outputs:dict,
     inference_form_agg_data:dict,
+    inference_form_outputs:dict,
     retraining_PSF_radio: str,
     retraining_PSF_val: float,
     RandD_PSF_radio: str,
@@ -496,7 +500,9 @@ def forward_form_input_to_export_module(
     inference_data = clean_non_used_inputs_for_export(inference_form_agg_data)
     # Add prefix to differentiate between training and inference
     training_data = {f'training-{key}': value for key, value in training_data.items() if key != 'appVersion'}
+    training_outputs = {f'training-{key}': value for key, value in training_form_outputs.items()}
     inference_data = {f'inference-{key}': value for key, value in inference_data.items() if key != 'appVersion'}
+    inference_outputs = {f'inference-{key}': value for key, value in inference_form_outputs.items()}
     # Add training additional fields - retrainings and R&D trainings
     if retraining_PSF_radio == 'No':
         retraining_PSF_val = 0
@@ -513,7 +519,9 @@ def forward_form_input_to_export_module(
     inference_data['input_data_time_scope_val'] = input_data_time_scope_val
     # Concatenate training and inference data
     forms_aggregate_data.update(training_data)
+    forms_aggregate_data.update(training_outputs)
     forms_aggregate_data.update(inference_data)
+    forms_aggregate_data.update(inference_outputs)
     return forms_aggregate_data
 
 
@@ -544,6 +552,7 @@ def process_inference_form_outputs_based_on_reporting_scope(
     It automatically scales the end electricity consumption based on reporting scope and
     and the input data time scope.
     '''
+    processed_inference_metrics = {}
     # We need to process the form outputs only if continuous inference is activated
     if inference_continuous_activated:
         # We scale input_data_time scope to month
@@ -564,9 +573,13 @@ def process_inference_form_outputs_based_on_reporting_scope(
              reporting_multiplicative_factor *= (12*reporting_time_val)
         # We apply multiplicative coefficients to the form outputs
         mult_coef = input_scope_mutiplicative_factor * reporting_multiplicative_factor
-        inference_form_metrics['energy_needed'] = mult_coef * inference_form_metrics['energy_needed']
-        inference_form_metrics['carbonEmissions'] = mult_coef * inference_form_metrics['carbonEmissions']
-    return inference_form_metrics
+    else:
+        mult_coef = 1
+    processed_inference_metrics['energy_needed_before_scaling'] =  inference_form_metrics['energy_needed']
+    processed_inference_metrics['energy_needed'] = mult_coef * inference_form_metrics['energy_needed']
+    processed_inference_metrics['carbonEmissions_before_scaling'] =  inference_form_metrics['carbonEmissions']
+    processed_inference_metrics['carbonEmissions'] = mult_coef * inference_form_metrics['carbonEmissions']
+    return processed_inference_metrics
     
 
 @AI_PAGE.callback(
@@ -598,9 +611,16 @@ def add_retrainings_and_RandD_to_training_outputs(
     if RandD_PSF_radio == 'No':
         RandD_PSF_val = 0
     # Add values to main training metrics
-    training_form_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_PSF_val + retraining_PSF_val)
-    training_form_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_PSF_val + retraining_PSF_val)
-    return training_form_metrics
+    detailed_training_metrics = {}
+    detailed_training_metrics['main_energy_needed'] = training_form_metrics['energy_needed']
+    detailed_training_metrics['R&D_energy_needed'] = training_form_metrics['energy_needed'] * RandD_PSF_val 
+    detailed_training_metrics['retrainings_energy_needed'] = training_form_metrics['energy_needed'] * retraining_PSF_val 
+    detailed_training_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_PSF_val + retraining_PSF_val)
+    detailed_training_metrics['main_carbonEmissions'] = training_form_metrics['carbonEmissions']
+    detailed_training_metrics['R&D_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  RandD_PSF_val 
+    detailed_training_metrics['retrainings_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  retraining_PSF_val 
+    detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_PSF_val + retraining_PSF_val)
+    return detailed_training_metrics
 
 
 

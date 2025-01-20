@@ -862,14 +862,14 @@ def get_form_blueprint(
             output['PSF'] = None
             output['PSFradio'] = None
             output['appVersion'] = version
-            metrics['runTime'] = None
+            metrics['energy_needed'] = 0
             metrics['carbonEmissions'] = 0
+            metrics['runTime'] = None
+            metrics['power_needed'] = 0
             metrics['CE_CPU'] = 0
             metrics['CE_GPU'] = 0
             metrics['CE_core'] = 0
             metrics['CE_memory'] = 0
-            metrics['energy_needed'] = 0
-            metrics['power_needed'] = 0
 
         #############################################
         ### PRE-COMPUTATIONS: update variables used in the calcul based on inputs
@@ -997,14 +997,14 @@ def get_form_blueprint(
             output['PSF'] = PSF_used
             output['PSFradio'] = PSFradio
             output['appVersion'] = version
-            metrics['runTime'] = runTime
+            metrics['energy_needed'] = energyNeeded
             metrics['carbonEmissions'] = carbonEmissions
+            metrics['runTime'] = runTime
+            metrics['power_needed'] = powerNeeded
             metrics['CE_CPU'] = CE_CPU
             metrics['CE_GPU'] = CE_GPU
             metrics['CE_core'] = CE_core
             metrics['CE_memory'] = CE_memory
-            metrics['energy_needed'] = energyNeeded
-            metrics['power_needed'] = powerNeeded
 
         return output, metrics
 

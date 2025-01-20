@@ -89,6 +89,14 @@ INPUT_KEYS_TO_IGNORE = [
     'nkm_train',
     'flying_context',
     'flying_text',
+    'energy_needed_before_scaling',
+    'carbonEmissions_before_scaling',
+    'main_energy_needed',
+    'R&D_energy_needed',
+    'retrainings_energy_needed',
+    'main_carbonEmissions',
+    'R&D_carbonEmissions',
+    'retrainings_carbonEmissions',
 ]
 
 

@@ -254,15 +254,21 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
         Output(f'{HOME_PAGE_ID_PREFIX}-export-content', 'data'),
         Input(f"{HOME_PAGE_ID_PREFIX}-btn-download_csv", "n_clicks"),
         State(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', 'data'),
+        State(f'{HOME_PAGE_ID_PREFIX}-form_output_metrics', "data"),
         prevent_initial_call=True,
 )
-def forward_form_input_to_export_module(_, form_aggregate_data):
+def forward_form_input_to_export_module(_, form_aggregate_data, form_output_metrics):
     '''
     Intermediate processing specific to the HOME page before exporting data.
-    We forward the inputs of the form to the export file. 
+    We forward the inputs of the form to the export file as long with the main outputs. 
     '''
+    to_export = {}
+    # Raw inputs of the form
     form_aggregate_data = clean_non_used_inputs_for_export(form_aggregate_data)
-    return form_aggregate_data
+    to_export.update(form_aggregate_data)
+    # Outputs of the form
+    to_export.update(form_output_metrics)
+    return to_export
 
 
 ##################### RESET 
