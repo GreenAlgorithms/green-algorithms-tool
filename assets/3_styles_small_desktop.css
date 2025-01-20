@@ -69,6 +69,10 @@
         width: 45%;
     } 
 
+    .input_data_time-section > input[type = 'number']{
+        padding: 7.5px;
+    }
+
     /* REPORTING SCOPE */
 
     /* This one is used to match the height of both the input and box fields of the repoting scope */

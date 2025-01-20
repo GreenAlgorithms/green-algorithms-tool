@@ -68,10 +68,10 @@ def get_green_algo_form_layout(
                                     dcc.Dropdown(
                                         id='input_data_time_scope_dropdown',
                                         options=[
-                                                {'label': 'Day', 'value': 'day'},
-                                                {'label': 'Week', 'value': 'week'},
-                                                {'label': 'Month', 'value': 'month'},
-                                                {'label': 'Year', 'value': 'year'},
+                                                {'label': 'Day(s)', 'value': 'day'},
+                                                {'label': 'Week(s)', 'value': 'week'},
+                                                {'label': 'Month(s)', 'value': 'month'},
+                                                {'label': 'Year(s)', 'value': 'year'},
                                             ],
                                         value='year',
                                         className='dropdown',

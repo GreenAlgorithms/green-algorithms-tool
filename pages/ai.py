@@ -125,8 +125,8 @@ def get_ai_page_layout():
                                             dcc.Dropdown(
                                                 id='reporting_time_scope_dropdown',
                                                 options=[
-                                                        {'label': 'Month', 'value': 'month'},
-                                                        {'label': 'Year', 'value': 'year'},
+                                                        {'label': 'Month(s)', 'value': 'month'},
+                                                        {'label': 'Year(s)', 'value': 'year'},
                                                     ],
                                                 value='year',
                                                 className='dropdown',
