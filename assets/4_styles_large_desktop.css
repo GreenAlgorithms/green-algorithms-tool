@@ -36,7 +36,8 @@
         margin-left:0;
     }
 
-    .form-row .box-fields {
+    .form-row .box-fields,
+    .form-row .radio-and-field {
         width: 94%
     }
 
@@ -50,9 +51,6 @@
         width: 47%;
     }
 
-    .form-row .radio-and-field {
-        width: 94%;
-    }
 
     
     .continuous-switcher {

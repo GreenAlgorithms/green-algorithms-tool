@@ -734,7 +734,7 @@ def get_additional_training_fields_layout():
                     html.Div(
                         [
                             dcc.RadioItems(
-                                id='RandD_PSF_radio',
+                                id='RandD_radio',
                                 options=YES_NO_OPTIONS,
                                 className="radio-input",
                             ),
@@ -743,7 +743,7 @@ def get_additional_training_fields_layout():
                                 min=0,
                                 step=0.1,
                                 type='number',
-                                id='RandD_PSF_input',
+                                id='RandD_MF_input',
                                 style=dict(display='none'),
                             ),
                         ],
@@ -783,42 +783,94 @@ def get_additional_training_fields_layout():
 
             html.Div(
                 [
-                    html.Label("Do you want to add retrainings compute time?"),
                     html.Div(
                         [
-                            dcc.RadioItems(
-                                id='retrainings_PSF_radio',
-                                options=YES_NO_OPTIONS,
-                                className="radio-input",
+                            html.Label("Do you want to add retrainings compute time?"),
+
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='retrainings_radio',
+                                        options=YES_NO_OPTIONS,
+                                        className="radio-input",
+                                    ),
+                                ],
+                                className='radio-and-field',
                             ),
 
-                            dcc.Input(
-                                min=0,
-                                step=0.1,
-                                type='number',
-                                id='retrainings_PSF_input',
-                                style=dict(display='none'),
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "If you plan to apply retrainings, select 'Yes'. " \
+                                        "Then, fill in the number of retrainings and their average relative requirements.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
                         ],
-                        className='radio-and-field',
+                        className='form-row radio-row',
                     ),
 
                     html.Div(
                         [
-                            html.Div('i', className='tooltip-icon'),
-                            html.P(
-                                "If your retrainings represent half the computations requirements of your main training, you should fill in '0.5'. " \
-                                "The resulting value will be added to your main training footprint.",
-                                className='tooltip-text'
+                            html.Div(
+                                [
+                                    html.Label("Number of retrainings"),
+
+                                    dcc.Input(
+                                        min=0,
+                                        step=1,
+                                        type='number',
+                                        id='retrainings_number_input',
+                                    ),
+
+                                    
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "Simply the number of retrainings you plan to apply over your reporting scope.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className='form-row short-input'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("What is the relative length of an average retraining compared to your main training?"),
+
+                                    dcc.Input(
+                                        min=0,
+                                        step=0.1,
+                                        type='number',
+                                        id='retrainings_MF_input',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "If an average retraining represents half the computations requirements of your main training, you should fill in '0.5'. ",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className='form-row short-input'
                             ),
                         ],
-                        className='tooltip',
-                    ),
-
+                        id='retraining-additional-inputs',
+                        style=dict(display='none'),
+                    )
                 ],
-                className='form-row radio-row',
             ),
-
         ]
     )
         

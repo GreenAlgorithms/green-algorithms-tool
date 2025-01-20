@@ -324,10 +324,11 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
 
 @AI_PAGE.callback(
         [
-            Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio','value'),
-            Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','value'),
-            Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio','value'),
-            Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','value'),
+            Output(f'{TRAINING_ID_PREFIX}-RandD_radio','value'),
+            Output(f'{TRAINING_ID_PREFIX}-RandD_MF_input','value'),
+            Output(f'{TRAINING_ID_PREFIX}-retrainings_radio','value'),
+            Output(f'{TRAINING_ID_PREFIX}-retrainings_number_input', 'value'),
+            Output(f'{TRAINING_ID_PREFIX}-retrainings_MF_input','value'),
         ],
         [
             # to allow initial triggering
@@ -342,18 +343,20 @@ def load_RandD_and_retrainings_inputs(_, specific_ai_inputs: dict):
     '''
     if specific_ai_inputs:
         return (
-            specific_ai_inputs['R&D_PSF_radio'],
-            specific_ai_inputs['R&D_PSF_value'],
-            specific_ai_inputs['retrainings_PSF_radio'],
-            specific_ai_inputs['retrainings_PSF_value'],
+            specific_ai_inputs['R&D_radio'],
+            specific_ai_inputs['R&D_MF_value'],
+            specific_ai_inputs['retrainings_radio'],
+            specific_ai_inputs['retrainings_number_input'],
+            specific_ai_inputs['retrainings_MF_value'],
         )
     else:
         # otherwise we return default values
         return (
-            AI_PAGE_DEFAULT_VALUES['R&D_PSF_radio'],
-            AI_PAGE_DEFAULT_VALUES['R&D_PSF_value'],
-            AI_PAGE_DEFAULT_VALUES['retrainings_PSF_radio'],
-            AI_PAGE_DEFAULT_VALUES['retrainings_PSF_value'], 
+            AI_PAGE_DEFAULT_VALUES['R&D_radio'],
+            AI_PAGE_DEFAULT_VALUES['R&D_MF_value'],
+            AI_PAGE_DEFAULT_VALUES['retrainings_radio'],
+            AI_PAGE_DEFAULT_VALUES['retrainings_number_input'], 
+            AI_PAGE_DEFAULT_VALUES['retrainings_MF_value'], 
         )
 
 @AI_PAGE.callback(
@@ -404,10 +407,10 @@ def display_or_hide_input_data_time_scope_section(is_inference_continuous):
 ################## ADDITIONAL TRAININGS FIELDS
 
 @AI_PAGE.callback(
-    Output(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','style'),
+    Output(f'{TRAINING_ID_PREFIX}-RandD_MF_input','style'),
     [
-        Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
-        Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_input','disabled')
+        Input(f'{TRAINING_ID_PREFIX}-RandD_radio', 'value'),
+        Input(f'{TRAINING_ID_PREFIX}-RandD_MF_input','disabled')
     ]
 )
 def display_RandD_trainings_input(RandD_trainings_radio, disabled):
@@ -426,23 +429,19 @@ def display_RandD_trainings_input(RandD_trainings_radio, disabled):
 
 
 @AI_PAGE.callback(
-    Output(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','style'),
+    Output(f'{TRAINING_ID_PREFIX}-retraining-additional-inputs', 'style'),
     [
-        Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
-        Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input','disabled')
+        Input(f'{TRAINING_ID_PREFIX}-retrainings_radio', 'value'),
     ]
 )
-def display_RandD_trainings_input(retrainings_radio, disabled):
+def display_retrainings_div(retrainings_radio):
     '''
     Shows or hides the  R&D trainings input box
     '''
     if retrainings_radio == 'No':
         out = {'display': 'none'}
     else:
-        out = {'display': 'block'}
-
-    if disabled:
-        out['background-color'] = MY_COLORS['boxesColor']
+        out = {'display': 'flex', 'flex-direction': 'column'}
 
     return out
 
@@ -459,10 +458,11 @@ def display_RandD_trainings_input(retrainings_radio, disabled):
             State(f'training_processed_output_metrics', 'data'),
             State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
             State(f'inference_processed_output_metrics', 'data'),
-            State(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
-            State(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input', 'value'),
-            State(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
-            State(f'{TRAINING_ID_PREFIX}-RandD_PSF_input', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-retrainings_radio', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-retrainings_number_input', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-retrainings_MF_input', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-RandD_radio', 'value'),
+            State(f'{TRAINING_ID_PREFIX}-RandD_MF_input', 'value'),
             State(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_input', 'value'),
             State(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_dropdown', 'value'),
             State(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
@@ -477,10 +477,11 @@ def forward_form_input_to_export_module(
     training_form_outputs:dict,
     inference_form_agg_data:dict,
     inference_form_outputs:dict,
-    retraining_PSF_radio: str,
-    retraining_PSF_val: float,
-    RandD_PSF_radio: str,
-    RandD_PSF_val: float,
+    retraining_radio: str,
+    retraining_number_val: float,
+    retraining_MF_val: float,
+    RandD_radio: str,
+    RandD_MF_val: float,
     input_data_time_scope_val: int,
     input_data_time_scope_unit: str,
     inference_continuous_activated: bool,
@@ -504,15 +505,16 @@ def forward_form_input_to_export_module(
     inference_data = {f'inference-{key}': value for key, value in inference_data.items() if key != 'appVersion'}
     inference_outputs = {f'inference-{key}': value for key, value in inference_form_outputs.items()}
     # Add training additional fields - retrainings and R&D trainings
-    if retraining_PSF_radio == 'No':
-        retraining_PSF_val = 0
+    if retraining_radio == 'No':
+        retraining_MF_val = 0
     ### WARNING: should not put the word 'training' in the key of the retraining items
-    training_data['retrainings_PSF_radio'] = retraining_PSF_radio
-    training_data['retrainings_PSF_value'] = retraining_PSF_val
-    if RandD_PSF_radio == 'No':
-        RandD_PSF_val = 0
-    training_data['R&D_PSF_radio'] = RandD_PSF_radio
-    training_data['R&D_PSF_value'] = RandD_PSF_val
+    training_data['retrainings_radio'] = retraining_radio
+    training_data['retrainings_MF_value'] = retraining_MF_val
+    training_data['retrainings_number_input'] = retraining_number_val
+    if RandD_radio == 'No':
+        RandD_MF_val = 0
+    training_data['R&D_radio'] = RandD_radio
+    training_data['R&D_MF_value'] = RandD_MF_val
     # Add inference additional fields - continuous inference scheme
     inference_data['continuous_inference_switcher'] = inference_continuous_activated
     inference_data['input_data_time_scope_unit'] = input_data_time_scope_unit
@@ -586,18 +588,20 @@ def process_inference_form_outputs_based_on_reporting_scope(
         Output('training_processed_output_metrics', 'data'),
         [
             Input(f'{TRAINING_ID_PREFIX}-form_output_metrics', 'data'),
-            Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_radio', 'value'),
-            Input(f'{TRAINING_ID_PREFIX}-retrainings_PSF_input', 'value'),
-            Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_radio', 'value'),
-            Input(f'{TRAINING_ID_PREFIX}-RandD_PSF_input', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-retrainings_radio', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-retrainings_number_input', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-retrainings_MF_input', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-RandD_radio', 'value'),
+            Input(f'{TRAINING_ID_PREFIX}-RandD_MF_input', 'value'),
         ]
 )
 def add_retrainings_and_RandD_to_training_outputs(
     training_form_metrics: dict,
-    retraining_PSF_radio: str,
-    retraining_PSF_val: float,
-    RandD_PSF_radio: str,
-    RandD_PSF_val: float,
+    retraining_radio: str,
+    retraining_number_val: float,
+    retraining_MF_val: float,
+    RandD_radio: str,
+    RandD_MF_val: float,
 ):
     ''' 
     The purpose of this callback is to take into account retrainings and R&D inputs.
@@ -605,21 +609,29 @@ def add_retrainings_and_RandD_to_training_outputs(
     multiplied by the corresponding PSF for both retrainings and R&D 
     before they are added to the total.
     '''
+    # Handling wrong inputs from the user
+    if retraining_MF_val is None:
+        retraining_MF_val = 0
+    if retraining_number_val is None:
+        retraining_number_val = 0
+    if RandD_MF_val is None:
+        RandD_MF_val = 0
     # Checking is values should be added from retrainings or RandD
-    if retraining_PSF_radio == 'No':
-        retraining_PSF_val = 0
-    if RandD_PSF_radio == 'No':
-        RandD_PSF_val = 0
+    if retraining_radio == 'No':
+        retraining_MF_val = 0
+        retraining_number_val = 0
+    if RandD_radio == 'No':
+        RandD_MF_val = 0
     # Add values to main training metrics
     detailed_training_metrics = {}
     detailed_training_metrics['main_energy_needed'] = training_form_metrics['energy_needed']
-    detailed_training_metrics['R&D_energy_needed'] = training_form_metrics['energy_needed'] * RandD_PSF_val 
-    detailed_training_metrics['retrainings_energy_needed'] = training_form_metrics['energy_needed'] * retraining_PSF_val 
-    detailed_training_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_PSF_val + retraining_PSF_val)
+    detailed_training_metrics['R&D_energy_needed'] = training_form_metrics['energy_needed'] * RandD_MF_val 
+    detailed_training_metrics['retrainings_energy_needed'] = training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val
+    detailed_training_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
     detailed_training_metrics['main_carbonEmissions'] = training_form_metrics['carbonEmissions']
-    detailed_training_metrics['R&D_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  RandD_PSF_val 
-    detailed_training_metrics['retrainings_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  retraining_PSF_val 
-    detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_PSF_val + retraining_PSF_val)
+    detailed_training_metrics['R&D_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  RandD_MF_val 
+    detailed_training_metrics['retrainings_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  retraining_MF_val * retraining_number_val
+    detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
     return detailed_training_metrics
 
 

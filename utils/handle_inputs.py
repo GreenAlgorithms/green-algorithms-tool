@@ -58,10 +58,11 @@ DEFAULT_VALUES.update(
 )
 
 AI_PAGE_DEFAULT_VALUES = {
-        'R&D_PSF_radio': 'No',
-        'R&D_PSF_value': 0,
-        'retrainings_PSF_radio': 'No',
-        'retrainings_PSF_value': 0,
+        'R&D_radio': 'No',
+        'R&D_MF_value': 0,
+        'retrainings_radio': 'No',
+        'retrainings_number_input': 0,
+        'retrainings_MF_value': 0,
         'continuous_inference_switcher': False,
         'input_data_time_scope_unit': 'month',
         'input_data_time_scope_val': 1,
