@@ -11,6 +11,7 @@
     ---------------------------------- INPUT FORM ----------------------------------------
     */
 
+
     .form-row > label {
         width: 70%;
         margin-bottom: 7;
@@ -61,7 +62,7 @@
 
     .form-row .box-runtime input:first-of-type {
         margin-right:0;
-        margin-bottom:2px;
+        margin-bottom:0px;
     }
 
     .form-row input:last-of-type {
@@ -85,6 +86,21 @@
 
     .radio-row input[type='number'] {
         width: 45%;
+    }
+
+    /* CONTINUOUS INFERENCE SCHEME */
+
+    .continuous-switcher {
+        width: 97%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:0px;
+    }
+
+    .input_data_time-section > input[type = 'number'],
+    .input_data_time-section .box-fields {
+        width: 25%;
     }
 
     .reset-button {

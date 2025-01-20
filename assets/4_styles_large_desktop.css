@@ -54,6 +54,21 @@
         width: 94%;
     }
 
+    
+    .continuous-switcher {
+        width: 94.5%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:0px;
+    }
+
+    .input_data_time-section > input[type = 'number'],
+    .input_data_time-section .box-fields {
+        width: 23%;
+    } 
+
+
     .tooltip {
         width: 4%;
         margin-left: 0em;

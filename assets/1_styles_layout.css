@@ -282,8 +282,21 @@ hr {
     justify-content: start;
 }
 
+.continuous-switcher {
+    width: 94%
+}
+
 .input_data_time-section input:first-of-type {
     margin-right:4px;
+}
+
+.input_data_time-section > input[type = 'number'],
+.input_data_time-section .box-fields {
+    width: 45%;
+}
+
+.input_data_time-section > input[type = 'number']{
+    padding: 9px;
 }
 
 .reset-button {

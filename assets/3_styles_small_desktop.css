@@ -54,25 +54,28 @@
         width: 91%;
     }
 
+    /* CONTINUOUS INFERENCE SCHEME */
 
-    .continuous-switcher{
-        width: 92%
+    .continuous-switcher {
+        width: 93%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:4px;
     }
 
     .input_data_time-section > input[type = 'number'],
     .input_data_time-section .box-fields {
         width: 45%;
-    }
+    } 
 
     /* REPORTING SCOPE */
 
-        
     /* This one is used to match the height of both the input and box fields of the repoting scope */
     .reporting-row input[type='number']{
         padding: 7px;
     }
 
-    
     
     /*
     ---------------------------------- Tooltip ----------------------------------------
@@ -229,6 +232,7 @@
         order: 2;
         margin-right: 12px;
         width: calc((33.3%) - (8px));
+        align-content: stretch;
     }
 
     .show-stripes {
