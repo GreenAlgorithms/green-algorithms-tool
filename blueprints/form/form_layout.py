@@ -675,7 +675,8 @@ def get_green_algo_form_layout(
                     #     className='reset-button'
                     # ),
                 ],
-                className='two-buttons'
+                className='two-buttons',
+                style={'display': 'none'}
             ),
 
             # html.Div(
