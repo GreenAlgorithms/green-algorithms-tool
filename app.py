@@ -7,8 +7,8 @@ from flask import send_file # Integrating Loader IO
 
 from dash import html, dcc, ctx, _dash_renderer
 from dash.dependencies import Input, Output, State
-import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
 _dash_renderer._set_react_version("18.2.0")
 
 from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR
@@ -52,82 +52,82 @@ appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT
 
 
 ###################################################
-## CREATE LAYOUT
+## CREATE NAVBAR
 
-pages_dropdown = dbc.DropdownMenu(
+icons_per_page = {'Home': 'fluent-color:home-16', 'Ai': 'streamline:artificial-intelligence-spark'}
+
+pages_navbar = html.Div(
     [
-        dbc.DropdownMenuItem(
-            children=html.Div(
-                [
-                    html.Img(
-                        src=app.get_asset_url(page["image"]),
-                        height="20px",
-                        width="20px",
-                        style={'padding-right': '5px'}
-                    ),
-                    page["name"],
-                ]
-            ),
+        dmc.NavLink(
+            label=html.Div(
+                    f"{page['name']}",
+                    className='navlink-label',
+                ),
             href=page["path"],
-            style={'align-item': 'center'}
+            id=f'{page["name"]}-navlink',
+            leftSection=DashIconify(icon=icons_per_page[page['name']], className='navlink-icon', height=20),
+            className='page-navlink',
         )
         for page in dash.page_registry.values()
     ],
-    nav=True,
-    label="More Pages",
+    className = 'pages-menu',
+)
+
+versions_menu = dmc.Menu(
+    [
+        dmc.MenuTarget(dmc.Button("Version", variant='subtle', id='version-button')),
+        dmc.MenuDropdown(
+            [
+                dmc.MenuItem(app_version['label'])
+                for app_version in appVersions_options
+            ],
+            id="appVersions_dropdown",
+        ),
+    ],
+    trigger="hover",
+)
+
+navbar = html.Div(
+    [
+        html.Div(
+            dmc.NavLink(
+                label=html.Div('Green Algorithms', id='navbar-site-name'),
+            ),
+        ),
+
+        # html.Div(
+        #     [
+        #         html.Label("App version"),
+
+        #         html.Div(
+        #             [
+        #                 dcc.Dropdown(
+        #                     id="appVersions_dropdown",
+        #                     options=appVersions_options,
+        #                     className='bottom-dropdown',
+        #                     clearable=False,
+        #                 ),
+        #             ],
+        #             className="box-fields"
+        #         )
+        #     ],
+        #     className='form-row short-input',
+        #     id='oldVersions_div',
+        #     style={'display': 'flex', 'flex-direction': 'row'}
+        # ),
+
+        pages_navbar,
+
+        versions_menu,
+ 
+    ],
+    className='navbar',
 )
 
 
-navbar = dbc.Navbar(
-    dbc.Container(
-        [
-            html.A(
-                # Use row and col to control vertical alignment of logo / brand
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.Img(src=app.get_asset_url("favicon.ico"), height="50px")
-                        ),
-                        dbc.Col(dbc.NavbarBrand("Navbar", className="ms-2")),
-                    ],
-                    align="center",
-                    className="g-0",
-                ),
-            ),
 
-            html.Div(
-                [
-                    html.P("Change app version", id='oldVersion_link'),
-                ],
-                className='reset-button'
-            ),
-
-            html.Div(
-                [
-                    html.Label("App version"),
-
-                    html.Div(
-                        [
-                            dcc.Dropdown(
-                                id="appVersions_dropdown",
-                                options=appVersions_options,
-                                className='bottom-dropdown',
-                                clearable=False,
-                            ),
-                        ],
-                        className="box-fields"
-                    )
-                ],
-                className='form-row short-input',
-                id='oldVersions_div',
-                style=dict(display='none'),
-            ),
-
-            pages_dropdown,
-        ],
-        fluid=True,
-    ),
-)
+###################################################
+## CREATE LAYOUT
 
 
 
@@ -144,7 +144,7 @@ app.layout = dmc.MantineProvider(
             
             #### NAVBAR ####
 
-            html.Div(navbar, id='navbar-container'),
+            navbar,
 
             #### HEADER ####
             html.Div(

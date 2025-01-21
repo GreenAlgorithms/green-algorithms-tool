@@ -18,6 +18,25 @@
         flex-direction: unset;
     }
 
+
+        /*
+    ---------------------------------- NAVBAR ----------------------------------------
+    */
+    
+    #navbar-site-name {
+        font-size: 3.5em;
+    }
+
+    
+    .navlink-label {
+        font-size: 2.9em;
+    }
+
+    #version-button {
+        font-size: 1.2em;
+    }
+
+
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
     */

@@ -515,7 +515,6 @@ def get_green_algo_form_layout(
                             dcc.Input(
                                 min=0,
                                 max=1,
-                                # step=0.1,
                                 type='number',
                                 id='usageCPU_input',
                                 style=dict(display='none'),
@@ -553,7 +552,6 @@ def get_green_algo_form_layout(
                             dcc.Input(
                                 min=0,
                                 max=1,
-                                # step=0.1,
                                 type='number',
                                 id='usageGPU_input',
                                 style=dict(display='none'),
@@ -741,7 +739,6 @@ def get_additional_training_fields_layout():
 
                             dcc.Input(
                                 min=0,
-                                step=0.1,
                                 type='number',
                                 id='RandD_MF_input',
                                 style=dict(display='none'),
@@ -847,7 +844,6 @@ def get_additional_training_fields_layout():
 
                                     dcc.Input(
                                         min=0,
-                                        step=0.1,
                                         type='number',
                                         id='retrainings_MF_input',
                                     ),
