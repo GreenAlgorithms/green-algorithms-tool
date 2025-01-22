@@ -73,18 +73,21 @@ pages_navbar = html.Div(
     className = 'pages-menu',
 )
 
-versions_menu = dmc.Menu(
-    [
-        dmc.MenuTarget(dmc.Button("Version", variant='subtle', id='version-button')),
-        dmc.MenuDropdown(
-            [
-                dmc.MenuItem(app_version['label'])
-                for app_version in appVersions_options
-            ],
-            id="appVersions_dropdown",
-        ),
-    ],
-    trigger="hover",
+versions_menu = html.Div(
+    dmc.Menu(
+        [
+            dmc.MenuTarget(dmc.Button("Version", variant='subtle', id='version-button')),
+            dmc.MenuDropdown(
+                [
+                    dmc.MenuItem(app_version['label'])
+                    for app_version in appVersions_options
+                ],
+                id="appVersions_dropdown",
+            ),
+        ],
+        trigger="hover",
+    ),
+    id='version-menu',
 )
 
 navbar = html.Div(
@@ -94,6 +97,8 @@ navbar = html.Div(
                 label=html.Div('Green Algorithms', id='navbar-site-name'),
             ),
         ),
+
+        dmc.Divider(orientation="vertical", className='navbar-divider'),
 
         # html.Div(
         #     [

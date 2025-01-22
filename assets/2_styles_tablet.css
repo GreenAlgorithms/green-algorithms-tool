@@ -20,6 +20,10 @@
         font-size: 2.5em;
     }
 
+    .navlink-icon {
+        height: 2.0em;
+    }
+
     #version-button {
         font-size: 1em;
     }

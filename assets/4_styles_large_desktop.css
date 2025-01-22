@@ -17,6 +17,10 @@
         align-items: stretch;
         flex-direction: unset;
     }
+    
+    .navlink-icon {
+        height: 2.4em;
+    }
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------

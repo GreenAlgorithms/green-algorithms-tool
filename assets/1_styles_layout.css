@@ -111,9 +111,7 @@ body {
     
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    text-align:center;
 
     border-radius: 0px;
     background-color: #f9f9f9;
@@ -122,7 +120,14 @@ body {
 }
 
 #navbar-site-name {
-    font-size: 2em;
+    font-size: 1.8em;
+}
+
+.navbar-divider{
+    height: 3em;
+    margin-left: 6px;
+    margin-right: 6px;
+    color: rgb(60, 60, 60);
 }
 
 .pages-menu {
@@ -138,12 +143,21 @@ body {
 }
 
 .navlink-label {
-    font-size: 1.5em;
+    font-size: 1.4em;
+}
+
+.navlink-icon {
+    height: 1.2em;
+    width: fit-content;
 }
 
 #version-button {
-    font-size: 0.8em;
+    font-size: 0.6em;
     color: rgb(60, 60, 60);
+}
+
+#version-menu {
+    margin-left: auto;
 }
 
 /*
