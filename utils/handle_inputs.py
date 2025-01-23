@@ -304,7 +304,7 @@ def availableOptions_region(selected_continent,selected_country,data):
 ###################################################
 ## PROPERLY HANDLE INPUTS
 
-def validateInput(input_dict, data_dict, keysOfInterest):
+def validate_main_form_inputs(input_dict, data_dict, keysOfInterest):
     '''
     Validates the inputs: ensures the consistency between the keys and corresponding 
     value but also between some values.
@@ -422,8 +422,12 @@ def validateInput(input_dict, data_dict, keysOfInterest):
 
     return new_dict, wrong_imputs
 
-def open_input_csv_and_comment(upload_csv_content, filename):
+def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     '''
+    Args:
+        upload_csv_content [str]: a binary string corresponding to the uploaded file.
+        filename [str]: the uploaded file name.
+
     Opens the input file content and stores it in a pandas DataFrame.
     NOTE: so far, only the first line of an input csv is read.
     '''
@@ -463,13 +467,13 @@ def read_csv_input(upload_csv:dict):
         newData = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
 
     # Validates the inputs against the data
-    processed_inputs, invalid_inputs = validateInput(
+    processed_inputs, invalid_inputs = validate_main_form_inputs(
         input_dict=upload_csv,
         data_dict=newData,
         keysOfInterest=list(upload_csv.keys())
     )
     # Returns the verified inputs, where wrong keys are replaced
-    #  by default values, hence the importance of the order of the keys
+    # by default values, hence the importance of the order of the keys
     values = copy.deepcopy(DEFAULT_VALUES)
     # adding required values that were not found as expected in the input
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))

@@ -8,7 +8,7 @@ from dash.exceptions import PreventUpdate
 from types import SimpleNamespace
 
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
 
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
@@ -216,7 +216,7 @@ HOME_PAGE.layout = get_home_page_layout()
     [
         State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', 'data'),
-        State('appVersions_dropdown','value'),
+        State('app_versions_dropdown','value'),
     ]
 )
 def forward_imported_content_to_form(import_data, filename, current_form_data, current_app_version):

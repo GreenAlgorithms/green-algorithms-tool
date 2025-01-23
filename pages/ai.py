@@ -18,7 +18,7 @@ import blueprints.methodology.methodology_layout as methodo_layout
 import blueprints.form.form_layout as form_layout
 
 from utils.graphics import loading_wrapper, MY_COLORS
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validateInput, open_input_csv_and_comment, read_csv_input, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_csv_input, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 
 
@@ -264,10 +264,18 @@ AI_PAGE.layout = get_ai_page_layout()
         State(f'{AI_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{TRAINING_ID_PREFIX}-form_aggregate_data', 'data'),
         State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
-        State('appVersions_dropdown','value'),
+        State('specific_ai_page_inputs', 'data'),
+        State('app_versions_dropdown','value'),
     ]
 )
-def forward_imported_content_to_form(import_data, filename, current_training_form_data, current_inference_form_data, current_app_version):
+def forward_imported_content_to_form(
+    import_data: str,
+    filename: str,
+    current_training_form_data: dict,
+    current_inference_form_data: dict,
+    current_specific_ai_inputs: dict,
+    current_app_version: str
+):
     '''
     Read input, split data between training and inference forms.
     Process specific inputs such as etrainings, R&D training and continuous inference related fields
@@ -286,7 +294,7 @@ def forward_imported_content_to_form(import_data, filename, current_training_for
             mess_subtitle,
             mess_content,
             current_app_version,
-            {}
+            current_specific_ai_inputs
         )
     
     # If input data could be read, we check its validity and consistency
