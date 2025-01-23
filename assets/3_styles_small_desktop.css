@@ -23,8 +23,8 @@
     ---------------------------------- NAVBAR ----------------------------------------
     */
     
-    #navbar-site-name {
-        font-size: 3.5em;
+    .pages-menu {
+        flex-direction: row;
     }
 
     .navlink-label {

@@ -45,8 +45,8 @@ app = dash.Dash(
 app.title = "Green Algorithms"
 server = app.server
 
-HOME_PAGE.register(app, module='home', path='/', title='Green Algorithms - Home')
-AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI')
+HOME_PAGE.register(app, module='home', path='/', title='Green Algorithms - Classic view')
+AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view')
 
 appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
 
@@ -56,13 +56,16 @@ appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT
 
 icons_per_page = {'Home': 'fluent-color:home-16', 'Ai': 'streamline:artificial-intelligence-spark'}
 
+name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
+
 pages_navbar = html.Div(
     [
         dmc.NavLink(
             label=html.Div(
-                    f"{page['name']}",
-                    className='navlink-label',
-                ),
+                name_per_page[page['name']],
+                className='navlink-label',
+                id=f'{page["name"]}-navlink-label',
+            ),
             href=page["path"],
             id=f'{page["name"]}-navlink',
             leftSection=DashIconify(icon=icons_per_page[page['name']], className='navlink-icon', height=20),
@@ -73,67 +76,35 @@ pages_navbar = html.Div(
     className = 'pages-menu',
 )
 
-versions_menu = html.Div(
-    dmc.Menu(
-        [
-            dmc.MenuTarget(dmc.Button("Version", variant='subtle', id='version-button')),
-            dmc.MenuDropdown(
-                [
-                    dmc.MenuItem(app_version['label'])
-                    for app_version in appVersions_options
-                ],
-                id="appVersions_dropdown",
-            ),
-        ],
-        trigger="hover",
-    ),
-    id='version-menu',
-)
-
-navbar = html.Div(
+versions_choice = html.Div(
     [
         html.Div(
-            dmc.NavLink(
-                label=html.Div('Green Algorithms', id='navbar-site-name'),
-            ),
+            [
+                html.P("Change app version", id='old_version_link'),
+            ],
+            className='change_version_text'
         ),
 
-        dmc.Divider(orientation="vertical", className='navbar-divider'),
-
-        # html.Div(
-        #     [
-        #         html.Label("App version"),
-
-        #         html.Div(
-        #             [
-        #                 dcc.Dropdown(
-        #                     id="appVersions_dropdown",
-        #                     options=appVersions_options,
-        #                     className='bottom-dropdown',
-        #                     clearable=False,
-        #                 ),
-        #             ],
-        #             className="box-fields"
-        #         )
-        #     ],
-        #     className='form-row short-input',
-        #     id='oldVersions_div',
-        #     style={'display': 'flex', 'flex-direction': 'row'}
-        # ),
-
-        pages_navbar,
-
-        versions_menu,
- 
+        html.Div(
+            dcc.Dropdown(
+                id="app_versions_dropdown",
+                options=appVersions_options,
+                className='bottom-dropdown',
+                clearable=False,
+                value=CURRENT_VERSION
+            ),
+            id='app_versions_dropdown_div',
+            style={'display': 'none'},
+        )
     ],
-    className='navbar',
+    className='form-row short-input',
+    id='versions_div',
 )
 
 
 
 ###################################################
 ## CREATE LAYOUT
-
 
 
 app.layout = dmc.MantineProvider(
@@ -146,16 +117,28 @@ app.layout = dmc.MantineProvider(
             dcc.Store(id=f"{AI_PAGE_ID_PREFIX}-version_from_input"),
             dcc.Store(id="versioned_data"),
             dcc.Location(id='url_content', refresh='callback-nav'), 
-            
-            #### NAVBAR ####
-
-            navbar,
 
             #### HEADER ####
             html.Div(
                 [
                     html.H1("Green Algorithms calculator"),
                     html.P("What's the carbon footprint of your computations?"),
+
+                    html.Div(
+                        [
+                            html.Hr(),
+                        ],
+                        className='Hr_div_header'
+                    ),
+
+                    pages_navbar,
+
+                    html.Div(
+                        [
+                            versions_choice,
+                        ],
+                        className='version_and_language_div'
+                    )
 
                 ],
                 className='container header'
@@ -326,11 +309,32 @@ app.layout = dmc.MantineProvider(
 ###################################################
 # CALLBACKS #
 
+################## NAVIGATION BAR
+
+@app.callback(
+        [
+            Output('Home-navlink', 'style'),
+            Output('Home-navlink-label', 'style'),
+            Output('Ai-navlink', 'style'),
+            Output('Ai-navlink-label', 'style'),
+        ],
+        Input('url_content', 'pathname')
+)
+def style_navlink(url_pathname: str):
+    to_be_clicked_style = {'cursor': 'pointer'}
+    to_be_clicked_label_style = {'text-decoration': 'underline', 'font-weight': '200'}
+    current_page_navlink_style = {'cursor': 'default'}
+    current_page_label_style = {'text-decoration': 'none', 'font-style': 'italic'}
+    if 'ai' in url_pathname:
+        return to_be_clicked_style, to_be_clicked_label_style, current_page_navlink_style, current_page_label_style
+    else:
+        return current_page_navlink_style, current_page_label_style, to_be_clicked_style, to_be_clicked_label_style
+
 
 ################## APP VERSIONING
 
 @app.callback(
-    Output('appVersions_dropdown','value'),
+    Output('app_versions_dropdown','value'),
     [
         Input(f"{HOME_PAGE_ID_PREFIX}-version_from_input",'data'),
         Input(f"{AI_PAGE_ID_PREFIX}-version_from_input",'data'),
@@ -353,7 +357,7 @@ def set_version_from_csv_inputs(version_from_home_input, version_from_ai_input):
     Output("versioned_data", "data"),
     [
         Input('url_content','search'),
-        Input('appVersions_dropdown','value'),
+        Input('app_versions_dropdown','value'),
     ],
 )
 def load_data_from_version(_, new_version):
@@ -370,17 +374,18 @@ def load_data_from_version(_, new_version):
         new_data = load_data(os.path.join(DATA_DIR, 'latest'), version = CURRENT_VERSION)
     else:
         new_data = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+
     return vars(new_data)
 
 
 @app.callback(
-    Output('oldVersions_div','style'),
+    Output('app_versions_dropdown_div', 'style'),
     [
-        Input('oldVersion_link','n_clicks'),
-        Input('appVersions_dropdown','value')
+        Input('old_version_link','n_clicks'),
+        Input('app_versions_dropdown','value')
     ],
     [
-        State('oldVersions_div', 'style')
+        State('app_versions_dropdown_div', 'style')
     ]
 )
 def display_oldVersion(clicks, version, oldStyle):
@@ -388,7 +393,7 @@ def display_oldVersion(clicks, version, oldStyle):
     Show the different available versions.
     '''
     if (clicks is not None)|((version is not None)&(version != CURRENT_VERSION)):
-        return {'display':'flex'}
+        return {'display':'flex', 'flex-direction': 'row', 'width': 'fit-content'}
     else:
         return oldStyle
 

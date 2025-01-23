@@ -12,8 +12,9 @@
     ---------------------------------- NAVBAR ----------------------------------------
     */
     
-    #navbar-site-name {
-        font-size: 3em;
+    
+    .pages-menu {
+        flex-direction: row;
     }
 
     .navlink-label {
@@ -124,7 +125,7 @@
         width: 25%;
     }
 
-    .reset-button {
+    .change_version_text {
         margin-bottom: 10px;
         margin-top: 20px;
     }

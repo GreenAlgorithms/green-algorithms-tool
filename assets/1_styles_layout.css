@@ -96,9 +96,14 @@ body {
 .header {
     background-color: rgba(249, 249, 249,0.6);
     padding-top: 38px;
-    padding-bottom: 35px;
+    padding-bottom: 5px;
     margin-top: 10px;
     margin-bottom: 6px;
+}
+
+.Hr_div_header{
+    margin-top: 1.5em;
+    width: 30%;
 }
 
 
@@ -106,33 +111,10 @@ body {
 ---------------------------------- NAVBAR ----------------------------------------
 */
 
-.navbar {
-    width: 100%;
-    
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    border-radius: 0px;
-    background-color: #f9f9f9;
-    margin: 6px 0;
-    padding: 25px;
-}
-
-#navbar-site-name {
-    font-size: 1.8em;
-}
-
-.navbar-divider{
-    height: 3em;
-    margin-left: 6px;
-    margin-right: 6px;
-    color: rgb(60, 60, 60);
-}
 
 .pages-menu {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
@@ -140,25 +122,59 @@ body {
 .page-navlink{
     margin-left: 4px;
     margin-right: 4px;
-}
-
-.navlink-label {
-    font-size: 1.4em;
-}
-
-.navlink-icon {
-    height: 1.2em;
     width: fit-content;
 }
 
-#version-button {
-    font-size: 0.6em;
-    color: rgb(60, 60, 60);
+.page-navlink:hover {
+    background-color: transparent;
 }
 
-#version-menu {
-    margin-left: auto;
+.navlink-label {
+    font-size: 2.8em;
 }
+
+.navlink-icon {
+    height: 1.8em;
+    width: fit-content;
+}
+
+.version_and_language_div {
+    width: 100%;
+    display: flex;
+}
+
+#versions_div {
+    margin-left: auto;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+}
+
+#app_versions_dropdown{
+    margin-left: 6px;
+}
+
+.change_version_text {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    width: fit-content;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* To set the width of the dropdown */
+
+#app_versions_dropdown .Select-value {
+    display: flex;
+}
+
+#app_versions_dropdown .Select-multi-value-wrapper {
+    width: 5.5em;
+    height: 2.2em;
+}
+
 
 /*
 ---------------------------------- INPUT FORM ----------------------------------------
@@ -356,16 +372,6 @@ hr {
 
 .input_data_time-section > input[type = 'number']{
     padding: 9px;
-}
-
-.reset-button {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    cursor: pointer;
-    width: 50%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .two-buttons {

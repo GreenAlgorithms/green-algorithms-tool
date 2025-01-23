@@ -70,6 +70,26 @@ p:not(:last-of-type) {
     margin-bottom: 0;
 }
 
+.change_version_text a:link,
+.change_version_text a:visited {
+    color: rgb(120, 120, 120);
+}
+
+.change_version_text a:hover {
+    color: rgb(80, 80, 80);
+}
+
+.change_version_text p {
+    color: rgb(120, 120, 120);
+    text-decoration: underline;
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.change_version_text p:hover {
+    color: rgb(80, 80, 80);
+}
+
 /*
 ---------------------------------- INPUT FORM ----------------------------------------
 */
@@ -97,23 +117,6 @@ input, select, .Select, textarea {
     text-align: center;
 }
 
-.reset-button a:link,
-.reset-button a:visited {
-    color: rgb(120, 120, 120);
-}
-
-.reset-button a:hover {
-    color: rgb(80, 80, 80);
-}
-
-.reset-button p {
-    color: rgb(120, 120, 120);
-    text-decoration: underline;
-}
-
-.reset-button p:hover {
-    color: rgb(80, 80, 80);
-}
 
 .tab-label {
     font-size: 15px;
