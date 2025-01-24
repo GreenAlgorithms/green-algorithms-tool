@@ -9,8 +9,16 @@ from utils.handle_inputs import  open_input_csv_and_comment
 
 from blueprints.import_export.import_export_layout import get_green_algo_import_export_layout
 
-def get_import_expot_blueprint(id_prefix):
-
+def get_import_expot_blueprint(
+    id_prefix: str,
+    csv_flushing_delay: int = 1500,
+):
+    """
+    Args:
+        id_prefix (str): _description_
+        csv_flushing_delay (int, optional): time delay between csv upload and csv flushing.
+        Given in miliseconds. Defaults to 1500.
+    """
     import_export_blueprint = DashBlueprint(
         transforms=[
             PrefixIdTransform(
@@ -22,7 +30,7 @@ def get_import_expot_blueprint(id_prefix):
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    import_export_blueprint.layout = get_green_algo_import_export_layout()
+    import_export_blueprint.layout = get_green_algo_import_export_layout(csv_flushing_delay)
 
 
     ##### DEFINE ITS CALLBACKS

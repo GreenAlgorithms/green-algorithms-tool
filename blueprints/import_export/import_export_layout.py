@@ -1,7 +1,9 @@
 from dash import html, dcc
 import dash_bootstrap_components as dbc 
 
-def get_green_algo_import_export_layout():
+def get_green_algo_import_export_layout(
+    csv_flushing_delay: int
+):
     return html.Div(
         [
             dcc.Store(id='import-content'),
@@ -60,7 +62,7 @@ def get_green_algo_import_export_layout():
 
             dcc.Interval(
                 id='csv-input-timer',
-                interval=1500, 
+                interval=csv_flushing_delay, 
                 # in milliseconds, should not be lower than 1000
                 # otherwise the update of the upload csv content is done too soon
                 # and there is not consistency between the state of the form and 

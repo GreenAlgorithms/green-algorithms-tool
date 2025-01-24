@@ -49,22 +49,22 @@ def get_form_blueprint(
             ##################################################################
             ## WARNING: do not modify the order, unless modifying the order
             ## of the DEFAULT_VALUES accordingly
-            Output('runTime_hour_input','value'),
-            Output('runTime_min_input','value'),
-            Output('coreType_dropdown','value'),
-            Output('numberCPUs_input','value'),
+            Output('runTime_hour_input', 'value'),
+            Output('runTime_min_input', 'value'),
+            Output('coreType_dropdown', 'value'),
+            Output('numberCPUs_input', 'value'),
             Output('CPUmodel_dropdown', 'value'),
-            Output('tdpCPU_input','value'),
-            Output('numberGPUs_input','value'),
+            Output('tdpCPU_input', 'value'),
+            Output('numberGPUs_input', 'value'),
             Output('GPUmodel_dropdown', 'value'),
-            Output('tdpGPU_input','value'),
-            Output('memory_input','value'),
-            Output('platformType_dropdown','value'),
-            Output('usageCPU_radio','value'),
-            Output('usageCPU_input','value'),
-            Output('usageGPU_radio','value'),
-            Output('usageGPU_input','value'),
-            Output('pue_radio','value'),
+            Output('tdpGPU_input', 'value'),
+            Output('memory_input', 'value'),
+            Output('platformType_dropdown', 'value'),
+            Output('usageCPU_radio', 'value'),
+            Output('usageCPU_input', 'value'),
+            Output('usageGPU_radio', 'value'),
+            Output('usageGPU_input', 'value'),
+            Output('pue_radio', 'value'),
             Output('PSF_radio', 'value'),
             Output('PSF_input', 'value'),
         ],
@@ -81,7 +81,34 @@ def get_form_blueprint(
         return tuple(DEFAULT_VALUES_FOR_PAGE_LOAD.values())
     
 
-    ##################### PLATFORM AND PROVIDER ###
+    ##################### LOCATION AND SERVER ###
+
+    ###########################################
+    ### TODO: platform, location and server inputs sometimes do not 
+    # render when uploaded from csv on AI page. Particularly frequent for server.
+    #  
+    # The first callback range (the one directly triggered by the upload) is almost
+    # always not enough to render all inputs, and most of the time it is the 
+    # second callback range (the one triggered by csv flushing) that allows to complete
+    # the csv inputs rendering.
+    #
+    # The current workaround consists in applying a higher csv_flushing_delay for the
+    # AI Page, so the second callback range almost always completes the inputs rendering.
+    # With a flushing delay of 2 seconds, inputs are correctly rendered after the second
+    # callback range when the app is run locally.  
+    #
+    # My best guess is that it is due to the callback chain being
+    # congested or not correcrly planned by Dash because of the number of callbacks 
+    # that are triggered at upload time: both location(s)
+    # (continent, country, region) options and value, provider options and value,
+    # server continent options and value as well as server options and value callbacks.
+    # 
+    # Possible fix include : 
+    #   - remove default values for location and server fields (maybe not very user compliant)
+    #   - refactor the callback chain by implementing step by step callback chain:
+    #       ~ if the server div is not rendered, never apply callback related to server
+    #       (could be done by passing 'from_input_data' as a State, not as an Input)  
+    ###########################################
 
     @form_blueprint.callback(
         Output('platformType_dropdown', 'options'),
@@ -104,10 +131,77 @@ def get_form_blueprint(
             return []
 
     @form_blueprint.callback(
+        [
+            Output('location_div', 'style'),
+            Output('server_div', 'style'),
+        ],
+        [
+            Input('platformType_dropdown', 'value'),
+            Input('provider_dropdown', 'value'),
+            Input('server_dropdown','value'),
+            Input('versioned_data','data'),
+            Input('from_input_data', 'data'),
+        ]
+    )
+    def display_location(selected_platform, selected_provider, selected_server, data, upload_content):
+        '''
+        Shows either LOCATION or SERVER depending on the platform.
+
+        NOTE: the input Input('from_input_data', 'data') should not be necessary
+        '''
+        if data is not None:
+            data_dict = SimpleNamespace(**data)
+            providers_withoutDC = data_dict.providers_withoutDC
+        else:
+            providers_withoutDC = []
+
+        show = {'display': 'flex'}
+        hide = {'display': 'none'}
+
+        # The following is a kind of duplicata from the lines below,
+        # should help to better take into account inputs uploaded from csv
+        if 'from_input_data' in ctx.triggered_id:
+            if upload_content['platformType'] == 'cloudComputing':
+                if upload_content['provider'] in ['other'] + providers_withoutDC:
+                    return show, hide
+                elif selected_server == 'other':
+                    return show, show
+                else:
+                    return hide, show
+            else:
+                return show, hide
+
+        if selected_platform == 'cloudComputing':
+            if selected_provider in ['other'] + providers_withoutDC:
+                return show, hide
+            elif selected_server == 'other':
+                return show, show
+            else:
+                return hide, show
+        else:
+            return show, hide
+        
+    ### Server (only for Cloud computing for now)
+    
+    @form_blueprint.callback(
+        Output('server_dropdown','style'),
+        Input('server_continent_dropdown', 'value'),
+    )
+    def set_server_style(selected_continent):
+        '''
+        Show or not the choice of servers, don't if continent is on "Other"
+        '''
+        if selected_continent == 'other':
+            return {'display': 'none'}
+
+        else:
+            return {'display': 'block'}
+   
+    @form_blueprint.callback(
         Output('provider_dropdown_div', 'style'),
         Input('platformType_dropdown', 'value'),
     )
-    def set_providers(selected_platform):
+    def show_provider_field(selected_platform):
         '''
         Shows or hide the "providers" box, based on the platform selected.
         '''
@@ -125,7 +219,7 @@ def get_form_blueprint(
             Input('versioned_data','data')
         ],
     )
-    def set_providers(selected_platform, data):
+    def set_provider_options(selected_platform, data):
         '''
         List options for the "provider" box.
         '''
@@ -156,7 +250,7 @@ def get_form_blueprint(
             State('provider_dropdown', 'value'),
         ],
     )
-    def set_provider(platform_type, versioned_data, upload_content, prev_provider):
+    def set_provider_value(platform_type, versioned_data, upload_content, prev_provider):
         '''
         Sets the provider value, either from the csv content of as a default value.
         TODO: improve the choice of the default value.
@@ -172,6 +266,57 @@ def get_form_blueprint(
                 return prev_provider
                     
         return 'gcp'
+    
+    
+    @form_blueprint.callback(
+        Output('server_continent_dropdown','options'),
+        [
+            Input('provider_dropdown', 'value'),
+            Input('versioned_data','data')
+        ]
+    )
+    def set_server_continents_options(selected_provider, data):
+        '''
+        List of options and default value for server's continent, based on the provider
+        '''
+        availableOptions = availableLocations_continent(selected_provider, data=data)
+        listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
+        return listOptions
+
+            
+    @form_blueprint.callback(
+        Output('server_dropdown','options'),
+        [
+            Input('provider_dropdown', 'value'),
+            Input('server_continent_dropdown', 'value'),
+            Input('versioned_data','data')
+        ]
+    )
+    def set_server_options(selected_provider,selected_continent, data):
+        '''
+        List of options for servers, based on provider and continent
+        '''
+        availableOptions = availableOptions_servers(selected_provider,selected_continent,data=data)
+        listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
+        return listOptions  
+    
+    ## Location (only for local server, personal device or "other" cloud server)
+
+    @form_blueprint.callback(
+        Output('location_continent_dropdown', 'options'),
+        [Input('versioned_data','data')]
+    )
+    def set_continentOptions(data):
+        if data is not None:
+            data_dict = SimpleNamespace(**data)
+
+            continentsList = list(data_dict.CI_dict_byName.keys())
+            continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
+
+            return continentsDict
+        else:
+            return []
+
     
     @form_blueprint.callback(
         Output('server_continent_dropdown','value'),
@@ -484,106 +629,6 @@ def get_form_blueprint(
             return {'display': 'none'}
     
 
-    ##################### LOCATION AND SERVER ###
-
-    @form_blueprint.callback(
-        [
-            Output('location_div', 'style'),
-            Output('server_div', 'style'),
-        ],
-        [
-            Input('platformType_dropdown', 'value'),
-            Input('provider_dropdown', 'value'),
-            Input('server_dropdown','value'),
-            Input('versioned_data','data')
-        ]
-    )
-    def display_location(selected_platform, selected_provider, selected_server, data):
-        '''
-        Shows either LOCATION or SERVER depending on the platform.
-        '''
-        if data is not None:
-            data_dict = SimpleNamespace(**data)
-            providers_withoutDC = data_dict.providers_withoutDC
-        else:
-            providers_withoutDC = []
-
-        show = {'display': 'flex'}
-        hide = {'display': 'none'}
-        if selected_platform == 'cloudComputing':
-            if selected_provider in ['other'] + providers_withoutDC:
-                return show, hide
-            elif selected_server == 'other':
-                return show, show
-            else:
-                return hide, show
-        else:
-            return show, hide
-        
-    ### Server (only for Cloud computing for now)
-
-    @form_blueprint.callback(
-        Output('server_continent_dropdown','options'),
-        [
-            Input('provider_dropdown', 'value'),
-            Input('versioned_data','data')
-        ]
-    )
-    def set_serverContinents_options(selected_provider, data):
-        '''
-        List of options and default value for server's continent, based on the provider
-        '''
-        availableOptions = availableLocations_continent(selected_provider, data=data)
-        listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
-        return listOptions
-    
-    @form_blueprint.callback(
-        Output('server_dropdown','style'),
-        Input('server_continent_dropdown', 'value'),
-    )
-    def set_server_style(selected_continent):
-        '''
-        Show or not the choice of servers, don't if continent is on "Other"
-        '''
-        if selected_continent == 'other':
-            return {'display': 'none'}
-
-        else:
-            return {'display': 'block'}
-        
-    @form_blueprint.callback(
-        Output('server_dropdown','options'),
-        [
-            Input('provider_dropdown', 'value'),
-            Input('server_continent_dropdown', 'value'),
-            Input('versioned_data','data')
-        ]
-    )
-    def set_server_options(selected_provider,selected_continent, data):
-        '''
-        List of options for servers, based on provider and continent
-        '''
-        availableOptions = availableOptions_servers(selected_provider,selected_continent,data=data)
-        listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
-        return listOptions
-    
-    
-    ## Location (only for local server, personal device or "other" cloud server)
-
-    @form_blueprint.callback(
-        Output('location_continent_dropdown', 'options'),
-        [Input('versioned_data','data')]
-    )
-    def set_continentOptions(data):
-        if data is not None:
-            data_dict = SimpleNamespace(**data)
-
-            continentsList = list(data_dict.CI_dict_byName.keys())
-            continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
-
-            return continentsDict
-        else:
-            return []
         
         
     ##################### USAGE FACTORS ###

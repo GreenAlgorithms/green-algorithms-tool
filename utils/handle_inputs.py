@@ -22,7 +22,9 @@ APP_VERSION_OPTIONS_LIST.sort(reverse=True)
 # The default values used to fill in the form when no other input is provided
 # WARNING: do not modify the order unless modifying the order of the outputs of 
 # the fillin_from_inputs callback accordingly
-# TODO: make it more robust
+#-----------------------------------------------------------------------------
+# TODO: make it more robust by using a dictionnay or dataclass for storing ids
+#-----------------------------------------------------------------------------
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,
     runTime_min=0,
@@ -58,6 +60,8 @@ DEFAULT_VALUES.update(
 )
 
 AI_PAGE_DEFAULT_VALUES = {
+        'reporting_time_scope_unit': 'year',
+        'reporting_time_scope_value': 1,
         'R&D_radio': 'No',
         'R&D_MF_value': 0,
         'retrainings_radio': 'No',
@@ -304,7 +308,7 @@ def availableOptions_region(selected_continent,selected_country,data):
 ###################################################
 ## PROPERLY HANDLE INPUTS
 
-def validate_main_form_inputs(input_dict, data_dict, keysOfInterest):
+def validate_main_form_inputs(input_dict, data_dict, keys_of_interest):
     '''
     Validates the inputs: ensures the consistency between the keys and corresponding 
     value but also between some values.
@@ -313,10 +317,12 @@ def validate_main_form_inputs(input_dict, data_dict, keysOfInterest):
         - data_dict: backend data used to check consistency between provided values.
         - keyOfInterest [list]: a list of keys to process.
     returns: 
-        - new_dict [dict]: a curated subset of input_dict with clean inputs. Its keys
+        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
         - wrong_imputs [dict]: a subset of the input_dict containing inputs
         either raising erorrs either not corresponding to keysOfInterest.
+        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing 
+        inputs with an unknown key.
     '''
     if type(data_dict) == dict:
         data_dict = SimpleNamespace(**data_dict)
@@ -351,11 +357,11 @@ def validate_main_form_inputs(input_dict, data_dict, keysOfInterest):
 
     def validateKey(key, value):
         '''
-        WARNING: the keys used to check should be the same as those used
-        in the DEFAULT_VALUES and aggregate_data.
-
         Ensures the consistency between the key and the provided value and
         checks the dependencies between different values.
+
+        WARNING: the keys used to check should be the same as those used
+        in the DEFAULT_VALUES and aggregate_data.
         '''
         new_val = copy.copy(value)
         if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
@@ -402,7 +408,7 @@ def validate_main_form_inputs(input_dict, data_dict, keysOfInterest):
             new_val = float(new_val)
             assert new_val >= 1
         elif key == 'appVersion':
-            assert new_val in (appVersions_options_list + [CURRENT_VERSION])
+            assert new_val in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]
         else:
             assert False, 'Unknown key'
         return new_val
@@ -410,17 +416,88 @@ def validate_main_form_inputs(input_dict, data_dict, keysOfInterest):
     ############################
     # Now we validate each of the target key from the input dict
 
-    new_dict = dict()
+    clean_inputs = dict()
     wrong_imputs = dict()
-    for key in keysOfInterest:
+    for key in keys_of_interest:
         if key not in INPUT_KEYS_TO_IGNORE:
             new_value = unlist(input_dict[key])
             try:
-                new_dict[key] = validateKey(key, new_value)
+                clean_inputs[key] = validateKey(key, new_value)
             except Exception as e:
+                ### TODO: distinguish between wrong_inputs and unknown_inputs
                 wrong_imputs[key] = new_value
 
-    return new_dict, wrong_imputs
+    return clean_inputs, wrong_imputs
+
+
+def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
+    '''
+    Validates the inputs related to the ai page: ensures the consistency between 
+    the keys and correspondind values. 
+
+    Args:
+        - input_dict: inputs to process
+        - keyOfInterest [list]: a list of keys to process.
+
+    Returns: 
+        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
+        are contained in keysofInterest.
+        - wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
+        (TO IMPLEMENT : with an expected key and a value raising an error).
+        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
+        an unknown key.
+    '''
+
+    def validateKey(key, value):
+        '''
+        Ensure the consistency between the key and the provided value and
+        checks the dependencies between different values.
+
+        WARNING: the keys used to check should be the same as those used
+        in the AI_PAGE_DEFAULT_VALUES and aggregate_data.
+        '''
+        new_val = copy.copy(value)
+        if key in ['R&D_radio', 'retrainings_radio']:
+            assert new_val in ['Yes', 'No']
+        elif key in ['R&D_MF_value', 'retrainings_MF_value']:
+            new_val = float(new_val)
+            assert new_val >= 0
+        elif key  == 'retrainings_number_input':
+            new_val = int(new_val)
+            assert new_val >= 0
+        elif key == 'continuous_inference_switcher':
+            assert new_val in [True, False]
+        elif key == 'input_data_time_scope_unit':
+            assert new_val in ['day', 'week', 'month', 'year']
+        elif key == 'input_data_time_scope_val':
+            new_val = float(new_val)
+            assert new_val >= 0
+        elif key == 'reporting_time_scope_unit':
+            assert new_val in ['month', 'year']
+        elif key == 'reporting_time_scope_value':
+            new_val = float(new_val)
+            assert new_val >= 0
+        else:
+            assert False, 'Unknown key'
+        return new_val
+    
+    clean_inputs = dict()
+    wrong_imputs = dict()
+    unknown_inputs = dict()
+
+    for key in keys_of_interest:
+        new_value = unlist(input_dict[key])
+        try:
+            clean_inputs[key] = validateKey(key, new_value)
+        except Exception as e:
+            ### TODO: distinguish between wrong_inputs and unknown_inputs
+            wrong_imputs[key] = new_value
+
+    return clean_inputs, wrong_imputs
+
+
+
+
 
 def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     '''
@@ -446,10 +523,11 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     # TODO : raise a warning if there are several rows in the input csv
     return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
 
-def read_csv_input(upload_csv:dict):
+def read_base_form_inputs_from_csv(upload_csv:dict):
     '''
     Reads the input dataframe to extract all the keys supposed to be verified.
     When an input raises an error, it is replaced by its corresponding default value.
+
     Returns:
     - values [dict]: curated inputs
     - invalid_inputs [dict]: inputs that could not be read properly
@@ -460,7 +538,7 @@ def read_csv_input(upload_csv:dict):
     new_version = CURRENT_VERSION
     if 'appVersion' in upload_csv:
         new_version = unlist(upload_csv['appVersion'])
-    assert new_version in (appVersions_options_list + [CURRENT_VERSION])
+    assert new_version in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]
     if new_version == CURRENT_VERSION:
         newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
     else:
@@ -470,7 +548,7 @@ def read_csv_input(upload_csv:dict):
     processed_inputs, invalid_inputs = validate_main_form_inputs(
         input_dict=upload_csv,
         data_dict=newData,
-        keysOfInterest=list(upload_csv.keys())
+        keys_of_interest=list(upload_csv.keys())
     )
     # Returns the verified inputs, where wrong keys are replaced
     # by default values, hence the importance of the order of the keys

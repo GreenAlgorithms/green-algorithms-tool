@@ -8,7 +8,7 @@ from dash.exceptions import PreventUpdate
 from types import SimpleNamespace
 
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_csv_input, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_base_form_inputs_from_csv, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
 
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
@@ -236,7 +236,7 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
     
     # If input data could be read, we check its validity and consistency
     else:
-        clean_inputs, invalid_inputs, app_version = read_csv_input(input_data)
+        clean_inputs, invalid_inputs, app_version = read_base_form_inputs_from_csv(input_data)
         invalid_inputs = filter_wrong_inputs(clean_inputs, invalid_inputs)
         mess_subtitle = 'Filling in values from the input csv file.'
         mess_content = ''

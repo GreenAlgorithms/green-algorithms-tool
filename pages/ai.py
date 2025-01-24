@@ -18,7 +18,7 @@ import blueprints.methodology.methodology_layout as methodo_layout
 import blueprints.form.form_layout as form_layout
 
 from utils.graphics import loading_wrapper, MY_COLORS
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_csv_input, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION, validate_ai_page_specific_inputs
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
 
 
@@ -43,7 +43,9 @@ inference_form = get_form_blueprint(
     continuous_inf_scheme_properties={'display': 'block'}
 )
 
-import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX) 
+### WARNING: the csv_flushing_delay below should not be lower than 
+# 2000 miliseconds to avoid rendering bugs of the server fields
+import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2000) 
 
 metrics = get_metrics_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
@@ -116,7 +118,6 @@ def get_ai_page_layout():
                                         type='number',
                                         id='reporting_time_scope_input',
                                         min=0.5,
-                                        step = 0.5,
                                         value=1,
                                     ),
 
@@ -299,26 +300,39 @@ def forward_imported_content_to_form(
     
     # If input data could be read, we check its validity and consistency
     else:
-        app_version = input_data['appVersion']
         mess_subtitle = ''
+        # Processing inputs specific to the AI page
+        # TODO: improve the error message based on the different error categories
+        ai_page_specific_inputs_keys = ['reporting_time_scope_unit', 'reporting_time_scope_value', 'R&D_radio', 'R&D_MF_value', 'retrainings_radio', 'retrainings_number_input', 'retrainings_MF_value', 'continuous_inference_switcher', 'input_data_time_scope_unit', 'input_data_time_scope_val']
+        clean_AI_inputs, invalid_AI_inputs = validate_ai_page_specific_inputs(input_dict=input_data, keys_of_interest=ai_page_specific_inputs_keys)
+        for key in ai_page_specific_inputs_keys:
+            if key not in clean_AI_inputs:
+                clean_AI_inputs[key] = AI_PAGE_DEFAULT_VALUES[key]
         # Processing training data
         training_input_data = {key.replace(f'{TRAINING_ID_PREFIX}-', ''): value for key, value in input_data.items() if TRAINING_ID_PREFIX in key}
-        clean_training_input_data, invalid_training_inputs, _ = read_csv_input(training_input_data)
+        if 'appVersion' in input_data:
+            training_input_data['appVersion'] = input_data['appVersion']
+        clean_training_input_data, invalid_training_inputs, app_version = read_base_form_inputs_from_csv(training_input_data)
         invalid_training_inputs = filter_wrong_inputs(clean_training_input_data, invalid_training_inputs)
         # Processing inference data
         inference_input_data = {key.replace(f'{INFERENCE_ID_PREFIX}-', ''): value for key, value in input_data.items() if INFERENCE_ID_PREFIX in key}
-        clean_inference_input_data, invalid_inference_inputs, _ = read_csv_input(inference_input_data)
+        if 'appVersion' in input_data:
+            inference_input_data['appVersion'] = input_data['appVersion']
+        clean_inference_input_data, invalid_inference_inputs, _ = read_base_form_inputs_from_csv(inference_input_data)
         invalid_inference_inputs = filter_wrong_inputs(clean_inference_input_data, invalid_inference_inputs)
         # Building error message
-        if len(invalid_training_inputs) or len(invalid_inference_inputs):
+        if len(invalid_training_inputs) or len(invalid_inference_inputs) or len(invalid_AI_inputs):
             show_err_mess = True
             mess_subtitle += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values. ' \
                             f'We use default values for the following fields. \n' 
+            if len(invalid_AI_inputs):
+                mess_content += 'Regarding the AI page specific inputs: '
+                mess_content += f"{', '.join(list(invalid_AI_inputs.keys()))}. \n"
             if len(invalid_training_inputs):
-                mess_content += 'For the training form:'
+                mess_content += 'For the training form: '
                 mess_content += f"{', '.join(list(invalid_training_inputs.keys()))}. \n"
             if len(invalid_inference_inputs):
-                mess_content += 'For the inference form:'
+                mess_content += 'For the inference form: '
                 mess_content += f"{', '.join(list(invalid_inference_inputs.keys()))}."
         return (
             clean_training_input_data, 
@@ -327,8 +341,39 @@ def forward_imported_content_to_form(
             mess_subtitle, 
             mess_content, 
             app_version,
-            input_data
+            clean_AI_inputs,
         )  
+
+@AI_PAGE.callback(
+        [
+          Output('reporting_time_scope_dropdown', 'value'),
+          Output('reporting_time_scope_input', 'value'),
+        ],
+        [
+            # to allow initial triggering
+            Input('url_content','search'),
+            Input('specific_ai_page_inputs', 'data'),
+        ]
+)
+def forward_reporting_scope_inputs(_, specific_ai_inputs: dict):
+    """
+    Args:
+        specific_ai_inputs (dict): the dictionnary of inputs that cannot
+        be handled at the form level because they are specifi to the AI page.
+    """
+    if specific_ai_inputs:
+        return (
+            specific_ai_inputs['reporting_time_scope_unit'],
+            specific_ai_inputs['reporting_time_scope_value'],
+        )
+    else:
+        # otherwise we return default values
+        return (
+            AI_PAGE_DEFAULT_VALUES['reporting_time_scope_unit'],
+            AI_PAGE_DEFAULT_VALUES['reporting_time_scope_value'], 
+        )
+
+
 
 @AI_PAGE.callback(
         [
@@ -624,7 +669,7 @@ def add_retrainings_and_RandD_to_training_outputs(
         retraining_number_val = 0
     if RandD_MF_val is None:
         RandD_MF_val = 0
-    # Checking is values should be added from retrainings or RandD
+    # Checking if values should be added from retrainings or RandD
     if retraining_radio == 'No':
         retraining_MF_val = 0
         retraining_number_val = 0
@@ -641,7 +686,6 @@ def add_retrainings_and_RandD_to_training_outputs(
     detailed_training_metrics['retrainings_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  retraining_MF_val * retraining_number_val
     detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
     return detailed_training_metrics
-
 
 
 @AI_PAGE.callback(

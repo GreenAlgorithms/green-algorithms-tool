@@ -321,10 +321,12 @@ app.layout = dmc.MantineProvider(
         Input('url_content', 'pathname')
 )
 def style_navlink(url_pathname: str):
+    # Define the different styles possibilities
     to_be_clicked_style = {'cursor': 'pointer'}
     to_be_clicked_label_style = {'text-decoration': 'underline', 'font-weight': '200'}
     current_page_navlink_style = {'cursor': 'default'}
     current_page_label_style = {'text-decoration': 'none', 'font-style': 'italic'}
+    # Allocate the style dictionnaries to the right ouputs
     if 'ai' in url_pathname:
         return to_be_clicked_style, to_be_clicked_label_style, current_page_navlink_style, current_page_label_style
     else:
