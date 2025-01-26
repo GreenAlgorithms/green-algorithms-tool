@@ -60,7 +60,7 @@ Yes, simply use the "Energy needed" (in W) displayed next to the carbon emission
 It depends on your system. For example if you're using SLURM, `seff <job_id>` will give you the "CPU Efficiency". 
 Similar commands exist for the different systems, and if you can't find it, you can just leave the default value of 1. 
 
-> How do I estimate my PSF (Pragmatic Scaling Factor)?
+> How do I estimate my MF (Multiplicative Factor)?
 
 Try to estimate how many times you need to run your full analysis to get results you're happy with. 
 It can be trials and errors, parameters optimisations, memory issues etc. 

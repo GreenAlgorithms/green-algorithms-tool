@@ -407,15 +407,15 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         else:
             prefixCountry = ''
 
-        if form_agg_data['PSF'] > 1:
-            textPSF = ' and ran {} times in total,'.format(form_agg_data['PSF'])
+        if form_agg_data['mult_factor'] > 1:
+            text_mult_factor = ' and ran {} times in total,'.format(form_agg_data['mult_factor'])
         else:
-            textPSF = ''
+            text_mult_factor = ''
 
         myText = f'''
         > This algorithm runs in {textRuntime} on {textCores},
         > and draws {text_energy}. 
-        > Based in {prefixCountry}{country}{textRegion},{textPSF} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
+        > Based in {prefixCountry}{country}{textRegion},{text_mult_factor} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
         (calculated using green-algorithms.org {form_agg_data['appVersion']} \[1\]).
         '''
 

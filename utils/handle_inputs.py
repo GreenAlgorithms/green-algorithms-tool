@@ -42,8 +42,8 @@ DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     usageGPUradio='No',
     usageGPU=1.0,
     PUEradio='No',
-    PSFradio='No',
-    PSF=1,
+    mult_factor_radio='No',
+    mult_factor=1,
 )
 
 DEFAULT_VALUES = DEFAULT_VALUES_FOR_PAGE_LOAD.copy()
@@ -369,7 +369,7 @@ def validate_main_form_inputs(input_dict, data_dict, keys_of_interest):
         elif key in ['runTime_min']:
             new_val = float(new_val)
             assert new_val >= 0
-        elif key in ['PSF']:
+        elif key in ['mult_factor']:
             new_val = int(new_val)
             assert new_val >= 1
         elif key in ['tdpCPU', 'tdpGPU', 'memory']:
@@ -378,7 +378,7 @@ def validate_main_form_inputs(input_dict, data_dict, keys_of_interest):
         elif key in ['usageCPU', 'usageGPU']:
             new_val = float(new_val)
             assert (new_val >= 0) & (new_val <= 1)
-        elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'PSFradio']:
+        elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'mult_factor_radio']:
             assert new_val in ['Yes', 'No']
         elif key == 'coreType':
             assert new_val in ['CPU', 'GPU', 'Both']

@@ -33,14 +33,14 @@ def get_green_algo_methodology_layout():
 
                         Where the energy needed is: 
 
-                        `runtime * (cores power draw cores * usage + memory power draw) * PUE * PSF`
+                        `runtime * (cores power draw cores * usage + memory power draw) * PUE * MF`
 
                         The power draw of the computing cores depends on the model and number of cores, 
                         while the memory power draw only depends on the size of memory __available__. 
                         The usage factor corrects for the real core usage (default is 1, i.e. full usage).
                         The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
                         to operate the data centre (cooling, lighting etc.). 
-                        The PSF (Pragmatic Scaling Factor) is used to take into account multiple identical runs 
+                        The MF (Multiplicative Factor) is used to take into account multiple identical runs 
                         (e.g. for testing or optimisation).
 
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.

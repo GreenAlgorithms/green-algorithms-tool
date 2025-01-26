@@ -9,7 +9,7 @@ def get_green_algo_form_layout(
     title: str,
     subtitle: html.P,
     continuous_inf_scheme_properties: dict,
-    PSF_properties: dict,
+    mult_factor_properties: dict,
     additional_bottom_fields: html.Div,
 ):
     return html.Form(
@@ -614,14 +614,14 @@ def get_green_algo_form_layout(
                 style=dict(display='none'),
             ),
 
-            ## PSF
+            ## MULTIPLICATIVE FACTOR
             html.Div(
                 [
-                    html.Label("Do you want to use a Pragmatic Scaling Factor (PSF)?"),
+                    html.Label("Do you want to use a Multiplicative Factor (MF)?"),
                     html.Div(
                         [
                             dcc.RadioItems(
-                                id='PSF_radio',
+                                id='mult_factor_radio',
                                 options=YES_NO_OPTIONS,
                                 className="radio-input",
                             ),
@@ -629,7 +629,7 @@ def get_green_algo_form_layout(
                             dcc.Input(
                                 min=1,
                                 type='number',
-                                id='PSF_input',
+                                id='mult_factor_input',
                                 style=dict(display='none'),
                             ),
                         ],
@@ -640,7 +640,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "The PSF refers to the number of repetions of the computation.",
+                                "The MF refers to the number of repetions of the computation.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -649,8 +649,8 @@ def get_green_algo_form_layout(
 
                 ],
                 className='form-row radio-row',
-                style=PSF_properties,
-                id='PSF_div'
+                style=mult_factor_properties,
+                id='mult_factor_div'
             ),
 
             dcc.ConfirmDialog(

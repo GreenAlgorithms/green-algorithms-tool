@@ -14,7 +14,7 @@ def get_form_blueprint(
     title: str,
     subtitle: html.P,
     continuous_inf_scheme_properties: dict = {'display': 'none'},
-    PSF_properties: dict = {},
+    mult_factor_properties: dict = {},
     additional_bottom_fields: html.Div = html.Div(),
 ):
 
@@ -34,7 +34,7 @@ def get_form_blueprint(
         title,
         subtitle,
         continuous_inf_scheme_properties,
-        PSF_properties,
+        mult_factor_properties,
         additional_bottom_fields
     )
 
@@ -65,8 +65,8 @@ def get_form_blueprint(
             Output('usageGPU_radio', 'value'),
             Output('usageGPU_input', 'value'),
             Output('pue_radio', 'value'),
-            Output('PSF_radio', 'value'),
-            Output('PSF_input', 'value'),
+            Output('mult_factor_radio', 'value'),
+            Output('mult_factor_input', 'value'),
         ],
         [
             # to allow initial triggering
@@ -750,20 +750,20 @@ def get_form_blueprint(
         return defaultPUE
     
 
-    ##################### PSF INPUTS ###
+    ##################### MULTIPLICATIVE FACTOR INPUTS ###
 
     @form_blueprint.callback(
-        Output('PSF_input','style'),
+        Output('mult_factor_input','style'),
         [
-            Input('PSF_radio', 'value'),
-            Input('PSF_input', 'disabled')
+            Input('mult_factor_radio', 'value'),
+            Input('mult_factor_input', 'disabled')
         ]
     )
-    def display_PSF_input(answer_PSF, disabled):
+    def display_mult_factor_input(answer_mult_factor, disabled):
         '''
-        Shows or hides the PSF input box
+        Shows or hides the MULTIPLICATIVE FACTOR input box
         '''
-        if answer_PSF == 'No':
+        if answer_mult_factor == 'No':
             out = {'display': 'none'}
         else:
             out = {'display': 'block'}
@@ -809,8 +809,8 @@ def get_form_blueprint(
             Input('PUEquestion_div','style'),
             Input('pue_radio', "value"),
             Input('PUE_input', "value"),
-            Input('PSF_radio', "value"),
-            Input('PSF_input', "value"),
+            Input('mult_factor_radio', "value"),
+            Input('mult_factor_input', "value"),
             Input('platformType_dropdown', 'value'),
             Input('provider_dropdown', 'value'),
             Input('provider_dropdown_div', 'style'),
@@ -819,7 +819,7 @@ def get_form_blueprint(
     def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                             memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                             serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
-                            PUEdivStyle, PUEradio, PUE, PSFradio, PSF, selected_platform, selected_provider, providerStyle):
+                            PUEdivStyle, PUEradio, PUE, mult_factor_radio, mult_factor, selected_platform, selected_provider, providerStyle):
         '''
         Computes all the metrics and gathers the information provided by the inputs of the form.
         '''
@@ -879,7 +879,7 @@ def get_form_blueprint(
 
         ### Other required inputs
         if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)| \
-                (usageCPU is None)|(usageGPU is None)|(PUE is None)|(PSF is None):
+                (usageCPU is None)|(usageGPU is None)|(PUE is None)|(mult_factor is None):
             notReady = True
 
         ### If any of the required inputs is note ready: do not compute
@@ -904,8 +904,8 @@ def get_form_blueprint(
             output['carbonIntensity'] = None
             output['PUE'] = None
             output['PUEradio'] = None
-            output['PSF'] = None
-            output['PSFradio'] = None
+            output['mult_factor'] = None
+            output['mult_factor_radio'] = None
             output['appVersion'] = version
             metrics['energy_needed'] = 0
             metrics['carbonEmissions'] = 0
@@ -985,11 +985,11 @@ def get_form_blueprint(
             ### SERVER/LOCATION
             carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
-            ### PSF
-            if PSFradio == 'Yes':
-                PSF_used = PSF
+            ### MULTIPLICATIVE FACTOR
+            if mult_factor_radio == 'Yes':
+                mult_factor_used = mult_factor
             else:
-                PSF_used = 1
+                mult_factor_used = 1
 
             #############################################
             ### COMPUTATIONS: final outputs are computed
@@ -1000,11 +1000,11 @@ def get_form_blueprint(
             powerNeeded = powerNeeded_core + powerNeeded_memory
 
             # Energy needed, in kWh (so dividing by 1000 to convert to kW)
-            energyNeeded_CPU = runTime * powerNeeded_CPU * PSF_used / 1000
-            energyNeeded_GPU = runTime * powerNeeded_GPU * PSF_used / 1000
-            energyNeeded_core = runTime * powerNeeded_core * PSF_used / 1000
-            eneregyNeeded_memory = runTime * powerNeeded_memory * PSF_used / 1000
-            energyNeeded = runTime * powerNeeded * PSF_used / 1000
+            energyNeeded_CPU = runTime * powerNeeded_CPU * mult_factor_used / 1000
+            energyNeeded_GPU = runTime * powerNeeded_GPU * mult_factor_used / 1000
+            energyNeeded_core = runTime * powerNeeded_core * mult_factor_used / 1000
+            eneregyNeeded_memory = runTime * powerNeeded_memory * mult_factor_used / 1000
+            energyNeeded = runTime * powerNeeded * mult_factor_used / 1000
 
             # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
             CE_CPU = energyNeeded_CPU * carbonIntensity
@@ -1039,8 +1039,8 @@ def get_form_blueprint(
             output['carbonIntensity'] = carbonIntensity
             output['PUE'] = PUE_used
             output['PUEradio'] = PUEradio
-            output['PSF'] = PSF_used
-            output['PSFradio'] = PSFradio
+            output['mult_factor'] = mult_factor_used
+            output['mult_factor_radio'] = mult_factor_radio
             output['appVersion'] = version
             metrics['energy_needed'] = energyNeeded
             metrics['carbonEmissions'] = carbonEmissions

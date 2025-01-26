@@ -31,7 +31,7 @@ training_form = get_form_blueprint(
     id_prefix=TRAINING_ID_PREFIX,
     title='',
     subtitle=html.P('Report your training-related computations. For more information about R&D experiments, retrainings or overall tips regarding your reporting, please refer to the Help tab.'),
-    PSF_properties={'display': 'none'},
+    mult_factor_properties={'display': 'none'},
     additional_bottom_fields=form_layout.get_additional_training_fields_layout()
 )
 
@@ -450,9 +450,9 @@ def load_inference_specific_inputs(_, specific_ai_inputs: dict):
 @AI_PAGE.callback(
     [
         Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_section', 'style'),
-        Output(f'{INFERENCE_ID_PREFIX}-PSF_div', 'style'),
-        Output(f'{INFERENCE_ID_PREFIX}-PSF_radio', 'value', allow_duplicate=True),
-        Output(f'{INFERENCE_ID_PREFIX}-PSF_input', 'value', allow_duplicate=True),
+        Output(f'{INFERENCE_ID_PREFIX}-mult_factor_div', 'style'),
+        Output(f'{INFERENCE_ID_PREFIX}-mult_factor_radio', 'value', allow_duplicate=True),
+        Output(f'{INFERENCE_ID_PREFIX}-mult_factor_input', 'value', allow_duplicate=True),
     ],
     Input(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
     prevent_initial_call = True
@@ -665,7 +665,7 @@ def add_retrainings_and_RandD_to_training_outputs(
     ''' 
     The purpose of this callback is to take into account retrainings and R&D inputs.
     The main training form outputs (energy consumption and crbon emissions) are 
-    multiplied by the corresponding PSF for both retrainings and R&D 
+    multiplied by the corresponding multiplicative factor for both retrainings and R&D 
     before they are added to the total.
     '''
     # Handling wrong inputs from the user
