@@ -448,13 +448,19 @@ def load_inference_specific_inputs(_, specific_ai_inputs: dict):
 ################## CONTINUOUS INFERENCE
 
 @AI_PAGE.callback(
-    Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_section', 'style'),
+    [
+        Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_section', 'style'),
+        Output(f'{INFERENCE_ID_PREFIX}-PSF_div', 'style'),
+        Output(f'{INFERENCE_ID_PREFIX}-PSF_radio', 'value', allow_duplicate=True),
+        Output(f'{INFERENCE_ID_PREFIX}-PSF_input', 'value', allow_duplicate=True),
+    ],
     Input(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
+    prevent_initial_call = True
 )
-def display_or_hide_input_data_time_scope_section(is_inference_continuous):
+def adapt_the_form_depending_on_inference_mode(is_inference_continuous):
     if is_inference_continuous:
-        return {'diplay': 'block'}
-    return {'display': 'none'}
+        return {'diplay': 'block'}, {'display': 'none'}, 'No', 1
+    return {'display': 'none'}, {'display': 'flex'}, 'No', 1
 
 
 ################## ADDITIONAL TRAININGS FIELDS

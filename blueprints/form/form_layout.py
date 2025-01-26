@@ -650,6 +650,7 @@ def get_green_algo_form_layout(
                 ],
                 className='form-row radio-row',
                 style=PSF_properties,
+                id='PSF_div'
             ),
 
             dcc.ConfirmDialog(
