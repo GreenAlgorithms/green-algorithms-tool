@@ -347,6 +347,23 @@ hr {
 }
 
 
+/* HELP TABS */
+
+.form-help-paper{
+    background-color: #f9f9f9;
+    box-shadow: 4px 4px 2px lightgrey;
+    padding: 8px;
+    border-color: rgb(162, 161, 161);
+    margin-bottom: 20px;
+    border-width: 2px;
+    text-align: left;
+}
+
+.div-in-paper{
+    margin-bottom: 4px;
+}
+
+
 /* OTHER */
 
 .switcher-section {

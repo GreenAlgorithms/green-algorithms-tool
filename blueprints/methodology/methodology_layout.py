@@ -1,4 +1,5 @@
 from dash import html, dcc
+import dash_mantine_components as dmc
 
 def get_green_algo_methodology_layout():
     return html.Div(
@@ -96,63 +97,94 @@ def get_training_help_content(title: str):
     return html.Div(
         [
             html.H3(title),
-
-            html.Center(
+            
+            dmc.Paper(
                 [
+
+                    html.H4('Overall description'),
 
                     dcc.Markdown(
                         '''
-                        The training phase of your AI system covers different kinds of computations:
-                        __R&D experiments, the main training of your model and potential retrainings__ (more details are given below).
+                        The training phase of your AI system covers __different kinds of computations__:
+                        R&D experiments, the main training of your model and potential retrainings (more details are given below).
                         
                         We invite you to quantify all these computations through the training form. 
-                        To do so, we recommend you to fill-in the form based on your main training requirements.
+                        To do so, __fill-in the form based on your main training requirements.
                         Then use the input fields available at the bottom of the form to give an approximative 
-                        estimate of your computations share due to R&D trainings or retrainings.
-                        Some use cases are illustrated in more details below.
+                        estimate of your computations share due to R&D trainings or retrainings__.
+                        Some R&D use cases are illustrated in more details below. 
 
-                        This approach has limitations because different hardware might be used for different training phases but offers a trade-off between the reporting effort and the final estimate quality.
+                        This approach has limitations because different hardware might be used for different training phases but it offers a trade-off between the reporting effort and the final estimate quality.
                         If you wish to quantify more precisely the other computation phases, we invite you to fill a form especially for each of them. 
+                        ''',
+                        className='form-help-markdown'
+                    ),
+                ],
+                className='form-help-paper',
+                withBorder=True,
+            ),
+
+
+            dmc.Paper(
+                [
+                    html.H4('Definitions and practical tips'),
+
+                    dcc.Markdown(
+
+                        ''' 
+                        __Main training__: the computations performed to achieve the final model deployed in your AI solution. 
+                        It can either correspond to the training from scrath of a custom model or to the fine-tuning of an existing model.
+
+                        __R&D trainings__: corresponds to the different experimental trainings and computations performed before the final training of your model.
+                        Such experiments may be useful to calibrate the final architecture or hyper-parameters set of your model.
+                        R&D trainings are taken into account using a simple scaling factor corresponding to the ratio between your R&D and your main training computational needs.
+
+                        __Retrainings__: any additional trainings performed after the deployment of your AI system.
+                        For consistent reporting, you are invited to take into account all retrainings requirements over your reporting time scope.
+                        To do so, we invite you to fill in the number of retrainings and a simple scaling factor corresponding to the ratio between a single average retraining and your main training computational needs.
                         '''
                     ),
-
-                ]
-            ),
-
-            html.Div(
-                [
-                    html.Hr(),
                 ],
-                className='Hr_div',
-                style = {'margin-top': '20px'}
+                className='form-help-paper',
+                withBorder=True,
             ),
 
-            dcc.Markdown(
-                '''
-                - `main training`: The computations performed to achieve the final model to be deployed in your AI solution.
-                It can either correspond to the training from scrath of a custom model or to the fine-tuning of an existing model. 
-
-                - `R&D trainings`: Corresponds to the different experimental trainings and computations performed before the final training of your model. 
-                Such experiments may be useful to calibrate the final architecture or hyper-parameters set of your model.
-
-                - `retrainings`: Any additional trainings performed after the deployment of your AI system.
-                For consistent reporting, you are invited to take into account all retrainings requirements over your reporting time scope.
-                '''
-            ),
-
-            html.Div(
+            dmc.Paper(
                 [
-                    html.Hr(),
-                ],
-                className='Hr_div',
-                style = {'margin-top': '20px'}
-            ),
+                    html.H4('Some examples of R&D experiment scenarios'),
 
-            dcc.Markdown(
-                '''
-                > Ajouter des exemples de cas d'usage sur le R&D training par exemple ?
-                '''
-            ),
+                    dcc.Markdown(
+                        '''
+                        The amount of computation requirements due to your R&D experiment stage may vary significantly depending on your project and AI system. 
+                        __We invite you to consider both architectural and hyperparemeters experiments, performed on either the whole data set or a subset of it.__
+                        We provide some qualitative examples to help you better understand what is expected.
+                        ''',
+                    ),
+
+                    dcc.Markdown(
+                        '''
+                        >When training classic machine learning models (XGBoots or SVM for instance), it is very frequent to run dozens or hundreds of real scale
+                        >experiments before choosing the final model. In this case, the scaling factor of your experiments stage may vary between 10 and 100 for instance.
+
+                        >Regarding "intermediate" neural networks training (less than 1 billon parameters), typically for small image classification models, the number of
+                        >real scale experiments may still be significant. The scaling factor will more likely be in the range of 10.
+
+                        >Eventually, among the few scientific papers that precisely quantify their computational needs due to the experiments preceding the main training, Luccioni et al. \[1\]
+                        >estimate that intermediate models training and evaluation account for approximately 150% of their main training consumption.
+                        >The final model is a 176 billon parameters LLM, developped in an academic context.
+                        ''',
+                        style={'margin-top': '8px'}
+                    ),
+
+                    dcc.Markdown(
+                        '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, “Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+                        className='footnote citation-report',
+                        style={'margin-top': '8px'}
+                    ),
+                ],
+                className='form-help-paper',
+                withBorder=True,
+            )
         ],
         className='form-help-container pretty-container container'
     )
@@ -161,26 +193,58 @@ def get_inference_help_content(title: str):
     return html.Div(
         [
             html.H3(title),
-            html.Center(
-                dcc.Markdown(
-                    '''
-                    The inference form should enable you to quantify the environmental footprint of you AI system's inference phase over the whole reporting time scope.
-                    To do so, `we distinguish between two inference schemes: block (or one-shot) inference and continuous inference`:
 
-                    - __continuous inference__: corresponds to an AI service that is requested on demand by users or other software systems. 
-                    > In this mode, we invite you to quantify how long ...
-                    For consistent reporting, we invite you to estimate the computations requirements associated with continuous inference over a well-known time length, the so-called "knowledge time scope'.
-                    Based on this and the reporting time scope value, your total inference footprint is computed with a simple scaling factor.
+            dmc.Paper(
+                [
+                    html.H4('Overall description'),
 
-                    - __block (one-shot) inference__: corresponds to an AI service that is occasionally requested in a one-shot fashion. 
-                    It may be used to process a data set as a whole or to build one-day or one-week strategy.
-                    As few of them should happen during over your reporting time scope, we invite you to quantify the computation requirements for one block and then use the Pragmatic Scaling Factor.
+                    dcc.Markdown(
+                        '''
+                        The inference form should enable you to quantify the environmental footprint of you AI system's inference phase over the whole reporting time scope.
+                        __To do so, we distinguish between two inference schemes: block (or one-shot) inference and continuous inference defined below__.
 
-                    It is important to keep in mind that these two kind of inference have no clear border: 
-                    you may prefer to use the knowledge time scope to automatically scale your block inference computations to the reporting scope.
-                    Conversely, you can also estimate the whole continuous inference requirements as a block over the whole
-                    '''
-                )
+                        By default, the form is in 'block inference' mode but you can actiave the continuous mode using the switcher at the top of the form.
+                        '''
+                    )
+                ],
+                className='form-help-paper',
+                withBorder=True,
+            ),
+
+            dmc.Paper(
+                [
+                    html.H4('Definitions and practical tips'),
+
+                    dcc.Markdown(
+                        '''
+                        __Block (one-shot) inference__: corresponds to an AI service that is occasionally requested in a one-shot fashion. 
+                        It may be used to process a data set as a whole or to build one-day or one-week strategy. 
+                        As a number of them may happen over your reporting time scope, we invite you to quantify the computation requirements for one inference block and then to use the Multiplicative Scaling Factor.
+                        ''',
+                        style={'margin-bottom': '6px'}
+                    ),
+
+                    dcc.Markdown(
+                        '''
+                        __Continuous inference__: corresponds to an AI service that is requested on demand by users or other software systems. 
+                        This inference workload does not follow a strict scheduling, making it harder to quantify. In this mode, we invite you to estimate the computations requirements over a time length of your choice, the so-called "input data time span”. 
+                        Based on this and the reporting time scope value, your total inference footprint is computed with a simple scaling factor.
+                        ''',
+                        style={'margin-bottom': '12px'}
+                    ),
+
+                    dcc.Markdown(
+                        '''
+                        >It is important to keep in mind that __the reporting time scope does have an influence on the computations only when choosing the 'continuous inference scheme'__.
+                        >In that case, the environmental impacts are automatically scaled from your "`input data time span`" to your reporting time scope.
+                        >For instance, if choosing a reporting scope of 1 year and filling the form in continuous inference mode with an "`input data time span`" of 1 month,
+                        >then your environmental impacts correspond to the intermediate metrics computed from the input fields, multiplied by 12.
+                        ''',
+                    ),
+
+                ],
+                className='form-help-paper',
+                withBorder=True,
             )
         ],
         className='form-help-container container'
