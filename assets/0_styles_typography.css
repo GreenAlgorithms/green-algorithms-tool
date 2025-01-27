@@ -85,7 +85,7 @@ p:not(:last-of-type) {
 }
 
 .change_version_text p {
-    color: rgb(120, 120, 120);
+    color: rgb(60, 60, 60);
     text-decoration: underline;
     font-size: 0.8em;
     font-style: normal;

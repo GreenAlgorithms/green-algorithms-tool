@@ -86,6 +86,7 @@ AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view
 
 icons_per_page = {'Home': 'fluent-color:home-16', 'Ai': 'streamline:artificial-intelligence-spark'}
 name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
+pages = list(dash.page_registry.values())
 
 appVersions_options = get_available_versions()
 
@@ -93,17 +94,29 @@ pages_navbar = html.Div(
     [
         dmc.NavLink(
             label=html.Div(
-                name_per_page[page['name']],
+                name_per_page[pages[0]['name']],
                 className='navlink-label',
-                id=f'{page["name"]}-navlink-label',
+                id=f'{pages[0]["name"]}-navlink-label',
             ),
             # Built-in navigation from Dash (see the documentation)
-            href=page["path"],
-            id=f'{page["name"]}-navlink',
-            leftSection=DashIconify(icon=icons_per_page[page['name']], className='navlink-icon', height=20),
+            href=pages[0]["path"],
+            id=f'{pages[0]["name"]}-navlink',
             className='page-navlink',
-        )
-        for page in dash.page_registry.values()
+        ),
+
+        # dmc.Divider(orientation="vertical", style={'height': '20', '--divider-color': 'rgb(60, 60, 60)'}),
+
+        dmc.NavLink(
+            label=html.Div(
+                name_per_page[pages[1]['name']],
+                className='navlink-label',
+                id=f'{pages[1]["name"]}-navlink-label',
+            ),
+            # Built-in navigation from Dash (see the documentation)
+            href=pages[1]["path"],
+            id=f'{pages[1]["name"]}-navlink',
+            className='page-navlink',
+        ),
     ],
     className = 'pages-menu',
 )
@@ -112,7 +125,7 @@ versions_choice = html.Div(
     [
         html.Div(
             [
-                html.P("Change app version", id='old_version_link'),
+                html.P("Change data version", id='old_version_link'),
             ],
             className='change_version_text'
         ),
@@ -161,7 +174,7 @@ app.layout = dmc.MantineProvider(
 
                     html.Div(
                         [
-                            html.Hr(),
+                            html.Hr(style={'background-color': 'rgb(60, 60, 60)'}),
                         ],
                         className='Hr_div_header',
                     ),
@@ -371,7 +384,7 @@ def style_navlink(url_pathname: str):
     to_be_clicked_style = {'cursor': 'pointer'}
     to_be_clicked_label_style = {'text-decoration': 'underline', 'font-weight': '200'}
     current_page_navlink_style = {'cursor': 'default'}
-    current_page_label_style = {'text-decoration': 'none', 'font-style': 'italic'}
+    current_page_label_style = {'text-decoration': 'none', 'font-weight': '600'}
     # Allocate the style dictionnaries to the right ouputs
     if 'ai' in url_pathname:
         return to_be_clicked_style, to_be_clicked_label_style, current_page_navlink_style, current_page_label_style

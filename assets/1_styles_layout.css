@@ -102,8 +102,9 @@ body {
 }
 
 .Hr_div_header{
-    margin-top: 1.5em;
-    width: 30%;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+    width: 33%;
 }
 
 
@@ -117,12 +118,22 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    /* margin-top: 3em; only if removing the horizontal rule between title and pages-menu */
 }
 
 .page-navlink{
     margin-left: 4px;
+    width: 50%;
     margin-right: 4px;
-    width: fit-content;
+}
+
+#Ai-navlink{
+    text-align: left;
+}
+
+#Home-navlink{
+    text-align: right;
 }
 
 .page-navlink:hover {
@@ -131,11 +142,6 @@ body {
 
 .navlink-label {
     font-size: 2.8em;
-}
-
-.navlink-icon {
-    height: 1.8em;
-    width: fit-content;
 }
 
 .version_and_language_div {
