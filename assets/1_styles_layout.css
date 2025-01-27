@@ -104,7 +104,7 @@ body {
 .Hr_div_header{
     margin-top: 2em;
     margin-bottom: 0.5em;
-    width: 33%;
+    width: 20em;
 }
 
 
@@ -124,16 +124,9 @@ body {
 
 .page-navlink{
     margin-left: 4px;
-    width: 50%;
     margin-right: 4px;
-}
-
-#Ai-navlink{
-    text-align: left;
-}
-
-#Home-navlink{
-    text-align: right;
+    width: 100%;
+    text-align: center;
 }
 
 .page-navlink:hover {
@@ -355,18 +348,8 @@ hr {
 
 /* HELP TABS */
 
-.form-help-paper{
-    background-color: #f9f9f9;
-    box-shadow: 4px 4px 2px lightgrey;
-    padding: 8px;
-    border-color: rgb(162, 161, 161);
-    margin-bottom: 20px;
-    border-width: 2px;
-    text-align: left;
-}
-
-.div-in-paper{
-    margin-bottom: 4px;
+.form-help-subsection{
+    margin-bottom: 18px;
 }
 
 

@@ -11,10 +11,23 @@
     /*
     ---------------------------------- NAVBAR ----------------------------------------
     */
+
+    .Hr_div_header{
+        width: 30em;
+    }
+    
     
     
     .pages-menu {
         flex-direction: row;
+    }
+
+    #Ai-navlink{
+        text-align: left;
+    }
+    
+    #Home-navlink{
+        text-align: right;
     }
 
     .navlink-label {

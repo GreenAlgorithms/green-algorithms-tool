@@ -42,14 +42,14 @@ def get_green_algo_methodology_layout():
 
                         Where the energy needed is: 
 
-                        `runtime * (cores power draw cores * usage + memory power draw) * PUE * MF`
+                        `runtime * (cores power draw cores * usage + memory power draw) * PUE * Multiplicative Factor`
 
                         The power draw of the computing cores depends on the model and number of cores, 
                         while the memory power draw only depends on the size of memory __available__. 
                         The usage factor corrects for the real core usage (default is 1, i.e. full usage).
                         The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
                         to operate the data centre (cooling, lighting etc.). 
-                        The MF (Multiplicative Factor) is used to take into account multiple identical runs 
+                        The Multiplicative Factor is used to take into account multiple identical runs 
                         (e.g. for testing or optimisation).
 
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.
@@ -107,7 +107,7 @@ def get_training_help_content(title: str):
         [
             html.H3(title),
             
-            dmc.Paper(
+            html.Div(
                 [
 
                     html.H4('Overall description'),
@@ -129,12 +129,17 @@ def get_training_help_content(title: str):
                         className='form-help-markdown'
                     ),
                 ],
-                className='form-help-paper',
-                withBorder=True,
+                className='form-help-subsection',
             ),
 
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div'
+            ),
 
-            dmc.Paper(
+            html.Div(
                 [
                     html.H4('Definitions and practical tips'),
 
@@ -154,11 +159,17 @@ def get_training_help_content(title: str):
                         '''
                     ),
                 ],
-                className='form-help-paper',
-                withBorder=True,
+                className='form-help-subsection',
             ),
 
-            dmc.Paper(
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div',
+            ),
+
+            html.Div(
                 [
                     html.H4('Some examples of R&D experiment scenarios'),
 
@@ -169,18 +180,23 @@ def get_training_help_content(title: str):
                         We provide some qualitative examples to help you better understand what is expected.
                         ''',
                     ),
+                ]
+            ),
 
+            html.Div(
+                [
+                
                     dcc.Markdown(
                         '''
-                        >When training classic machine learning models (XGBoots or SVM for instance), it is very frequent to run dozens or hundreds of real scale
-                        >experiments before choosing the final model. In this case, the scaling factor of your experiments stage may vary between 10 and 100 for instance.
+                        When training classic machine learning models (XGBoots or SVM for instance), it is very frequent to run dozens or hundreds of real scale
+                        experiments before choosing the final model. In this case, the scaling factor of your experiments stage may vary between 10 and 100 for instance.
 
-                        >Regarding "intermediate" neural networks training (less than 1 billon parameters), typically for small image classification models, the number of
-                        >real scale experiments may still be significant. The scaling factor will more likely be in the range of 10.
+                        Regarding "intermediate" neural networks training (less than 1 billon parameters), typically for small image classification models, the number of
+                        real scale experiments may still be significant. The scaling factor will more likely be in the range of 10.
 
-                        >Eventually, among the few scientific papers that precisely quantify their computational needs due to the experiments preceding the main training, Luccioni et al. \[1\]
-                        >estimate that intermediate models training and evaluation account for approximately 150% of their main training consumption.
-                        >The final model is a 176 billon parameters LLM, developped in an academic context.
+                        Eventually, among the few scientific papers that precisely quantify their computational needs due to the experiments preceding the main training, Luccioni et al. \[1\]
+                        estimate that intermediate models training and evaluation account for approximately 150% of their main training consumption.
+                        The final model is a 176 billon parameters LLM, developped in an academic context.
                         ''',
                         style={'margin-top': '8px'}
                     ),
@@ -191,8 +207,7 @@ def get_training_help_content(title: str):
                         style={'margin-top': '8px'}
                     ),
                 ],
-                className='form-help-paper',
-                withBorder=True,
+                className='form-help-subsection',
             )
         ],
         className='form-help-container pretty-container container'
@@ -203,7 +218,7 @@ def get_inference_help_content(title: str):
         [
             html.H3(title),
 
-            dmc.Paper(
+            html.Div(
                 [
                     html.H4('Overall description'),
 
@@ -216,11 +231,17 @@ def get_inference_help_content(title: str):
                         '''
                     )
                 ],
-                className='form-help-paper',
-                withBorder=True,
+                className='form-help-subsection',
             ),
 
-            dmc.Paper(
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div',
+            ),
+
+            html.Div(
                 [
                     html.H4('Definitions and practical tips'),
 
@@ -244,16 +265,15 @@ def get_inference_help_content(title: str):
 
                     dcc.Markdown(
                         '''
-                        >It is important to keep in mind that __the reporting time scope does have an influence on the computations only when choosing the 'continuous inference scheme'__.
-                        >In that case, the environmental impacts are automatically scaled from your "`input data time span`" to your reporting time scope.
-                        >For instance, if choosing a reporting scope of 1 year and filling the form in continuous inference mode with an "`input data time span`" of 1 month,
-                        >then your environmental impacts correspond to the intermediate metrics computed from the input fields, multiplied by 12.
+                        It is important to keep in mind that __the reporting time scope does have an influence on the computations only when choosing the 'continuous inference scheme'__.
+                        In that case, the environmental impacts are automatically scaled from your "`input data time span`" to your reporting time scope.
+                        For instance, if choosing a reporting scope of 1 year and filling the form in continuous inference mode with an "`input data time span`" of 1 month,
+                        then your environmental impacts correspond to the intermediate metrics computed from the input fields, multiplied by 12.
                         ''',
                     ),
 
                 ],
-                className='form-help-paper',
-                withBorder=True,
+                className='form-help-subsection',
             )
         ],
         className='form-help-container container'
