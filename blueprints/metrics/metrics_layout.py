@@ -1,11 +1,23 @@
+'''
+This script contains:
+    - the layout of the metrics and "equivalents" (tree absorption, km driving and plane trip) section
+    - the layout of the textual content that gives training and inference results
+
+It is important to note that the electricity consumption and carbon emissions sections
+have a different structure than the three "equivalents" sections.
+This is because the first also contain the training and inference results.
+The latter only display the total value.
+'''
+
 import os
 
 from dash import html, dcc
 from utils.graphics import loading_wrapper
 
-import dash_bootstrap_components as dbc
-
 image_dir = os.path.join('assets/images')
+
+###################################################
+# METRICS MODULE LAYOUT
 
 def get_green_algo_metrics_layout(
         carbon_footprint_details: html.Div,
@@ -17,7 +29,7 @@ def get_green_algo_metrics_layout(
 
             dcc.Store(id='base_results'),
 
-            #### METRICS AND EQUIVALENTS BOXES ####
+            #### CARBON EMISSIONS ####
             
             html.Div(
                 [
@@ -56,6 +68,8 @@ def get_green_algo_metrics_layout(
                 className="container mini-box"
             ),
 
+            #### ELECTRICITY CONSUMPTION ####
+
             html.Div(
                 [
                     html.Div(
@@ -91,6 +105,8 @@ def get_green_algo_metrics_layout(
                 className="container mini-box"
             ),
 
+            #### TREE ABSOPRTION EQUIVALENT ####
+
             html.Div(
                 [
                     html.Img(
@@ -119,6 +135,8 @@ def get_green_algo_metrics_layout(
                 className="container mini-box"
             ),
 
+            #### CAR KILOMETERS EQUIVALENT ####
+
             html.Div(
                 [
                     html.Img(
@@ -145,6 +163,8 @@ def get_green_algo_metrics_layout(
                 ],
                 className="container mini-box"
             ),
+
+            #### PLANE TRIPS EQUIVALENT ####
 
             html.Div(
                 [
@@ -175,6 +195,10 @@ def get_green_algo_metrics_layout(
         ],
         className='super-section mini-boxes'
     )
+
+
+###################################################
+# METRICS PER FORM LAYOUT
 
 def get_metric_per_form_layout(training_id, inference_id):
     return html.P(

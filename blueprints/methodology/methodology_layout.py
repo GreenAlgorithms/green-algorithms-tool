@@ -1,10 +1,18 @@
+'''
+This script contains:
+    - the layout of the home page's methodology sections
+    - the layout of the training and inference help tabs
+'''
+
 from dash import html, dcc
 import dash_mantine_components as dmc
+
+
 
 def get_green_algo_methodology_layout():
     return html.Div(
         [
-         #### PUBLICATION ####
+            #### PUBLICATION ####
 
             html.Div(
                 [
@@ -19,6 +27,7 @@ def get_green_algo_methodology_layout():
                 ],
                 className='container footer preprint'
             ),
+
             #### FORMULA ####
 
             html.Div(

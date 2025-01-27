@@ -1,3 +1,5 @@
+''' Import-export layout. '''
+
 from dash import html, dcc
 import dash_bootstrap_components as dbc 
 
@@ -6,11 +8,21 @@ def get_green_algo_import_export_layout(
 ):
     return html.Div(
         [
+
+            #### BACKEND DATA ####
+                
+            # Intermediate variable used to read the uploaded data only once
+            # Its is then forwared to the target form(s) depending on the page
             dcc.Store(id='import-content'),
+            # Intermediate variable that is updated only when the user want to export data as csv.
+            # It is useful as it allows to run the callback only once per export, not after each form modification.
             dcc.Store(id='export-content'),
 
+    
             html.Div(
                 [
+                    #### EXPORT DATA ####
+
                     html.Div(
                         [
                             html.Div(
@@ -24,6 +36,8 @@ def get_green_algo_import_export_layout(
                         className='container footer import-export',
                         id='export-result',
                     ),
+                    
+                    #### IMPORT DATA ####
 
                     html.Div(
                         dcc.Upload(
@@ -47,6 +61,8 @@ def get_green_algo_import_export_layout(
                 ],
                 className='import-export-buttons',
             ),
+
+            #### ERROR MESSAGE ####
 
             dbc.Alert(
                 [

@@ -1,3 +1,12 @@
+''''
+This script implements:
+    - the layout of the Form module
+    - the layout of the retraining and R&D training sections 
+
+TODO: move the continuous inference scheme section to a specific function
+instead of being part of the base Form layout.
+'''
+
 from dash import html, dcc
 import dash_mantine_components as dmc
 from utils.utils import YES_NO_OPTIONS
@@ -14,15 +23,25 @@ def get_green_algo_form_layout(
 ):
     return html.Form(
         [
-            html.H3(title),
-            html.Center(subtitle),
+            #### BACKEND DATA ####
 
-            ## BACKEND DATA
-            dcc.Store(id='from_input_data'),
+            # Obtained throug intermediate processing applied to the import-content of a page
+            # Once it is updated, it is used to spread uploaded data to the corresponding form fields
+            dcc.Store(id='form_data_imported_from_csv'),
+
+            # The following two components are form outputs: form_aggregate_data is the collection
+            # of all fields required to replicate the whole form, form_output_metrics is the collection
+            # of raw metrics (electricity consumption, carbon emissions...) that will be forwarded
+            # to the results section
             dcc.Store(id='form_aggregate_data'),
             dcc.Store(id='form_output_metrics'),
 
-            ## CONTINUOUS INFERENCE SCHEME
+            #### FORM HEADER ####
+
+            html.H3(title),
+            html.Center(subtitle),
+
+            #### CONTINUOUS INFERENCE SCHEME ####
 
             html.Div(
                 [
@@ -107,7 +126,8 @@ def get_green_algo_form_layout(
                 style=continuous_inf_scheme_properties,
             ),
 
-            ## RUN TIME
+            #### RUN TIME ####
+
             html.Div(
                 [
                     html.Label("Runtime (HH:MM)"),
@@ -140,7 +160,8 @@ def get_green_algo_form_layout(
                 className='Hr_div'
             ),
 
-            ## TYPE OF CORES
+            #### TYPE OF CORES ####
+
             html.Div(
                 [
                     html.Label("Type of cores"),
@@ -169,7 +190,8 @@ def get_green_algo_form_layout(
                 className='form-row short-input'
             ),
 
-            ## CPUs
+            #### CPUs ####
+
             html.Div(
                 [
                     html.H3(
@@ -231,7 +253,8 @@ def get_green_algo_form_layout(
                         className='form-row short-input'
                     ),
 
-                    # CPU TDP
+                    #### CPU TDP
+
                     html.Div(
                         [
                             html.Label(
@@ -253,7 +276,8 @@ def get_green_algo_form_layout(
                 id='CPU_div',
             ),
 
-            ## GPUs
+            #### GPUs ####
+
             html.Div(
                 [
                     html.H3(
@@ -314,7 +338,8 @@ def get_green_algo_form_layout(
                         className='form-row short-input'
                     ),
 
-                    # GPU TDP
+                    #### GPU TDP
+
                     html.Div(
                         [
                             html.Label(
@@ -343,7 +368,8 @@ def get_green_algo_form_layout(
                 className='Hr_div'
             ),
 
-            ## MEMORY
+            #### MEMORY ####
+
             html.Div(
                 [
                     html.Label("Memory available (in GB)"),
@@ -376,7 +402,8 @@ def get_green_algo_form_layout(
                 className='Hr_div'
             ),
 
-            ## SELECT COMPUTING PLATFORM
+            #### SELECT COMPUTING PLATFORM ####
+
             html.Div(
                 [
                     html.Label("Select the platform used for the computations"),
@@ -402,7 +429,8 @@ def get_green_algo_form_layout(
                         className='tooltip',
                     ),    
 
-                    ## SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+                    #### SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+
                     html.Div(
                         [
                             dcc.Dropdown(
@@ -419,7 +447,8 @@ def get_green_algo_form_layout(
             ),
 
 
-            ## SERVER (for cloud computing)
+            #### SERVER (for cloud computing) ####
+
             html.Div(
                 [
                     html.Label("Select server"),
@@ -445,7 +474,8 @@ def get_green_algo_form_layout(
                 style={'display': 'none'}
             ),
 
-            ## LOCATION
+            #### LOCATION ####
+
             html.Div(
                 [
                     html.Label("Select location"),
@@ -500,7 +530,8 @@ def get_green_algo_form_layout(
                 style={'display': 'flex'}
             ),
 
-            ## CORE USAGE (CPU and GPU)
+            #### CORE USAGE (CPU and GPU) ####
+
             html.Div(
                 [
                     html.Label("Do you know the real usage factor of your CPU?"),
@@ -575,7 +606,8 @@ def get_green_algo_form_layout(
                 id='usageGPU_div',
             ),
 
-            ## PUE
+            #### PUE ####
+
             html.Div(
                 [
                     html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
@@ -614,7 +646,8 @@ def get_green_algo_form_layout(
                 style=dict(display='none'),
             ),
 
-            ## MULTIPLICATIVE FACTOR
+            #### MULTIPLICATIVE FACTOR ####
+
             html.Div(
                 [
                     html.Label("Do you want to use a Multiplicative Factor (MF)?"),

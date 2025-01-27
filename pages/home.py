@@ -1,15 +1,20 @@
+'''
+The page itself is defined as a DashBlueprint that encompasses both layout and callbacks.
+
+The layout is a combination Dash components directly implemented in this script and 
+modules' layout inserted as blueprints (the form, import-export section or results section).
+Such modules also contain their own callbacks that will first be registered as page callbacks 
+and then, when the page is registered in the app, as app callbacks.
+'''
+
 import os
-import dash
 
 import plotly.graph_objects as go
 
-from dash import ctx, html, dcc, Input, Output, State
-from dash.exceptions import PreventUpdate
+from dash import html, dcc, Input, Output, State
 from types import SimpleNamespace
 
-from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_base_form_inputs_from_csv, DEFAULT_VALUES_FOR_PAGE_LOAD, CURRENT_VERSION
-
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, open_input_csv_and_comment, read_base_form_inputs_from_csv
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
 
@@ -20,9 +25,16 @@ from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 
 
+###################################################
+# PAGE CREATION
+
 HOME_PAGE = DashBlueprint()
 
 HOME_PAGE_ID_PREFIX = 'main'
+
+
+###################################################
+# MODULES CREATTION
 
 form = get_form_blueprint(
     id_prefix = HOME_PAGE_ID_PREFIX,
@@ -54,25 +66,20 @@ image_dir = os.path.join('assets/images')
 data_dir = os.path.join(os.path.abspath(''),'data')
 
 appVersions_options = get_available_versions()
-# form_ids = GreenAlgoFormIDS()
 
 
 ###################################################
-# DEFINE APP LAYOUT
+# DEFINE PAGE LAYOUT
 
 def get_home_page_layout():
     page_layout = html.Div(
         [
-            
-            #### PAGE DATA ####
-
-            dcc.Store(id=f'{HOME_PAGE_ID_PREFIX}-aggregate_data'),
 
             #### INPUT FORM ####
 
             form.embed(HOME_PAGE),
 
-            #### FIRST OUTPUTS ####
+            #### IMPORT-EXPORT AND FIRST OUTPUTS ####
 
             html.Div(
                 [
@@ -86,9 +93,8 @@ def get_home_page_layout():
                         [
                             html.Div(
                                 [
-                                    html.H2(
-                                        "Computing cores VS Memory"
-                                    ),
+                                    html.H2("Computing cores VS Memory"),
+
                                     loading_wrapper(
                                         dcc.Graph(
                                             id="pie_graph",
@@ -97,7 +103,6 @@ def get_home_page_layout():
                                             figure=BLANK_FIGURE,
                                         )
                                     ),
-
                                 ],
                                 className='one-of-two-graphs'
                             ),
@@ -140,14 +145,16 @@ def get_home_page_layout():
                 [
                     html.H2("How to report it?"),
 
-                    dcc.Markdown('''
-            It's important to track the impact 
-            of computational research on climate change in order to stimulate greener algorithms.
-            For that, __we believe that the carbon footprint of a project should be reported on publications
-            alongside other performance metrics__. 
+                    dcc.Markdown(
+                        '''
+                        It's important to track the impact 
+                        of computational research on climate change in order to stimulate greener algorithms.
+                        For that, __we believe that the carbon footprint of a project should be reported on publications
+                        alongside other performance metrics__. 
 
-            Here is a text you can include in your paper:
-            '''),
+                        Here is a text you can include in your paper:
+                        '''
+                    ),
 
                     dcc.Markdown(id='report_markdown'),
 
@@ -186,7 +193,6 @@ def get_home_page_layout():
                 ],
                 className='container core-comparison'
             ),
-
         ],
         className='page_content'
 
@@ -204,7 +210,7 @@ HOME_PAGE.layout = get_home_page_layout()
 
 @HOME_PAGE.callback(
     [
-        Output(f'{HOME_PAGE_ID_PREFIX}-from_input_data', 'data'),
+        Output(f'{HOME_PAGE_ID_PREFIX}-form_data_imported_from_csv', 'data'),
         Output(f'{HOME_PAGE_ID_PREFIX}-import-error-message', 'is_open'),
         Output(f'{HOME_PAGE_ID_PREFIX}-log-error-subtitle', 'children'),
         Output(f'{HOME_PAGE_ID_PREFIX}-log-error-content', 'children'),
@@ -223,6 +229,7 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
     '''
     Processes the raw input dictionnary and checks content before 
     forwarding it to the main page form. 
+    Produces error messages depending on the csv content.
     '''
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
@@ -260,7 +267,7 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
 def forward_form_input_to_export_module(_, form_aggregate_data, form_output_metrics):
     '''
     Intermediate processing specific to the HOME page before exporting data.
-    We forward the inputs of the form to the export file as long with the main outputs. 
+    We forward the inputs of the form to the export file along with the main outputs. 
     '''
     to_export = {}
     # Raw inputs of the form
@@ -269,23 +276,6 @@ def forward_form_input_to_export_module(_, form_aggregate_data, form_output_metr
     # Outputs of the form
     to_export.update(form_output_metrics)
     return to_export
-
-
-##################### RESET 
-
-@HOME_PAGE.callback(
-    Output(f'{HOME_PAGE_ID_PREFIX}-confirm_reset','displayed'),
-    [
-        Input(f'{HOME_PAGE_ID_PREFIX}-reset_link','n_clicks')
-    ]
-)
-def display_confirm(clicks):
-    '''
-    Display a popup asking for reset confirmation.
-    '''
-    if clicks is not None:
-        return True
-    return False
 
 
 ################## RESULTS AND METRICS 
@@ -299,7 +289,6 @@ def forward_results_from_form_to_metrics(form_metrics):
         'energy_needed': form_metrics['energy_needed'],
         'carbonEmissions': form_metrics['carbonEmissions'],
     }
-
 
 ## OUTPUT GRAPHICS
 
@@ -341,7 +330,6 @@ def create_bar_chart_cores(form_agg_data, versioned_data):
             return go.Figure()
         return create_cores_bar_chart_graphic(form_agg_data, versioned_data)
     return None
-
 
 ## OUTPUT SUMMARY
 

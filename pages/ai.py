@@ -1,30 +1,45 @@
-import os
-import dash
+'''
+The page itself is defined as a DashBlueprint that encompasses both layout and callbacks.
 
-from dash import html, ctx, callback, Input, Output, State, dcc
+Conversely to the Home page, the Ai page requires more intermediate processing to obtain the metrics.
+These are due to the continuous inference option and the possible retrainings or R&D experiments to take into account.
+
+These additional fields must be taken into account:
+    - when exporting or loading data
+    - when computing the results: we compute and show both the training and inference results, as well as their sum
+'''
+
+
+import os
+
+from dash import html, Input, Output, State, dcc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 
-from types import SimpleNamespace
-
 from dash_extensions.enrich import DashBlueprint, html
+
 from blueprints.form.form_blueprint import get_form_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
-
 import blueprints.metrics.metrics_layout as metrics_layout
 import blueprints.metrics.utils as metrics_utils
 import blueprints.methodology.methodology_layout as methodo_layout
 import blueprints.form.form_layout as form_layout
 
-from utils.graphics import loading_wrapper, MY_COLORS
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, validate_main_form_inputs, open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, CURRENT_VERSION, validate_ai_page_specific_inputs
-from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region
+from utils.graphics import MY_COLORS
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
 
+
+###################################################
+# PAGE CREATION
 
 AI_PAGE = DashBlueprint()
 
 AI_PAGE_ID_PREFIX = 'ai'
+
+
+###################################################
+# MODULES CREATTION
 
 TRAINING_ID_PREFIX = 'training'
 training_form = get_form_blueprint(
@@ -91,6 +106,10 @@ def get_ai_page_layout():
             #### IMPORT AND EXPORT ####
 
             import_export.embed(AI_PAGE),
+
+            # The following intermediate variable contains the fields imported by csv upload that cannot
+            # be handled at the form level because they are specific to the AI page:
+            # the reporting scope, the continuous inference related fields, retrainings and R&D training fields
             dcc.Store(id='specific_ai_page_inputs'),
 
             #### FORMS ####
@@ -166,6 +185,9 @@ def get_ai_page_layout():
 
                     #### TRAINING FORM ####
 
+                    # Variable containing the "final" training related results.
+                    # It is computed from the training form's 'form_output_metrics'
+                    #  and the retrainings/R&D training fields
                     dcc.Store(id='training_processed_output_metrics'),
 
                     dmc.Tabs(
@@ -197,6 +219,9 @@ def get_ai_page_layout():
 
                     #### INFERENCE FORM ####
 
+                    # Variable containing the "final" inference related results.
+                    # It is computed from the inference form's 'form_output_metrics' and 
+                    # the reporting scope / continuous inference fields
                     dcc.Store(id='inference_processed_output_metrics'),
 
                     dmc.Tabs(
@@ -242,16 +267,16 @@ def get_ai_page_layout():
 
 AI_PAGE.layout = get_ai_page_layout()
 
+
 ###################################################
 # DEFINE CALLBACKS
-
 
 ################## LOAD PAGE AND INPUTS
 
 @AI_PAGE.callback(
     [
-        Output(f'{TRAINING_ID_PREFIX}-from_input_data', 'data'),
-        Output(f'{INFERENCE_ID_PREFIX}-from_input_data', 'data'),
+        Output(f'{TRAINING_ID_PREFIX}-form_data_imported_from_csv', 'data'),
+        Output(f'{INFERENCE_ID_PREFIX}-form_data_imported_from_csv', 'data'),
         Output(f'{AI_PAGE_ID_PREFIX}-import-error-message', 'is_open'),
         Output(f'{AI_PAGE_ID_PREFIX}-log-error-subtitle', 'children'),
         Output(f'{AI_PAGE_ID_PREFIX}-log-error-content', 'children'),
@@ -278,8 +303,8 @@ def forward_imported_content_to_form(
     current_app_version: str
 ):
     '''
-    Read input, split data between training and inference forms.
-    Process specific inputs such as etrainings, R&D training and continuous inference related fields
+    Read input from uploaded CSV, split data between training and inference forms.
+    Process specific inputs such as retrainings, R&D training and continuous inference related fields.
     Then process and check content, filtering wrong inputs and displayling error message if required.
     '''
     show_err_mess = False
@@ -350,7 +375,7 @@ def forward_imported_content_to_form(
           Output('reporting_time_scope_input', 'value'),
         ],
         [
-            # to allow initial triggering
+            # To force initial triggering
             Input('url_content','search'),
             Input('specific_ai_page_inputs', 'data'),
         ]
@@ -359,7 +384,7 @@ def forward_reporting_scope_inputs(_, specific_ai_inputs: dict):
     """
     Args:
         specific_ai_inputs (dict): the dictionnary of inputs that cannot
-        be handled at the form level because they are specifi to the AI page.
+        be handled at the form level because they are specific to the AI page.
     """
     if specific_ai_inputs:
         return (
@@ -384,7 +409,7 @@ def forward_reporting_scope_inputs(_, specific_ai_inputs: dict):
             Output(f'{TRAINING_ID_PREFIX}-retrainings_MF_input','value'),
         ],
         [
-            # to allow initial triggering
+            # To force initial triggering
             Input('url_content','search'),
             Input('specific_ai_page_inputs', 'data'),
         ]
@@ -419,7 +444,7 @@ def load_RandD_and_retrainings_inputs(_, specific_ai_inputs: dict):
             Output(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_input', 'value'),
         ],
         [
-            # to allow initial triggering
+            # To force initial triggering
             Input('url_content','search'),
             Input('specific_ai_page_inputs', 'data'),
         ]
@@ -445,7 +470,7 @@ def load_inference_specific_inputs(_, specific_ai_inputs: dict):
 
 
 
-################## CONTINUOUS INFERENCE
+################## CONTINUOUS INFERENCE SECTION
 
 @AI_PAGE.callback(
     [
@@ -463,7 +488,7 @@ def adapt_the_form_depending_on_inference_mode(is_inference_continuous):
     return {'display': 'none'}, {'display': 'flex'}, 'No', 1
 
 
-################## ADDITIONAL TRAININGS FIELDS
+################## ADDITIONAL TRAININGS FIELDS SECTIONS
 
 @AI_PAGE.callback(
     Output(f'{TRAINING_ID_PREFIX}-RandD_MF_input','style'),
@@ -495,7 +520,7 @@ def display_RandD_trainings_input(RandD_trainings_radio, disabled):
 )
 def display_retrainings_div(retrainings_radio):
     '''
-    Shows or hides the  R&D trainings input box
+    Shows or hides the retrainings input fields
     '''
     if retrainings_radio == 'No':
         out = {'display': 'none'}
@@ -549,6 +574,9 @@ def forward_form_input_to_export_module(
     Intermediate processing specific to the AI page before exporting data.
     Cleans content to export by standardizing non-used inputs.
     We concatenate the content of the training form and inference form into a single dictionnary to be exported.
+
+    Even if no retrainings, R&D experiments or even if the continuous inference scheme, we 
+    add the intermediate results to the CSV so the CSV are homogeneous.
     '''
     forms_aggregate_data = dict()
     # Forward global inputs
@@ -587,6 +615,10 @@ def forward_form_input_to_export_module(
 
 
 ################## RESULTS AND METRICS 
+
+## Once we process training and inference fields to 
+## get their final energy consumption and carbon emissions,
+## we store them in intermediate variables that are used to show the final results
 
 @AI_PAGE.callback(
         Output('inference_processed_output_metrics', 'data'),
@@ -664,7 +696,7 @@ def add_retrainings_and_RandD_to_training_outputs(
 ):
     ''' 
     The purpose of this callback is to take into account retrainings and R&D inputs.
-    The main training form outputs (energy consumption and crbon emissions) are 
+    The main training form outputs (energy consumption and carbon emissions) are 
     multiplied by the corresponding multiplicative factor for both retrainings and R&D 
     before they are added to the total.
     '''

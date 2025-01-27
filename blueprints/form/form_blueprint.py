@@ -1,3 +1,7 @@
+'''
+Implements the form blueprint.
+'''
+
 import pandas as pd
 
 from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixIdTransform, ctx, html
@@ -17,6 +21,19 @@ def get_form_blueprint(
     mult_factor_properties: dict = {},
     additional_bottom_fields: html.Div = html.Div(),
 ):
+    """
+    TODO: remove the continuous inference section from the form blueprint and add it through this function.
+
+    Args:
+        id_prefix (str): id prefix automatically applied to all components and callbacks.
+        title (str): form title (at the top of the layout)
+        subtitle (html.P): form subtitle (below the title)
+        continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main
+        form and the training form. Defaults to {'display': 'none'}.
+        mult_factor_properties (dict, optional): used to hide the MF fields. Defaults to {}.
+        additional_bottom_fields (html.Div, optional): used to add retraining and R&D training fields for instance.
+        Defaults to html.Div().
+    """
 
     form_blueprint = DashBlueprint(
         transforms=[
@@ -48,7 +65,8 @@ def get_form_blueprint(
         [
             ##################################################################
             ## WARNING: do not modify the order, unless modifying the order
-            ## of the DEFAULT_VALUES accordingly
+            ## of the DEFAULT_VALUES_FOR_PAGE_LOAD accordingly
+            ## TODO: make it more robust.
             Output('runTime_hour_input', 'value'),
             Output('runTime_min_input', 'value'),
             Output('coreType_dropdown', 'value'),
@@ -69,13 +87,13 @@ def get_form_blueprint(
             Output('mult_factor_input', 'value'),
         ],
         [
-            # to allow initial triggering
+            # To force initial triggering
             Input('url_content','search'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
     )
     def filling_form(_, upload_content): 
-        if  ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if  ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             to_return = {k: upload_content[k] for k in DEFAULT_VALUES_FOR_PAGE_LOAD.keys()}
             return tuple(to_return.values())
         return tuple(DEFAULT_VALUES_FOR_PAGE_LOAD.values())
@@ -98,16 +116,17 @@ def get_form_blueprint(
     # callback range when the app is run locally.  
     #
     # My best guess is that it is due to the callback chain being
-    # congested or not correcrly planned by Dash because of the number of callbacks 
+    # congested or not correctly organised by Dash because of the number of callbacks 
     # that are triggered at upload time: both location(s)
     # (continent, country, region) options and value, provider options and value,
     # server continent options and value as well as server options and value callbacks.
     # 
     # Possible fix include : 
-    #   - remove default values for location and server fields (maybe not very user compliant)
+    #   - remove default values for location and server fields 
+    #       ~ (maybe not very user compliant)
     #   - refactor the callback chain by implementing step by step callback chain:
     #       ~ if the server div is not rendered, never apply callback related to server
-    #       (could be done by passing 'from_input_data' as a State, not as an Input)  
+    #       (could be done by passing 'form_data_imported_from_csv' as a State, not as an Input)  
     ###########################################
 
     @form_blueprint.callback(
@@ -140,14 +159,14 @@ def get_form_blueprint(
             Input('provider_dropdown', 'value'),
             Input('server_dropdown','value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ]
     )
     def display_location(selected_platform, selected_provider, selected_server, data, upload_content):
         '''
         Shows either LOCATION or SERVER depending on the platform.
 
-        NOTE: the input Input('from_input_data', 'data') should not be necessary
+        NOTE: the input Input('form_data_imported_from_csv', 'data') should not be necessary
         '''
         if data is not None:
             data_dict = SimpleNamespace(**data)
@@ -160,7 +179,8 @@ def get_form_blueprint(
 
         # The following is a kind of duplicata from the lines below,
         # should help to better take into account inputs uploaded from csv
-        if 'from_input_data' in ctx.triggered_id:
+        # TODO: should be removed when the callback chain is made simpler
+        if 'form_data_imported_from_csv' in ctx.triggered_id:
             if upload_content['platformType'] == 'cloudComputing':
                 if upload_content['provider'] in ['other'] + providers_withoutDC:
                     return show, hide
@@ -244,7 +264,7 @@ def get_form_blueprint(
         [
             Input('platformType_dropdown', 'value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State('provider_dropdown', 'value'),
@@ -257,11 +277,11 @@ def get_form_blueprint(
         '''
         # reads data from input
         if ctx.triggered_id is not None:
-            if 'from_input_data' in ctx.triggered_id:
+            if 'form_data_imported_from_csv' in ctx.triggered_id:
                 return upload_content['provider']
         
             # by default, when changing the platform type, we return the previously selected
-            # providern, because properly handles the case when 'Cloud Computing' is selected 
+            # provider, because it properly handles the case when 'Cloud Computing' is selected 
             if 'platformType_dropdown' in ctx.triggered_id and prev_provider is not None:
                 return prev_provider
                     
@@ -279,7 +299,7 @@ def get_form_blueprint(
         '''
         List of options and default value for server's continent, based on the provider
         '''
-        availableOptions = availableLocations_continent(selected_provider, data=data)
+        availableOptions = availableLocations_continent(selected_provider, versioned_data=data)
         listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
         return listOptions
 
@@ -296,7 +316,7 @@ def get_form_blueprint(
         '''
         List of options for servers, based on provider and continent
         '''
-        availableOptions = availableOptions_servers(selected_provider,selected_continent,data=data)
+        availableOptions = availableOptions_servers(selected_provider,selected_continent,versioned_data=data)
         listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
         return listOptions  
     
@@ -323,7 +343,7 @@ def get_form_blueprint(
         [
             Input('provider_dropdown', 'value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State('server_continent_dropdown', 'value'),
@@ -336,11 +356,11 @@ def get_form_blueprint(
         a value selcted previously by the user.
         '''
         # reads data from input
-        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             return upload_content['serverContinent']
 
         # otherwise we return a suitable default value
-        availableOptions = availableLocations_continent(selected_provider, data=versioned_data)
+        availableOptions = availableLocations_continent(selected_provider, versioned_data=versioned_data)
         if prev_server_continent in availableOptions:
             defaultValue = prev_server_continent
         else:
@@ -355,7 +375,7 @@ def get_form_blueprint(
         [
             Input('server_continent_dropdown', 'value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State('provider_dropdown', 'value'),
@@ -369,7 +389,7 @@ def get_form_blueprint(
         fecth the value from a csv or to show a value previously selected by the user.
         '''
         # reads data from input
-        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             return upload_content['server']
         
         # handles special case
@@ -377,7 +397,7 @@ def get_form_blueprint(
             return 'other'
 
         # Otherwise we return a suitable default value
-        availableOptions = availableOptions_servers(selected_provider, selected_continent, data=versioned_data)
+        availableOptions = availableOptions_servers(selected_provider, selected_continent, versioned_data=versioned_data)
         try:
             # when the server continent value had previously been set by the user
             if prev_server_value in [server['name_unique'] for server in availableOptions]:
@@ -393,7 +413,7 @@ def get_form_blueprint(
         Output('location_continent_dropdown', 'value'),
         [
             Input('server_div', 'style'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State('server_continent_dropdown','value'),
@@ -406,7 +426,7 @@ def get_form_blueprint(
         Same as for server and server continent regarding the different inputs.
         '''
         # reads data from input
-        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             return upload_content['locationContinent']
         
         # when the continent value had previously been set by the user
@@ -428,7 +448,7 @@ def get_form_blueprint(
         [
             Input(f'location_continent_dropdown', 'value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State(f'location_country_dropdown', 'value')
@@ -440,12 +460,12 @@ def get_form_blueprint(
         Hides country dropdown if continent=World is selected.
         Must fetch the value from a csv as well.
         '''
-        availableOptions = availableOptions_country(selected_continent, data=versioned_data)
+        availableOptions = availableOptions_country(selected_continent, versioned_data=versioned_data)
         listOptions = [{'label': k, 'value': k} for k in availableOptions]
         defaultValue = None
 
         # reads data from input
-        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             defaultValue = upload_content['locationCountry']
 
         # otherwise we get a suitable default value    
@@ -476,7 +496,7 @@ def get_form_blueprint(
             Input(f'location_continent_dropdown', 'value'),
             Input(f'location_country_dropdown', 'value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State(f'location_region_dropdown', 'value'),
@@ -496,7 +516,7 @@ def get_form_blueprint(
         defaultValue = None
 
         # reads data from input
-        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             defaultValue = upload_content['locationRegion']
 
         # otherwise we get a suitable default value  
@@ -724,7 +744,7 @@ def get_form_blueprint(
         [
             Input(f'pue_radio', 'value'),
             Input('versioned_data','data'),
-            Input('from_input_data', 'data'),
+            Input('form_data_imported_from_csv', 'data'),
         ],
         [
             State(f'PUE_input','value'),
@@ -744,7 +764,7 @@ def get_form_blueprint(
             return defaultPUE
         
         # reads data from input
-        if ctx.triggered_id is not None and 'from_input_data' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             return upload_content['PUE']
 
         return defaultPUE

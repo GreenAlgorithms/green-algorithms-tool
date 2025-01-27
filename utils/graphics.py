@@ -1,3 +1,5 @@
+''' Plotly graphs used for results visualization. '''
+
 import os 
 import copy
 import dash
@@ -61,6 +63,7 @@ BLANK_FIGURE = {
 ## UTILS
 
 def loading_wrapper(component):
+    """ Defines the loading icon when results are being computed. """
     return dash.html.P(dash.dcc.Loading(component, type='circle', color='#96BA6E'))
 
 def iso2_to_iso3(x):
