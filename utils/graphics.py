@@ -1,9 +1,10 @@
+''' Plotly graphs used for results visualization. '''
+
 import os 
 import copy
 import dash
 
 import pandas as pd
-import pycountry_convert as pc
 import plotly.graph_objects as go
 
 from utils.handle_inputs import DATA_DIR
@@ -61,15 +62,8 @@ BLANK_FIGURE = {
 ## UTILS
 
 def loading_wrapper(component):
+    """ Defines the loading icon when results are being computed. """
     return dash.html.P(dash.dcc.Loading(component, type='circle', color='#96BA6E'))
-
-def iso2_to_iso3(x):
-    try:
-        output = pc.country_name_to_country_alpha3(pc.country_alpha2_to_country_name(x, cn_name_format="default"),
-                                                   cn_name_format="default")
-    except:
-        output = ''
-    return output
 
 def colours_hex2rgba(hex):
     h = hex.lstrip('#')
@@ -81,76 +75,6 @@ def convertList_hex2rgba(hex_list):
         out.append(colours_hex2rgba(hex))
     return out
 
-
-###################################################
-## CARBON INTENSITIES MAP
-
-def get_map_layout():
-    layout_map = copy.deepcopy(PLOTS_LAYOUT)
-    layout_map['height'] = 250
-    layout_map['margin']['t'] = 30
-    layout_map['geo'] = dict(
-        projection=dict(
-            type='natural earth',
-        ),
-        showcoastlines=False,
-        showocean=True,
-        oceancolor=MY_COLORS['boxesColor'],
-        showcountries=True,
-        countrycolor=MY_COLORS['boxesColor'],
-        showframe=False,
-        bgcolor=MY_COLORS['boxesColor'],
-    )
-    return layout_map
-
-def create_CI_map_graphic():
-    '''
-    Generates a map showing carbon intensities over the world.
-    The map is not updated when changing versions, but it's probably not an isssue
-    '''
-    # Loading carbon intensity data
-    CI_4map = pd.read_csv(os.path.join(DATA_DIR, 'latest', "CI_aggregated.csv"), sep=',', skiprows=1)
-    CI_4map['ISO3'] = CI_4map.location.apply(iso2_to_iso3)
-
-    map_df = CI_4map.loc[CI_4map.ISO3 != '', ['ISO3', 'carbonIntensity', 'countryName']]
-    map_df['text'] = map_df.carbonIntensity.apply(round).astype('str') + " gCO2e/kWh"
-
-    # Building the map
-    mapCI = go.Figure(
-        data=go.Choropleth(
-            geojson=os.path.join(DATA_DIR, 'world.geo.json'),
-            locations = map_df.ISO3,
-            locationmode='geojson-id',
-            z=map_df.carbonIntensity.astype(float),
-            colorscale=MY_COLORS['map1'],
-            colorbar=dict(
-                title=dict(
-                    # text="Carbon <br> intensity <br> (gCO2e/kWh)",
-                    font=dict(
-                        color=MY_COLORS['fontColor'],
-                    )
-                ),
-                tickfont=dict(
-                    color=MY_COLORS['fontColor'],
-                    size=12,
-                ),
-                thicknessmode='fraction',
-                thickness=0.04,
-                xpad=3,
-            ),
-            showscale=True,
-            hovertemplate="%{text} <extra> %{z:.0f} gCO2e/kWh </extra>",
-            text=map_df.countryName,
-            marker=dict(
-                line=dict(
-                    color=MY_COLORS['boxesColor'],
-                    width=0.5
-                )
-            ),
-        ),
-        layout=get_map_layout()
-    )
-    return mapCI
 
 
 ###################################################

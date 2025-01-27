@@ -96,26 +96,102 @@ body {
 .header {
     background-color: rgba(249, 249, 249,0.6);
     padding-top: 38px;
-    padding-bottom: 35px;
+    padding-bottom: 5px;
     margin-top: 10px;
     margin-bottom: 6px;
 }
+
+.Hr_div_header{
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+    width: 20em;
+}
+
+
+/*
+---------------------------------- NAVBAR ----------------------------------------
+*/
+
+
+.pages-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* margin-top: 3em; only if removing the horizontal rule between title and pages-menu */
+}
+
+.page-navlink{
+    margin-left: 4px;
+    margin-right: 4px;
+    width: 100%;
+    text-align: center;
+}
+
+.page-navlink:hover {
+    background-color: transparent;
+}
+
+.navlink-label {
+    font-size: 2.8em;
+}
+
+.version_and_language_div {
+    width: 100%;
+    display: flex;
+}
+
+/* VERSION */
+
+#versions_div {
+    margin-left: auto;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+}
+
+#app_versions_dropdown{
+    margin-left: 6px;
+}
+
+.change_version_text {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    width: fit-content;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* To set the width of the dropdown */
+
+#app_versions_dropdown .Select-value {
+    display: flex;
+}
+
+#app_versions_dropdown .Select-multi-value-wrapper {
+    width: 5.5em;
+    height: 2.2em;
+}
+
+/* LANGUAGE */
+
+#language_div{
+    margin-right: auto;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0px;
+}
+
+
 
 /*
 ---------------------------------- INPUT FORM ----------------------------------------
 */
 
-
-/* REPORTING SCOPE */
-
-.reporting_scope_text {
-    margin-bottom: 10px
-}
-
-.reporting-row .box-fields,
-.reporting-row input[type='number'] {
-    height: 100%;
-}
 
 /* GENERAL */
 
@@ -195,6 +271,45 @@ hr {
     margin-top: 5px;
 }
 
+
+/* REPORTING SCOPE */
+
+.reporting_scope_text {
+    margin-bottom: 10px
+}
+
+.reporting-row {
+    /* Below fields are inspired from those of the .form-row class. */
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.reporting-row input[type='number'],
+.reporting-row .Select-control{
+    background-color: #FFFFFF;
+    border: 1px solid #D6D9DC;
+    border-radius: 3px;
+}
+
+.reporting-row input[type='number']{
+    padding: 9px;
+}
+
+
+.reporting-row input[type='number'] ,
+.reporting-row .box-fields{
+    margin-right: 2px;
+    text-align: center;
+    height: 100%;
+    width: 42%;
+}
+
+
 /* RUNTIME */
 
 .box-runtime {
@@ -244,23 +359,38 @@ hr {
 }
 
 
+/* HELP TABS */
+
+.form-help-subsection{
+    margin-bottom: 18px;
+}
+
+
 /* OTHER */
 
 .switcher-section {
     margin-bottom: 20px;
+    margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: start;
 }
 
-.reset-button {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    cursor: pointer;
-    width: 50%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
+.continuous-switcher {
+    width: 94%
+}
+
+.input_data_time-section input:first-of-type {
+    margin-right:4px;
+}
+
+.input_data_time-section > input[type = 'number'],
+.input_data_time-section .box-fields {
+    width: 45%;
+}
+
+.input_data_time-section > input[type = 'number']{
+    padding: 9px;
 }
 
 .two-buttons {

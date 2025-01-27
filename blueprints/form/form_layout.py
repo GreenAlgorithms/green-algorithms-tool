@@ -1,3 +1,12 @@
+''''
+This script implements:
+    - the layout of the Form module
+    - the layout of the retraining and R&D training sections 
+
+TODO: move the continuous inference scheme section to a specific function
+instead of being part of the base Form layout.
+'''
+
 from dash import html, dcc
 import dash_mantine_components as dmc
 from utils.utils import YES_NO_OPTIONS
@@ -9,20 +18,30 @@ def get_green_algo_form_layout(
     title: str,
     subtitle: html.P,
     continuous_inf_scheme_properties: dict,
-    PSF_properties: dict,
+    mult_factor_properties: dict,
     additional_bottom_fields: html.Div,
 ):
     return html.Form(
         [
-            html.H3(title),
-            html.Center(subtitle),
+            #### BACKEND DATA ####
 
-            ## BACKEND DATA
-            dcc.Store(id='from_input_data'),
+            # Obtained throug intermediate processing applied to the import-content of a page
+            # Once it is updated, it is used to spread uploaded data to the corresponding form fields
+            dcc.Store(id='form_data_imported_from_csv'),
+
+            # The following two components are form outputs: form_aggregate_data is the collection
+            # of all fields required to replicate the whole form, form_output_metrics is the collection
+            # of raw metrics (electricity consumption, carbon emissions...) that will be forwarded
+            # to the results section
             dcc.Store(id='form_aggregate_data'),
             dcc.Store(id='form_output_metrics'),
 
-            ## CONTINUOUS INFERENCE SCHEME
+            #### FORM HEADER ####
+
+            html.H3(title),
+            html.Center(subtitle),
+
+            #### CONTINUOUS INFERENCE SCHEME ####
 
             html.Div(
                 [
@@ -30,17 +49,18 @@ def get_green_algo_form_layout(
                         [
                             dmc.Switch(
                                 size="lg",
-                                radius="sm",
+                                radius="xl",
                                 label="Apply continuous inference scheme",
                                 checked=False,
-                                id='continuous_inference_scheme_switcher'
+                                id='continuous_inference_scheme_switcher',
+                                className = 'continuous-switcher'
                             ),
 
                             html.Div(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Please see the Help tab for more information about continuous inference. If chosen, then, only report the computations falling within your ‘input data time span’. Scaling to the reporting time scope is done automatically.",
+                                        "Please see the Help tab for more information about continuous inference. If chosen, then only report the computations falling within your ‘input data time span’. Scaling to the reporting time scope is done automatically.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -67,10 +87,10 @@ def get_green_algo_form_layout(
                                     dcc.Dropdown(
                                         id='input_data_time_scope_dropdown',
                                         options=[
-                                                {'label': 'Day', 'value': 'day'},
-                                                {'label': 'Week', 'value': 'week'},
-                                                {'label': 'Month', 'value': 'month'},
-                                                {'label': 'Year', 'value': 'year'},
+                                                {'label': 'Day(s)', 'value': 'day'},
+                                                {'label': 'Week(s)', 'value': 'week'},
+                                                {'label': 'Month(s)', 'value': 'month'},
+                                                {'label': 'Year(s)', 'value': 'year'},
                                             ],
                                         value='year',
                                         className='dropdown',
@@ -106,7 +126,8 @@ def get_green_algo_form_layout(
                 style=continuous_inf_scheme_properties,
             ),
 
-            ## RUN TIME
+            #### RUN TIME ####
+
             html.Div(
                 [
                     html.Label("Runtime (HH:MM)"),
@@ -139,7 +160,8 @@ def get_green_algo_form_layout(
                 className='Hr_div'
             ),
 
-            ## TYPE OF CORES
+            #### TYPE OF CORES ####
+
             html.Div(
                 [
                     html.Label("Type of cores"),
@@ -168,7 +190,8 @@ def get_green_algo_form_layout(
                 className='form-row short-input'
             ),
 
-            ## CPUs
+            #### CPUs ####
+
             html.Div(
                 [
                     html.H3(
@@ -230,7 +253,8 @@ def get_green_algo_form_layout(
                         className='form-row short-input'
                     ),
 
-                    # CPU TDP
+                    #### CPU TDP
+
                     html.Div(
                         [
                             html.Label(
@@ -252,7 +276,8 @@ def get_green_algo_form_layout(
                 id='CPU_div',
             ),
 
-            ## GPUs
+            #### GPUs ####
+
             html.Div(
                 [
                     html.H3(
@@ -313,7 +338,8 @@ def get_green_algo_form_layout(
                         className='form-row short-input'
                     ),
 
-                    # GPU TDP
+                    #### GPU TDP
+
                     html.Div(
                         [
                             html.Label(
@@ -342,7 +368,8 @@ def get_green_algo_form_layout(
                 className='Hr_div'
             ),
 
-            ## MEMORY
+            #### MEMORY ####
+
             html.Div(
                 [
                     html.Label("Memory available (in GB)"),
@@ -375,7 +402,8 @@ def get_green_algo_form_layout(
                 className='Hr_div'
             ),
 
-            ## SELECT COMPUTING PLATFORM
+            #### SELECT COMPUTING PLATFORM ####
+
             html.Div(
                 [
                     html.Label("Select the platform used for the computations"),
@@ -401,7 +429,8 @@ def get_green_algo_form_layout(
                         className='tooltip',
                     ),    
 
-                    ## SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+                    #### SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+
                     html.Div(
                         [
                             dcc.Dropdown(
@@ -418,7 +447,8 @@ def get_green_algo_form_layout(
             ),
 
 
-            ## SERVER (for cloud computing)
+            #### SERVER (for cloud computing) ####
+
             html.Div(
                 [
                     html.Label("Select server"),
@@ -444,7 +474,8 @@ def get_green_algo_form_layout(
                 style={'display': 'none'}
             ),
 
-            ## LOCATION
+            #### LOCATION ####
+
             html.Div(
                 [
                     html.Label("Select location"),
@@ -499,7 +530,8 @@ def get_green_algo_form_layout(
                 style={'display': 'flex'}
             ),
 
-            ## CORE USAGE (CPU and GPU)
+            #### CORE USAGE (CPU and GPU) ####
+
             html.Div(
                 [
                     html.Label("Do you know the real usage factor of your CPU?"),
@@ -514,7 +546,6 @@ def get_green_algo_form_layout(
                             dcc.Input(
                                 min=0,
                                 max=1,
-                                # step=0.1,
                                 type='number',
                                 id='usageCPU_input',
                                 style=dict(display='none'),
@@ -552,7 +583,6 @@ def get_green_algo_form_layout(
                             dcc.Input(
                                 min=0,
                                 max=1,
-                                # step=0.1,
                                 type='number',
                                 id='usageGPU_input',
                                 style=dict(display='none'),
@@ -576,7 +606,8 @@ def get_green_algo_form_layout(
                 id='usageGPU_div',
             ),
 
-            ## PUE
+            #### PUE ####
+
             html.Div(
                 [
                     html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
@@ -615,14 +646,15 @@ def get_green_algo_form_layout(
                 style=dict(display='none'),
             ),
 
-            ## PSF
+            #### MULTIPLICATIVE FACTOR ####
+
             html.Div(
                 [
-                    html.Label("Do you want to use a Pragmatic Scaling Factor (PSF)?"),
+                    html.Label("Do you want to use a Multiplicative Factor?"),
                     html.Div(
                         [
                             dcc.RadioItems(
-                                id='PSF_radio',
+                                id='mult_factor_radio',
                                 options=YES_NO_OPTIONS,
                                 className="radio-input",
                             ),
@@ -630,7 +662,7 @@ def get_green_algo_form_layout(
                             dcc.Input(
                                 min=1,
                                 type='number',
-                                id='PSF_input',
+                                id='mult_factor_input',
                                 style=dict(display='none'),
                             ),
                         ],
@@ -641,7 +673,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "The PSF refers to the number of repetions of the computation.",
+                                "The Multiplicative Factor refers to the number of repetions of the computation.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -650,7 +682,8 @@ def get_green_algo_form_layout(
 
                 ],
                 className='form-row radio-row',
-                style=PSF_properties,
+                style=mult_factor_properties,
+                id='mult_factor_div'
             ),
 
             dcc.ConfirmDialog(
@@ -660,45 +693,6 @@ def get_green_algo_form_layout(
             ),
 
             additional_bottom_fields,
-
-            html.Div(
-                [
-                    html.Div(
-                        [
-                            html.P("Reset", id='reset_link'),
-                        ],
-                        className='reset-button'
-                    ),
-                    # html.Div(
-                    #     [
-                    #         html.P("Change app version", id='oldVersion_link'),
-                    #     ],
-                    #     className='reset-button'
-                    # ),
-                ],
-                className='two-buttons'
-            ),
-
-            # html.Div(
-            #     [
-            #         html.Label("App version"),
-
-            #         html.Div(
-            #             [
-            #                 dcc.Dropdown(
-            #                     id="appVersions_dropdown",
-            #                     options=appVersions_options,
-            #                     className='bottom-dropdown',
-            #                     clearable=False,
-            #                 ),
-            #             ],
-            #             className="box-fields"
-            #         )
-            #     ],
-            #     className='form-row short-input',
-            #     id='oldVersions_div',
-            #     style=dict(display='none'),
-            # ),
 
             html.P(
                 id="placeholder",
@@ -733,16 +727,15 @@ def get_additional_training_fields_layout():
                     html.Div(
                         [
                             dcc.RadioItems(
-                                id='RandD_PSF_radio',
+                                id='RandD_radio',
                                 options=YES_NO_OPTIONS,
                                 className="radio-input",
                             ),
 
                             dcc.Input(
                                 min=0,
-                                step=0.1,
                                 type='number',
-                                id='RandD_PSF_input',
+                                id='RandD_MF_input',
                                 style=dict(display='none'),
                             ),
                         ],
@@ -782,42 +775,93 @@ def get_additional_training_fields_layout():
 
             html.Div(
                 [
-                    html.Label("Do you want to add retrainings compute time?"),
                     html.Div(
                         [
-                            dcc.RadioItems(
-                                id='retrainings_PSF_radio',
-                                options=YES_NO_OPTIONS,
-                                className="radio-input",
+                            html.Label("Do you want to add retrainings compute time?"),
+
+                            html.Div(
+                                [
+                                    dcc.RadioItems(
+                                        id='retrainings_radio',
+                                        options=YES_NO_OPTIONS,
+                                        className="radio-input",
+                                    ),
+                                ],
+                                className='radio-and-field',
                             ),
 
-                            dcc.Input(
-                                min=0,
-                                step=0.1,
-                                type='number',
-                                id='retrainings_PSF_input',
-                                style=dict(display='none'),
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "If you plan to apply retrainings, select 'Yes'. " \
+                                        "Then, fill in the number of retrainings and their average relative requirements.",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
                             ),
                         ],
-                        className='radio-and-field',
+                        className='form-row radio-row',
                     ),
 
                     html.Div(
                         [
-                            html.Div('i', className='tooltip-icon'),
-                            html.P(
-                                "If your retrainings represent half the computations requirements of your main training, you should fill in '0.5'. " \
-                                "The resulting value will be added to your main training footprint.",
-                                className='tooltip-text'
+                            html.Div(
+                                [
+                                    html.Label("Number of retrainings"),
+
+                                    dcc.Input(
+                                        min=0,
+                                        step=1,
+                                        type='number',
+                                        id='retrainings_number_input',
+                                    ),
+
+                                    
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "Simply the number of retrainings you plan to apply over your reporting scope.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className='form-row short-input'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.Label("What is the relative length of an average retraining compared to your main training?"),
+
+                                    dcc.Input(
+                                        min=0,
+                                        type='number',
+                                        id='retrainings_MF_input',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "If an average retraining represents half the computations requirements of your main training, you should fill in '0.5'. ",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className='form-row short-input'
                             ),
                         ],
-                        className='tooltip',
-                    ),
-
+                        id='retraining-additional-inputs',
+                        style=dict(display='none'),
+                    )
                 ],
-                className='form-row radio-row',
             ),
-
         ]
     )
         

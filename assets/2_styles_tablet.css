@@ -6,10 +6,46 @@
       font-size: 57%;
     }
 
+    
+    
+    /*
+    ---------------------------------- NAVBAR ----------------------------------------
+    */
+
+    .Hr_div_header{
+        width: 30em;
+    }
+    
+    
+    
+    .pages-menu {
+        flex-direction: row;
+    }
+
+    #Ai-navlink{
+        text-align: left;
+    }
+    
+    #Home-navlink{
+        text-align: right;
+    }
+
+    .navlink-label {
+        font-size: 2.5em;
+    }
+
+    .navlink-icon {
+        height: 2.0em;
+    }
+
+    #version-button {
+        font-size: 1em;
+    }
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
     */
+
 
     .form-row > label {
         width: 70%;
@@ -31,6 +67,19 @@
         width: 50%;
     }
 
+    
+    /* This one is used to match the height of both the input and box fields of the repoting scope */
+    .reporting-row input[type='number']{
+        padding: 8px;
+    }
+
+    /* This one is used to cancel the effet of the .short-input related properties (defined above)*/
+    .reporting-row input[type='number'] ,
+    .reporting-row .box-fields{
+        height: 100%;
+        width: 42%;
+    }
+
     /* The following one is used for location and cloud computing */
     .long-input .box-fields {
         width: 95%;
@@ -48,7 +97,7 @@
 
     .form-row .box-runtime input:first-of-type {
         margin-right:0;
-        margin-bottom:2px;
+        margin-bottom:0px;
     }
 
     .form-row input:last-of-type {
@@ -74,7 +123,22 @@
         width: 45%;
     }
 
-    .reset-button {
+    /* CONTINUOUS INFERENCE SCHEME */
+
+    .continuous-switcher {
+        width: 97%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:0px;
+    }
+
+    .input_data_time-section > input[type = 'number'],
+    .input_data_time-section .box-fields {
+        width: 25%;
+    }
+
+    .change_version_text {
         margin-bottom: 10px;
         margin-top: 20px;
     }

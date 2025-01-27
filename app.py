@@ -1,5 +1,31 @@
-# -*- coding: utf-8 -*-
-#currently running on Python 3.7.4
+'''
+-*- coding: utf-8 -*-
+
+The current Green Algorithms is a modularized two-pages application fully implemented in Dash. 
+The modularization relies on the DashBlueprint class from the dash_extensions.enrich module. 
+(https://www.dash-extensions.com/sections/enrich)
+Each module <module> is implemented in a function defined in blueprints/<module>/<module>_blueprint.py.
+These modules are inserted in the app at the page level (see pages/home.py and pages/ai.py).
+They communicate with each other through intermediate variables stored in dcc.Store instances.
+The callbacks between these intermediate variables are implemented at the page level too.
+
+To ensure the uniqueness of each component's id, DashBlueprints rely on id prefix.
+These prefix are automatically added to the blueprint components' id and 
+to the Inputs, Outputs and States of its callbacks. Though, for outer callbacks,
+the prefix needs to be manually added to the Inputs, Outputs and State ids.
+
+The only app level variable is the backend data "versioned_data" used to run the calculator.
+The "versioned_data" is loaded when the app is launched and then triggers all the callbacks 
+that require backend data (cores, server, location, carbon intensity and "equivalent" callbacks).
+As the name suggests, this data is versioned to ensure the results replicability accross the
+different versions of the app data.
+
+Because of our usage of DashBlueprint, we also implemented the pages as blueprints.
+The pages are registered in the app and wrapped within a layout made of the
+HTML/Dash components that are common to both pages.
+
+This script generates and runs the app.
+'''
 
 import os
 import dash
@@ -7,13 +33,11 @@ from flask import send_file # Integrating Loader IO
 
 from dash import html, dcc, ctx, _dash_renderer
 from dash.dependencies import Input, Output, State
-import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
 _dash_renderer._set_react_version("18.2.0")
 
-from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR
-from utils.handle_inputs import APP_VERSION_OPTIONS_LIST
-
+from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR, get_available_versions, APP_VERSION_OPTIONS_LIST
 from pages.home import HOME_PAGE, HOME_PAGE_ID_PREFIX
 from pages.ai import AI_PAGE, AI_PAGE_ID_PREFIX
 
@@ -21,10 +45,9 @@ from blueprints.translation.translatable_text_blueprint import translatable_text
 
 
 ###################################################
-## CREATE APP
+## CREATE APP AND PAGES
 
 external_stylesheets = [
-    # dbc.themes.BOOTSTRAP,
     dict(
         href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,600|Ruda:400,500,700&display=swap",
         rel="stylesheet"
@@ -35,146 +58,169 @@ app = dash.Dash(
     __name__,
     use_pages=True,
     external_stylesheets=external_stylesheets,
-    # these tags are to insure proper responsiveness on mobile devices
+    # Below tags are to ensure proper responsiveness on mobile devices
     meta_tags=[
         dict(
             name= 'viewport',
             content="width=device-width, initial-scale=1.0" 
         )
     ],
+    ############
+    # DEBUGONLY: suppress_callback_exceptions = False
     suppress_callback_exceptions=True
+    # Callbacks exceptions are removed because otherwise warning messages are raised
+    # due to callbacks based on HTML components that are said to be nonexistent
+    # whereas they are just implemented on the other app page.
+    # In case a callback does not work, allowing callback_exception back
+    # may help to find the right fix.
 )
+
 app.title = "Green Algorithms"
 server = app.server
 
-HOME_PAGE.register(app, module='home', path='/', title='Green Algorithms - Home')
-AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI')
+HOME_PAGE.register(app, module='home', path='/', title='Green Algorithms - Classic view')
+AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view')
 
-appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
+
+
+###################################################
+## CREATE NAVBAR
+
+icons_per_page = {'Home': 'fluent-color:home-16', 'Ai': 'streamline:artificial-intelligence-spark'}
+name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
+pages = list(dash.page_registry.values())
+
+appVersions_options = get_available_versions()
+
+pages_navbar = html.Div(
+    [
+        dmc.NavLink(
+            label=html.Div(
+                name_per_page[pages[0]['name']],
+                className='navlink-label',
+                id=f'{pages[0]["name"]}-navlink-label',
+            ),
+            # Built-in navigation from Dash (see the documentation)
+            href=pages[0]["path"],
+            id=f'{pages[0]["name"]}-navlink',
+            className='page-navlink',
+        ),
+
+        # dmc.Divider(orientation="vertical", style={'height': '20', '--divider-color': 'rgb(60, 60, 60)'}),
+
+        dmc.NavLink(
+            label=html.Div(
+                name_per_page[pages[1]['name']],
+                className='navlink-label',
+                id=f'{pages[1]["name"]}-navlink-label',
+            ),
+            # Built-in navigation from Dash (see the documentation)
+            href=pages[1]["path"],
+            id=f'{pages[1]["name"]}-navlink',
+            className='page-navlink',
+        ),
+    ],
+    className = 'pages-menu',
+)
+
+versions_choice = html.Div(
+    [
+        html.Div(
+            [
+                html.P("Change data version", id='old_version_link'),
+            ],
+            className='change_version_text'
+        ),
+
+        html.Div(
+            dcc.Dropdown(
+                id="app_versions_dropdown",
+                options=appVersions_options,
+                className='bottom-dropdown',
+                clearable=False,
+                value=CURRENT_VERSION
+            ),
+            id='app_versions_dropdown_div',
+            style={'display': 'none'},
+        )
+    ],
+    className='form-row short-input',
+    id='versions_div',
+)
+
+language_choice = html.Div(
+    [
+        html.Div(
+            [
+                html.P("Change language", id='language_choice_link'),
+            ],
+            className='change_version_text'
+        ),
+
+        html.Div(
+            [
+                dcc.Dropdown(
+                    id="language_dropdown",
+                    options=[
+                    {"label": "English", "value": "en"},
+                    {"label": "Français", "value": "fr"},
+                ],
+                    value='en',
+                    persistence=True,
+                    clearable=False,
+                ),
+            ],
+            id='language_dropdown_div',
+            className="language-box-field",
+            style={'display': 'none'},
+        ),
+    ],
+    className='form-row short-input',
+    id='language_div'
+)
+
 
 
 ###################################################
 ## CREATE LAYOUT
-
-pages_dropdown = dbc.DropdownMenu(
-    [
-        dbc.DropdownMenuItem(
-            children=html.Div(
-                [
-                    html.Img(
-                        src=app.get_asset_url(page["image"]),
-                        height="20px",
-                        width="20px",
-                        style={'padding-right': '5px'}
-                    ),
-                    page["name"],
-                ]
-            ),
-            href=page["path"],
-            style={'align-item': 'center'}
-        )
-        for page in dash.page_registry.values()
-    ],
-    nav=True,
-    label="More Pages",
-)
-
-
-navbar = dbc.Navbar(
-    dbc.Container(
-        [
-            html.A(
-                # Use row and col to control vertical alignment of logo / brand
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.Img(src=app.get_asset_url("favicon.ico"), height="50px")
-                        ),
-                        dbc.Col(dbc.NavbarBrand("Navbar", className="ms-2")),
-                    ],
-                    align="center",
-                    className="g-0",
-                ),
-            ),
-
-            html.Div(
-                [
-                    html.P("Change app version", id='oldVersion_link'),
-                ],
-                className='reset-button'
-            ),
-
-            html.Div(
-                [
-                    html.Label("App version"),
-
-                    html.Div(
-                        [
-                            dcc.Dropdown(
-                                id="appVersions_dropdown",
-                                options=appVersions_options,
-                                className='bottom-dropdown',
-                                clearable=False,
-                            ),
-                        ],
-                        className="box-fields"
-                    )
-                ],
-                className='form-row short-input',
-                id='oldVersions_div',
-                style=dict(display='none'),
-            ),
-
-            pages_dropdown,
-
-            html.Div(
-                [
-                    html.Label("Language"),
-
-                    html.Div(
-                        [
-                            dcc.Dropdown(
-                                id="language_dropdown",
-                                options=[
-                                {"label": "English", "value": "en"},
-                                {"label": "Français", "value": "fr"},
-                            ],
-                                value='en',
-                                persistence=True,
-                                clearable=False,
-                            ),
-                        ],
-                        className="language-box-field"
-                        ),
-                ],
-            ),  
-        ],
-        fluid=True,
-    ),
-)
-
-
 
 app.layout = dmc.MantineProvider(
     html.Div(
         [
             
             #### BACKEND PURPOSE ####
-            
-            dcc.Store(id=f"{HOME_PAGE_ID_PREFIX}-version_from_input"),
-            dcc.Store(id=f"{AI_PAGE_ID_PREFIX}-version_from_input"),
-            dcc.Store(id="versioned_data"),
-            dcc.Location(id='url_content', refresh='callback-nav'), 
-            
-            #### NAVBAR ####
 
-            html.Div(navbar, id='navbar-container'),
+            # Used to forward the version coming from a CSV uploaded to the Home page 
+            dcc.Store(id=f"{HOME_PAGE_ID_PREFIX}-version_from_input"),
+            # Used to forward the version coming from a CSV uploaded to the Ai page 
+            dcc.Store(id=f"{AI_PAGE_ID_PREFIX}-version_from_input"),
+            # A dictionnary containing all the backend data used everywhere in the app
+            dcc.Store(id="versioned_data"),
+            # The component storing the url state, only used to trigger callback when the app is loaded
+            dcc.Location(id='url_content', refresh='callback-nav'), 
 
             #### HEADER ####
             html.Div(
                 [
                     html.H1("Green Algorithms calculator"),
                     html.P("What's the carbon footprint of your computations?"),
+
+                    html.Div(
+                        [
+                            html.Hr(style={'background-color': 'rgb(60, 60, 60)'}),
+                        ],
+                        className='Hr_div_header',
+                    ),
+
+                    pages_navbar,
+
+                    html.Div(
+                        [
+                            language_choice,
+                            versions_choice,
+                        ],
+                        className='version_and_language_div'
+                    )
 
                 ],
                 className='container header'
@@ -220,9 +266,12 @@ app.layout = dmc.MantineProvider(
             ),
 
             #### PAGE CONTENT #####
-
+            
+            # Pages are registered manually above and their layout is inserted in the app
+            # as suggested in the official documentation (https://dash.plotly.com/urls)
             dash.page_container,
 
+            #### FOOTERS #####
         
             html.Div(
                 [
@@ -345,21 +394,70 @@ app.layout = dmc.MantineProvider(
 ###################################################
 # CALLBACKS #
 
+# These are the few callbacks implemented at the app level, namely
+# those related to the version choice and backend data loading, 
+# and page navigation.
+
+################## NAVIGATION BAR
+
+@app.callback(
+        [
+            Output('Home-navlink', 'style'),
+            Output('Home-navlink-label', 'style'),
+            Output('Ai-navlink', 'style'),
+            Output('Ai-navlink-label', 'style'),
+        ],
+        Input('url_content', 'pathname')
+)
+def style_navlink(url_pathname: str):
+    """ 
+    Once the page is changed (built-in page navigation), this
+    callback adapts the css of the navigation labels.
+    """
+    # Define the different styles possibilities
+    to_be_clicked_style = {'cursor': 'pointer'}
+    to_be_clicked_label_style = {'text-decoration': 'underline', 'font-weight': '200'}
+    current_page_navlink_style = {'cursor': 'default'}
+    current_page_label_style = {'text-decoration': 'none', 'font-weight': '600'}
+    # Allocate the style dictionnaries to the right ouputs
+    if 'ai' in url_pathname:
+        return to_be_clicked_style, to_be_clicked_label_style, current_page_navlink_style, current_page_label_style
+    else:
+        return current_page_navlink_style, current_page_label_style, to_be_clicked_style, to_be_clicked_label_style
+
+
+################## LANGUAGE CHOICE
+
+@app.callback(
+    Output('language_dropdown_div', 'style'),
+    Input('language_choice_link','n_clicks'),
+    State('language_dropdown_div', 'style'),
+)
+def display_oldVersion(clicks: int, previous_style:dict):
+    """
+    Show the different available languages.
+    """
+    if (clicks is not None):
+        return {'display':'flex', 'flex-direction': 'row', 'width': 'fit-content'}
+    else:
+        return previous_style
+    
 
 ################## APP VERSIONING
 
 @app.callback(
-    Output('appVersions_dropdown','value'),
+    Output('app_versions_dropdown','value'),
     [
         Input(f"{HOME_PAGE_ID_PREFIX}-version_from_input",'data'),
         Input(f"{AI_PAGE_ID_PREFIX}-version_from_input",'data'),
     ]
 )
-def set_version_from_csv_inputs(version_from_home_input, version_from_ai_input):
-    '''
+def set_version_from_csv_inputs(version_from_home_input: str, version_from_ai_input: str):
+    """
     Set the app version based on csv inputs 
     dropped either from the home page or the ai page.
-    '''
+    """
+    # We use the ctx.triggered_id to get know which input triggered the callback.
     new_version = None
     if HOME_PAGE_ID_PREFIX in ctx.triggered_id:
         new_version = version_from_home_input
@@ -367,18 +465,37 @@ def set_version_from_csv_inputs(version_from_home_input, version_from_ai_input):
         new_version = version_from_ai_input
     return new_version
 
+@app.callback(
+    Output('app_versions_dropdown_div', 'style'),
+    [
+        Input('old_version_link','n_clicks'),
+        Input('app_versions_dropdown','value')
+    ],
+    [
+        State('app_versions_dropdown_div', 'style')
+    ]
+)
+def display_oldVersion(clicks: int, version: str, oldStyle: dict):
+    """
+    Show the different available versions.
+    """
+    if (clicks is not None)|((version is not None)&(version != CURRENT_VERSION)):
+        return {'display':'flex', 'flex-direction': 'row', 'width': 'fit-content'}
+    else:
+        return oldStyle
     
 @app.callback(
     Output("versioned_data", "data"),
     [
+        # To force initial triggering
         Input('url_content','search'),
-        Input('appVersions_dropdown','value'),
+        Input('app_versions_dropdown','value'),
     ],
 )
-def load_data_from_version(_, new_version):
-    '''
+def load_data_from_version(_, new_version:str):
+    """
     Loads all the backend data required to propose consistent options to the user.
-    '''
+    """
     # Collect input version and check validity
     if new_version is None:
         new_version = CURRENT_VERSION
@@ -389,28 +506,8 @@ def load_data_from_version(_, new_version):
         new_data = load_data(os.path.join(DATA_DIR, 'latest'), version = CURRENT_VERSION)
     else:
         new_data = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+
     return vars(new_data)
-
-
-@app.callback(
-    Output('oldVersions_div','style'),
-    [
-        Input('oldVersion_link','n_clicks'),
-        Input('appVersions_dropdown','value')
-    ],
-    [
-        State('oldVersions_div', 'style')
-    ]
-)
-def display_oldVersion(clicks, version, oldStyle):
-    '''
-    Show the different available versions.
-    '''
-    if (clicks is not None)|((version is not None)&(version != CURRENT_VERSION)):
-        return {'display':'flex'}
-    else:
-        return oldStyle
-
 
 
 # Loader IO

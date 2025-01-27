@@ -1,3 +1,8 @@
+'''
+This script implements miscellaneous functions and global variables 
+used at page loading or when a csv is uploaded.
+'''
+
 import os
 import copy
 import base64
@@ -19,10 +24,16 @@ DATA_DIR = os.path.join(os.path.abspath(''),'data')
 APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0]=='v')&(x!=CURRENT_VERSION))]
 APP_VERSION_OPTIONS_LIST.sort(reverse=True)
 
+def get_available_versions():
+    appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
+    return appVersions_options
+
 # The default values used to fill in the form when no other input is provided
 # WARNING: do not modify the order unless modifying the order of the outputs of 
 # the fillin_from_inputs callback accordingly
-# TODO: make it more robust
+#-----------------------------------------------------------------------------
+# TODO: make it more robust by using a dictionnay or dataclass for storing ids
+#-----------------------------------------------------------------------------
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,
     runTime_min=0,
@@ -40,10 +51,13 @@ DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     usageGPUradio='No',
     usageGPU=1.0,
     PUEradio='No',
-    PSFradio='No',
-    PSF=1,
+    mult_factor_radio='No',
+    mult_factor=1,
 )
 
+# We must distinguish between DEFAULT_VALUES_FOR_PAGE_LOAD  
+# and DEFAULT_VALUES because the first one is returned as such in 
+# the main loading callback of the form blueprints.
 DEFAULT_VALUES = DEFAULT_VALUES_FOR_PAGE_LOAD.copy()
 DEFAULT_VALUES.update(
     {
@@ -58,17 +72,22 @@ DEFAULT_VALUES.update(
 )
 
 AI_PAGE_DEFAULT_VALUES = {
-        'R&D_PSF_radio': 'No',
-        'R&D_PSF_value': 0,
-        'retrainings_PSF_radio': 'No',
-        'retrainings_PSF_value': 0,
+        'reporting_time_scope_unit': 'year',
+        'reporting_time_scope_value': 1,
+        'R&D_radio': 'No',
+        'R&D_MF_value': 0,
+        'retrainings_radio': 'No',
+        'retrainings_number_input': 0,
+        'retrainings_MF_value': 0,
         'continuous_inference_switcher': False,
         'input_data_time_scope_unit': 'month',
         'input_data_time_scope_val': 1,
     }
 
-# The following list should contain tke keys of aggregate_data that should not
+# The following list should contain tke keys of uploaded CSV that should not
 # raise an message error because they are not intended to be processed as inputs
+# Not all of them are relevant. 
+# TODO: clean it and make it more robust when improving the error message system.
 INPUT_KEYS_TO_IGNORE = [
     'runTime',
     'location',
@@ -89,18 +108,26 @@ INPUT_KEYS_TO_IGNORE = [
     'nkm_train',
     'flying_context',
     'flying_text',
+    'energy_needed_before_scaling',
+    'carbonEmissions_before_scaling',
+    'main_energy_needed',
+    'R&D_energy_needed',
+    'retrainings_energy_needed',
+    'main_carbonEmissions',
+    'R&D_carbonEmissions',
+    'retrainings_carbonEmissions',
 ]
 
 
 ###################################################
 ## DATA LOADING 
 
-def load_data(data_dir, **kwargs):
-    '''
-    We download each csv and store it in a pd.DataFrame.
+def load_data(data_dir: str, **kwargs):
+    """
+    Download each CSV and store it in a pd.DataFrame.
     We ignore the first row, as it contains metadata.
-    All these correspond to tabs of the spreadsheet on the Google Drive.
-    '''
+    All these CSV correspond to tabs of the spreadsheet on the Google Drive.
+    """
     data_dict0 = dict()
 
     for k,v in kwargs.items():
@@ -198,20 +225,19 @@ def load_data(data_dir, **kwargs):
 
     return data_dict # This is a SimpleNamespace
 
-def get_available_versions():
-    appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]
-    return appVersions_options
-
 
 ###################################################
 ## DROPDOWN OPTIONS
 
-def availableLocations_continent(selected_provider, data):
-    '''
+# The following functions return the options for the target dropdown
+# of the form. They are called within the Form blueprints.
+
+def availableLocations_continent(selected_provider: str, versioned_data: dict):
+    """
     Provides the available continents for a given provider.
-    '''
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
+    """
+    if versioned_data is not None:
+        data_dict = SimpleNamespace(**versioned_data)
         dict_per_server_id_in_provider = data_dict.datacenters_dict_byProvider.get(selected_provider)
     else:
         dict_per_server_id_in_provider = None
@@ -224,12 +250,12 @@ def availableLocations_continent(selected_provider, data):
     else:
         return []
 
-def availableOptions_servers(selected_provider, selected_continent, data):
-    '''
+def availableOptions_servers(selected_provider: str, selected_continent: str, versioned_data: dict):
+    """
     Provides the available servers for the given provider and continent.
-    '''
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
+    """
+    if versioned_data is not None:
+        data_dict = SimpleNamespace(**versioned_data)
         ci_by_country_in_continent = data_dict.CI_dict_byName.get(selected_continent)
         dict_per_server_id_in_provider = data_dict.datacenters_dict_byProvider.get(selected_provider)
     else:
@@ -248,12 +274,12 @@ def availableOptions_servers(selected_provider, selected_continent, data):
     else:
         return []
 
-def availableOptions_country(selected_continent, data):
-    '''
+def availableOptions_country(selected_continent: str, versioned_data: dict):
+    """
     Provides the available country for the selected continent.
-    '''
-    if data is not None:
-        data_dict = SimpleNamespace(**data)
+    """
+    if versioned_data is not None:
+        data_dict = SimpleNamespace(**versioned_data)
         ci_per_country_dit = data_dict.CI_dict_byName.get(selected_continent)
     else:
         ci_per_country_dit = None
@@ -265,10 +291,10 @@ def availableOptions_country(selected_continent, data):
     else:
         return []
 
-def availableOptions_region(selected_continent,selected_country,data):
-    '''
+def availableOptions_region(selected_continent: str,selected_country: str, data: dict):
+    """
     Provides the available region for the selected continent and contry.
-    '''
+    """
     if data is not None:
         data_dict = SimpleNamespace(**data)
         ci_per_country_dict = data_dict.CI_dict_byName.get(selected_continent)
@@ -295,8 +321,8 @@ def availableOptions_region(selected_continent,selected_country,data):
 ###################################################
 ## PROPERLY HANDLE INPUTS
 
-def validateInput(input_dict, data_dict, keysOfInterest):
-    '''
+def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interest: list):
+    """
     Validates the inputs: ensures the consistency between the keys and corresponding 
     value but also between some values.
     args:
@@ -304,11 +330,13 @@ def validateInput(input_dict, data_dict, keysOfInterest):
         - data_dict: backend data used to check consistency between provided values.
         - keyOfInterest [list]: a list of keys to process.
     returns: 
-        - new_dict [dict]: a curated subset of input_dict with clean inputs. Its keys
+        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
         - wrong_imputs [dict]: a subset of the input_dict containing inputs
         either raising erorrs either not corresponding to keysOfInterest.
-    '''
+        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing 
+        inputs with an unknown key.
+    """
     if type(data_dict) == dict:
         data_dict = SimpleNamespace(**data_dict)
     appVersions_options_list = get_available_versions()
@@ -341,20 +369,20 @@ def validateInput(input_dict, data_dict, keysOfInterest):
         platformType_options = None
 
     def validateKey(key, value):
-        '''
-        WARNING: the keys used to check should be the same as those used
-        in the DEFAULT_VALUES and aggregate_data.
-
+        """
         Ensures the consistency between the key and the provided value and
         checks the dependencies between different values.
-        '''
+
+        WARNING: the keys used to check should be the same as those used
+        in the DEFAULT_VALUES and aggregate_data.
+        """
         new_val = copy.copy(value)
         if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
             new_val = int(float(new_val))
         elif key in ['runTime_min']:
             new_val = float(new_val)
             assert new_val >= 0
-        elif key in ['PSF']:
+        elif key in ['mult_factor']:
             new_val = int(new_val)
             assert new_val >= 1
         elif key in ['tdpCPU', 'tdpGPU', 'memory']:
@@ -363,7 +391,7 @@ def validateInput(input_dict, data_dict, keysOfInterest):
         elif key in ['usageCPU', 'usageGPU']:
             new_val = float(new_val)
             assert (new_val >= 0) & (new_val <= 1)
-        elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'PSFradio']:
+        elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'mult_factor_radio']:
             assert new_val in ['Yes', 'No']
         elif key == 'coreType':
             assert new_val in ['CPU', 'GPU', 'Both']
@@ -375,16 +403,16 @@ def validateInput(input_dict, data_dict, keysOfInterest):
             if unlist(input_dict['platformType']) == 'cloudComputing':  # TODO: I don't think this if is necessary?
                 assert (new_val in data_dict.platformName_byType['cloudComputing']) | (new_val == 'other')
         elif key == 'serverContinent':
-            assert new_val in availableLocations_continent(unlist(input_dict['provider']), data=vars(data_dict)) + ['other']
+            assert new_val in availableLocations_continent(unlist(input_dict['provider']), versioned_data=vars(data_dict)) + ['other']
         elif key == 'server':
             list_servers = availableOptions_servers(unlist(input_dict['provider']),
                                                     unlist(input_dict['serverContinent']),
-                                                    data=vars(data_dict))
+                                                    versioned_data=vars(data_dict))
             assert new_val in [x['name_unique'] for x in list_servers] + ["other"]
         elif key == 'locationContinent':
             assert new_val in list(data_dict.CI_dict_byName.keys())
         elif key == 'locationCountry':
-            assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), data=vars(data_dict))
+            assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), versioned_data=vars(data_dict))
         elif key == 'locationRegion':
             list_loc = availableOptions_region(unlist(input_dict['locationContinent']),
                                                unlist(input_dict['locationCountry']), data=vars(data_dict))
@@ -393,7 +421,7 @@ def validateInput(input_dict, data_dict, keysOfInterest):
             new_val = float(new_val)
             assert new_val >= 1
         elif key == 'appVersion':
-            assert new_val in (appVersions_options_list + [CURRENT_VERSION])
+            assert new_val in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]
         else:
             assert False, 'Unknown key'
         return new_val
@@ -401,23 +429,98 @@ def validateInput(input_dict, data_dict, keysOfInterest):
     ############################
     # Now we validate each of the target key from the input dict
 
-    new_dict = dict()
+    clean_inputs = dict()
     wrong_imputs = dict()
-    for key in keysOfInterest:
+    for key in keys_of_interest:
         if key not in INPUT_KEYS_TO_IGNORE:
             new_value = unlist(input_dict[key])
             try:
-                new_dict[key] = validateKey(key, new_value)
+                clean_inputs[key] = validateKey(key, new_value)
             except Exception as e:
+                ### TODO: distinguish between wrong_inputs and unknown_inputs
                 wrong_imputs[key] = new_value
 
-    return new_dict, wrong_imputs
+    return clean_inputs, wrong_imputs
 
-def open_input_csv_and_comment(upload_csv_content, filename):
-    '''
+
+def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
+    """
+    Validates the inputs related to the ai page: ensures the consistency between 
+    the keys and correspondind values. 
+
+    Args:
+        - input_dict: inputs to process
+        - keyOfInterest [list]: a list of keys to process.
+
+    Returns: 
+        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
+        are contained in keysofInterest.
+        - wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
+        (TO IMPLEMENT : with an expected key and a value raising an error).
+        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
+        an unknown key.
+    """
+
+    def validateKey(key, value):
+        """
+        Ensure the consistency between the key and the provided value and
+        checks the dependencies between different values.
+
+        WARNING: the keys used to check should be the same as those used
+        in the AI_PAGE_DEFAULT_VALUES and aggregate_data.
+        """
+        new_val = copy.copy(value)
+        if key in ['R&D_radio', 'retrainings_radio']:
+            assert new_val in ['Yes', 'No']
+        elif key in ['R&D_MF_value', 'retrainings_MF_value']:
+            new_val = float(new_val)
+            assert new_val >= 0
+        elif key  == 'retrainings_number_input':
+            new_val = int(new_val)
+            assert new_val >= 0
+        elif key == 'continuous_inference_switcher':
+            assert new_val in [True, False]
+        elif key == 'input_data_time_scope_unit':
+            assert new_val in ['day', 'week', 'month', 'year']
+        elif key == 'input_data_time_scope_val':
+            new_val = float(new_val)
+            assert new_val >= 0
+        elif key == 'reporting_time_scope_unit':
+            assert new_val in ['month', 'year']
+        elif key == 'reporting_time_scope_value':
+            new_val = float(new_val)
+            assert new_val >= 0
+        else:
+            assert False, 'Unknown key'
+        return new_val
+    
+    clean_inputs = dict()
+    wrong_imputs = dict()
+    unknown_inputs = dict()
+
+    for key in keys_of_interest:
+        new_value = unlist(input_dict[key])
+        try:
+            clean_inputs[key] = validateKey(key, new_value)
+        except Exception as e:
+            ### TODO: distinguish between wrong_inputs and unknown_inputs
+            wrong_imputs[key] = new_value
+
+    return clean_inputs, wrong_imputs
+
+
+
+
+
+def open_input_csv_and_comment(upload_csv_content: str, filename: str):
+    """
+    Args:
+        upload_csv_content [str]: a binary string corresponding to the uploaded file.
+        filename [str]: the uploaded file name.
+
     Opens the input file content and stores it in a pandas DataFrame.
     NOTE: so far, only the first line of an input csv is read.
-    '''
+    """
     _, upload_string = upload_csv_content.split(',')
     decoded = base64.b64decode(upload_string)
     try:
@@ -433,34 +536,35 @@ def open_input_csv_and_comment(upload_csv_content, filename):
     # TODO : raise a warning if there are several rows in the input csv
     return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
 
-def read_csv_input(upload_csv:dict):
-    '''
+def read_base_form_inputs_from_csv(upload_csv:dict):
+    """
     Reads the input dataframe to extract all the keys supposed to be verified.
     When an input raises an error, it is replaced by its corresponding default value.
+
     Returns:
     - values [dict]: curated inputs
     - invalid_inputs [dict]: inputs that could not be read properly
     - new_version [str]: app version to use, maybe coming from input data
-    '''
+    """
     # Loads the right dataset to validate the inputs
     appVersions_options_list = get_available_versions()
     new_version = CURRENT_VERSION
     if 'appVersion' in upload_csv:
         new_version = unlist(upload_csv['appVersion'])
-    assert new_version in (appVersions_options_list + [CURRENT_VERSION])
+    assert new_version in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]
     if new_version == CURRENT_VERSION:
         newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
     else:
         newData = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
 
     # Validates the inputs against the data
-    processed_inputs, invalid_inputs = validateInput(
+    processed_inputs, invalid_inputs = validate_main_form_inputs(
         input_dict=upload_csv,
         data_dict=newData,
-        keysOfInterest=list(upload_csv.keys())
+        keys_of_interest=list(upload_csv.keys())
     )
     # Returns the verified inputs, where wrong keys are replaced
-    #  by default values, hence the importance of the order of the keys
+    # by default values, hence the importance of the order of the keys
     values = copy.deepcopy(DEFAULT_VALUES)
     # adding required values that were not found as expected in the input
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
@@ -538,10 +642,11 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         wrong_inputs_from_csv.pop('serverContinent', None)
         wrong_inputs_from_csv.pop('server', None)
     ### For consistency with AI page utilities
-    wrong_inputs_from_csv.pop('R&D_PSF_radio', None)
-    wrong_inputs_from_csv.pop('R&D_PSF_value', None)
-    wrong_inputs_from_csv.pop('retrainings_PSF_radio', None)
-    wrong_inputs_from_csv.pop('retrainings_PSF_value', None)
+    wrong_inputs_from_csv.pop('R&D_radio', None)
+    wrong_inputs_from_csv.pop('R&D_MF_value', None)
+    wrong_inputs_from_csv.pop('retrainings_radio', None)
+    wrong_inputs_from_csv.pop('retrainings_number_input', None)
+    wrong_inputs_from_csv.pop('retrainings_MF_value', None)
     wrong_inputs_from_csv.pop('continuous_inference_switcher', None)
     wrong_inputs_from_csv.pop('input_data_time_scope_unit', None)
     wrong_inputs_from_csv.pop('input_data_time_scope_val', None)

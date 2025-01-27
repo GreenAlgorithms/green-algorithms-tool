@@ -1,3 +1,12 @@
+'''
+Implements the import-export blueprint.
+
+When a csv is uploaded, the dcc.Upload component (id=upload-data) is 
+automatically flushed after few seconds to let the user upload the same file again.
+Otherwise, the callbacks with Input upload-data would not trigger because upload-data 
+actually remained the same.
+'''
+
 import pandas as pd
 import datetime
 
@@ -5,12 +14,18 @@ from dash import ctx, dcc
 from dash_extensions.enrich import DashBlueprint, PrefixIdTransform, Output, Input, State
 from dash.exceptions import PreventUpdate
 
-from utils.handle_inputs import  open_input_csv_and_comment
-
 from blueprints.import_export.import_export_layout import get_green_algo_import_export_layout
 
-def get_import_expot_blueprint(id_prefix):
-
+def get_import_expot_blueprint(
+    id_prefix: str,
+    csv_flushing_delay: int = 1500,
+):
+    """
+    Args:
+        id_prefix (str): id prefix automatically applied to all components.
+        csv_flushing_delay (int, optional): time delay between csv upload and csv flushing.
+        Given in miliseconds. Defaults to 1500.
+    """
     import_export_blueprint = DashBlueprint(
         transforms=[
             PrefixIdTransform(
@@ -22,7 +37,7 @@ def get_import_expot_blueprint(id_prefix):
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    import_export_blueprint.layout = get_green_algo_import_export_layout()
+    import_export_blueprint.layout = get_green_algo_import_export_layout(csv_flushing_delay)
 
 
     ##### DEFINE ITS CALLBACKS
@@ -57,7 +72,7 @@ def get_import_expot_blueprint(id_prefix):
         Input('upload-data', 'contents'),
         State('import-content', 'data'),
     )
-    def read_input(upload_content, current_import_data):
+    def read_input(upload_content: dict, current_import_data: dict):
         '''
         Open input file and extract data from csv if possible.
         Does not process the content, just proceeds to raw extraction.
@@ -69,7 +84,8 @@ def get_import_expot_blueprint(id_prefix):
         if ctx.triggered_id is None:
             raise PreventUpdate 
         
-        # when the upload_content is automatically flushed, we want to keep the same data
+        # The following case only happens when the upload-data is automatically flushed 
+        # Therefore, we want to return the data that was previously uploaded
         if upload_content is None:
             return current_import_data
     

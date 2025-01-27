@@ -7,6 +7,7 @@ train_perkm,41,"in gCO2/km, but more like 5-37g, from https://www.gov.uk/governm
 flight_economy_perkm,171,"in gCO2/km, but more like 139-244g, from https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020"
 treeYear,11000,in gCO2/tree/year from http://www.sciencedirect.com/science/article/pii/S0269749101002640
 flight_NY-SF,570000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
+flight_PAR-DUB,110000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 flight_PAR-LON,50000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 flight_NYC-MEL,2310000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 streaming_netflix_perhour,36,gCO2 from https://www.carbonbrief.org/factcheck-what-is-the-carbon-footprint-of-streaming-video-on-netflix (update)

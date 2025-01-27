@@ -43,6 +43,11 @@ h3 {
     color: rgb(100, 100, 100);
 }
 
+h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
 p:not(:last-of-type) {
     margin-bottom: 1rem;
 }
@@ -68,6 +73,26 @@ p:not(:last-of-type) {
     font-size: 2.1rem;
     letter-spacing: -0.02rem;
     margin-bottom: 0;
+}
+
+.change_version_text a:link,
+.change_version_text a:visited {
+    color: rgb(120, 120, 120);
+}
+
+.change_version_text a:hover {
+    color: rgb(80, 80, 80);
+}
+
+.change_version_text p {
+    color: rgb(60, 60, 60);
+    text-decoration: underline;
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.change_version_text p:hover {
+    color: rgb(80, 80, 80);
 }
 
 /*
@@ -97,23 +122,23 @@ input, select, .Select, textarea {
     text-align: center;
 }
 
-.reset-button a:link,
-.reset-button a:visited {
-    color: rgb(120, 120, 120);
+
+.tab-label {
+    font-size: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
 }
 
-.reset-button a:hover {
-    color: rgb(80, 80, 80);
+.mantine-Switch-label{
+    font-size: 1.7rem;
+    margin-left: 6px;
 }
 
-.reset-button p {
-    color: rgb(120, 120, 120);
-    text-decoration: underline;
+.form-help-markdown {
+    font-size: 17px;
 }
 
-.reset-button p:hover {
-    color: rgb(80, 80, 80);
-}
+
 
 /*
 ---------------------------------- Tooltip ----------------------------------------

@@ -1,14 +1,28 @@
+''' Import-export layout. '''
+
 from dash import html, dcc
 import dash_bootstrap_components as dbc 
 
-def get_green_algo_import_export_layout():
+def get_green_algo_import_export_layout(
+    csv_flushing_delay: int
+):
     return html.Div(
         [
+
+            #### BACKEND DATA ####
+                
+            # Intermediate variable used to read the uploaded data only once
+            # Its is then forwared to the target form(s) depending on the page
             dcc.Store(id='import-content'),
+            # Intermediate variable that is updated only when the user want to export data as csv.
+            # It is useful as it allows to run the callback only once per export, not after each form modification.
             dcc.Store(id='export-content'),
 
+    
             html.Div(
                 [
+                    #### EXPORT DATA ####
+
                     html.Div(
                         [
                             html.Div(
@@ -22,6 +36,8 @@ def get_green_algo_import_export_layout():
                         className='container footer import-export',
                         id='export-result',
                     ),
+                    
+                    #### IMPORT DATA ####
 
                     html.Div(
                         dcc.Upload(
@@ -46,6 +62,8 @@ def get_green_algo_import_export_layout():
                 className='import-export-buttons',
             ),
 
+            #### ERROR MESSAGE ####
+
             dbc.Alert(
                 [
                     html.B('Filling values from csv: error'),
@@ -60,7 +78,7 @@ def get_green_algo_import_export_layout():
 
             dcc.Interval(
                 id='csv-input-timer',
-                interval=2000, 
+                interval=csv_flushing_delay, 
                 # in milliseconds, should not be lower than 1000
                 # otherwise the update of the upload csv content is done too soon
                 # and there is not consistency between the state of the form and 
