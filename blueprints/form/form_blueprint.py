@@ -173,7 +173,7 @@ def get_form_blueprint(
 
         NOTE: the input Input('form_data_imported_from_csv', 'data') should not be necessary because, when a csv is uploaded,
         this callback would be triggered by the other Inputs. However, because of the issue documented in 
-        the above TODO (~ line 108), I have been thinking that adding Input('form_data_imported_from_csv', 'data') as
+        the above TO DO (~ line 108), I have been thinking that adding Input('form_data_imported_from_csv', 'data') as
         an Input would help organizing the callback chain.
         '''
         if data is not None:
@@ -188,7 +188,7 @@ def get_form_blueprint(
         # The following is a kind of duplicata from the lines below,
         # should help to better take into account inputs uploaded from csv
         # TODO: should be removed when the callback chain is made simpler.
-        # This simplification refers to the above TODO as well. In simple terms
+        # This simplification refers to the above TO DO as well. In simple terms
         # it would be worth trying to refactor the callback chain using intermediate bottlenecks. 
         # For instance, if the server div is not rendered, never apply callback related to server
         # (could be done by passing 'form_data_imported_from_csv' as a State, not as an Input)
