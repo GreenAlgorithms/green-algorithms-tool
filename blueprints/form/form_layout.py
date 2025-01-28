@@ -649,7 +649,7 @@ def get_green_algo_form_layout(
 
             html.Div(
                 [
-                    html.Label("Do you want to use a Multiplicative Factor?"),
+                    html.Label("Do you want to use a multiplicative factor?"),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -672,7 +672,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "The Multiplicative Factor refers to the number of repetions of the computation.",
+                                "The multiplicative factor refers to the number of repetitions of the computation.",
                                 className='tooltip-text'
                             ),
                         ],

@@ -42,7 +42,7 @@ def get_green_algo_methodology_layout():
 
                         Where the energy needed is: 
 
-                        `runtime * (cores power draw cores * usage + memory power draw) * PUE * Multiplicative Factor`
+                        `runtime * (cores power draw * usage + memory power draw) * PUE * multiplicative factor`
 
                         The power draw of the computing cores depends on the model and number of cores, 
                         while the memory power draw only depends on the size of memory __available__. 
