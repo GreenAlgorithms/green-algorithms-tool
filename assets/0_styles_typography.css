@@ -168,7 +168,7 @@ input, select, .Select, textarea {
 }
 
 .tooltip-text {
-    font-size: 0.6em;
+    font-size: .8em;
     visibility: hidden;
     width: 12em;
     background-color: black;
