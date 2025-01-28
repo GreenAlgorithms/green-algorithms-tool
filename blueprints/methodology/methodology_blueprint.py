@@ -1,3 +1,10 @@
+'''
+Implements the methodology blueprint.
+
+Actually, as the methodology content is static, there is no callback to implement.
+The reason for this file is mostly to respect the structure of the other blueprint folders.
+'''
+
 from dash_extensions.enrich import DashBlueprint, PrefixIdTransform
 
 from blueprints.methodology.methodology_layout import get_green_algo_methodology_layout

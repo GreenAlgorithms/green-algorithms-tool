@@ -1,3 +1,8 @@
+'''
+Python utils intended to correctly format the texts associated with the 
+results shown to the user. The text adapts to the result range and its unit.
+'''
+
 def format_energy_text(energy_needed: float):
     """
     Adapt the value and unit of the energy based on the raw value.

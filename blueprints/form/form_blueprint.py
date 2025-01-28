@@ -68,7 +68,9 @@ def get_form_blueprint(
         [
             ##################################################################
             ## WARNING: do not modify the order, unless modifying the order
-            ## of the DEFAULT_VALUES_FOR_PAGE_LOAD accordingly
+            ## of the DEFAULT_VALUES_FOR_PAGE_LOAD accordingly. The issue is the strong 
+            # dependency between the order of the keys in the utils/handle_inputs.py/DEFAULT_VALUES_FOR_PAGE_LOAD 
+            # and the order of the Outputs of this callback.
             ## TODO: make it more robust.
             Output('runTime_hour_input', 'value'),
             Output('runTime_min_input', 'value'),
@@ -185,10 +187,10 @@ def get_form_blueprint(
 
         # The following is a kind of duplicata from the lines below,
         # should help to better take into account inputs uploaded from csv
-        # TODO: should be removed when the callback chain is made simpler
-        # this simplification refers to the above TODO as well. In simple terms
-        # it would be worth trying to refactor the callback chain using intermediate bottleneck. 
-        # If the server div is not rendered, never apply callback related to server
+        # TODO: should be removed when the callback chain is made simpler.
+        # This simplification refers to the above TODO as well. In simple terms
+        # it would be worth trying to refactor the callback chain using intermediate bottlenecks. 
+        # For instance, if the server div is not rendered, never apply callback related to server
         # (could be done by passing 'form_data_imported_from_csv' as a State, not as an Input)
         if 'form_data_imported_from_csv' in ctx.triggered_id:
             if upload_content['platformType'] == 'cloudComputing':
