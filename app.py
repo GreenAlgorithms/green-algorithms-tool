@@ -192,6 +192,10 @@ app.layout = dmc.MantineProvider(
                 className='container header'
             ),
 
+            # TODO add job adverts
+            # TODO add a note about the new app, and how to report bugs
+            # TODO include outstanding issues and PRs
+
             html.Div(
                 [
                     html.H2("Some news..."), # TODO align this left?
@@ -238,6 +242,8 @@ app.layout = dmc.MantineProvider(
             dash.page_container,
 
             #### FOOTERS #####
+
+            # TODO revisit the footer
         
             html.Div(
                 [

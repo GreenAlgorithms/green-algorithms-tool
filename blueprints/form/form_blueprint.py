@@ -14,7 +14,7 @@ from utils.graphics import MY_COLORS
 from blueprints.form.form_layout import get_green_algo_form_layout
 
 def get_form_blueprint(
-    id_prefix:str,
+    id_prefix: str,
     title: str,
     subtitle: html.P,
     continuous_inf_scheme_properties: dict = {'display': 'none'},
@@ -88,12 +88,12 @@ def get_form_blueprint(
         ],
         [
             # To force initial triggering
-            Input('url_content','search'),
+            Input('url_content', 'search'),
             Input('form_data_imported_from_csv', 'data'),
         ],
     )
     def filling_form(_, upload_content): 
-        if  ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             to_return = {k: upload_content[k] for k in DEFAULT_VALUES_FOR_PAGE_LOAD.keys()}
             return tuple(to_return.values())
         return tuple(DEFAULT_VALUES_FOR_PAGE_LOAD.values())
@@ -102,8 +102,8 @@ def get_form_blueprint(
     ##################### LOCATION AND SERVER ###
 
     ###########################################
-    ### TODO: platform, location and server inputs sometimes do not 
-    # render when uploaded from csv on AI page. Particularly frequent for server.
+    ### TODO: platform, location and server inputs sometimes do not render when uploaded from csv on AI page.
+    # Particularly frequent for server.
     #  
     # The first callback range (the one directly triggered by the upload) is almost
     # always not enough to render all inputs, and most of the time it is the 
