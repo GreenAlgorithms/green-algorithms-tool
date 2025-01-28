@@ -61,7 +61,7 @@ inference_form = get_form_blueprint(
 
 ### WARNING: the csv_flushing_delay below should not be lower than 
 # 2000 miliseconds to avoid rendering bugs of the server fields
-import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
+import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2000) 
 
 metrics = get_metrics_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,

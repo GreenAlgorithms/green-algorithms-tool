@@ -14,11 +14,17 @@ These prefix are automatically added to the blueprint components' id and
 to the Inputs, Outputs and States of its callbacks. Though, for outer callbacks,
 the prefix needs to be manually added to the Inputs, Outputs and State ids.
 
-The only app level variable is the backend data "versioned_data" used to run the calculator.
-The "versioned_data" is loaded when the app is launched and then triggers all the callbacks 
-that require backend data (cores, server, location, carbon intensity and "equivalent" callbacks).
-As the name suggests, this data is versioned to ensure the results replicability accross the
-different versions of the app data.
+The only app level variables are the backend data "versioned_data" used to run the calculator
+and the language choice. The "versioned_data" is loaded when the app is launched and then triggers
+all the callbacks that require backend data (cores, server, location,
+carbon intensity and "equivalent" callbacks). As the name suggests,
+this data is versioned to ensure the results replicability accross the
+different versions of the app data. 
+
+The translation is applied through a dedicated blueprint for all 
+textual contents. Because of this, we initialize the app as a  dash_extensions.enrich.DashProxy.
+TODO: stay aware of possible bugs due to maintenance issues of the
+DashProxy or DashBlueprint modules, that may entail refactorization work.
 
 Because of our usage of DashBlueprint, we also implemented the pages as blueprints.
 The pages are registered in the app and wrapped within a layout made of the
@@ -33,8 +39,8 @@ from flask import send_file # Integrating Loader IO
 
 from dash import html, dcc, ctx, _dash_renderer
 from dash.dependencies import Input, Output, State
+from dash_extensions.enrich import DashProxy
 import dash_mantine_components as dmc
-from dash_iconify import DashIconify
 _dash_renderer._set_react_version("18.2.0")
 
 from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR, get_available_versions, APP_VERSION_OPTIONS_LIST
@@ -54,7 +60,7 @@ external_stylesheets = [
     ),
 ]
 
-app = dash.Dash(
+app = DashProxy(
     __name__,
     use_pages=True,
     external_stylesheets=external_stylesheets,
@@ -87,7 +93,7 @@ AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view
 ## CREATE NAVBAR
 
 icons_per_page = {'Home': 'fluent-color:home-16', 'Ai': 'streamline:artificial-intelligence-spark'}
-name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
+name_per_page = {'Home': translatable_text('Classic-view').embed(app), 'Ai': translatable_text('AI-view').embed(app)}
 pages = list(dash.page_registry.values())
 
 appVersions_options = get_available_versions()
@@ -127,7 +133,7 @@ versions_choice = html.Div(
     [
         html.Div(
             [
-                html.P("Change data version", id='old_version_link'),
+                html.P(translatable_text("Change data version").embed(app), id='old_version_link'),
             ],
             className='change_version_text'
         ),
@@ -152,7 +158,7 @@ language_choice = html.Div(
     [
         html.Div(
             [
-                html.P("Change language", id='language_choice_link'),
+                html.P(translatable_text("Change language").embed(app), id='language_choice_link'),
             ],
             className='change_version_text'
         ),
@@ -202,8 +208,8 @@ app.layout = dmc.MantineProvider(
             #### HEADER ####
             html.Div(
                 [
-                    html.H1("Green Algorithms calculator"),
-                    html.P("What's the carbon footprint of your computations?"),
+                    html.H1(translatable_text("Green Algorithms calculator").embed(app)),
+                    html.P(translatable_text("Subtitle").embed(app)),
 
                     html.Div(
                         [
@@ -228,30 +234,40 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("Some news..."), # TODO align this left?
-                    html.P([
-                        html.A(
-                            "The GREENER principles",
-                            href="https://rdcu.be/dfpLM",
-                            target="_blank"
-                        ),
-                        " for environmentally sustainable computational science."
-                    ]),
-                    html.P([
-                        html.A(
-                            "A short primer",
-                            href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
-                            target="_blank"
-                        ),
-                        " discussing different options for carbon footprint estimation."
-                    ]),
+                    html.H2(translatable_text("Some news").embed(app)), # TODO align this left?
+
+                    html.P(
+                        [
+                            html.A(
+                                translatable_text("The GREENER principles").embed(app),
+                                href="https://rdcu.be/dfpLM",
+                                target="_blank",
+                                style={'margin-right': '6px'},
+                            ),
+                            translatable_text("for environmentally sustainable computational science").embed(app),
+                        ],
+                        style={'display': 'block', 'width': 'fit-content'}
+                    ),
+
+                    html.P(
+                        [
+                            html.A(
+                                translatable_text("A short primer").embed(app),
+                                href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                                target="_blank",
+                                style={'margin-right': '6px'}
+                            ),
+                            translatable_text("carbon footprint estimations").embed(app)
+                        ],
+                        style={'display': 'block', 'width': 'fit-content'}
+                    ),
                     # TODO add something else there? GA4HPC?
 
                     html.Div(
                         [
                             html.A(
                                 html.Button(
-                                    'More on the project website!',
+                                    translatable_text('More on the project website').embed(app),
                                     id='website-link-button'
                                 ),
                                 href='https://www.green-algorithms.org',
@@ -403,9 +419,9 @@ app.layout = dmc.MantineProvider(
 @app.callback(
         [
             Output('Home-navlink', 'style'),
-            Output('Home-navlink-label', 'style'),
+            Output('Classic-view-text_value', 'style'),
             Output('Ai-navlink', 'style'),
-            Output('Ai-navlink-label', 'style'),
+            Output('AI-view-text_value', 'style'),
         ],
         Input('url_content', 'pathname')
 )
@@ -427,7 +443,7 @@ def style_navlink(url_pathname: str):
 
 
 ################## LANGUAGE CHOICE
-
+    
 @app.callback(
     Output('language_dropdown_div', 'style'),
     Input('language_choice_link','n_clicks'),

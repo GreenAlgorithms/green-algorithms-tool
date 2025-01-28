@@ -158,6 +158,7 @@ body {
 .change_version_text {
     margin-bottom: 10px;
     margin-top: 10px;
+    margin-right: 3px;
     cursor: pointer;
     width: fit-content;
     display:flex;
@@ -184,6 +185,19 @@ body {
     display: flex;
     flex-direction: row;
     margin-bottom: 0px;
+}
+
+#language_dropdown_div {
+    margin-left: 4px;
+}
+
+#language_dropdown .Select-value {
+    display: flex;
+}
+
+#language_dropdown .Select-multi-value-wrapper {
+    width: 5.5em;
+    height: 2.2em;
 }
 
 

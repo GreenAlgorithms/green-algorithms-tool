@@ -61,6 +61,10 @@ p:not(:last-of-type) {
     line-height: 1.3;
 }
 
+a div{
+    text-decoration: underline;
+}
+
 /*
 ---------------------------------- HEADER ----------------------------------------
 */
@@ -84,7 +88,7 @@ p:not(:last-of-type) {
     color: rgb(80, 80, 80);
 }
 
-.change_version_text p {
+.change_version_text p div {
     color: rgb(60, 60, 60);
     text-decoration: underline;
     font-size: 0.8em;
