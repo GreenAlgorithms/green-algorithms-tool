@@ -475,6 +475,9 @@ def get_green_algo_form_layout(
 
             #### LOCATION ####
 
+            # TODO add a display of the carbon intensity value used
+            # TODO Give the option to input a custom carbon intensity value
+
             html.Div(
                 [
                     html.Label("Select location"),

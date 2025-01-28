@@ -94,11 +94,14 @@ def get_ai_page_layout():
 
             html.Div(
                 [
-                    html.H2('Artificial intelligence dedicated page'),
-                    html.P(
-                            'This new page is especially dedicated to AI-related computations, namely training and inference phases. ' \
-                            "Based on the same formula as in the main page, it is intended to ease the reporting of AI systems' environmental impacts over a fixed time lenght, typically one year. " \
-                        )
+                    html.H2('The Green Algorithms calculator, adapted for artificial intelligence'),
+                    html.P([
+                            "This new page is especially dedicated to AI-related computations, ",
+                            "where compute is usually divided between training and inference phases. ",
+                            "The methods is the same as in the original tool, ",
+                            "it simply facilitates the reporting of AI systems' environmental impacts ",
+                            "over a fixed period of time, e.g. one year."
+                        ])
                 ],
                 className='container'
             ),
@@ -120,15 +123,28 @@ def get_ai_page_layout():
 
                     html.Div(
                         [
-                            html.H3("Reporting time scope"),
+                            html.H3("Reporting period"),
 
                             html.P(
                                 [
-                                    'Your reporting (time) scope corresponds to the time length over which you want to estimate the environmental impacts of your AI system. ' ,
-                                    'Typical values might be one year or the whole estimated lifespan of your system. ' ,
-                                    html.B('To consistently report the impacts of your project, you are invited to take into account all the computations falling within the scope. ' ),
+                                    'The reporting period is to the period of time over which you want to estimate '
+                                    'the environmental impacts of your AI system (training and inference). '
+                                    'This is particularly relevant in the case of ongoing deployment of the system. '
+                                    'Typical values might be one year or the whole estimated lifespan of your system. ',
+                                    # html.B('To consistently report the impacts of your project, you are invited to '
+                                    #        'take into account all the computations falling within the scope. ' ), # Not sure what this means
                                 ],
                                 className='reporting-scope-text'
+                            ),
+
+                            html.P(
+                                [
+                                    'The value is only used by the calculator when you select "continuous inference" '
+                                    'to report the total energy and carbon footprint over the reporting period.'
+                                    'It is nonetheless good practice to enter it to clarify the scope of your '
+                                    'estimations.',
+                                ],
+                                className='reporting-scope-text text-italic'
                             ),
                                   
                             html.Div(
@@ -169,16 +185,6 @@ def get_ai_page_layout():
                                 ],
                                 className="reporting-row short-input"
                             ),
-
-                            html.P(
-                                [
-                                    'The above field is mostly declarative. It should help you to correctly quantify your computations and then easily communicate about your reporting. ',
-                                    html.B('It will only have an impact when choosing the continuous inference scheme. Please refer to the inference Help tab for more information.'),
-                                ],
-                                className='reporting-scope-text',
-                                style={'margin-top': '10px'},
-                            )
-
                         ],
                         className='container',
                     ),

@@ -16,16 +16,34 @@ def get_green_algo_methodology_layout():
 
             html.Div(
                 [
-                    html.Center(
-                        html.P(["More details about the methodology in the ",
-                                html.A("methods paper",
-                                       href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                                       target='_blank'),
-                                "."
-                                ]),
-                    ),
+                    # html.Center(
+                    html.P(html.B(["🌱 More details about the methodology in the ",
+                            html.A("methods paper",
+                                   href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
+                                   target='_blank'),
+                            "."
+                            ])),
+                    # ),
+                    html.P([
+                        html.B("🌱 Other resources you may find interesting on this topic: "),
+                        html.A("the GREENER principles", href="https://rdcu.be/dfpLM", target="_blank"),
+                        " for environmentally sustainable computational science, ",
+                        "or this ",
+                        html.A("short primer",
+                               href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                               target="_blank"),
+                        " discussing different options for carbon footprint estimation."
+                    ]),
+                    html.P([
+                        html.B("🌱 Using a SLURM-powered HPC server?"),
+                        " Check out ",
+                        html.A("GA4HPC",
+                               href="https://github.com/GreenAlgorithms/GreenAlgorithms4HPC",
+                               target="_blank"),
+                        ", it uses the same calculation method but at scale."
+                    ])
                 ],
-                className='container footer preprint'
+                className='container text-italic'
             ),
 
             #### FORMULA ####

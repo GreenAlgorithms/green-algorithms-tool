@@ -213,21 +213,41 @@ app.layout = dmc.MantineProvider(
                 [
                     html.H2("Some news..."), # TODO align this left?
                     html.P([
-                        html.A(
-                            "The GREENER principles",
-                            href="https://rdcu.be/dfpLM",
-                            target="_blank"
-                        ),
-                        " for environmentally sustainable computational science."
+                        "🌱 ",
+                        html.B('Interested in green computing?'),
+                        " We're recruiting for 2 research roles at the University of Cambridge! ",
+                        html.A("More info here", href="https://www.lannelongue-group.org/join/", target="_blank")
                     ]),
                     html.P([
-                        html.A(
-                            "A short primer",
-                            href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
-                            target="_blank"
-                        ),
-                        " discussing different options for carbon footprint estimation."
+                        "🌱 ",
+                        html.B('The new major update of the calculator is here!'),
+                        " Possibility to share your results as csv, more guidelines on how to use the tool, "
+                        "and the addition of a brand-new AI-specific calculator! ",
+                        html.A("Check out the release notes", href="", target="_blank"),
+                        " for the full list of new features."
                     ]),
+                    html.P([
+                        "🐞 It's always possible that some bugs have slipped through the net of this new release... "
+                        "If you spot one, just let us know ",
+                        html.A("here", href="https://github.com/GreenAlgorithms/green-algorithms-tool/issues", target="_blank"),
+                        "."
+                    ]),
+                    # html.P([
+                    #     html.A(
+                    #         "The GREENER principles",
+                    #         href="https://rdcu.be/dfpLM",
+                    #         target="_blank"
+                    #     ),
+                    #     " for environmentally sustainable computational science."
+                    # ]),
+                    # html.P([
+                    #     html.A(
+                    #         "A short primer",
+                    #         href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                    #         target="_blank"
+                    #     ),
+                    #     " discussing different options for carbon footprint estimation."
+                    # ]),
                     # TODO add something else there? GA4HPC?
 
                     html.Div(
@@ -285,6 +305,7 @@ app.layout = dmc.MantineProvider(
                                                 href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
                                                 target='_blank'),
                                         " on the GitHub or ",
+                                        # TODO set up a better green algorithms email redirecting to someone
                                         html.A("email us",
                                                 href='mailto:green.algorithms@gmail.com', ),
                                         ]),
@@ -323,20 +344,13 @@ app.layout = dmc.MantineProvider(
 
                     dcc.Markdown('''
                     The Green Algorithms project is led by
-
-                    [Loïc Lannelongue](www.lannelongue.eu)¹ and [Michael Inouye](https://www.inouyelab.org/home/people)².
+                    [Loïc Lannelongue](www.lannelongue-group.org) and 
+                    [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge,
+                    but made possible by the contribution and support of many: 
+                    [full list here](https://www.green-algorithms.org/about/)
                     ''',
-                                    className='authors'
-                                    ),
-
-                    dcc.Markdown('''
-                    (1) University of Cambridge
-
-                    (2) Baker Heart and Diabetes Institute
-                    
-                    ''',
-                                    className='affiliations'
-                                    ),
+                    className='authors'
+                    ),
                 ],
                 className='container about-us footer'
             ),
