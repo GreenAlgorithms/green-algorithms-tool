@@ -34,7 +34,7 @@ HOME_PAGE_ID_PREFIX = 'main'
 
 
 ###################################################
-# MODULES CREATTION
+# MODULES CREATION
 
 form = get_form_blueprint(
     id_prefix = HOME_PAGE_ID_PREFIX,

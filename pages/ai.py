@@ -1,8 +1,8 @@
 '''
 The page itself is defined as a DashBlueprint that encompasses both layout and callbacks.
 
-Conversely to the Home page, the Ai page requires more intermediate processing to obtain the metrics.
-These are due to the continuous inference option and the possible retrainings or R&D experiments to take into account.
+Contrary to the Home page, the Ai page requires more intermediate processing to obtain the metrics.
+These are due to the continuous inference option and the possible retraining or R&D experiments to take into account.
 
 These additional fields must be taken into account:
     - when exporting or loading data
@@ -39,7 +39,7 @@ AI_PAGE_ID_PREFIX = 'ai'
 
 
 ###################################################
-# MODULES CREATTION
+# MODULES CREATION
 
 TRAINING_ID_PREFIX = 'training'
 training_form = get_form_blueprint(

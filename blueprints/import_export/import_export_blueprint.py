@@ -53,8 +53,7 @@ def get_import_expot_blueprint(
     def export_as_csv(aggregate_data):
         '''
         Exports the aggregate_data.
-        TODO: modify the suffixe strategy because not robust with
-        respect to the prefix of the AI page's components
+        TODO: modify the suffixe strategy because not robust with respect to the prefix of the AI page's components
         '''
         file_suffixe = ''
         if ctx.triggered_id is not None and 'ai-' in ctx.triggered_id:
