@@ -123,8 +123,8 @@ body {
 }
 
 .page-navlink{
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: 12px;
+    margin-right: 12px;
     width: 100%;
     text-align: center;
 }
@@ -140,10 +140,11 @@ body {
 .version_and_language_div {
     width: 100%;
     display: flex;
+    justify-content: center;
 }
 
 #versions_div {
-    margin-left: auto;
+    /* margin-left: auto; */
     width: fit-content;
     display: flex;
     flex-direction: row;
@@ -161,6 +162,19 @@ body {
     display:flex;
     align-items: center;
     justify-content: center;
+}
+
+#data_version_tooltip .tooltip-icon{
+    position: relative;
+    left: -1.7em;
+    top: -0.05em;
+}
+
+#data_version_tooltip .tooltip-text{
+    position: absolute;
+    right: -8em;
+    z-index: 1;
+    font-size: 0.6em;
 }
 
 /* To set the width of the dropdown */

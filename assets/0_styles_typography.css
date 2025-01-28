@@ -168,6 +168,7 @@ input, select, .Select, textarea {
 }
 
 .tooltip-text {
+    font-size: 0.6em;
     visibility: hidden;
     width: 12em;
     background-color: black;
@@ -180,6 +181,11 @@ input, select, .Select, textarea {
     position: absolute;
     right: 1em;
     z-index: 1;
+}
+
+
+#data_version_tooltip .tooltip-text {
+    font-family: 'Raleway', serif;
 }
 
 

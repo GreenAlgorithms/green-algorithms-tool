@@ -16,8 +16,6 @@
         width: 30em;
     }
     
-    
-    
     .pages-menu {
         flex-direction: row;
     }
@@ -38,8 +36,21 @@
         height: 2.0em;
     }
 
+    #versions_div {
+        margin-left: auto;
+    }
+
     #version-button {
         font-size: 1em;
+    }
+
+    #data_version_tooltip .tooltip-icon{
+        top: 0.25em;
+    }
+    
+    #data_version_tooltip .tooltip-text{
+        font-size: 0.8em;
+        top: 2.2em
     }
 
     /*
@@ -141,6 +152,10 @@
     .change_version_text {
         margin-bottom: 10px;
         margin-top: 20px;
+    }
+
+    .tooltip-text {
+        font-size: 0.8em;
     }
 
     /*

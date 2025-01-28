@@ -47,6 +47,10 @@
         height: 2.4em;
     }
 
+    #versions_div {
+        margin-left: auto;
+    }
+
     #version-button {
         font-size: 1.2em;
     }

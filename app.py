@@ -34,7 +34,6 @@ from flask import send_file # Integrating Loader IO
 from dash import html, dcc, ctx, _dash_renderer
 from dash.dependencies import Input, Output, State
 import dash_mantine_components as dmc
-from dash_iconify import DashIconify
 _dash_renderer._set_react_version("18.2.0")
 
 from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR, get_available_versions, APP_VERSION_OPTIONS_LIST
@@ -123,6 +122,20 @@ pages_navbar = html.Div(
 
 versions_choice = html.Div(
     [
+        
+        html.Div(
+            [
+                html.Div('i', className='tooltip-icon'),
+
+                html.P(
+                    "The calculator data (carbon intensities, hardware...) is regularly updated. If you want to replicate results computed in the past, please select the corresponding data version.",
+                    className='tooltip-text'
+                ),
+            ],
+            className='tooltip',
+            id='data_version_tooltip'
+        ),
+        
         html.Div(
             [
                 html.P("Change data version", id='old_version_link'),
