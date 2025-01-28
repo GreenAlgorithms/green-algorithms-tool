@@ -7,6 +7,8 @@ TRANSLATIONS_DICT = {
 
     #### APP HEADER ####
 
+    ## TOP HEADER AND NAVIGATION BAR
+
     "Green Algorithms calculator": {
         "en": "Green Algorithms calculator",
         "fr": "Calculateur Green Algorithms",
@@ -30,6 +32,9 @@ TRANSLATIONS_DICT = {
     "Change data version": {
         "en": "Change data version",
         "fr": "Version des données",
+
+    ## NEWS SECTION
+
     },
     "Some news": {
         "en": "Some news...",
@@ -56,9 +61,60 @@ TRANSLATIONS_DICT = {
         "fr": "En savoir plus sur le projet du site !",
     },
 
-
     "Artificial intelligence dedicated page": {
         "en": "Artificial intelligence dedicated page",
         "fr": "Page dédiée à l'intelligence artificielle",
     },
+
+    #### APP FOOTER ####
+
+    ### DATA AND CODE
+
+    "Data and code": {
+        "en": "Data and code",
+        "fr": "Code et données",
+    },
+    "Data_and_code_explanation": {
+        "en": "All the data and code used to run this calculator can be found on ",
+        "fr": "Toutes les données et le code du calculateur se trouvent sur ",
+    },
+    
+    ### SUGGESTIONS
+
+    "Questions_suggestions": {
+        "en": "Questions / Suggestions?",
+        "fr": "Questions / suggestions ?",
+    },
+    "Questions_suggestions_text": {
+        "en": "If you have questions or suggestions about the tool, you can ",
+        "fr": "Si vous avez des questions ou des suggestions concernant l'outil, vous pouvez ",
+    },
+    "open an issue": {
+        "en": "open an issue",
+        "fr": "ouvrir une 'issue'",
+    },
+    "on the GitHub or": {
+        "en": " on the GitHub or ",
+        "fr": " sur le Github ou ",
+    },
+    "email_us": {
+        "en": "email us.",
+        "fr": "nous envoyer un mail.",
+    },
+
+    ### HOW TO CITE
+
+    "How to cite this work": {
+        "en": "How to cite this work",
+        "fr": "Citer ce travail",
+    },
+
+    ### ABOUT US
+
+    "About us": {
+        "en": "About us",
+        "fr": "Qui nous sommes",
+    },
+
+
 }

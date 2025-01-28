@@ -585,3 +585,12 @@ blockquote {
 .footnote {
     align-self: flex-start;
 }
+
+
+/*
+---------------------------------- FOOTER ----------------------------------------
+*/
+
+#Data_and_code_explanation-text_value {
+    display: inline-block;
+}

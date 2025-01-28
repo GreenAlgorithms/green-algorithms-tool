@@ -293,14 +293,21 @@ app.layout = dmc.MantineProvider(
                 [
                     html.Div(
                         [
-                            html.H2("Data and code"),
+                            html.H2(translatable_text("Data and code").embed(app)),
 
                             html.Center(
-                                html.P(["All the data and code used to run this calculator can be found on ",
-                                        html.A("GitHub",
-                                                href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                                target='_blank')
-                                        ]),
+                                html.P(
+                                    [
+                                        translatable_text("Data_and_code_explanation").embed(app),
+                                        html.A(
+                                            "GitHub",
+                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool',
+                                            target='_blank',
+                                            style={'display': 'inline-block'}
+                                        )
+                                    ],
+                                    style={'display': 'inline-block'}
+                                ),
                             ),
                         ],
                         className='container footer'
@@ -308,17 +315,24 @@ app.layout = dmc.MantineProvider(
 
                     html.Div(
                         [
-                            html.H2('Questions / Suggestions?'),
+                            html.H2(translatable_text('Questions_suggestions').embed(app)),
 
                             html.Center(
-                                html.P(["If you have questions or suggestions about the tool, you can ",
-                                        html.A("open an issue",
-                                                href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
-                                                target='_blank'),
-                                        " on the GitHub or ",
-                                        html.A("email us",
-                                                href='mailto:green.algorithms@gmail.com', ),
-                                        ]),
+                                html.P(
+                                    [
+                                        translatable_text("Questions_suggestions_text").embed(app),
+                                        html.A(
+                                            translatable_text("open an issue").embed(app),
+                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
+                                            target='_blank',
+                                            style={'margin-right': '4px'}
+                                        ),
+                                        translatable_text("on the GitHub or").embed(app),
+                                        html.A(
+                                            translatable_text("email_us").embed(app),
+                                            href='mailto:green.algorithms@gmail.com', ),
+                                    ]
+                                ),
                             ),
                         ],
                         className='container footer'
@@ -331,7 +345,7 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("How to cite this work"),
+                    html.H2(translatable_text("How to cite this work").embed(app)),
 
                     html.Center(
                         html.P([
@@ -350,7 +364,7 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("About us"),
+                    html.H2(translatable_text("About us").embed(app)),
 
                     dcc.Markdown('''
                     The Green Algorithms project is led by
