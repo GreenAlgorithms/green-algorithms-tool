@@ -22,7 +22,10 @@ def get_form_blueprint(
     additional_bottom_fields: html.Div = html.Div(),
 ):
     """
-    TODO: remove the continuous inference section from the form blueprint and add it through this function.
+    TODO: remove the continuous inference section from the form blueprint,
+    as it should not belong to the base Form module. Instead, the right 
+    way to embed the continuous inference section in the inference form should 
+    be to pass it as an argument to this function.
 
     Args:
         id_prefix (str): id prefix automatically applied to all components and callbacks.
@@ -166,7 +169,10 @@ def get_form_blueprint(
         '''
         Shows either LOCATION or SERVER depending on the platform.
 
-        NOTE: the input Input('form_data_imported_from_csv', 'data') should not be necessary
+        NOTE: the input Input('form_data_imported_from_csv', 'data') should not be necessary because, when a csv is uploaded,
+        this callback would be triggered by the other Inputs. However, because of the issue documented in 
+        the above TODO (~ line 108), I have been thinking that adding Input('form_data_imported_from_csv', 'data') as
+        an Input would help organizing the callback chain.
         '''
         if data is not None:
             data_dict = SimpleNamespace(**data)
@@ -180,6 +186,10 @@ def get_form_blueprint(
         # The following is a kind of duplicata from the lines below,
         # should help to better take into account inputs uploaded from csv
         # TODO: should be removed when the callback chain is made simpler
+        # this simplification refers to the above TODO as well. In simple terms
+        # it would be worth trying to refactor the callback chain using intermediate bottleneck. 
+        # If the server div is not rendered, never apply callback related to server
+        # (could be done by passing 'form_data_imported_from_csv' as a State, not as an Input)
         if 'form_data_imported_from_csv' in ctx.triggered_id:
             if upload_content['platformType'] == 'cloudComputing':
                 if upload_content['provider'] in ['other'] + providers_withoutDC:
@@ -273,7 +283,6 @@ def get_form_blueprint(
     def set_provider_value(platform_type, versioned_data, upload_content, prev_provider):
         '''
         Sets the provider value, either from the csv content of as a default value.
-        TODO: improve the choice of the default value.
         '''
         # reads data from input
         if ctx.triggered_id is not None:
