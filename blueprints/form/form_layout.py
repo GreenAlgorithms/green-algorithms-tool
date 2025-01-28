@@ -3,8 +3,7 @@ This script implements:
     - the layout of the Form module
     - the layout of the retraining and R&D training sections 
 
-TODO: move the continuous inference scheme section to a specific function
-instead of being part of the base Form layout.
+TODO: move the continuous inference scheme section to a specific function instead of being part of the base Form layout.
 '''
 
 from dash import html, dcc
