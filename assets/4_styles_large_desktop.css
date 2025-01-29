@@ -18,9 +18,6 @@
         flex-direction: unset;
     }
     
-    .navlink-icon {
-        height: 2.6em;
-    }
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
@@ -76,6 +73,11 @@
         margin-left: 0em;
         margin-right: -1em;
     }
+
+    #data_version_tooltip .tooltip-icon{
+        left: -2.8em;
+    }
+
     
     /*
     ---------------------------------- MINI-BOX ----------------------------------------

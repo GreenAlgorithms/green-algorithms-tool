@@ -186,6 +186,8 @@ input, select, .Select, textarea {
 
 #data_version_tooltip .tooltip-text {
     font-family: 'Raleway', serif;
+    font-style: normal;
+    font-weight: 200;
 }
 
 

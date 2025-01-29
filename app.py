@@ -212,12 +212,14 @@ app.layout = dmc.MantineProvider(
             html.Div(
                 [
                     html.H2("Some news..."), # TODO align this left?
+                    
                     html.P([
                         "🌱 ",
                         html.B('Interested in green computing?'),
                         " We're recruiting for 2 research roles at the University of Cambridge! ",
                         html.A("More info here", href="https://www.lannelongue-group.org/join/", target="_blank")
                     ]),
+
                     html.P([
                         "🌱 ",
                         html.B('The new major update of the calculator is here!'),
@@ -226,29 +228,13 @@ app.layout = dmc.MantineProvider(
                         html.A("Check out the release notes", href="", target="_blank"),
                         " for the full list of new features."
                     ]),
+
                     html.P([
                         "🐞 It's always possible that some bugs have slipped through the net of this new release... "
                         "If you spot one, just let us know ",
                         html.A("here", href="https://github.com/GreenAlgorithms/green-algorithms-tool/issues", target="_blank"),
                         "."
                     ]),
-                    # html.P([
-                    #     html.A(
-                    #         "The GREENER principles",
-                    #         href="https://rdcu.be/dfpLM",
-                    #         target="_blank"
-                    #     ),
-                    #     " for environmentally sustainable computational science."
-                    # ]),
-                    # html.P([
-                    #     html.A(
-                    #         "A short primer",
-                    #         href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
-                    #         target="_blank"
-                    #     ),
-                    #     " discussing different options for carbon footprint estimation."
-                    # ]),
-                    # TODO add something else there? GA4HPC?
 
                     html.Div(
                         [

@@ -42,10 +42,6 @@
     .navlink-label {
         font-size: 2.9em;
     }
-    
-    .navlink-icon {
-        height: 2.4em;
-    }
 
     #versions_div {
         margin-left: auto;
@@ -53,6 +49,10 @@
 
     #version-button {
         font-size: 1.2em;
+    }
+
+    #data_version_tooltip .tooltip-text{
+        font-size: 0.9em;
     }
 
 
