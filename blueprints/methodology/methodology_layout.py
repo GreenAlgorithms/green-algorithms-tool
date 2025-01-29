@@ -9,7 +9,9 @@ import dash_mantine_components as dmc
 
 
 
-def get_green_algo_methodology_layout():
+def get_green_algo_methodology_layout(
+    additional_formula_content: dcc.Markdown,
+):
     return html.Div(
         [
             #### PUBLICATION ####
@@ -21,8 +23,8 @@ def get_green_algo_methodology_layout():
                             [
                                 "🌱 More details about the methodology in the ",
                                 html.A("methods paper",
-                                   href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                                   target='_blank'),
+                                    href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
+                                    target='_blank'),
                                 "."
                             ]
                         )
@@ -45,8 +47,8 @@ def get_green_algo_methodology_layout():
                         html.B("🌱 Using a SLURM-powered HPC server?"),
                         " Check out ",
                         html.A("GA4HPC",
-                               href="https://github.com/GreenAlgorithms/GreenAlgorithms4HPC",
-                               target="_blank"),
+                                href="https://github.com/GreenAlgorithms/GreenAlgorithms4HPC",
+                                target="_blank"),
                         ", it uses the same calculation method but at scale."
                     ])
 
@@ -59,6 +61,8 @@ def get_green_algo_methodology_layout():
             html.Div(
                 [
                     html.H2("The formula"),
+
+                    additional_formula_content,
 
                     dcc.Markdown('''
                         The carbon footprint is calculated by estimating the energy draw of the algorithm

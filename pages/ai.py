@@ -21,6 +21,8 @@ from dash_extensions.enrich import DashBlueprint, html
 from blueprints.form.form_blueprint import get_form_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
+from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
+
 import blueprints.metrics.metrics_layout as metrics_layout
 import blueprints.metrics.utils as metrics_utils
 import blueprints.methodology.methodology_layout as methodo_layout
@@ -61,6 +63,18 @@ inference_form = get_form_blueprint(
 ### WARNING: the csv_flushing_delay below should not be lower than 
 # 2000 miliseconds to avoid rendering bugs of the server fields
 import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
+
+methodo_content = get_methodology_blueprint(
+    id_prefix=AI_PAGE_ID_PREFIX,
+    additional_formula_content= dcc.Markdown(
+        '''
+        The training and inference forms rely on the same base formula as the one used in the main
+        page calculator. Additive (for retrainings and R&D experiments) and multiplicative (for continuous inference) terms
+        are then applied to compute the final results. More information is provided by the tooltips and the help tabs.
+        ''',
+        style= {'margin-bottom': '10px'}
+    )
+)
 
 metrics = get_metrics_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
@@ -263,6 +277,10 @@ def get_ai_page_layout():
             #### RESULTS ####
 
             metrics.embed(AI_PAGE),
+                        
+            #### METHODOLOGY CONTENT ####
+
+            methodo_content.embed(AI_PAGE),
 
         ],
         className='page_content'
