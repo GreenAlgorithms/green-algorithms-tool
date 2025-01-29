@@ -59,7 +59,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Please see the Help tab for more information about continuous inference. If chosen, then only report the computations falling within your ‘input data time span’. Scaling to the reporting time scope is done automatically.",
+                                        "Please see the Help tab for more information about continuous inference. If chosen, then only report the computations falling within your ‘input data time span’. Scaling to the reporting period is done automatically.",
                                         className='tooltip-text'
                                     ),
                                 ],

@@ -280,7 +280,12 @@ hr {
 }
 
 .reporting-row {
-    /* Below fields are inspired from those of the .form-row class. */
+    /* 
+    Below fields are inspired from those of the .form-row class,
+    but we created a dedicated css class because we do not want many of the 
+    .for-row .<subclass> (for instance input[type='number']) to apply
+    for larger screen sizes
+    */
     margin-bottom: 20px;
     display: flex;
     justify-content: flex-start;
@@ -288,6 +293,7 @@ hr {
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 6px;
+    margin-top: 18px;
 }
 
 .reporting-row input[type='number'],

@@ -16,24 +16,31 @@ def get_green_algo_methodology_layout():
 
             html.Div(
                 [
-                    # html.Center(
-                    html.P(html.B(["🌱 More details about the methodology in the ",
-                            html.A("methods paper",
+                    html.P(
+                        html.B(
+                            [
+                                "🌱 More details about the methodology in the ",
+                                html.A("methods paper",
                                    href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
                                    target='_blank'),
-                            "."
-                            ])),
-                    # ),
-                    html.P([
-                        html.B("🌱 Other resources you may find interesting on this topic: "),
-                        html.A("the GREENER principles", href="https://rdcu.be/dfpLM", target="_blank"),
-                        " for environmentally sustainable computational science, ",
-                        "or this ",
-                        html.A("short primer",
-                               href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
-                               target="_blank"),
-                        " discussing different options for carbon footprint estimation."
-                    ]),
+                                "."
+                            ]
+                        )
+                    ),
+
+                    html.P(
+                        [
+                            html.B("🌱 Other resources you may find interesting on this topic: "),
+                            html.A("the GREENER principles", href="https://rdcu.be/dfpLM", target="_blank"),
+                            " for environmentally sustainable computational science, ",
+                            "or this ",
+                            html.A("short primer",
+                                href="https://www.green-algorithms.org/assets/publications/2023_Comment_NRPM.pdf",
+                                target="_blank"),
+                            " discussing different options for carbon footprint estimation."
+                        ]
+                    ),
+
                     html.P([
                         html.B("🌱 Using a SLURM-powered HPC server?"),
                         " Check out ",
@@ -42,6 +49,7 @@ def get_green_algo_methodology_layout():
                                target="_blank"),
                         ", it uses the same calculation method but at scale."
                     ])
+
                 ],
                 className='container text-italic'
             ),
@@ -172,7 +180,7 @@ def get_training_help_content(title: str):
                         R&D trainings are taken into account using a simple scaling factor corresponding to the ratio between your R&D and your main training computational needs.
 
                         __Retrainings__: any additional trainings performed after the deployment of your AI system.
-                        For consistent reporting, you are invited to take into account all retrainings requirements over your reporting time scope.
+                        For consistent reporting, you are invited to take into account all retrainings requirements over your reporting period.
                         To do so, we invite you to fill in the number of retrainings and a simple scaling factor corresponding to the ratio between a single average retraining and your main training computational needs.
                         '''
                     ),
@@ -242,7 +250,7 @@ def get_inference_help_content(title: str):
 
                     dcc.Markdown(
                         '''
-                        The inference form should enable you to quantify the environmental footprint of you AI system's inference phase over the whole reporting time scope.
+                        The inference form should enable you to quantify the environmental footprint of you AI system's inference phase over the whole reporting period.
                         __To do so, we distinguish between two inference schemes: block (or one-shot) inference and continuous inference defined below__.
 
                         By default, the form is in 'block inference' mode but you can actiave the continuous mode using the switcher at the top of the form.
@@ -267,7 +275,7 @@ def get_inference_help_content(title: str):
                         '''
                         __Block (one-shot) inference__: corresponds to an AI service that is occasionally requested in a one-shot fashion. 
                         It may be used to process a data set as a whole or to build one-day or one-week strategy. 
-                        As a number of them may happen over your reporting time scope, we invite you to quantify the computation requirements for one inference block and then to use the Multiplicative Scaling Factor.
+                        As a number of them may happen over your reporting period, we invite you to quantify the computation requirements for one inference block and then to use the Multiplicative Scaling Factor.
                         ''',
                         style={'margin-bottom': '6px'}
                     ),
@@ -276,15 +284,15 @@ def get_inference_help_content(title: str):
                         '''
                         __Continuous inference__: corresponds to an AI service that is requested on demand by users or other software systems. 
                         This inference workload does not follow a strict scheduling, making it harder to quantify. In this mode, we invite you to estimate the computations requirements over a time length of your choice, the so-called "input data time span”. 
-                        Based on this and the reporting time scope value, your total inference footprint is computed with a simple scaling factor.
+                        Based on this and the reporting period value, your total inference footprint is computed with a simple scaling factor.
                         ''',
                         style={'margin-bottom': '12px'}
                     ),
 
                     dcc.Markdown(
                         '''
-                        It is important to keep in mind that __the reporting time scope does have an influence on the computations only when choosing the 'continuous inference scheme'__.
-                        In that case, the environmental impacts are automatically scaled from your "`input data time span`" to your reporting time scope.
+                        It is important to keep in mind that __the reporting period does have an influence on the computations only when choosing the 'continuous inference scheme'__.
+                        In that case, the environmental impacts are automatically scaled from your "`input data time span`" to your reporting period.
                         For instance, if choosing a reporting scope of 1 year and filling the form in continuous inference mode with an "`input data time span`" of 1 month,
                         then your environmental impacts correspond to the intermediate metrics computed from the input fields, multiplied by 12.
                         ''',

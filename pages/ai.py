@@ -98,7 +98,7 @@ def get_ai_page_layout():
                     html.P([
                             "This new page is especially dedicated to AI-related computations, ",
                             "where compute is usually divided between training and inference phases. ",
-                            "The methods is the same as in the original tool, ",
+                            "The method is the same as in the original tool, ",
                             "it simply facilitates the reporting of AI systems' environmental impacts ",
                             "over a fixed period of time, e.g. one year."
                         ])
@@ -176,7 +176,7 @@ def get_ai_page_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Please, fill in your reporting time scope.",
+                                                "Please, fill in your reporting period.",
                                                 className='tooltip-text'
                                             ),
                                         ],
