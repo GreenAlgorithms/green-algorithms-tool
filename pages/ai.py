@@ -141,12 +141,10 @@ def get_ai_page_layout():
 
                             html.P(
                                 [
-                                    'The reporting period is to the period of time over which you want to estimate '
+                                    'The reporting period is the period of time over which you want to estimate '
                                     'the environmental impacts of your AI system (training and inference). '
                                     'This is particularly relevant in the case of ongoing deployment of the system. '
                                     'Typical values might be one year or the whole estimated lifespan of your system. ',
-                                    # html.B('To consistently report the impacts of your project, you are invited to '
-                                    #        'take into account all the computations falling within the scope. ' ), # Not sure what this means
                                 ],
                                 className='reporting-scope-text'
                             ),
@@ -154,7 +152,7 @@ def get_ai_page_layout():
                             html.P(
                                 [
                                     'The value is only used by the calculator when you select "continuous inference" '
-                                    'to report the total energy and carbon footprint over the reporting period.'
+                                    'to report the total energy and carbon footprint over the reporting period. '
                                     'It is nonetheless good practice to enter it to clarify the scope of your '
                                     'estimations.',
                                 ],
@@ -190,7 +188,7 @@ def get_ai_page_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Please, fill in your reporting period.",
+                                                "Fill in your reporting period.",
                                                 className='tooltip-text'
                                             ),
                                         ],

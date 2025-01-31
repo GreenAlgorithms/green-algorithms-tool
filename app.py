@@ -128,7 +128,7 @@ versions_choice = html.Div(
                 html.Div('i', className='tooltip-icon'),
 
                 html.P(
-                    "The calculator data (carbon intensities, hardware...) is regularly updated. If you want to replicate results computed in the past, please select the corresponding data version.",
+                    "The calculator data (carbon intensities, hardware...) is regularly updated. If you want to replicate results computed in the past, select the corresponding data version.",
                     className='tooltip-text'
                 ),
             ],

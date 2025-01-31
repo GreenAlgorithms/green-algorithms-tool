@@ -59,7 +59,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Please see the Help tab for more information about continuous inference. If chosen, then only report the computations falling within your ‘input data time span’. Scaling to the reporting period is done automatically.",
+                                        "See the Help tab for more information about continuous inference. If chosen, then only report the computations falling within your ‘input data time span’. Scaling to the reporting period is done automatically.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -212,7 +212,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "A single CPU contains several cores.",
+                                        "Refers to the number of cores (a single CPU contains several cores).",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -241,7 +241,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "To fill-in a custom core power usage (TDP), please select 'other'.",
+                                        "Select 'other' to fill-in a custom core power usage (TDP).",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -298,7 +298,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Here, we ask for the number of GPUs (not the cores).",
+                                        "Refers to the number of GPUs (not the cores).",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -327,7 +327,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "To fill-in a custom TDP, please select 'other'.",
+                                        "Select 'other' to fill-in a custom TDP.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -383,7 +383,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "We refer to the ‘allocated memory’, not the memory actually used by the program.",
+                                "Refers to the ‘allocated memory’, not the memory actually used by the program.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -421,7 +421,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "This field enables us to retrieve the PUE and energy mix associated with your computations.",
+                                "This field is used retrieve the PUE and energy mix associated with your computations.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -560,7 +560,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Between 0 and 1. Should correspond to a temporal factor usage, accessible from log files for instance.",
+                                "Between 0 and 1. Should correspond to a temporal factor usage, accessible from log files for instance. Equals 1 by default.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -675,7 +675,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "The multiplicative factor refers to the number of repetitions of the computation.",
+                                "Refers to the number of repetitions of the computation.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -748,7 +748,7 @@ def get_additional_training_fields_layout():
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "If your R&D trainings represent twice the computations requirements of your main training, you should fill in '2'. " \
+                                "If your R&D trainings represent twice the computations requirements of your main training, fill '2'. " \
                                 "If they represent only 50% of your main training compute time, then fill in '0.5'. "
                                 "The resulting value will be added to your main training footprint.",
                                 className='tooltip-text'
@@ -849,7 +849,7 @@ def get_additional_training_fields_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "If an average retraining represents half the computations requirements of your main training, you should fill in '0.5'. ",
+                                                "If an average retraining represents half the computations requirements of your main training, fill '0.5'. ",
                                                 className='tooltip-text'
                                             ),
                                         ],
