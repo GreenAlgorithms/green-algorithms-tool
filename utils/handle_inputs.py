@@ -570,6 +570,14 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
     # enforcing input values for entries that are correct
     values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
+
+    # Small fix for special case: when the provider is not Google Cloud we should not
+    # replace the serverContinent and server values by default ones, because it has
+    # an influence on how the PUE is computed in the aggregate_input_values callback.
+    if values['provider'] != 'gcp':
+        values['serverContinent'] = None
+        values['server'] = None
+
     return values, invalid_inputs, new_version
 
 def clean_non_used_inputs_for_export(form_aggregate_data: dict):
@@ -594,14 +602,18 @@ def clean_non_used_inputs_for_export(form_aggregate_data: dict):
         form_aggregate_data['usageCPUradio'] = 'No'
         form_aggregate_data['tdpCPU'] = 0
     ### Platform related processing
-    if form_aggregate_data['platformType'] == 'cloudComputing':
-        form_aggregate_data['locationContinent'] = None
-        form_aggregate_data['locationCountry'] = None
-        form_aggregate_data['locationRegion'] = None
-    else:
+    if form_aggregate_data['platformType'] != 'cloudComputing':
         form_aggregate_data['provider'] = None
         form_aggregate_data['serverContinent'] = None
         form_aggregate_data['server'] = None
+    else:
+        if form_aggregate_data['provider'] == 'gcp':
+            form_aggregate_data['locationContinent'] = None
+            form_aggregate_data['locationCountry'] = None
+            form_aggregate_data['locationRegion'] = None
+        else:
+            form_aggregate_data['serverContinent'] = None
+            form_aggregate_data['server'] = None
     return form_aggregate_data
 
 
@@ -633,14 +645,18 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         wrong_inputs_from_csv.pop('usageCPUradio', None)
         wrong_inputs_from_csv.pop('tdpCPU', None)
     ### Platform related processing
-    if clean_inputs_from_csv['platformType'] == 'cloudComputing':
-        wrong_inputs_from_csv.pop('locationContinent', None)
-        wrong_inputs_from_csv.pop('locationCountry', None)
-        wrong_inputs_from_csv.pop('locationRegion', None)
-    else:
+    if clean_inputs_from_csv['platformType'] != 'cloudComputing':
         wrong_inputs_from_csv.pop('provider', None)
         wrong_inputs_from_csv.pop('serverContinent', None)
         wrong_inputs_from_csv.pop('server', None)
+    else:
+        if clean_inputs_from_csv['provider'] == 'gcp':
+            wrong_inputs_from_csv.pop('locationContinent', None)
+            wrong_inputs_from_csv.pop('locationCountry', None)
+            wrong_inputs_from_csv.pop('locationRegion', None)
+        else:
+            wrong_inputs_from_csv.pop('serverContinent', None)
+            wrong_inputs_from_csv.pop('server', None)
     ### For consistency with AI page utilities
     wrong_inputs_from_csv.pop('R&D_radio', None)
     wrong_inputs_from_csv.pop('R&D_MF_value', None)
