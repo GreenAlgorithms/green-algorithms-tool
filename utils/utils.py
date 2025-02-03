@@ -54,6 +54,6 @@ def custom_prefix_escape(component_id: str):
             return True
         if component_id.startswith("anchor-"):  # intended usage is for anchors
             return True
-        if component_id in ['versioned_data', 'url_content']:
+        if component_id in ['versioned_data', 'url_content', 'language_dropdown']:
             return True
     return False

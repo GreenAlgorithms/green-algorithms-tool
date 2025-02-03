@@ -30,6 +30,7 @@ import blueprints.form.form_layout as form_layout
 
 from utils.graphics import MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
+from blueprints.translation.translatable_text_blueprint import translatable_text
 
 
 ###################################################
@@ -62,7 +63,7 @@ inference_form = get_form_blueprint(
 
 ### WARNING: the csv_flushing_delay below should not be lower than 
 # 2000 miliseconds to avoid rendering bugs of the server fields
-import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
+import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2000) 
 
 methodo_content = get_methodology_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
@@ -109,13 +110,15 @@ def get_ai_page_layout():
             html.Div(
                 [
                     html.H2('The Green Algorithms calculator, adapted for artificial intelligence'),
-                    html.P([
+                    html.P(
+                        [
                             "This new page is especially dedicated to AI-related computations, ",
                             "where compute is usually divided between training and inference phases. ",
                             "The method is the same as in the original tool, ",
                             "it simply facilitates the reporting of AI systems' environmental impacts ",
                             "over a fixed period of time, e.g. one year."
-                        ])
+                        ]
+                    )
                 ],
                 className='container'
             ),
@@ -158,7 +161,7 @@ def get_ai_page_layout():
                                 ],
                                 className='reporting-scope-text text-italic'
                             ),
-                                  
+                            
                             html.Div(
                                 [
                                     dcc.Input(
@@ -393,8 +396,8 @@ def forward_imported_content_to_form(
 
 @AI_PAGE.callback(
         [
-          Output('reporting_time_scope_dropdown', 'value'),
-          Output('reporting_time_scope_input', 'value'),
+            Output('reporting_time_scope_dropdown', 'value'),
+            Output('reporting_time_scope_input', 'value'),
         ],
         [
             # To force initial triggering

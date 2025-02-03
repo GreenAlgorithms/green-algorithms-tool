@@ -37,7 +37,6 @@ HOME_PAGE_ID_PREFIX = 'main'
 # MODULES CREATION
 
 # TODO add a "help" tab on the home form as well (similar to the AI one)
-
 form = get_form_blueprint(
     id_prefix = HOME_PAGE_ID_PREFIX,
     title = "Details about your algorithm",

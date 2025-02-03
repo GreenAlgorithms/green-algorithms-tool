@@ -178,7 +178,6 @@ body {
 }
 
 /* To set the width of the dropdown */
-
 #app_versions_dropdown .Select-value {
     display: flex;
 }
@@ -188,6 +187,28 @@ body {
     height: 2.2em;
 }
 
+/* LANGUAGE */
+
+#language_div{
+    margin-right: auto;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0px;
+}
+
+#language_dropdown_div {
+    margin-left: 4px;
+}
+
+#language_dropdown .Select-value {
+    display: flex;
+}
+
+#language_dropdown .Select-multi-value-wrapper {
+    width: 5.5em;
+    height: 2.2em;
+}
 
 /*
 ---------------------------------- INPUT FORM ----------------------------------------
@@ -577,4 +598,13 @@ blockquote {
 
 .footnote {
     align-self: flex-start;
+}
+
+
+/*
+---------------------------------- FOOTER ----------------------------------------
+*/
+
+#Data_and_code_explanation-text_value {
+    display: inline-block;
 }

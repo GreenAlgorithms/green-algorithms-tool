@@ -2,7 +2,7 @@
 @media only screen and (min-width: 1001px) {
 
     html {
-      font-size: 62.5%;
+        font-size: 62.5%;
     }
 
     .fullPage {
@@ -54,7 +54,6 @@
     #data_version_tooltip .tooltip-text{
         font-size: 0.9em;
     }
-
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
