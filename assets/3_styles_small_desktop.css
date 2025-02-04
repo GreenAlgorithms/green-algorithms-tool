@@ -42,9 +42,19 @@
     .navlink-label {
         font-size: 2.9em;
     }
+    
+    .version_and_language_div {
+        flex-direction: row;
+    }
 
     #versions_div {
         margin-left: auto;
+        width: fit-content;
+    }
+
+    #language_div {
+        margin-right: auto;
+        width: fit-content;
     }
 
     #version-button {

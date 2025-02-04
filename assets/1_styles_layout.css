@@ -141,13 +141,18 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
+/* VERSIONNING */
+
 #versions_div {
-    /* margin-left: auto; */
-    width: fit-content;
+    width: 100%;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 #app_versions_dropdown{
@@ -167,7 +172,7 @@ body {
 #data_version_tooltip .tooltip-icon{
     position: relative;
     left: -1.7em;
-    top: -0.05em;
+    top: 0.05em;
 }
 
 #data_version_tooltip .tooltip-text{
@@ -190,11 +195,12 @@ body {
 /* LANGUAGE */
 
 #language_div{
-    margin-right: auto;
-    width: fit-content;
+    width: 100%;
     display: flex;
     flex-direction: row;
     margin-bottom: 0px;
+    align-items: center;
+    justify-content: center;
 }
 
 #language_dropdown_div {
