@@ -1,5 +1,5 @@
 '''
-Implements the translatable text blueprint.
+Implements the translatable text blueprint for Markdown containers.
 
 This blueprint should be used to wrap all the textual contents of the app.
 It comes with a dcc.Store containing the translation key corresponding to the 
@@ -12,16 +12,16 @@ from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixId
 from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 from utils.utils import custom_prefix_escape
 
-def get_translatable_text_layout(text_key: str):
+def get_translatable_markdown_text_layout(text_key: str):
     return html.Div(
         [
             dcc.Store(id='text_key', data=text_key),
-            html.Div(id='text_value')
+            dcc.Markdown(id='text_value')
         ],
         style={'display': 'inline-block'}
     )
 
-def translatable_text(text_key: str):
+def translatable_markdown_text(text_key: str):
 
     translatable_text_blueprint = DashBlueprint(        
         transforms=[
@@ -36,7 +36,7 @@ def translatable_text(text_key: str):
     ##### IMPORT THE COMPONENT LAYOUT
     #################################
 
-    translatable_text_blueprint.layout = get_translatable_text_layout(text_key)
+    translatable_text_blueprint.layout = get_translatable_markdown_text_layout(text_key)
 
 
     ##### DEFINE ITS CALLBACKS

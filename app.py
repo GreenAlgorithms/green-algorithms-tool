@@ -47,7 +47,8 @@ from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR, get_availa
 from pages.home import HOME_PAGE, HOME_PAGE_ID_PREFIX
 from pages.ai import AI_PAGE, AI_PAGE_ID_PREFIX
 
-from blueprints.translation.translatable_text_blueprint import translatable_text
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
 
 
 ###################################################
@@ -92,7 +93,7 @@ AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view
 ###################################################
 ## CREATE NAVBAR
 
-name_per_page = {'Home': translatable_text('Classic-view').embed(app), 'Ai': translatable_text('AI-view').embed(app)}
+name_per_page = {'Home': translatable_div_text('Classic-view').embed(app), 'Ai': translatable_div_text('AI-view').embed(app)}
 pages = list(dash.page_registry.values())
 
 appVersions_options = get_available_versions()
@@ -145,7 +146,7 @@ versions_choice = html.Div(
         
         html.Div(
             [
-                html.P(translatable_text("Change data version").embed(app), id='old_version_link'),
+                html.P(translatable_div_text("Change data version").embed(app), id='old_version_link'),
             ],
             className='change_version_text'
         ),
@@ -170,7 +171,7 @@ language_choice = html.Div(
     [
         html.Div(
             [
-                html.P(translatable_text("Change language").embed(app), id='language_choice_link'),
+                html.P(translatable_div_text("Change language").embed(app), id='language_choice_link'),
             ],
             className='change_version_text'
         ),
@@ -205,6 +206,7 @@ app.layout = dmc.MantineProvider(
     html.Div(
         [
             #### BACKEND PURPOSE ####
+
             # Used to forward the version coming from a CSV uploaded to the Home page 
             dcc.Store(id=f"{HOME_PAGE_ID_PREFIX}-version_from_input"),
             # Used to forward the version coming from a CSV uploaded to the Ai page 
@@ -215,11 +217,12 @@ app.layout = dmc.MantineProvider(
             dcc.Location(id='url_content', refresh='callback-nav'), 
 
             #### HEADER ####
+
             html.Div(
                 [
-                    html.H1(translatable_text("Green Algorithms calculator").embed(app)),
+                    html.H1(translatable_div_text("Green Algorithms calculator").embed(app)),
 
-                    html.P(translatable_text("Subtitle").embed(app)),
+                    html.P(translatable_div_text("Subtitle").embed(app)),
 
                     html.Div(
                         [
@@ -264,7 +267,8 @@ app.layout = dmc.MantineProvider(
                     ]),
 
                     html.P([
-                        "🐞 It's always possible that some bugs have slipped through the net of this new release... "
+                        "🐞 ",
+                        " It's always possible that some bugs have slipped through the net of this new release... ",
                         "If you spot one, just let us know ",
                         html.A("here", href="https://github.com/GreenAlgorithms/green-algorithms-tool/issues", target="_blank"),
                         "."
@@ -275,7 +279,7 @@ app.layout = dmc.MantineProvider(
                         [
                             html.A(
                                 html.Button(
-                                    translatable_text('More on the project website').embed(app),
+                                    translatable_div_text('More on the project website').embed(app),
                                     id='website-link-button'
                                 ),
                                 href='https://www.green-algorithms.org',
@@ -303,12 +307,12 @@ app.layout = dmc.MantineProvider(
                 [
                     html.Div(
                         [
-                            html.H2(translatable_text("Data and code").embed(app)),
+                            html.H2(translatable_div_text("Data and code").embed(app)),
 
                             html.Center(
                                 html.P(
                                     [
-                                        translatable_text("Data_and_code_explanation").embed(app),
+                                        translatable_div_text("Data_and_code_explanation").embed(app),
                                         html.A(
                                             "GitHub",
                                             href='https://github.com/GreenAlgorithms/green-algorithms-tool',
@@ -325,22 +329,22 @@ app.layout = dmc.MantineProvider(
 
                     html.Div(
                         [
-                            html.H2(translatable_text('Questions_suggestions').embed(app)),
+                            html.H2(translatable_div_text('Questions_suggestions').embed(app)),
 
                             html.Center(
                                 html.P(
                                     [
-                                        translatable_text("Questions_suggestions_text").embed(app),
+                                        translatable_div_text("Questions_suggestions_text").embed(app),
                                         html.A(
-                                            translatable_text("open an issue").embed(app),
+                                            translatable_div_text("open an issue").embed(app),
                                             href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
                                             target='_blank',
                                             style={'margin-right': '4px'}
                                         ),
-                                        translatable_text("on the GitHub or").embed(app),
+                                        translatable_div_text("on the GitHub or").embed(app),
                                         # TODO set up a better green algorithms email redirecting to someone
                                         html.A(
-                                            translatable_text("email_us").embed(app),
+                                            translatable_div_text("email_us").embed(app),
                                             href='mailto:green.algorithms@gmail.com', ),
                                     ]
                                 )
@@ -356,7 +360,7 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2(translatable_text("How to cite this work").embed(app)),
+                    html.H2(translatable_div_text("How to cite this work").embed(app)),
 
                     html.Center(
                         html.P([
@@ -375,16 +379,11 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2(translatable_text("About us").embed(app)),
+                    html.H2(translatable_div_text("About us").embed(app)),
 
-                    dcc.Markdown('''
-                    The Green Algorithms project is led by
-                    [Loïc Lannelongue](www.lannelongue-group.org) and 
-                    [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge,
-                    but made possible by the contribution and support of many: 
-                    [full list here](https://www.green-algorithms.org/about/)
-                    ''',
-                    className='authors'
+                    html.Div(
+                        translatable_markdown_text('Green Algorithms project').embed(app),
+                        className='authors'
                     ),
                 ],
                 className='container about-us footer'

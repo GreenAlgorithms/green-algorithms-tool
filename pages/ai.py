@@ -30,7 +30,7 @@ import blueprints.form.form_layout as form_layout
 
 from utils.graphics import MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
-from blueprints.translation.translatable_text_blueprint import translatable_text
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
 
 
 ###################################################

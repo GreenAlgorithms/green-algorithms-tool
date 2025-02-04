@@ -116,5 +116,18 @@ TRANSLATIONS_DICT = {
         "fr": "Qui nous sommes",
     },
 
+    "Green Algorithms project": {
+        "en":  '''
+                    The Green Algorithms project is led by [Loïc Lannelongue](www.lannelongue-group.org) and 
+                    [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge, 
+                    but made possible by the contribution and support of many: [full list here](https://www.green-algorithms.org/about/)
+                ''',
+        "fr":  '''
+                    Le projet Green Algorithms est piloté par [Loïc Lannelongue](www.lannelongue-group.org) et 
+                    [Michael Inouye](https://www.inouyelab.org/home/people) à l'université de Cambridge,
+                    mais a bénéficié de la contribution et du soutien de beaucoup : [liste complète des contributeurs](https://www.green-algorithms.org/about/)
+                '''
+    }
+
 
 }
