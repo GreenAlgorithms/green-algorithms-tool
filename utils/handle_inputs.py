@@ -32,7 +32,7 @@ def get_available_versions():
 # WARNING: do not modify the order unless modifying the order of the outputs of 
 # the fillin_from_inputs callback accordingly
 #-----------------------------------------------------------------------------
-# TODO: make it more robust by using a dictionnay or dataclass for storing ids
+# TODO: make it more robust by using a dictionary or dataclass for storing ids
 #-----------------------------------------------------------------------------
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,

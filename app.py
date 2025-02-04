@@ -128,7 +128,8 @@ versions_choice = html.Div(
                 html.Div('i', className='tooltip-icon'),
 
                 html.P(
-                    "The calculator data (carbon intensities, hardware...) is regularly updated. If you want to replicate results computed in the past, select the corresponding data version.",
+                    "The calculator data (carbon intensities, hardware...) is regularly updated. "
+                    "If you want to replicate results obtained in the past, select the corresponding data version.",
                     className='tooltip-text'
                 ),
             ],
@@ -214,7 +215,7 @@ app.layout = dmc.MantineProvider(
                     html.P([
                         "🌱 ",
                         html.B('Interested in green computing?'),
-                        " We're recruiting for 2 research roles at the University of Cambridge! ",
+                        " We're recruiting for research roles at the University of Cambridge! ",
                         html.A("More info here", href="https://www.lannelongue-group.org/join/", target="_blank")
                     ]),
 
@@ -238,7 +239,7 @@ app.layout = dmc.MantineProvider(
                         [
                             html.A(
                                 html.Button(
-                                    'More on the project website!',
+                                    'More on the project website',
                                     id='website-link-button'
                                 ),
                                 href='https://www.green-algorithms.org',
@@ -292,6 +293,7 @@ app.layout = dmc.MantineProvider(
                                         # TODO set up a better green algorithms email redirecting to someone
                                         html.A("email us",
                                                 href='mailto:green.algorithms@gmail.com', ),
+                                        "."
                                         ]),
                             ),
                         ],
@@ -331,7 +333,11 @@ app.layout = dmc.MantineProvider(
                     [Loïc Lannelongue](www.lannelongue-group.org) and 
                     [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge,
                     but made possible by the contribution and support of many: 
-                    [full list here](https://www.green-algorithms.org/about/)
+                    [full list here](https://www.green-algorithms.org/about/).
+                    
+                    _In particular, we are thankful for the development work of Even Matencio
+                    and the support of the Wellcome Trust, NIHR Cambridge Biomedical Research Centre, 
+                    and French Department for the Environment._
                     ''',
                     className='authors'
                     ),

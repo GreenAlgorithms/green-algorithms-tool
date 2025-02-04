@@ -75,11 +75,11 @@ def get_green_algo_methodology_layout(
                         `runtime * (cores power draw * usage + memory power draw) * PUE * multiplicative factor`
 
                         The power draw of the computing cores depends on the model and number of cores, 
-                        while the memory power draw only depends on the size of memory __available__. 
+                        while the memory power draw only depends on the size of memory _available_. 
                         The usage factor corrects for the real core usage (default is 1, i.e. full usage).
                         The PUE (Power Usage Effectiveness) measures how much extra energy is needed 
                         to operate the data centre (cooling, lighting etc.). 
-                        The Multiplicative Factor is used to take into account multiple identical runs 
+                        The multiplicative factor is used to take into account multiple identical runs 
                         (e.g. for testing or optimisation).
 
                         The Carbon Intensity depends on the location and the technologies used to produce electricity.
@@ -144,17 +144,19 @@ def get_training_help_content(title: str):
 
                     dcc.Markdown(
                         '''
-                        The training phase of your AI system covers __different kinds of computations__:
-                        R&D experiments, the main training of your model and potential retrainings (more details are given below).
+                        The training phase of your AI system includes different stages:
+                        R&D experiments, the final training of your model, and potential retraining runs 
+                        (more details are given below).
                         
-                        We invite you to quantify all these computations through the training form. 
-                        To do so, __fill-in the form based on your main training requirements.
-                        Then use the input fields available at the bottom of the form to give an approximative 
-                        estimate of your computations share due to R&D trainings or retrainings__.
+                        We invite you to include all these stages in this form. 
+                        __Start by filling-in the form based on the main training run.
+                        Then use the input fields available at the bottom of the form to 
+                        estimate the impact of R&D training and/or retraining__.
                         Some R&D use cases are illustrated in more details below. 
 
-                        This approach has limitations because different hardware might be used for different training phases but it offers a trade-off between the reporting effort and the final estimate quality.
-                        If you wish to quantify more precisely the other computation phases, we invite you to fill a form especially for each of them. 
+                        This approach may not work for all cases (e.g. if retraining is done with different
+                        hardware) but it offers a reasonable estimate. 
+                        Besides, there is always the option of rerunning the calculator separately.
                         ''',
                         className='form-help-markdown'
                     ),
@@ -176,59 +178,26 @@ def get_training_help_content(title: str):
                     dcc.Markdown(
 
                         ''' 
-                        __Main training__: the computations performed to achieve the final model deployed in your AI solution. 
-                        It can either correspond to the training from scrath of a custom model or to the fine-tuning of an existing model.
+                        __Main/final training stage__: the computations performed to achieve the final model 
+                        of your AI solution. 
+                        It can either correspond to training from scratch a custom model 
+                        or fine-tuning an existing model.
 
-                        __R&D trainings__: corresponds to the different experimental trainings and computations performed before the final training of your model.
-                        Such experiments may be useful to calibrate the final architecture or hyper-parameters set of your model.
-                        R&D trainings are taken into account using a simple scaling factor corresponding to the ratio between your R&D and your main training computational needs.
-
-                        __Retrainings__: any additional trainings performed after the deployment of your AI system.
-                        For consistent reporting, you are invited to take into account all retrainings requirements over your reporting period.
-                        To do so, we invite you to fill in the number of retrainings and a simple scaling factor corresponding to the ratio between a single average retraining and your main training computational needs.
+                        __R&D training__: the compute involved in the research and development phase before the
+                         final run (e.g. hyper-parameters search).
+                        This is included by added R&D as a fraction of the training time, 
+                        e.g. enter 2 if you assume that in total R&D represents 
+                        double the compute resources of the final run. 
+                        There is no typical value for that, from a small fraction in case of 
+                        well defined straightforward models to hundreds in more complex models requiring 
+                        extensive searches. For example, when studying a 176 billon parameters LLM,
+                        Luccioni et al. \[1\] estimated that intermediate models training and evaluation accounted 
+                        for approximately 150% of their main training consumption.
+                        
+                        __Retraining__: any additional training runs performed after the deployment of your AI system.
+                        For consistent reporting, you are invited to take into account all retraining happening
+                         over your reporting period.
                         '''
-                    ),
-                ],
-                className='form-help-subsection',
-            ),
-
-            html.Div(
-                [
-                    html.Hr(),
-                ],
-                className='Hr_div',
-            ),
-
-            html.Div(
-                [
-                    html.H4('Some examples of R&D experiment scenarios'),
-
-                    dcc.Markdown(
-                        '''
-                        The amount of computation requirements due to your R&D experiment stage may vary significantly depending on your project and AI system. 
-                        __We invite you to consider both architectural and hyperparemeters experiments, performed on either the whole data set or a subset of it.__
-                        We provide some qualitative examples to help you better understand what is expected.
-                        ''',
-                    ),
-                ]
-            ),
-
-            html.Div(
-                [
-                
-                    dcc.Markdown(
-                        '''
-                        When training classic machine learning models (XGBoots or SVM for instance), it is very frequent to run dozens or hundreds of real scale
-                        experiments before choosing the final model. In this case, the scaling factor of your experiments stage may vary between 10 and 100 for instance.
-
-                        Regarding "intermediate" neural networks training (less than 1 billon parameters), typically for small image classification models, the number of
-                        real scale experiments may still be significant. The scaling factor will more likely be in the range of 10.
-
-                        Eventually, among the few scientific papers that precisely quantify their computational needs due to the experiments preceding the main training, Luccioni et al. \[1\]
-                        estimate that intermediate models training and evaluation account for approximately 150% of their main training consumption.
-                        The final model is a 176 billon parameters LLM, developped in an academic context.
-                        ''',
-                        style={'margin-top': '8px'}
                     ),
 
                     dcc.Markdown(
@@ -238,7 +207,55 @@ def get_training_help_content(title: str):
                     ),
                 ],
                 className='form-help-subsection',
-            )
+            ),
+
+            # html.Div(
+            #     [
+            #         html.Hr(),
+            #     ],
+            #     className='Hr_div',
+            # ),
+            #
+            # html.Div(
+            #     [
+            #         html.H4('Some examples of R&D experiment scenarios'),
+            #
+            #         dcc.Markdown(
+            #             '''
+            #             The amount of computation requirements due to your R&D experiment stage may vary significantly depending on your project and AI system.
+            #             __We invite you to consider both architectural and hyperparemeters experiments, performed on either the whole data set or a subset of it.__
+            #             We provide some qualitative examples to help you better understand what is expected.
+            #             ''',
+            #         ),
+            #     ]
+            # ),
+            #
+            # html.Div(
+            #     [
+            #
+            #         dcc.Markdown(
+            #             '''
+            #             When training classic machine learning models (XGBoots or SVM for instance), it is very frequent to run dozens or hundreds of real scale
+            #             experiments before choosing the final model. In this case, the scaling factor of your experiments stage may vary between 10 and 100 for instance.
+            #
+            #             Regarding "intermediate" neural networks training (less than 1 billon parameters), typically for small image classification models, the number of
+            #             real scale experiments may still be significant. The scaling factor will more likely be in the range of 10.
+            #
+            #             Eventually, among the few scientific papers that precisely quantify their computational needs due to the experiments preceding the main training, Luccioni et al. \[1\]
+            #             estimate that intermediate models training and evaluation account for approximately 150% of their main training consumption.
+            #             The final model is a 176 billon parameters LLM, developped in an academic context.
+            #             ''',
+            #             style={'margin-top': '8px'}
+            #         ),
+            #
+            #         dcc.Markdown(
+            #             '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, “Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+            #             className='footnote citation-report',
+            #             style={'margin-top': '8px'}
+            #         ),
+            #     ],
+            #     className='form-help-subsection',
+            # )
         ],
         className='form-help-container pretty-container container'
     )
@@ -254,10 +271,13 @@ def get_inference_help_content(title: str):
 
                     dcc.Markdown(
                         '''
-                        The inference form should enable you to quantify the environmental footprint of you AI system's inference phase over the whole reporting period.
-                        __To do so, we distinguish between two inference schemes: block (or one-shot) inference and continuous inference defined below__.
+                        This is to quantify the environmental impacts of the inference phase of your AI system.
+                        __We distinguish between two types of inference: block, or one-shot, inference 
+                        (you make predictions once and for all)  and continuous inference 
+                        (the model makes predictions continuously over time, e.g. a chatbot)__.
 
-                        By default, the form is in 'block inference' mode but you can actiave the continuous mode using the switcher at the top of the form.
+                        By default, the form is in 'block inference' mode but you can activate 
+                        the continuous mode using the switch at the top.
                         '''
                     )
                 ],
@@ -277,29 +297,32 @@ def get_inference_help_content(title: str):
 
                     dcc.Markdown(
                         '''
-                        __Block (one-shot) inference__: corresponds to an AI service that is occasionally requested in a one-shot fashion. 
+                        __Block (one-shot) inference__: for a system where prediction is made on a one-off basis 
+                        (or repeated occasionally).
                         It may be used to process a data set as a whole or to build one-day or one-week strategy. 
-                        As a number of them may happen over your reporting period, we invite you to quantify the computation requirements for one inference block and then to use the Multiplicative Scaling Factor.
+                        If multiple block inferences happen over your reporting period, 
+                        we invite you to quantify the resource needs for one inference block 
+                        and then to use the multiplicative factor.
                         ''',
                         style={'margin-bottom': '6px'}
                     ),
 
                     dcc.Markdown(
                         '''
-                        __Continuous inference__: corresponds to an AI service that is requested on demand by users or other software systems. 
-                        This inference workload does not follow a strict scheduling, making it harder to quantify. In this mode, we invite you to estimate the computations requirements over a time length of your choice, the so-called "input data time span”. 
-                        Based on this and the reporting period value, your total inference footprint is computed with a simple scaling factor.
+                        __Continuous inference__: corresponds to an AI service that is requested on demand 
+                        by users or other software systems (e.g. chatbot). 
+                        This inference workload does not follow a strict scheduling, making it harder to quantify. 
+                        In this mode, we invite you to estimate the resource usage 
+                        over a period of time of your choice, the so-called "input data time span”. 
+                        The results are then scaled up over the total reporting period. 
+                        For instance, if choosing a reporting scope of 1 year and filling 
+                        the form in continuous inference mode with an `input data time span` of 1 month,
+                        then your environmental impacts correspond to the monthly results multiplied by 12.
+                        
+                        It is worth keeping in mind that __the reporting period only impacts the results
+                        in the 'continuous inference' situation__.
                         ''',
-                        style={'margin-bottom': '12px'}
-                    ),
-
-                    dcc.Markdown(
-                        '''
-                        It is important to keep in mind that __the reporting period does have an influence on the computations only when choosing the 'continuous inference scheme'__.
-                        In that case, the environmental impacts are automatically scaled from your "`input data time span`" to your reporting period.
-                        For instance, if choosing a reporting scope of 1 year and filling the form in continuous inference mode with an "`input data time span`" of 1 month,
-                        then your environmental impacts correspond to the intermediate metrics computed from the input fields, multiplied by 12.
-                        ''',
+                        # style={'margin-bottom': '12px'}
                     ),
 
                 ],

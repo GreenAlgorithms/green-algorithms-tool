@@ -66,13 +66,15 @@ import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flus
 
 methodo_content = get_methodology_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
-    additional_formula_content= dcc.Markdown(
+    additional_formula_content=dcc.Markdown(
         '''
         The training and inference forms rely on the same base formula as the one used in the main
-        page calculator. Additive (for retrainings and R&D experiments) and multiplicative (for continuous inference) terms
-        are then applied to compute the final results. More information is provided by the tooltips and the help tabs.
+        page calculator. 
+        When appropriate, retraining and R&D impacts are then added, and continuous inference impacts 
+        are scaled to the reporting period.
+        More information is provided by the tooltips and the help tabs.
         ''',
-        style= {'margin-bottom': '10px'}
+        style={'margin-bottom': '10px'}
     )
 )
 
@@ -184,16 +186,17 @@ def get_ai_page_layout():
                                         className='box-fields'
                                     ),
 
-                                    html.Div(
-                                        [
-                                            html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "Fill in your reporting period.",
-                                                className='tooltip-text'
-                                            ),
-                                        ],
-                                        className='tooltip',
-                                    ),
+                                    # I don't think a tooltip is needed there
+                                    # html.Div(
+                                    #     [
+                                    #         html.Div('i', className='tooltip-icon'),
+                                    #         html.P(
+                                    #             "Fill in your reporting period.",
+                                    #             className='tooltip-text'
+                                    #         ),
+                                    #     ],
+                                    #     className='tooltip',
+                                    # ),
                                 ],
                                 className="reporting-row short-input"
                             ),
