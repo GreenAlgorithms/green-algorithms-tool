@@ -666,6 +666,8 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
     wrong_inputs_from_csv.pop('continuous_inference_switcher', None)
     wrong_inputs_from_csv.pop('input_data_time_scope_unit', None)
     wrong_inputs_from_csv.pop('input_data_time_scope_val', None)
+    wrong_inputs_from_csv.pop('tot_energy_needed', None)
+    wrong_inputs_from_csv.pop('tot_carbonEmissions', None)
     return wrong_inputs_from_csv
 
 
