@@ -649,7 +649,7 @@ def get_green_algo_form_layout(
                             html.Div('i', className='tooltip-icon'),
                             html.P(
                                 "PUE is a standardised efficiency metrics measuring the"
-                                "energy consumption of data centre overheads (e.g. cooling) (default: 1.67).",
+                                "energy consumption of data centre overheads (e.g. cooling).",
                                 className='tooltip-text'
                             ),
                         ],
