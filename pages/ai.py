@@ -393,8 +393,8 @@ def forward_imported_content_to_form(
 
 @AI_PAGE.callback(
         [
-          Output('reporting_time_scope_dropdown', 'value'),
-          Output('reporting_time_scope_input', 'value'),
+            Output('reporting_time_scope_dropdown', 'value'),
+            Output('reporting_time_scope_input', 'value'),
         ],
         [
             # To force initial triggering
@@ -572,6 +572,7 @@ def display_retrainings_div(retrainings_radio):
             State(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_input', 'value'),
             State(f'{INFERENCE_ID_PREFIX}-input_data_time_scope_dropdown', 'value'),
             State(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
+            State(f'{AI_PAGE_ID_PREFIX}-base_results', 'data'),
         ],
         prevent_initial_call=True,
 )
@@ -591,6 +592,7 @@ def forward_form_input_to_export_module(
     input_data_time_scope_val: int,
     input_data_time_scope_unit: str,
     inference_continuous_activated: bool,
+    ai_aggregated_results: dict,
 ):
     '''
     Intermediate processing specific to the AI page before exporting data.
@@ -633,6 +635,8 @@ def forward_form_input_to_export_module(
     forms_aggregate_data.update(training_outputs)
     forms_aggregate_data.update(inference_data)
     forms_aggregate_data.update(inference_outputs)
+    forms_aggregate_data['tot_energy_needed'] = ai_aggregated_results['energy_needed']
+    forms_aggregate_data['tot_carbonEmissions'] = ai_aggregated_results['carbonEmissions']
     return forms_aggregate_data
 
 
