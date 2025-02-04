@@ -1,7 +1,8 @@
-''' Import-export layout. '''
+""" Import-export layout. """
 
 from dash import html, dcc
 import dash_bootstrap_components as dbc 
+
 
 def get_green_algo_import_export_layout(
     csv_flushing_delay: int
@@ -70,7 +71,7 @@ def get_green_algo_import_export_layout(
                     html.Div(id='log-error-subtitle'),
                     html.Div(id='log-error-content'),
                 ],
-                className = 'container footer import-error-message',
+                className='container footer import-error-message',
                 id='import-error-message',
                 is_open=False,
                 duration=60000,

@@ -8,7 +8,6 @@ from dash import html, dcc
 import dash_mantine_components as dmc
 
 
-
 def get_green_algo_methodology_layout(
     additional_formula_content: dcc.Markdown,
 ):
@@ -201,7 +200,9 @@ def get_training_help_content(title: str):
                     ),
 
                     dcc.Markdown(
-                        '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, “Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+                        '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, '
+                        '“Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal '
+                        'of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
                         className='footnote citation-report',
                         style={'margin-top': '8px'}
                     ),
@@ -259,6 +260,7 @@ def get_training_help_content(title: str):
         ],
         className='form-help-container pretty-container container'
     )
+
 
 def get_inference_help_content(title: str):
     return html.Div(

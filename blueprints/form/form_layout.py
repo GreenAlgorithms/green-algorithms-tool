@@ -15,6 +15,7 @@ appVersions_options = get_available_versions()
 
 # FIXME the margins on the tooltips are a bit tight
 
+
 def get_green_algo_form_layout(
     title: str,
     subtitle: html.P,
@@ -26,7 +27,7 @@ def get_green_algo_form_layout(
         [
             #### BACKEND DATA ####
 
-            # Obtained throug intermediate processing applied to the import-content of a page
+            # Obtained through intermediate processing applied to the import-content of a page
             # Once it is updated, it is used to spread uploaded data to the corresponding form fields
             dcc.Store(id='form_data_imported_from_csv'),
 

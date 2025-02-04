@@ -1,7 +1,8 @@
-'''
-Python utils intended to correctly format the texts associated with the 
+"""
+Python utils intended to correctly format the texts associated with the
 results shown to the user. The text adapts to the result range and its unit.
-'''
+"""
+
 
 def format_energy_text(energy_needed: float):
     """
@@ -21,6 +22,7 @@ def format_energy_text(energy_needed: float):
     else:
         text_energy = f"{energy_needed:,.2f} {energyNeeded_unit}"
     return text_energy
+
 
 def format_CE_text(carbon_emissions: float):
     """
@@ -44,6 +46,7 @@ def format_CE_text(carbon_emissions: float):
         text_CE = f"{carbon_emissions:,.2f} {carbonEmissions_unit}CO2e"
     return text_CE
 
+
 def write_tree_months_equivalent(carbon_emissions: float, ref_values: dict):
     """
     Compute the tree-month equivalent and format unit along with value.
@@ -62,6 +65,7 @@ def write_tree_months_equivalent(carbon_emissions: float, ref_values: dict):
         text_ty = f"{treeTime_value:,.2f} {treeTime_unit}"
     return text_ty
 
+
 def write_driving_equivalent(carbon_emissions: float, ref_values: dict):
     """
     Compute the driving equivalent and format unit along with value.
@@ -75,6 +79,7 @@ def write_driving_equivalent(carbon_emissions: float, ref_values: dict):
     else:
         text_car = f"{nkm_drivingEU:,.2f} km"
     return text_car
+
 
 def write_plane_trip_equivalent(carbon_emissions: float, ref_values: dict):
     """

@@ -1,4 +1,4 @@
-''' Generic Python utils. '''
+""" Generic Python utils. """
 
 import pandas as pd
 
@@ -6,6 +6,7 @@ YES_NO_OPTIONS = [
     {'label': 'Yes', 'value': 'Yes'},
     {'label': 'No', 'value': 'No'}
 ]
+
 
 class dotdict(dict):
     """dot.notation access to dictionary attributes."""
@@ -21,6 +22,7 @@ def put_value_first(L: list, value):
         return [value] + L
     return L
 
+
 def unlist(x):
     """ Extracts content of ONE ITEM lists."""
     if isinstance(x, list):
@@ -28,9 +30,11 @@ def unlist(x):
         return x[0]
     else:
         return x
-    
+
+
 def is_shown(style: dict):
     return style['display'] != 'none'
+
 
 def check_CIcountries_df(df: pd.DataFrame):
     """
@@ -39,6 +43,7 @@ def check_CIcountries_df(df: pd.DataFrame):
     regions_cols_as_str = df.groupby(['continentName', 'countryName'])['regionName'].apply(','.join)
     for regions_per_country_as_str in regions_cols_as_str:
         assert 'Any' in regions_per_country_as_str.split(','), f"{regions_per_country_as_str} does't have an 'Any' column"
+
 
 def custom_prefix_escape(component_id: str):
     """

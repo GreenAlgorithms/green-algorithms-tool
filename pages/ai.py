@@ -1,4 +1,4 @@
-'''
+"""
 The page itself is defined as a DashBlueprint that encompasses both layout and callbacks.
 
 Contrary to the Home page, the Ai page requires more intermediate processing to obtain the metrics.
@@ -7,7 +7,7 @@ These are due to the continuous inference option and the possible retraining or 
 These additional fields must be taken into account:
     - when exporting or loading data
     - when computing the results: we compute and show both the training and inference results, as well as their sum
-'''
+"""
 
 
 import os
@@ -47,7 +47,8 @@ TRAINING_ID_PREFIX = 'training'
 training_form = get_form_blueprint(
     id_prefix=TRAINING_ID_PREFIX,
     title='',
-    subtitle=html.P('Report your training-related computations. For more information about R&D experiments, retrainings or overall tips regarding your reporting, please refer to the Help tab.'),
+    subtitle=html.P('Report your training-related computations. For more information about R&D experiments, '
+                    'retraining or overall tips regarding your reporting, please refer to the Help tab.'),
     mult_factor_properties={'display': 'none'},
     additional_bottom_fields=form_layout.get_additional_training_fields_layout()
 )
@@ -56,12 +57,13 @@ INFERENCE_ID_PREFIX = 'inference'
 inference_form = get_form_blueprint(
     id_prefix=INFERENCE_ID_PREFIX,
     title='',
-    subtitle=html.P('Report your inference-related computations. For more information about continuous inference scheme or overall tips regarding your reporting, please refer to the Help tab.'),
+    subtitle=html.P('Report your inference-related computations. For more information about continuous inference'
+                    ' or overall tips regarding your reporting, please refer to the Help tab.'),
     continuous_inf_scheme_properties={'display': 'block'}
 )
 
 ### WARNING: the csv_flushing_delay below should not be lower than 
-# 2000 miliseconds to avoid rendering bugs of the server fields
+# 2000 milliseconds to avoid rendering bugs of the server fields
 import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
 
 methodo_content = get_methodology_blueprint(
@@ -82,11 +84,11 @@ metrics = get_metrics_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
     energy_needed_details=metrics_layout.get_metric_per_form_layout(
         training_id=f'{TRAINING_ID_PREFIX}-energy_needed',
-        inference_id= f'{INFERENCE_ID_PREFIX}-energy_needed',
+        inference_id=f'{INFERENCE_ID_PREFIX}-energy_needed',
     ),
     carbon_footprint_details=metrics_layout.get_metric_per_form_layout(
         training_id=f'{TRAINING_ID_PREFIX}-carbon_emissions',
-        inference_id= f'{INFERENCE_ID_PREFIX}-carbon_emissions',
+        inference_id=f'{INFERENCE_ID_PREFIX}-carbon_emissions',
     )
 )
 
@@ -298,6 +300,7 @@ AI_PAGE.layout = get_ai_page_layout()
 
 ################## LOAD PAGE AND INPUTS
 
+
 @AI_PAGE.callback(
     [
         Output(f'{TRAINING_ID_PREFIX}-form_data_imported_from_csv', 'data'),
@@ -327,11 +330,11 @@ def forward_imported_content_to_form(
     current_specific_ai_inputs: dict,
     current_app_version: str
 ):
-    '''
+    """
     Read input from uploaded CSV, split data between training and inference forms.
-    Process specific inputs such as retrainings, R&D training and continuous inference related fields.
-    Then process and check content, filtering wrong inputs and displayling error message if required.
-    '''
+    Process specific inputs such as retraining, R&D training and continuous inference related fields.
+    Then process and check content, filtering wrong inputs and displaying error message if required.
+    """
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
 
@@ -353,7 +356,11 @@ def forward_imported_content_to_form(
         mess_subtitle = ''
         # Processing inputs specific to the AI page
         # TODO: improve the error message based on the different error categories
-        ai_page_specific_inputs_keys = ['reporting_time_scope_unit', 'reporting_time_scope_value', 'R&D_radio', 'R&D_MF_value', 'retrainings_radio', 'retrainings_number_input', 'retrainings_MF_value', 'continuous_inference_switcher', 'input_data_time_scope_unit', 'input_data_time_scope_val']
+        ai_page_specific_inputs_keys = [
+            'reporting_time_scope_unit', 'reporting_time_scope_value', 'R&D_radio', 'R&D_MF_value',
+            'retrainings_radio', 'retrainings_number_input', 'retrainings_MF_value', 'continuous_inference_switcher',
+            'input_data_time_scope_unit', 'input_data_time_scope_val'
+        ]
         clean_AI_inputs, invalid_AI_inputs = validate_ai_page_specific_inputs(input_dict=input_data, keys_of_interest=ai_page_specific_inputs_keys)
         for key in ai_page_specific_inputs_keys:
             if key not in clean_AI_inputs:
@@ -373,8 +380,8 @@ def forward_imported_content_to_form(
         # Building error message
         if len(invalid_training_inputs) or len(invalid_inference_inputs) or len(invalid_AI_inputs):
             show_err_mess = True
-            mess_subtitle += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values. ' \
-                            f'We use default values for the following fields. \n' 
+            mess_subtitle += f'\n\nThere seems to be some typos in the csv columns name or ' \
+                             f'inconsistencies in its values. We use default values for the following fields. \n'
             if len(invalid_AI_inputs):
                 mess_content += 'Regarding the AI page specific inputs: '
                 mess_content += f"{', '.join(list(invalid_AI_inputs.keys()))}. \n"
@@ -393,6 +400,7 @@ def forward_imported_content_to_form(
             app_version,
             clean_AI_inputs,
         )  
+
 
 @AI_PAGE.callback(
         [
@@ -424,7 +432,6 @@ def forward_reporting_scope_inputs(_, specific_ai_inputs: dict):
         )
 
 
-
 @AI_PAGE.callback(
         [
             Output(f'{TRAINING_ID_PREFIX}-RandD_radio','value'),
@@ -440,10 +447,10 @@ def forward_reporting_scope_inputs(_, specific_ai_inputs: dict):
         ]
 )
 def load_RandD_and_retrainings_inputs(_, specific_ai_inputs: dict):
-    '''
+    """
     Forward inputs from the csv to retrainings and R&D fields.
     If not, fill in with default values, for instance when loading the page.
-    '''
+    """
     if specific_ai_inputs:
         return (
             specific_ai_inputs['R&D_radio'],
@@ -462,6 +469,7 @@ def load_RandD_and_retrainings_inputs(_, specific_ai_inputs: dict):
             AI_PAGE_DEFAULT_VALUES['retrainings_MF_value'], 
         )
 
+
 @AI_PAGE.callback(
         [
             Output(f'{INFERENCE_ID_PREFIX}-continuous_inference_scheme_switcher', 'checked'),
@@ -475,10 +483,10 @@ def load_RandD_and_retrainings_inputs(_, specific_ai_inputs: dict):
         ]
 )
 def load_inference_specific_inputs(_, specific_ai_inputs: dict):
-    '''
+    """
     Forward inputs from the csv to input data time scope and continuous inference field.
     If not, fill in with default values, for instance when loading the page.
-    '''
+    """
     if specific_ai_inputs:
         return (
             specific_ai_inputs['continuous_inference_switcher'],
@@ -492,8 +500,6 @@ def load_inference_specific_inputs(_, specific_ai_inputs: dict):
             AI_PAGE_DEFAULT_VALUES['input_data_time_scope_unit'],
             AI_PAGE_DEFAULT_VALUES['input_data_time_scope_val'],
         )
-
-
 
 ################## CONTINUOUS INFERENCE SECTION
 
@@ -523,9 +529,9 @@ def adapt_the_form_depending_on_inference_mode(is_inference_continuous):
     ]
 )
 def display_RandD_trainings_input(RandD_trainings_radio, disabled):
-    '''
+    """
     Shows or hides the  R&D trainings input box
-    '''
+    """
     if RandD_trainings_radio == 'No':
         out = {'display': 'none'}
     else:
@@ -544,9 +550,9 @@ def display_RandD_trainings_input(RandD_trainings_radio, disabled):
     ]
 )
 def display_retrainings_div(retrainings_radio):
-    '''
+    """
     Shows or hides the retrainings input fields
-    '''
+    """
     if retrainings_radio == 'No':
         out = {'display': 'none'}
     else:
@@ -583,10 +589,10 @@ def forward_form_input_to_export_module(
     _,
     reporting_time_val: int,
     reporting_time_unit: str,
-    training_form_agg_data:dict,
-    training_form_outputs:dict,
-    inference_form_agg_data:dict,
-    inference_form_outputs:dict,
+    training_form_agg_data: dict,
+    training_form_outputs: dict,
+    inference_form_agg_data: dict,
+    inference_form_outputs: dict,
     retraining_radio: str,
     retraining_number_val: float,
     retraining_MF_val: float,
@@ -597,15 +603,15 @@ def forward_form_input_to_export_module(
     inference_continuous_activated: bool,
     ai_aggregated_results: dict,
 ):
-    '''
+    """
     Intermediate processing specific to the AI page before exporting data.
     Cleans content to export by standardizing non-used inputs.
     We concatenate the content of the training form and inference form into a single dictionnary to be exported.
 
-    Even if no retrainings, R&D experiments or even if the continuous inference scheme, we 
+    Even if no retrainings, R&D experiments or even if the continuous inference scheme, we
     add the intermediate results to the CSV so the CSV are homogeneous.
-    '''
-    forms_aggregate_data = dict()
+    """
+    forms_aggregate_data = {}
     # Forward global inputs
     forms_aggregate_data['appVersion'] = training_form_agg_data['appVersion']
     forms_aggregate_data['reporting_time_scope_unit'] = reporting_time_unit
@@ -649,6 +655,7 @@ def forward_form_input_to_export_module(
 ## get their final energy consumption and carbon emissions,
 ## we store them in intermediate variables that are used to show the final results
 
+
 @AI_PAGE.callback(
         Output('inference_processed_output_metrics', 'data'),
         [
@@ -668,12 +675,12 @@ def process_inference_form_outputs_based_on_reporting_scope(
     input_data_time_scope_unit: str,
     inference_continuous_activated: bool,
 ):
-    '''
+    """
     The purpose of this callback is to take into account the reporting scope
     in case continuous inference scheme is selected by the user.
     It automatically scales the end electricity consumption based on reporting scope and
     and the input data time scope.
-    '''
+    """
     processed_inference_metrics = {}
     # We need to process the form outputs only if continuous inference is activated
     if inference_continuous_activated:
@@ -723,12 +730,12 @@ def add_retrainings_and_RandD_to_training_outputs(
     RandD_radio: str,
     RandD_MF_val: float,
 ):
-    ''' 
+    """
     The purpose of this callback is to take into account retrainings and R&D inputs.
-    The main training form outputs (energy consumption and carbon emissions) are 
-    multiplied by the corresponding multiplicative factor for both retrainings and R&D 
+    The main training form outputs (energy consumption and carbon emissions) are
+    multiplied by the corresponding multiplicative factor for both retrainings and R&D
     before they are added to the total.
-    '''
+    """
     # Handling wrong inputs from the user
     if retraining_MF_val is None:
         retraining_MF_val = 0
@@ -758,8 +765,8 @@ def add_retrainings_and_RandD_to_training_outputs(
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-base_results', 'data'),
     [ 
-        Input(f'training_processed_output_metrics', 'data'),
-        Input(f'inference_processed_output_metrics', 'data'),
+        Input('training_processed_output_metrics', 'data'),
+        Input('inference_processed_output_metrics', 'data'),
     ],
 )
 def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, inference_form_metrics,):
@@ -775,14 +782,14 @@ def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, infer
 # Energy
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{TRAINING_ID_PREFIX}-energy_needed', 'children'),
-    Input(f'training_processed_output_metrics', 'data'),
+    Input('training_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(training_form_metrics):
     return metrics_utils.format_energy_text(training_form_metrics['energy_needed'])
 
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{INFERENCE_ID_PREFIX}-energy_needed', 'children'),
-    Input(f'inference_processed_output_metrics', 'data'),
+    Input('inference_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(inference_form_metrics):
     return metrics_utils.format_energy_text(inference_form_metrics['energy_needed'])
@@ -790,14 +797,14 @@ def get_training_needed_energy(inference_form_metrics):
 # Carbon emissions
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{TRAINING_ID_PREFIX}-carbon_emissions', 'children'),
-    Input(f'training_processed_output_metrics', 'data'),
+    Input('training_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(training_form_metrics):
     return metrics_utils.format_CE_text(training_form_metrics['carbonEmissions'])
 
 @AI_PAGE.callback(
     Output(f'{AI_PAGE_ID_PREFIX}-{INFERENCE_ID_PREFIX}-carbon_emissions', 'children'),
-    Input(f'inference_processed_output_metrics', 'data'),
+    Input('inference_processed_output_metrics', 'data'),
 )
 def get_training_needed_energy(inference_form_metrics):
     return metrics_utils.format_CE_text(inference_form_metrics['carbonEmissions'])

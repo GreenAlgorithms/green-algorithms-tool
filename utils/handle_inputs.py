@@ -21,7 +21,7 @@ CURRENT_VERSION = 'v2.2'
 DATA_DIR = os.path.join(os.path.abspath(''),'data')
 
 # TODO Add the dev option for testing, make it permanent, with a warning pop up if selected by mistake
-APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0]=='v')&(x!=CURRENT_VERSION))]
+APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0] == 'v') & (x != CURRENT_VERSION))]
 APP_VERSION_OPTIONS_LIST.sort(reverse=True)
 
 def get_available_versions():
@@ -30,7 +30,7 @@ def get_available_versions():
 
 # The default values used to fill in the form when no other input is provided
 # WARNING: do not modify the order unless modifying the order of the outputs of 
-# the fillin_from_inputs callback accordingly
+# the filling_from_inputs callback accordingly
 #-----------------------------------------------------------------------------
 # TODO: make it more robust by using a dictionary or dataclass for storing ids
 #-----------------------------------------------------------------------------
@@ -128,9 +128,9 @@ def load_data(data_dir: str, **kwargs):
     We ignore the first row, as it contains metadata.
     All these CSV correspond to tabs of the spreadsheet on the Google Drive.
     """
-    data_dict0 = dict()
+    data_dict0 = {}
 
-    for k,v in kwargs.items():
+    for k, v in kwargs.items():
         data_dict0[k] = v
 
     data_dict = SimpleNamespace(**data_dict0)
@@ -147,9 +147,10 @@ def load_data(data_dir: str, **kwargs):
 
     # Dict of dict with all the possible models
     # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
-    data_dict.cores_dict = dict()
-    data_dict.cores_dict['CPU'] = pd.Series(cpu_df.TDP_per_core.values,index=cpu_df.model).to_dict()
-    data_dict.cores_dict['GPU'] = pd.Series(gpu_df.TDP_per_core.values,index=gpu_df.model).to_dict()
+    data_dict.cores_dict = {
+        'CPU': pd.Series(cpu_df.TDP_per_core.values, index=cpu_df.model).to_dict(),
+        'GPU': pd.Series(gpu_df.TDP_per_core.values, index=gpu_df.model).to_dict()
+    }
 
     ### PUE ###
     pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
@@ -159,19 +160,18 @@ def load_data(data_dir: str, **kwargs):
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
 
     ### CARBON INTENSITY BY LOCATION ###
-    CI_df =  pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"),
-                         sep=',', skiprows=1)
+    CI_df = pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"), sep=',', skiprows=1)
     check_CIcountries_df(CI_df)
     assert len(set(CI_df.location)) == len(CI_df.location)
 
-    data_dict.CI_dict_byLoc = dict()
+    data_dict.CI_dict_byLoc = {}
     for location in CI_df.location:
-        foo = dict()
-        for col in ['continentName','countryName','regionName','carbonIntensity']:
-            foo[col] = CI_df.loc[CI_df.location == location,col].values[0]
+        foo = {}
+        for col in ['continentName', 'countryName', 'regionName', 'carbonIntensity']:
+            foo[col] = CI_df.loc[CI_df.location == location, col].values[0]
         data_dict.CI_dict_byLoc[location] = foo
 
-    data_dict.CI_dict_byName = dict()
+    data_dict.CI_dict_byName = {}
     for continent in set(CI_df.continentName):
         foo = CI_df.loc[CI_df.continentName == continent]
         data_dict.CI_dict_byName[continent] = dict()
@@ -212,7 +212,7 @@ def load_data(data_dir: str, **kwargs):
 
     data_dict.providersTypes = pd.Series(providersNames_df.platformName.values, index=providersNames_df.platformType).to_dict()
 
-    data_dict.platformName_byType = dict()
+    data_dict.platformName_byType = {}
     for platformType in set(providersNames_df.platformType):
         foo = providersNames_df.loc[providersNames_df.platformType == platformType]
         data_dict.platformName_byType[platformType] = pd.Series(providersNames_df.providerName.values, index=providersNames_df.provider).to_dict()
@@ -245,10 +245,13 @@ def availableLocations_continent(selected_provider: str, versioned_data: dict):
     if dict_per_server_id_in_provider is not None:
         availableLocations = [x['location'] for x in dict_per_server_id_in_provider.values()]
         availableLocations = list(set(availableLocations))
-        availableOptions = list(set([data_dict.CI_dict_byLoc[x]['continentName'] for x in availableLocations if x in data_dict.CI_dict_byLoc]))
+        availableOptions = list(set(
+            [data_dict.CI_dict_byLoc[x]['continentName'] for x in availableLocations if x in data_dict.CI_dict_byLoc]
+        ))
         return availableOptions
     else:
         return []
+
 
 def availableOptions_servers(selected_provider: str, selected_continent: str, versioned_data: dict):
     """
@@ -273,6 +276,7 @@ def availableOptions_servers(selected_provider: str, selected_continent: str, ve
         return availableOptions
     else:
         return []
+
 
 def availableOptions_country(selected_continent: str, versioned_data: dict):
     """
@@ -429,8 +433,8 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
     ############################
     # Now we validate each of the target key from the input dict
 
-    clean_inputs = dict()
-    wrong_imputs = dict()
+    clean_inputs = {}
+    wrong_imputs = {}
     for key in keys_of_interest:
         if key not in INPUT_KEYS_TO_IGNORE:
             new_value = unlist(input_dict[key])
@@ -494,9 +498,9 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
             assert False, 'Unknown key'
         return new_val
     
-    clean_inputs = dict()
-    wrong_imputs = dict()
-    unknown_inputs = dict()
+    clean_inputs = {}
+    wrong_imputs = {}
+    unknown_inputs = {}
 
     for key in keys_of_interest:
         new_value = unlist(input_dict[key])
@@ -507,9 +511,6 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
             wrong_imputs[key] = new_value
 
     return clean_inputs, wrong_imputs
-
-
-
 
 
 def open_input_csv_and_comment(upload_csv_content: str, filename: str):
@@ -524,7 +525,7 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     _, upload_string = upload_csv_content.split(',')
     decoded = base64.b64decode(upload_string)
     try:
-        # TODO: extarct content from .xlsx files as well.
+        # TODO: extract content from .xlsx files as well.
         if 'csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
@@ -534,7 +535,8 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
         message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
         return {}, subtitle, message
     # TODO : raise a warning if there are several rows in the input csv
-    return  {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+    return {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+
 
 def read_base_form_inputs_from_csv(upload_csv:dict):
     """
@@ -577,6 +579,7 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
         values['serverContinent'] = None
         values['server'] = None
     return values, invalid_inputs, new_version
+
 
 def clean_non_used_inputs_for_export(form_aggregate_data: dict):
     """

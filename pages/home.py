@@ -39,9 +39,9 @@ HOME_PAGE_ID_PREFIX = 'main'
 # TODO add a "help" tab on the home form as well (similar to the AI one)
 
 form = get_form_blueprint(
-    id_prefix = HOME_PAGE_ID_PREFIX,
-    title = "Details about your algorithm",
-    subtitle = html.P(
+    id_prefix=HOME_PAGE_ID_PREFIX,
+    title="Details about your algorithm",
+    subtitle=html.P(
         [
             "To understand how each parameter impacts your carbon footprint, "
             "check out the formula below and the ",
@@ -228,11 +228,11 @@ HOME_PAGE.layout = get_home_page_layout()
     ]
 )
 def forward_imported_content_to_form(import_data, filename, current_form_data, current_app_version):
-    '''
-    Processes the raw input dictionnary and checks content before 
-    forwarding it to the main page form. 
+    """
+    Processes the raw input dictionnary and checks content before
+    forwarding it to the main page form.
     Produces error messages depending on the csv content.
-    '''
+    """
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
 
@@ -267,10 +267,10 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
         prevent_initial_call=True,
 )
 def forward_form_input_to_export_module(_, form_aggregate_data, form_output_metrics):
-    '''
+    """
     Intermediate processing specific to the HOME page before exporting data.
-    We forward the inputs of the form to the export file along with the main outputs. 
-    '''
+    We forward the inputs of the form to the export file along with the main outputs.
+    """
     to_export = {}
     # Raw inputs of the form
     form_aggregate_data = clean_non_used_inputs_for_export(form_aggregate_data)
@@ -293,6 +293,7 @@ def forward_results_from_form_to_metrics(form_metrics):
     }
 
 ## OUTPUT GRAPHICS
+
 
 @HOME_PAGE.callback(
     Output("pie_graph", "figure"),
@@ -335,25 +336,26 @@ def create_bar_chart_cores(form_agg_data, versioned_data):
 
 ## OUTPUT SUMMARY
 
+
 @HOME_PAGE.callback(
     Output('report_markdown', 'children'),
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', "data"),
-        Input('versioned_data','data'),
+        Input('versioned_data', 'data'),
         Input(f'{HOME_PAGE_ID_PREFIX}-energy_text', 'children'),
         Input(f'{HOME_PAGE_ID_PREFIX}-carbonEmissions_text', 'children'),
         Input(f'{HOME_PAGE_ID_PREFIX}-treeMonths_text', 'children'),
     ],
 )
 def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text_ty):
-    '''
+    """
     Writes a summary text of the current computation that is shown as an example
     for the user on how to report its impact.
-    '''
+    """
     if (form_agg_data['numberCPUs'] is None)&(form_agg_data['numberGPUs'] is None):
-        return('')
+        return ""
     elif versioned_data is None:
-        return ('')
+        return ""
     else:
         versioned_data = SimpleNamespace(**versioned_data)
 
@@ -362,7 +364,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         hours = form_agg_data['runTime_hour']
         if (minutes > 0)&(hours>0):
             textRuntime = "{}h and {}min".format(hours, minutes)
-        elif (hours > 0):
+        elif hours > 0:
             textRuntime = "{}h".format(hours)
         else:
             textRuntime = "{}min".format(minutes)
