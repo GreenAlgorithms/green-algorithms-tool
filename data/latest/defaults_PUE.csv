@@ -1,6 +1,8 @@
 index,>1,
 provider,PUE,source
-Unknown,1.67,2019 https://journal.uptimeinstitute.com/is-pue-actually-going-up/
-gcp,1.11,https://www.google.co.uk/about/datacenters/efficiency/
-aws,1.2,https://aws.amazon.com/about-aws/sustainability/
-azure,1.125,but only for new datacentres https://azure.microsoft.com/en-gb/global-infrastructure/
+Unknown,1.56,2024 https://datacenter.uptimeinstitute.com/rs/711-RIA-145/images/2024.GlobalDataCenterSurvey.Report.pdf?version=0
+gcp,1.12,https://www.nutanix.dev/2023/05/04/digging-into-data-center-efficiency-pue-and-the-impact-of-hci/
+aws,1.2,https://www.nutanix.dev/2023/05/04/digging-into-data-center-efficiency-pue-and-the-impact-of-hci/
+azure,1.12,https://www.nutanix.dev/2023/05/04/digging-into-data-center-efficiency-pue-and-the-impact-of-hci/
+OVHcloud,1.09,https://www.nutanix.dev/2023/05/04/digging-into-data-center-efficiency-pue-and-the-impact-of-hci/
+Oracle,1.2,https://www.nutanix.dev/2023/05/04/digging-into-data-center-efficiency-pue-and-the-impact-of-hci/
