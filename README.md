@@ -1,14 +1,14 @@
 # Green Algorithms 
 **www.green-algorithms.org**
 
-[![Generic badge](https://img.shields.io/badge/Version-v2.2-blue.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Version-v3.0-blue.svg)](https://shields.io/)
   
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/purple?icon=github)](https://github.com/Naereen/badges/)
 
 ---
 
-<img src="assets/images/2025-01-27_Green_Algorithms_Classic_view.png" width="500">
+<img src="assets/images/View_v3_classic.png" width="500">
 
 
 ## Methods and data
@@ -71,6 +71,17 @@ It can be trials and errors, parameters optimisations, memory issues etc.
 
 ## Credits 
 
+The Green Algorithms project is led by [Dr Loïc Lannelongue](https://www.lannelongue-group.org) 
+with the support of [Prof Michael Inouye](https://www.inouyelab.org/) from the University of Cambridge (UK).
+
+### Other contributors
+
+- [Dr Jason Grealey](https://scholar.google.com/citations?user=DiAlGKAAAAAJ&hl=en) (then: Baker Heart and Diabetes Institute, Melbourne, Australia) helped to start this project.
+- Even Matencio ([GitHub](https://github.com/evenmatencio), [LinkedIn](www.linkedin.com/in/evenmatencio)) (then: French Department for the Environment, Paris, France) developed the v3.0 of the calculator and in particular the AI view. 
+- The app has also been improved by [ongcp97](https://www.fiverr.com/ongcp97)
+
+
+### Software and images
 - The app was designed using [Plotly Dash](https://plot.ly/dash/).
 - The background image is realised by [Ed Hawkins](https://showyourstripes.info) from the University of Reading.
 - The icons used are under [CC Attribution licence](https://creativecommons.org/licenses/by/4.0/) 
@@ -80,7 +91,7 @@ and have been designed by
 [Sergei Kokota](https://icon-icons.com/icon/tree-greenery-nature/53329),
 [Baianat](https://icon-icons.com/icon/car/61086) and
 [RoundIcons](https://icon-icons.com/icon/plane-airplane/89770).
-- The app has also been improved by [ongcp97](https://www.fiverr.com/ongcp97).
+.
 
 ## Licence
 
