@@ -43,14 +43,27 @@ h3 {
     color: rgb(100, 100, 100);
 }
 
+h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
 p:not(:last-of-type) {
     margin-bottom: 1rem;
+}
+
+#website-link-button {
+    font-size: 1.8rem;
+    font-weight: 400;
+    font-style: italic;
+    font-family: 'Raleway', serif;
+    color: rgb(100, 100, 100);
+    line-height: 1.3;
 }
 
 /*
 ---------------------------------- HEADER ----------------------------------------
 */
-
 
 .header p {
     font-family: 'Ruda', sans-serif;
@@ -62,6 +75,26 @@ p:not(:last-of-type) {
     margin-bottom: 0;
 }
 
+.change_version_text a:link,
+.change_version_text a:visited {
+    color: rgb(120, 120, 120);
+}
+
+.change_version_text a:hover {
+    color: rgb(80, 80, 80);
+}
+
+.change_version_text p {
+    color: rgb(60, 60, 60);
+    text-decoration: underline;
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.change_version_text p:hover {
+    color: rgb(80, 80, 80);
+}
+
 /*
 ---------------------------------- INPUT FORM ----------------------------------------
 */
@@ -69,7 +102,7 @@ p:not(:last-of-type) {
 form p {
     font-style: italic;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-size: 1.7rem;
 }
 
@@ -85,42 +118,109 @@ input, select, .Select, textarea {
     font-size: 1.5rem;
 }
 
-.form-row input[type='number'] {
+.form-row input[type='number'], .form-row .box-fields {
     text-align: center;
 }
 
-.reset-button a:link,
-.reset-button a:visited {
-    color: rgb(120, 120, 120);
+
+.tab-label {
+    font-size: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
 }
 
-.reset-button a:hover {
-    color: rgb(80, 80, 80);
+.mantine-Switch-label{
+    font-size: 1.7rem;
+    margin-left: 6px;
 }
 
-.reset-button p {
-    color: rgb(120, 120, 120);
-    text-decoration: underline;
+.form-help-markdown {
+    font-size: 17px;
 }
 
-.reset-button p:hover {
-    color: rgb(80, 80, 80);
-}
+
 
 /*
-.Select,
-#platformType_dropdown .Select-value-label,
-#provider_dropdown .Select-value-label,
-#coreType_dropdown .Select-value-label,
-#coreModel_dropdown .Select-value-label,
-#location_continent_dropdown .Select-value-label,
-#location_country_dropdown .Select-value-label,
-#location_region_dropdown .Select-value-label {
-    font-size: 15px;
-    font-size: 1.5rem;
-    color: #ff0000;
-}
+---------------------------------- Tooltip ----------------------------------------
 */
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip-icon {
+    display: inline-block;
+    /* Text content of the icon */
+    font-style: bold;
+    font-size: 0.8em;
+    text-align: center;
+    color: rgb(100, 100, 100);
+    /* Border of the icon */
+    height: 1.1em;
+    width: 1.2em;
+    line-height: 1.1em;
+    border-radius: 50%;
+    border: .5px solid rgb(100, 100, 100);
+    /* Position of the icon */
+    position: relative;
+    left: 0.3em;
+    top: 0.05em;       
+}
+
+.tooltip-text {
+    font-size: .8em;
+    visibility: hidden;
+    width: 12em;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    font-style: normal;
+    /* Position of the text */
+    position: absolute;
+    right: 1em;
+    z-index: 1;
+}
+
+
+#data_version_tooltip .tooltip-text {
+    font-family: 'Raleway', serif;
+    font-style: normal;
+    font-weight: 200;
+}
+
+
+
+/*
+---------------------------------- IMPORT-EXPORT ----------------------------------------
+*/
+
+#export-result {
+    font-size: 22px;
+    font-size: 2.2rem;
+    justify-content: center;
+    align-items: center;
+}
+
+#export-content {
+    vertical-align: middle;
+}
+
+#import-result {
+    font-size: 22px;
+    font-size: 2.2rem;
+}
+
+#log-error-subtitle {
+    font-size: 12px ;
+}
+
+#log-error-content {
+    font-size: 12px ;
+    font-style: italic;
+}
+
 
 /*
 ---------------------------------- MINI-BOX ----------------------------------------
@@ -139,15 +239,19 @@ input, select, .Select, textarea {
 
 .caption-icons p:last-of-type {
     font-weight: 400;
-    /*font-style: italic;
-    font-size: 20px;
-    font-size: 2rem;*/
 }
 
-.permalink {
-    font-size: 22px;
-    font-size: 2.2rem;
+.detailed-metric-container {
+    font-size: 12px
 }
+
+.metric-per-form-value {
+    font-weight: 600;
+    font-size: 12px;
+    margin-right: 6px;
+    margin-left: 2px;
+}
+
 
 /*
 ---------------------------------- DESCRIPTIONS ----------------------------------------
@@ -208,7 +312,10 @@ blockquote {
     margin-top: 1rem;
 }
 
-.preprint {
+.text-italic {
     font-style: italic;
-    background-color: rgba(249, 249, 249,0.9);
 }
+
+
+
+

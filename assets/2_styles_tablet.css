@@ -6,65 +6,177 @@
       font-size: 57%;
     }
 
+    
+    
+    /*
+    ---------------------------------- NAVBAR ----------------------------------------
+    */
+
+    .Hr_div_header{
+        width: 30em;
+    }
+    
+    .pages-menu {
+        flex-direction: row;
+    }
+
+    #Ai-navlink{
+        text-align: left;
+    }
+    
+    #Home-navlink{
+        text-align: right;
+    }
+
+    .navlink-label {
+        font-size: 2.5em;
+    }
+
+    #versions_div {
+        margin-left: auto;
+    }
+
+    #version-button {
+        font-size: 1em;
+    }
+
+    #data_version_tooltip .tooltip-icon{
+        top: 0.25em;
+    }
+    
+    #data_version_tooltip .tooltip-text{
+        font-size: 0.8em;
+        top: 2.2em
+    }
+
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
     */
 
-    /*
-    .input-form {
-        margin-right: 12px;
-        width: calc((50%) - (6px));
-    }
-
-    .first-output {
-        width:calc((50%) - (6px));
-    }
-    */
-
-    .form-row  {
-        flex-direction: row;
-        align-items: center;
-    }
 
     .form-row > label {
-        width: 50%;
-        margin-bottom: 0;
-        /*text-align: right;
-        padding-right: 10px;*/
+        width: 70%;
+        margin-bottom: 7;
     }
 
-    .form-row .box-fields {
-        display:block;
+    /* The sum of the following three widths should be 100% */
+    .short-input label {
+        width: 45%;
+        margin-bottom: 0;
+    }
+
+    .form-row .tooltip {
+        width: 5%;
+    }
+
+    .short-input .box-fields, 
+    .short-input > input[type = 'number'] {
         width: 50%;
+    }
+
+    
+    /* This one is used to match the height of both the input and box fields of the repoting scope */
+    .reporting-row input[type='number']{
+        padding: 8px;
+    }
+
+    /* This one is used to cancel the effet of the .short-input related properties (defined above)*/
+    .reporting-row input[type='number'] ,
+    .reporting-row .box-fields{
+        height: 100%;
+        width: 42%;
+    }
+
+    /* The following one is used for location and cloud computing */
+    .long-input .box-fields {
+        width: 95%;
+    }
+
+    .TDP > label {
+        box-sizing: border-box;
+        width: 70%;
+        padding-right: 25px;
+    }
+
+    .TDP > input[type = 'number'] {
+        width: 25%;
     }
 
     .form-row .box-runtime input:first-of-type {
         margin-right:0;
-        margin-bottom:2px;
-
+        margin-bottom:0px;
     }
 
     .form-row input:last-of-type {
         margin-left:0;
     }
+    
+    .radio-row label{
+            width: 45%;
+        }
 
-    .form-row > input[type='number'] {
-        width: 50%;
-    }
+    .radio-and-field{
+        width: 50%
+        /* equivalent to the .short-input .box-fields selector */  
+    }  
 
     .radio-input {
-        width: 30%;
+        width: 50%;
         margin: 0;
+        padding-left: 20px;
     }
 
-    .radio-and-field input[type='number'] {
-        width: 20%;
+    .radio-row input[type='number'] {
+        width: 45%;
     }
 
-    .reset-button {
+    /* CONTINUOUS INFERENCE SCHEME */
+
+    .continuous-switcher {
+        width: 97%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:0px;
+    }
+
+    .input_data_time-section > input[type = 'number'],
+    .input_data_time-section .box-fields {
+        width: 25%;
+    }
+
+    .change_version_text {
         margin-bottom: 10px;
         margin-top: 20px;
     }
+
+    .tooltip-text {
+        font-size: 0.8em;
+    }
+
+    /*
+    ---------------------------------- IMPORT-EXPORT ----------------------------------
+    */
+
+    #import-export-buttons {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #export-result {
+        margin-right: 4px;
+        width: calc((50%) - (4px));
+    }
+
+    #import-result {
+        margin-left: 4px;
+        width: calc((50%) - (4px));
+    }
+
+    #import-error-message{
+        width: 100%;
+    }
+    
 
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
@@ -75,14 +187,17 @@
         height: 180px;
     }
 
+    /* We target the extreme right mini-box(s) */
     .mini-box:nth-of-type(2), .mini-box:nth-of-type(5) {
         margin-right: 0;
     }
 
-    .mini-box:nth-of-type(-n+2) {
+    /* We target the top row of mini-box(s) */
+    .mini-box:nth-of-type(1), .mini-box:nth-of-type(2) {
         width: calc((50%) - (6px));
     }
 
+    /* We target the second row of mini-boxe(s) */
     .mini-box:nth-of-type(n+3) {
         width: calc((33%) - (8px));
         flex-direction: column;
