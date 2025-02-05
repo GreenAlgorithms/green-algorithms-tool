@@ -6,23 +6,22 @@
     }
 
     .fullPage {
-        width: 1280px;
+        width: 95%;
         margin: 0 auto;
     }
+
+    .page_content{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: unset;
+    }
+    
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
     */
-
-    .short-input  {
-        flex-direction: row;
-        align-items: center;
-    }
-
-    .short-input label {
-        width: 50%;
-        margin-bottom: 0;
-    }
 
     .short-input .box-runtime {
         display:block;
@@ -32,49 +31,70 @@
     .short-input .box-runtime input:first-of-type {
         margin-right:0;
         margin-bottom:2px;
-
     }
 
     .box-runtime input:last-of-type {
         margin-left:0;
     }
 
+    .form-row .box-fields,
+    .form-row .radio-and-field {
+        width: 94%
+    }
+
+    .short-input label {
+            width: 47%;
+            margin-bottom: 0;
+        }
+
     .short-input > input[type='number'],
     .short-input .box-fields {
-        width: 50%;
-    }
-
-    #div_memory label{
         width: 47%;
-        margin-right: 3%;
     }
 
+
+    
+    .continuous-switcher {
+        width: 95.5%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:0px;
+    }
+
+    .input_data_time-section > input[type = 'number'],
+    .input_data_time-section .box-fields {
+        width: 23.5%;
+    } 
+
+
+    .tooltip {
+        width: 4%;
+        margin-left: 0em;
+        margin-right: -1em;
+    }
+
+    #data_version_tooltip .tooltip-icon{
+        left: -2.8em;
+    }
+
+    
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
-
-    /*.mini-box:not(:last-of-type)  {*/
-    /*    margin-right: 12px;*/
-    /*}*/
-
-    /*.mini-box {*/
-    /*    flex-direction: column;*/
-    /*    height: 260px;*/
-    /*    width:calc((25%) - (9px));*/
-    /*}*/
-
 
     .mini-box:nth-of-type(n+3) {
         height: 240px;
     }
 
+    .training-metric {
+        margin-right: 50px;
+    }
+
+
     /*
     ---------------------------------- FIRST OUTPUT ----------------------------------------
     */
-
-    /*.two-graphs-box {*/
-    /*    flex-grow: 1;*/
-    /*}*/
 
     .one-of-two-graphs {
         width: calc((50%) - (10px));

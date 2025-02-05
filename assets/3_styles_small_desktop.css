@@ -6,9 +6,55 @@
     }
 
     .fullPage {
-        width: 1000px;
+        width: 95%;
         margin: 0 auto;
     }
+
+    .page_content{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: unset;
+    }
+
+
+        /*
+    ---------------------------------- NAVBAR ----------------------------------------
+    */
+    
+    .Hr_div_header{
+        width: 40em;
+    }
+
+    .pages-menu {
+        flex-direction: row;
+    }
+
+    #Ai-navlink{
+        text-align: left;
+    }
+    
+    #Home-navlink{
+        text-align: right;
+    }
+
+    .navlink-label {
+        font-size: 2.9em;
+    }
+
+    #versions_div {
+        margin-left: auto;
+    }
+
+    #version-button {
+        font-size: 1.2em;
+    }
+
+    #data_version_tooltip .tooltip-text{
+        font-size: 0.9em;
+    }
+
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------
@@ -19,50 +65,129 @@
         width: calc((33.3%) - (6px));
     }
 
+    .ai-input-forms {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        flex-direction: row; 
+        width: 100%;
+    }
+
+    .ai-input-forms .tab-container  {
+        width: calc((50%) - (6px));
+        margin-right: 12px;
+    }
+    
+    .ai-input-forms .tab-container:last-of-type{
+            margin-right: 0px;
+    }
+
+    .ai-input-forms form  {
+        width: 100%;
+    }
+
+    .form-row .box-fields,
+    .form-row .radio-and-field,
+    .form-row > input[type = 'number'] {
+        width: 91%;
+    }
+
+    /* CONTINUOUS INFERENCE SCHEME */
+
+    .continuous-switcher {
+        width: 93%
+    }
+
+    .input_data_time-section input:first-of-type {
+        margin-right:4px;
+    }
+
+    .input_data_time-section > input[type = 'number'],
+    .input_data_time-section .box-fields {
+        width: 45%;
+    } 
+
+    .input_data_time-section > input[type = 'number']{
+        padding: 7.5px;
+    }
+
+    /* REPORTING SCOPE */
+
+    /* This one is used to match the height of both the input and box fields of the repoting scope */
+    .reporting-row input[type='number']{
+        padding: 7px;
+    }
+
+    
+    /*
+    ---------------------------------- Tooltip ----------------------------------------
+    */
+
+    .form-row .tooltip {
+        width: 4%;
+        margin-left: -0.5em;
+    }  
+
+    .tooltip-text {
+        position: absolute;
+        right: 0.1em
+    }
+        
+    
+    .tooltip-icon {
+        /* Position of the icon */
+        position: relative;
+        left: 0.3em;
+        top: 0.05em;       
+    }
+    
+        
+    /*
+    ---------------------------------- IMPORT-EXPORT ----------------------------------------
+    */
+    
+    #import-export-buttons {
+        display: flex;
+        flex-direction: row;
+    }
+    
+    #import-result {
+        margin-left: 6px
+    }
+
+
+    
     /*
     ---------------------------------- MINI-BOX ----------------------------------------
     */
 
-    /*.mini-box:nth-of-type(2n) {*/
-    /*    margin-right: 12px;*/
-    /*}*/
-
-    /*.mini-box {*/
-    /*    height: 180px;*/
-    /*    width:calc((50%) - (6px));*/
-    /*}*/
-
-    /*.mini-box:first-of-type {*/
-    /*    margin-right: 0;*/
-    /*    width: 100%;*/
-    /*}*/
-
     .caption-icons p:first-of-type {
         font-size: 22px;
         font-size: 2.2rem;
-    }
+    }    
 
     .mini-box {
         margin-right: 12px;
         height: 170px;
-    }
+        padding-bottom: 25px;
+    }    
 
+    /* We target the extreme right mini-box(s) */
     .mini-box:nth-of-type(2), .mini-box:nth-of-type(5) {
         margin-right: 0;
-    }
+    }    
 
-    .mini-box:nth-of-type(-n+2) {
+    /* We target the top row of mini-box(s) */
+    .mini-box:nth-of-type(1), .mini-box:nth-of-type(2) {
         width: calc((50%) - (6px));
-    }
+    }    
 
+    /* We target the second row of mini-boxe(s) */
     .mini-box:nth-of-type(n+3) {
         width: calc((33%) - (8px));
         flex-direction: column;
         height: 260px;
-    }
-
-
-
+    }        
 
 
     /*
@@ -77,9 +202,6 @@
         flex-grow: 1;
     }
 
-    /*.one-of-two-graphs {*/
-    /*    width: calc((50%) - (10px));*/
-    /*}*/
 
     .one-of-two-graphs:last-of-type {
         padding-right: 80px;
@@ -87,62 +209,56 @@
         /*margin-bottom: 0;*/
     }
 
-    /*.pie-graph {*/
-    /*    margin-top: 70px;*/
-    /*}*/
 
     /*
-    ---------------------------------- MAP AND DEFINITIONS ----------------------------------------
+    ---------------------------------- FORMULA AND DEFINITIONS ----------------------------------------
     */
 
-    .maps {
+    .formula {
         margin-right: 12px;
-        width: calc((50%) - (6px));
+        width: calc((60%) - (6px));
     }
-
-    .maps .graph-container {
-        margin-top: 30px;
-    }
-
-    /*
-    .maps .graph-container {
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-    */
 
     .definitions {
-        width: calc((50%) - (6px));
+        width: calc((40%) - (6px));
     }
 
+    .definitions .container {
+        height: calc((50%) - (12px));
+    }
+
+    .methodology-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+    }
+
+
     /*
-    ---------------------------------- WHAT TO DO and CORES COMPARISON ----------------------------------------
+    ---------------------------------- REPORT and CORES COMPARISON ----------------------------------------
     */
+    
+    .report {
+        order: 1;
+        margin-right: 10px;
+        width: calc((45%) - (6px));
+    }
 
     .core-comparison {
         width: calc((55%) - (6px));
         order: 1;
     }
 
-    .to-do {
-        width: calc((45%) - (6px));
-        margin-right: 12px;
-    }
-
     /*
-    ---------------------------------- FORMULA and REPORT ----------------------------------------
+    ---------------------------------- WHAT CAN YOU DO ----------------------------------------
     */
 
-    .formula {
-        order: 1;
-        margin-right: 12px;
-        width: calc((60%) - (6px));
-    }
+    /*.to-do {*/
+    /*    width: calc((45%) - (6px));*/
+    /*    margin-right: 12px;*/
+    /*    order: 1;*/
+    /*}*/
 
-    .report {
-        order: 1;
-        width: calc((40%) - (6px));
-    }
 
     /*
     ---------------------------------- FOOTER ----------------------------------------
@@ -158,6 +274,7 @@
         order: 2;
         margin-right: 12px;
         width: calc((33.3%) - (8px));
+        align-content: stretch;
     }
 
     .show-stripes {
@@ -166,6 +283,6 @@
     }
 
     .citation {
-        order: 3;
+        order: 1;
     }
 }
