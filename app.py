@@ -211,6 +211,14 @@ app.layout = dmc.MantineProvider(
             html.Div(
                 [
                     html.H2("Some news..."), # TODO align this left?
+
+                    html.P([
+                        "⏳ ",
+                        html.B('We are in the process of updating the carbon intensity values '
+                               'for electricity consumption to the latest data.'),
+                        " Due to a change of T&C with carbonfootprint, "
+                        "this is taking a bit longer than planned.",
+                    ]),
                     
                     html.P([
                         "🌱 ",
@@ -224,7 +232,7 @@ app.layout = dmc.MantineProvider(
                         html.B('The new major update of the calculator is here!'),
                         " Possibility to share your results as csv, more guidelines on how to use the tool, "
                         "and the addition of a brand-new AI-specific calculator! ",
-                        html.A("Check out the release notes", href="", target="_blank"),
+                        html.A("Check out the release notes", href="https://github.com/GreenAlgorithms/green-algorithms-tool/releases", target="_blank"),
                         " for the full list of new features."
                     ]),
 
@@ -333,11 +341,11 @@ app.layout = dmc.MantineProvider(
                     [Loïc Lannelongue](www.lannelongue-group.org) and 
                     [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge,
                     but made possible by the contribution and support of many: 
-                    [full list here](https://www.green-algorithms.org/about/).
+                    [full list](https://www.green-algorithms.org/about/).
                     
                     _In particular, we are thankful for the development work of Even Matencio
                     and the support of the Wellcome Trust, NIHR Cambridge Biomedical Research Centre, 
-                    and French Department for the Environment._
+                    and French Department for the Ecological Transition._
                     ''',
                     className='authors'
                     ),

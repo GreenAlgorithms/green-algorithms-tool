@@ -1,7 +1,7 @@
-'''
-This script implements miscellaneous functions and global variables 
+"""
+This script implements miscellaneous functions and global variables
 used at page loading or when a csv is uploaded.
-'''
+"""
 
 import os
 import copy
@@ -17,12 +17,13 @@ from utils.utils import check_CIcountries_df, unlist, put_value_first
 ###################################################
 ## GLOABAL VARIABLES
 
-CURRENT_VERSION = 'v2.2'
-DATA_DIR = os.path.join(os.path.abspath(''),'data')
+CURRENT_VERSION = 'v3.0'
+DATA_DIR = os.path.join(os.path.abspath(''), 'data')
 
 # TODO Add the dev option for testing, make it permanent, with a warning pop up if selected by mistake
 APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0] == 'v') & (x != CURRENT_VERSION))]
 APP_VERSION_OPTIONS_LIST.sort(reverse=True)
+
 
 def get_available_versions():
     appVersions_options = [{'label': f'{CURRENT_VERSION} (latest)', 'value': CURRENT_VERSION}] + [{'label': k, 'value': k} for k in APP_VERSION_OPTIONS_LIST]

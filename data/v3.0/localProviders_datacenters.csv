@@ -1,0 +1,2 @@
+must match providers codes,The name of the data centre on the cloud platform,must match CI-aggregated$location,extra level of details after regionName,,,> 1,
+provider,Name,location,Extra_details,location_freeForm,source_datacentre,PUE,source_PUE
