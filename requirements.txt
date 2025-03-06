@@ -21,7 +21,7 @@ gunicorn==23.0.0
 idna==3.10
 importlib_metadata==8.6.1
 itsdangerous==2.2.0
-Jinja2==3.1.5
+Jinja2==3.1.6
 jsbeautifier==1.15.1
 MarkupSafe==3.0.2
 more-itertools==10.6.0
