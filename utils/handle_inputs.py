@@ -545,16 +545,19 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     When an input raises an error, it is replaced by its corresponding default value.
 
     Returns:
-    - values [dict]: curated inputs
+    - clean_values [dict]: curated inputs
     - invalid_inputs [dict]: inputs that could not be read properly
+    - not_provided_inputs [list]: expected inputs that were not provided
     - new_version [str]: app version to use, maybe coming from input data
     """
-    # Loads the right dataset to validate the inputs
     appVersions_options_list = get_available_versions()
+    # Retrieve the target data version if correctly provided
     new_version = CURRENT_VERSION
     if 'appVersion' in upload_csv:
         new_version = unlist(upload_csv['appVersion'])
-    assert new_version in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]
+        if not new_version in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]:
+            new_version = CURRENT_VERSION
+    # Loads the right dataset to validate the inputs
     if new_version == CURRENT_VERSION:
         newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
     else:
@@ -568,18 +571,18 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     )
     # Returns the verified inputs, where wrong keys are replaced
     # by default values, hence the importance of the order of the keys
-    values = copy.deepcopy(DEFAULT_VALUES)
+    clean_values = copy.deepcopy(DEFAULT_VALUES)
     # adding required values that were not found as expected in the input
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
     # enforcing input values for entries that are correct
-    values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
+    clean_values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
     # Small fix for special case: when the provider is not Google Cloud we should not
     # replace the serverContinent and server values by default ones, because it has
     # an influence on how the PUE is computed in the aggregate_input_values callback.
-    if values['provider'] != 'gcp':
-        values['serverContinent'] = None
-        values['server'] = None
-    return values, invalid_inputs, new_version
+    if clean_values['provider'] != 'gcp':
+        clean_values['serverContinent'] = None
+        clean_values['server'] = None
+    return clean_values, invalid_inputs, new_version
 
 
 def clean_non_used_inputs_for_export(form_aggregate_data: dict):
