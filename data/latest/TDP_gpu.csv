@@ -6,7 +6,7 @@ NVIDIA A100 40GB PCIe,250,,250,,,,,https://www.nvidia.com/content/dam/en-zz/Solu
 NVIDIA A100 80GB PCIe,300,,300,,,,,https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/PB-10577-001_v02.pdf 
 NVIDIA GTX 1080,180,,180,,,,,techpowerup.com
 NVIDIA GTX 1080 Ti,250,,250,,,,,techpowerup.com
-NVIDIA GTX TITAN X,250,,250,,,,,techpowerup.com
+NVIDIA GTX TITAN X,250,,250,2015,28,6.01,12,techpowerup.com/gpu-specs/geforce-gtx-titan-x.c2632,
 NVIDIA Jetson AGX Xavier,30,,30,,,,,https://www.techpowerup.com/gpu-specs/jetson-agx-xavier.c3232
 NVIDIA RTX 2080,215,,215,,,,,techpowerup.com
 NVIDIA RTX 2080 Ti,250,,250,,,,,techpowerup.com

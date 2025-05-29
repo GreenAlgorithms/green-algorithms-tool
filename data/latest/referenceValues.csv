@@ -10,6 +10,38 @@ flight_NY-SF,570000,gCO2e from https://calculator.carbonfootprint.com/calculator
 flight_PAR-LON,50000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 flight_PAR-DUB,110000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
 flight_NYC-MEL,2310000,gCO2e from https://calculator.carbonfootprint.com/calculator.aspx?tab=3
-streaming_netflix_perhour,36,gCO2 from https://www.carbonbrief.org/factcheck-what-is-the-carbon-footprint-of-streaming-video-on-netflix (update)
+streaming_netflix_perhour,55,gCO2 from https://www.carbontrust.com/resources/carbon-impact-of-video-streaming (update)
 google_search,10,gCO2 from http://www.janavirgin.com/CO2/CO2GLE_about.html
 tree_month,917,gCO2 same source as treeYear
+PB_GWP_per_capita,985000,"gCO2 e from Sala et al. (2020) ""Environmental sustanability of European production and consumption assessed against panetary boundaries"" https://doi.org/10.1016/j.jenvman.2020.110686"
+PB_ADP_per_capita,2.63E+04,kgSbe same source as PB_GWP_per_capita
+nb_cpu_per_module,2,To allocate server impacts depending on number of used cores
+cpu_die_impact_gwp,1970,"gCO2 e/cm2 from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, Appendix B.2.1 and section 3.2.3.3"
+cpu_base_impact_gwp,9140,"gCO2 e (fixed impact common to all CPUs) from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, Appendix B.2.1 and section 3.2.3.3"
+cpu_die_impact_adp,5.80E-07,"kgSb e/cm2 from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, Appendix B.2.1 and section 3.2.3.3"
+cpu_base_impact_adp,2.04E-02,"kgSb e (fixed impact common to all CPUs) from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, Appendix B.2.1 and section 3.2.3.3"
+ram_die_impact_gwp,2200,"gCO2 e/cm2 from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, section 3.2.3.4"
+ram_base_impact_gwp,5220,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, section 3.2.3.4"
+ram_die_impact_adp,6.30E-05,"kgSb e/cm2 from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, section 3.2.3.4"
+ram_base_impact_adp,1.69E-03,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, section 3.2.3.4"
+ram_density,1.8762,"GB/cm2 rom Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht.   Umweltbundesamt, section 3.2.3.4"
+ram_default_strip_size, 32, "GB from Clément Morand expertise"
+PSU_impact_gwp,24300,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+PSU_impact_adp,8.30E-03,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+motherboard_impact_gwp,66100,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+motherboard_impact_adp,3.69E-03,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+rack_casing_impact_gwp,150000,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+rack_casing_impact_adp,2.02E-02,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+blade_casing_impact_gwp,150000,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+blade_casing_impact_adp,2.02E-02,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+blade_16slot_gwp,880000,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+blade_16slot_adp,4.32E-01,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+blade_module_gwp,205000,"values to use, gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+blade_module_adp,4.72E-02,"values to use, kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+assembly_impact_gwp,6680,"gCO2 e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+assembly_impact_adp,1.41E-06,"kgSb e from Gröger, J., Liu, R., Stobbe, L., Druschke, J., and Richter,N. (2021). Green Cloud Computing: lebenszyklusbasierte Datenerhebung zuUmweltwirkungen des Cloud Computing: Abschlussbericht."
+gpu_die_impact_gwp,1970,gCO2 e/cm2 same source as cpu_gwp_die_impact_gwp
+gpu_base_impact_gwp,26970,"gCO2 e from   Loubet, P., Vincent, A., Collin, A., Dejous, C., Ghiotto, A., and Jego, C.(2023). (whole graphics card)"
+gpu_die_impact_adp,5.80E-07,kgSb e/cm2 same source as cpu_gwp_die_impact_adp
+gpu_base_impact_adp,1.70E-02,"kgSb e from   Loubet, P., Vincent, A., Collin, A., Dejous, C., Ghiotto, A., and Jego, C.(2023). (whole graphics card)"
+default_lifespan_all_hardware,44676,"hours from C. Morand, A.-L. Ligozat, A. Névéol, MLCA: a tool for Machine Learning Life Cycle Assessment, in: ICT4S’24 - 10th International Conference on ICT for Sus- tainability, IEEE, Stockhlom, Sweden, 2024."
