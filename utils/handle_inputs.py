@@ -137,25 +137,44 @@ def load_data(data_dir: str, **kwargs):
     data_dict = SimpleNamespace(**data_dict0)
 
     ### CPU ###
-    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
-                         sep=',', skiprows=1)
+    ############# DRAFT
+    # cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"), sep=',', skiprows=1)
+    cpu_df = pd.read_csv(os.path.join(data_dir, "Draft_LCA_TDP_cpu.csv"), sep=',', skiprows=1)
+    cpu_df.set_index('model', inplace=True)
+    ############# DRAFT
+
     cpu_df.drop(['source'], axis=1, inplace=True)
 
     ### GPU ###
-    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
-                         sep=',', skiprows=1)
+    ############# DRAFT
+    # gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"), sep=',', skiprows=1)
+    gpu_df = pd.read_csv(os.path.join(data_dir, "Draft_LCA_TDP_gpu.csv"), sep=',', skiprows=1)
+    gpu_df.set_index('model', inplace=True)
+    ############# DRAFT
     gpu_df.drop(['source'], axis=1, inplace=True)
 
+    ### AGGREGATED CORES ###
     # Dict of dict with all the possible models
-    # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
+    # e.g. {'CPU': {'Core i9-10920XE': {'TDP_per_core': 13.8, 'die_area_per_core': None, 'embodied_gwp_per_core': 761.7, 'embodied_adp_per_core': 1.7e-3 ...
     data_dict.cores_dict = {
-        'CPU': pd.Series(cpu_df.TDP_per_core.values, index=cpu_df.model).to_dict(),
-        'GPU': pd.Series(gpu_df.TDP_per_core.values, index=gpu_df.model).to_dict()
+        'CPU': cpu_df[
+            [
+                'TDP_per_core',
+                'die_area_per_core',
+                'embodied_gwp_per_core',
+                'embodied_adp_per_core'
+            ]
+        ].to_dict(orient='index'),
+        'GPU': gpu_df[
+            [
+                'TDP_per_core',
+                'die_area'
+            ]
+        ].to_dict(orient='index')
     }
 
     ### PUE ###
-    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
-                         sep=',', skiprows=1)
+    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"), sep=',', skiprows=1)
     pue_df.drop(['source'], axis=1, inplace=True)
 
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
@@ -186,8 +205,7 @@ def load_data(data_dir: str, **kwargs):
                 data_dict.CI_dict_byName[continent][country][region]['carbonIntensity'] = baar.carbonIntensity.values[0]
 
     ### CLOUD DATACENTERS ###
-    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
-                                      sep=',', skiprows=1)
+    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"), sep=',', skiprows=1)
     data_dict.providers_withoutDC = ['aws']
 
     datacenters_df = cloudDatacenters_df

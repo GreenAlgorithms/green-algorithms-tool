@@ -970,24 +970,41 @@ def get_form_blueprint(
                         else:
                             PUE_used = data_dict.pueDefault_dict[selected_provider]
 
-            ### CPUs
+            ### CPUs: DYNAMIC AND EMBODIED IMPACTS
             if coreType in ['CPU', 'Both']:
+                # Retrieving the CPU data
                 if is_shown(tdpCPUstyle):
-                    # we asked the question about TDP
+                    # We asked the question about TDP, so the dafault CPU is selected
                     CPUpower = tdpCPU
+                    CPU_die_area_per_core = data_dict.cores['CPU']['Any']['die_area_per_core']
+                    fixed_CPU_embodied_GWP_per_core = data_dict.cores['CPU']['Any']['embodied_gwp_per_core']
+                    fixed_CPU_embodied_ADP_per_core = data_dict.cores['CPU']['Any']['embodied_adp_per_core']
                 else:
-                    # CPUmodel cannot be "other"
+                    # CPUmodel cannot be "other", so we retrieve the data of the selected CPU
                     CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
+                    CPU_die_area_per_core = data_dict.cores['CPU'][CPUmodel]['die_area_per_core']
+                    # Checking if we actually have the die area for the selected CPU
+                    if CPU_die_area_per_core is None or CPU_die_area_per_core==0:
+                        CPU_die_area_per_core = data_dict.cores['CPU']['Any']['die_area_per_core']
+                    fixed_CPU_embodied_GWP_per_core = data_dict.cores['CPU'][CPUmodel]['embodied_gwp_per_core']
+                    fixed_CPU_embodied_ADP_per_core = data_dict.cores['CPU'][CPUmodel]['embodied_adp_per_core']
+                # Usage ration data
                 if usageCPUradio == 'Yes':
                     usageCPU_used = usageCPU
                 else:
                     usageCPU_used = 1.
-                powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
+                # CPU impact values
+                dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
+                embodied_GWP_CPU = n_CPUcores * (CPU_die_area_per_core * data_dict.refValues_dict['cpu_die_impact_gwp'] + fixed_CPU_embodied_GWP_per_core)
+                embodied_per_hour_GWP_CPU = embodied_GWP_CPU / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                embodied_ADP_CPU = n_CPUcores * (CPU_die_area_per_core * data_dict.refValues_dict['cpu_die_impact_adp'] + fixed_CPU_embodied_ADP_per_core)
+                embodied_per_hour_ADP_CPU = embodied_ADP_CPU / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
             else:
-                powerNeeded_CPU = 0
+                dynamic_powerNeeded_CPU = 0
                 CPUpower = 0
                 usageCPU_used = 0
 
+            ### GPUs: DYNAMIC AND EMBODIED IMPACTS
             if coreType in ['GPU', 'Both']:
                 if is_shown(tdpGPUstyle):
                     GPUpower = tdpGPU
@@ -1017,12 +1034,12 @@ def get_form_blueprint(
             ### COMPUTATIONS: final outputs are computed
 
             # Power needed, in Watt
-            powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
+            powerNeeded_core = dynamic_powerNeeded_CPU + powerNeeded_GPU
             powerNeeded_memory = PUE_used * (memory * data_dict.refValues_dict['memoryPower'])
             powerNeeded = powerNeeded_core + powerNeeded_memory
 
             # Energy needed, in kWh (so dividing by 1000 to convert to kW)
-            energyNeeded_CPU = runTime * powerNeeded_CPU * mult_factor_used / 1000
+            energyNeeded_CPU = runTime * dynamic_powerNeeded_CPU * mult_factor_used / 1000
             energyNeeded_GPU = runTime * powerNeeded_GPU * mult_factor_used / 1000
             energyNeeded_core = runTime * powerNeeded_core * mult_factor_used / 1000
             eneregyNeeded_memory = runTime * powerNeeded_memory * mult_factor_used / 1000
