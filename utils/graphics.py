@@ -149,13 +149,13 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
             if gpu == 'other':
                 power_list.append(aggregated_data['tdpGPU'])
             else:
-                power_list.append(versioned_data.cores_dict['GPU'][gpu])
+                power_list.append(versioned_data.cores_dict['GPU'][gpu]['TDP_per_core'])
     else:
         for cpu in list_cores:
             if cpu == 'other':
                 power_list.append(aggregated_data['tdpCPU'])
             else:
-                power_list.append(versioned_data.cores_dict['CPU'][cpu])
+                power_list.append(versioned_data.cores_dict['CPU'][cpu]['TDP_per_core'])
 
     power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
     power_df.sort_values(by=['corePower'], inplace=True)

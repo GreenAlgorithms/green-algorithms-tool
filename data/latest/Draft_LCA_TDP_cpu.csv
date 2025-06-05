@@ -1,6 +1,6 @@
 index,,in Watt,,,,in nm (not used for now),in cm2,in cm2,in gCO2e,in kgSb e,,
 model,Manufacturer,TDP,n_cores,TDP_per_core,Release_year,feature_size,die_area,die_area_per_core,embodied_gwp_per_core,embodied_adp_per_core,source,comment
-A8-7680,,45,4,11.3,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
+A8-7680,AMD,45,4,11.3,2018,28,2.5,0.625,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/a8-7680.c2120,
 A9-9425 SoC,,15,2,7.5,,,,0,4570,1.02E-02,https://www.techpowerup.com/cpu-specs/,
 AMD 7552,,200,48,4.2,,,,0,190.4166667,4.25E-04,https://www.amd.com/system/files/documents/AMD-EPYC-7002-Series-Datasheet.pdf,
 AMD EPYC 7251,,120,8,15.0,,,,0,1142.5,2.55E-03,https://www.amd.com/en/products/cpu/amd-epyc-7251,
@@ -17,7 +17,7 @@ Core i3-10100,,65,4,16.3,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-spec
 Core i3-10300,,62,4,15.5,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
 Core i3-10320,,91,4,22.8,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
 Core i3-10350K,,91,4,22.8,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
-Core i3-9100,,65,4,16.3,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
+Core i3-9100,Intel,65,4,16.3,2018,14,1.26,0.315,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/core-i3-9100.c2096,
 Core i3-9100F,,65,4,16.3,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
 Core i5-10400,,65,6,10.8,,,,0,1523.333333,3.40E-03,https://www.techpowerup.com/cpu-specs/,
 Core i5-10400F,,65,6,10.8,,,,0,1523.333333,3.40E-03,https://www.techpowerup.com/cpu-specs/,
@@ -71,7 +71,7 @@ Xeon E5-2683 v4,,120,16,7.5,,,,0,571.25,1.28E-03,https://www.intel.co.uk/content
 Xeon E5-2690 v2,,130,10,13.0,,,,0,914,2.04E-03,https://ark.intel.com/content/www/us/en/ark/products/75279/intel-xeon-processor-e5-2690-v2-25m-cache-3-00-ghz.html,
 Xeon E5-2690 v3,,135,12,11.3,,,,0,761.6666667,1.70E-03,https://ark.intel.com/content/www/us/en/ark/products/81713/intel-xeon-processor-e5-2690-v3-30m-cache-2-60-ghz.html,
 Xeon E5-2695 v4,,120,18,6.7,,,,0,507.7777778,1.13E-03,https://ark.intel.com/content/www/us/en/ark/products/91316/intel-xeon-processor-e5-2695-v4-45m-cache-2-10-ghz.html,
-Xeon E5-2697 v4,,145,18,8.1,,,,0,507.7777778,1.13E-03,https://ark.intel.com/content/www/us/en/ark/products/91755/intel-xeon-processor-e5-2697-v4-45m-cache-2-30-ghz.html,
+Xeon E5-2697 v4,Intel,145,18,8.1,2016,14,4.56,0.2533333333,507.7777778,1.13E-03,https://ark.intel.com/content/www/us/en/ark/products/91755/intel-xeon-processor-e5-2697-v4-45m-cache-2-30-ghz.html,
 Xeon E5-2699 v3,,145,18,8.1,,,,0,507.7777778,1.13E-03,https://ark.intel.com/content/www/us/en/ark/products/81061/intel-xeon-processor-e5-2699-v3-45m-cache-2-30-ghz.html,
 Xeon E5-2699 v4,,145,22,6.6,,,,0,415.4545455,9.27E-04,https://ark.intel.com/content/www/us/en/ark/products/91317/intel-xeon-processor-e5-2699-v4-55m-cache-2-20-ghz.html,
 Xeon E5-4610 v4,,105,10,10.5,,,,0,914,2.04E-03,https://ark.intel.com/content/www/us/en/ark/products/93812/intel-xeon-processor-e5-4610-v4-25m-cache-1-80-ghz.html,
@@ -80,8 +80,8 @@ Xeon E5-4650L,,115,8,14.4,,,,0,1142.5,2.55E-03,https://ark.intel.com/content/www
 Xeon E7-8867 v3,,165,16,10.3,,,,0,571.25,1.28E-03,https://ark.intel.com/content/www/us/en/ark/products/84681/intel-xeon-processor-e7-8867-v3-45m-cache-2-50-ghz.html,
 Xeon E7-8880 v4,,150,22,6.8,,,,0,415.4545455,9.27E-04,https://www.intel.co.uk/content/www/uk/en/products/processors/xeon/e7-processors/e7-8880-v4.html,
 Xeon Gold 6142,,150,16,9.4,,,,0,571.25,1.28E-03,https://ark.intel.com/content/www/us/en/ark/products/120487/intel-xeon-gold-6142-processor-22m-cache-2-60-ghz.html,
-Xeon Gold 6148,,150,20,7.5,,,,0,457,1.02E-03,https://ark.intel.com/content/www/us/en/ark/products/120489/intel-xeon-gold-6148-processor-27-5m-cache-2-40-ghz.html,
-Xeon Gold 6248,,150,20,7.5,,,,0,457,1.02E-03,https://ark.intel.com/content/www/us/en/ark/products/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz.html,
+Xeon Gold 6148,Intel,150,20,,2017,14,6.94,0.347,457,1.02E-03,https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server)https://www.intel.fr/content/www/fr/fr/products/sku/120489/intel-xeon-gold-6148-processor-27-5m-cache-2-40-ghz/specifications.html,die size for XCC configuration
+Xeon Gold 6248,Intel,150,20,7.5,2019,14,6.94,0.347,457,1.02E-03,https://www.intel.fr/content/www/fr/fr/products/sku/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz/specifications.html,We can see on [[https://www.intel.fr/content/www/fr/fr/products/sku/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz/specifications.html][Intel's webpage]] that it is a processor of the Cascade Lake architecture. On [[https://en.wikichip.org/wiki/intel/microarchitectures/cascade_lake#LCC_SoC][Wikichip]]
 Xeon Gold 6252,,150,24,6.3,,,,0,380.8333333,8.50E-04,https://ark.intel.com/content/www/us/en/ark/products/192447/intel-xeon-gold-6252-processor-35-75m-cache-2-10-ghz.html,
 Xeon L5640 ,,60,6,10.0,,,,0,1523.333333,3.40E-03,https://ark.intel.com/content/www/us/en/ark/products/47926/intel-xeon-processor-l5640-12m-cache-2-26-ghz-5-86-gt-s-intel-qpi.html,
 Xeon Phi 5110P,,225,60,3.8,,,,0,152.3333333,3.40E-04,https://ark.intel.com/content/www/us/en/ark/products/71992/intel-xeon-phi-coprocessor-5110p-8gb-1-053-ghz-60-core.html,
@@ -136,12 +136,10 @@ EPYC 7551,AMD,180,32,5.6,2017,14,2.13,0.0665625,285.625,6.38E-04,https://www.tec
 EPYC 7551P,AMD,180,32,5.6,2017,14,2.13,0.0665625,285.625,6.38E-04,https://www.techpowerup.com/cpu-specs/epyc-7551p.c1929,
 EPYC 7601,AMD,180,32,5.6,2017,14,2.13,0.0665625,285.625,6.38E-04,https://www.techpowerup.com/cpu-specs/epyc-7601.c1920,
 A8-7600,AMD,65,4,16.3,2014,28,2.45,0.6125,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/a8-7600.c2615,
-A8-7680,AMD,45,4,11.3,2018,28,2.5,0.625,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/a8-7680.c2120,
 EPYC 7452,AMD,155,32,4.8,2019,7,0.74,0.023125,285.625,6.38E-04,https://www.techpowerup.com/cpu-specs/epyc-7452.c2251,
 Ryzen 5 7600,AMD,65,6,10.8,2023,5,1.93,0.3216666667,1523.333333,3.40E-03,https://www.techpowerup.com/cpu-specs/ryzen-5-7600.c2959,
 Ryzen 7 7700,AMD,65,8,8.1,2023,5,1.82,0.2275,1142.5,2.55E-03,https://www.techpowerup.com/cpu-specs/ryzen-7-7700.c2960,
 Ryzen 9 7900,AMD,65,12,5.4,2023,5,2.66,0.2216666667,761.6666667,1.70E-03,https://www.techpowerup.com/cpu-specs/ryzen-9-7900.c2961,
-Core i3-9100,Intel,65,4,16.3,2018,14,1.26,0.315,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/core-i3-9100.c2096,
 Core i3-13100E,Intel,60,4,15.0,2023,10,2.57,0.6425,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/core-i3-13100e.c3076,
 Core i3-13100TE,Intel,35,4,8.8,2023,10,2.57,0.6425,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/core-i3-13100te.c3075,
 Core i5-13400,Intel,65,10,6.5,2023,10,2.57,0.257,914,2.04E-03,https://www.techpowerup.com/cpu-specs/core-i5-13400.c2994,
@@ -221,31 +219,17 @@ Xeon w3-2425,Intel,130,6,21.7,2023,10,19.08,3.18,1523.333333,3.40E-03,https://ww
 Xeon w3-2435,Intel,165,8,20.6,2023,10,19.08,2.385,1142.5,2.55E-03,https://www.techpowerup.com/cpu-specs/xeon-w3-2435.c3118,
 Xeon w5-2445,Intel,175,10,17.5,2023,10,19.08,1.908,914,2.04E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-2445.c3117,
 Xeon w5-2455X,Intel,200,12,16.7,2023,10,19.08,1.59,761.6666667,1.70E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-2455x.c3116,
-Xeon w5-2465X,Intel,200,16,,2023,10,19.08,1.1925,571.25,1.28E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-2465x.c3115,
-Xeon w5-3425,Intel,270,12,,2023,10,19.08,1.59,761.6666667,1.70E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-3425.c3112,
-Xeon w5-3435X,Intel,270,16,,2023,10,19.08,1.1925,571.25,1.28E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-3435x.c3111,
-Xeon w7-2475X,Intel,225,20,,2023,10,19.08,0.954,457,1.02E-03,https://www.techpowerup.com/cpu-specs/xeon-w7-2475x.c3114,
-Xeon w7-2495X,Intel,225,24,,2023,10,19.08,0.795,380.8333333,8.50E-04,https://www.techpowerup.com/cpu-specs/xeon-w7-2495x.c3113,
-Xeon w7-3445,Intel,270,20,,2023,10,19.08,0.954,457,1.02E-03,https://www.techpowerup.com/cpu-specs/xeon-w7-3445.c3110,
-Xeon w7-3455,Intel,270,24,,2023,10,19.08,0.795,380.8333333,8.50E-04,https://www.techpowerup.com/cpu-specs/xeon-w7-3455.c3109,
-Xeon w7-3465X,Intel,300,28,,2023,10,19.08,0.6814285714,326.4285714,7.29E-04,https://www.techpowerup.com/cpu-specs/xeon-w7-3465x.c3108,
-Xeon w9-3475X,Intel,300,36,,2023,10,19.08,0.53,253.8888889,5.67E-04,https://www.techpowerup.com/cpu-specs/xeon-w9-3475x.c3107,
-Xeon w9-3495X,Intel,350,56,,2023,10,19.08,0.3407142857,163.2142857,3.64E-04,https://www.techpowerup.com/cpu-specs/xeon-w9-3495x.c3106,
-Xeon Gold 6148,Intel,150,20,,2017,14,6.94,0.347,457,1.02E-03,https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server) https://www.intel.fr/content/www/fr/fr/products/sku/120489/intel-xeon-gold-6148-processor-27-5m-cache-2-40-ghz/specifications.html,die size for XCC configuration
-Xeon E5-2620 v2,Intel,95,6,,2012,32,4.35,0.725,1523.333333,3.40E-03,https://www.techpowerup.com/cpu-specs/xeon-e5-2620.c969,
-Xeon E5-2620 v4,Intel,85,8,,2016,14,2.4624,0.3078,1142.5,2.55E-03,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)#Die_Stats https://ark.intel.com/content/www/fr/fr/ark/products/92986/intel-xeon-processor-e52620-v4-20m-cache-2-10-ghz.html,die size for LCC configuration
-Xeon Gold 6248,Intel,150,20,,2019,14,6.94,0.347,457,1.02E-03,https://www.intel.fr/content/www/fr/fr/products/sku/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz/specifications.html,We can see on [[https://www.intel.fr/content/www/fr/fr/products/sku/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz/specifications.html][Intel's webpage]] that it is a processor of the Cascade Lake architecture. On [[https://en.wikichip.org/wiki/intel/microarchitectures/cascade_lake#LCC_SoC][Wikichip]]
-Xeon E5-2698 v4,Intel,135,20,,2016,14,4.56,0.228,457,1.02E-03,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC configuration
-Xeon E5-2697 v4,Intel,145,18,,2016,14,4.56,0.2533333333,507.7777778,1.13E-03,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC configuration
-Xeon Gold 6152,Intel,140,22,,2017,14,6.94,0.3154545455,415.4545455,9.27E-04,https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server),XCC configuration
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client),XCC chose max TDP of 24 cores Broawell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC chose max TDP of 22 cores Broawell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC chose max TDP of 20 cores Broawell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC chose max TDP of 18 cores Broawell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC chose max TDP of all the 16 cores Broadwell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),HCC chose max TDP of all the 14 cores Broadwell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),HCC chose max TDP of all the 12 cores Broadwell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),LCC
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),LCC chose max TDP of all the 8 cores Broadwell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),LCC chose max TDP of all the 6 cores Broadwell CPUs
-,,,,,,,,,,,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),LCC
+Xeon w5-2465X,Intel,200,16,12.5,2023,10,19.08,1.1925,571.25,1.28E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-2465x.c3115,
+Xeon w5-3425,Intel,270,12,22.5,2023,10,19.08,1.59,761.6666667,1.70E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-3425.c3112,
+Xeon w5-3435X,Intel,270,16,16.9,2023,10,19.08,1.1925,571.25,1.28E-03,https://www.techpowerup.com/cpu-specs/xeon-w5-3435x.c3111,
+Xeon w7-2475X,Intel,225,20,11.3,2023,10,19.08,0.954,457,1.02E-03,https://www.techpowerup.com/cpu-specs/xeon-w7-2475x.c3114,
+Xeon w7-2495X,Intel,225,24,9.4,2023,10,19.08,0.795,380.8333333,8.50E-04,https://www.techpowerup.com/cpu-specs/xeon-w7-2495x.c3113,
+Xeon w7-3445,Intel,270,20,13.5,2023,10,19.08,0.954,457,1.02E-03,https://www.techpowerup.com/cpu-specs/xeon-w7-3445.c3110,
+Xeon w7-3455,Intel,270,24,11.3,2023,10,19.08,0.795,380.8333333,8.50E-04,https://www.techpowerup.com/cpu-specs/xeon-w7-3455.c3109,
+Xeon w7-3465X,Intel,300,28,10.7,2023,10,19.08,0.6814285714,326.4285714,7.29E-04,https://www.techpowerup.com/cpu-specs/xeon-w7-3465x.c3108,
+Xeon w9-3475X,Intel,300,36,8.3,2023,10,19.08,0.53,253.8888889,5.67E-04,https://www.techpowerup.com/cpu-specs/xeon-w9-3475x.c3107,
+Xeon w9-3495X,Intel,350,56,6.3,2023,10,19.08,0.3407142857,163.2142857,3.64E-04,https://www.techpowerup.com/cpu-specs/xeon-w9-3495x.c3106,
+Xeon E5-2620 v2,Intel,95,6,15.8,2012,32,4.35,0.725,1523.333333,3.40E-03,https://www.techpowerup.com/cpu-specs/xeon-e5-2620.c969,
+Xeon E5-2620 v4,Intel,85,8,10.6,2016,14,2.4624,0.3078,1142.5,2.55E-03,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)#Die_Stats https://ark.intel.com/content/www/fr/fr/ark/products/92986/intel-xeon-processor-e52620-v4-20m-cache-2-10-ghz.html,die size for LCC configuration
+Xeon E5-2698 v4,Intel,135,20,6.8,2016,14,4.56,0.228,457,1.02E-03,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC configuration
+Xeon Gold 6152,Intel,140,22,6.4,2017,14,6.94,0.3154545455,415.4545455,9.27E-04,https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server),XCC configuration

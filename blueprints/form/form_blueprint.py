@@ -977,17 +977,17 @@ def get_form_blueprint(
                     # We asked the question about TDP, so the dafault CPU is selected
                     CPUpower = tdpCPU
                     CPU_die_area_per_core = data_dict.cores['CPU']['Any']['die_area_per_core']
-                    fixed_CPU_embodied_GWP_per_core = data_dict.cores['CPU']['Any']['embodied_gwp_per_core']
-                    fixed_CPU_embodied_ADP_per_core = data_dict.cores['CPU']['Any']['embodied_adp_per_core']
+                    fixed_CPU_embodied_GWP_per_core = data_dict.cores_dict['CPU']['Any']['embodied_gwp_per_core']
+                    fixed_CPU_embodied_ADP_per_core = data_dict.cores_dict['CPU']['Any']['embodied_adp_per_core']
                 else:
                     # CPUmodel cannot be "other", so we retrieve the data of the selected CPU
-                    CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
-                    CPU_die_area_per_core = data_dict.cores['CPU'][CPUmodel]['die_area_per_core']
+                    CPUpower = data_dict.cores_dict['CPU'][CPUmodel]['TDP_per_core']
+                    CPU_die_area_per_core = data_dict.cores_dict['CPU'][CPUmodel]['die_area_per_core']
                     # Checking if we actually have the die area for the selected CPU
                     if CPU_die_area_per_core is None or CPU_die_area_per_core==0:
-                        CPU_die_area_per_core = data_dict.cores['CPU']['Any']['die_area_per_core']
-                    fixed_CPU_embodied_GWP_per_core = data_dict.cores['CPU'][CPUmodel]['embodied_gwp_per_core']
-                    fixed_CPU_embodied_ADP_per_core = data_dict.cores['CPU'][CPUmodel]['embodied_adp_per_core']
+                        CPU_die_area_per_core = data_dict.cores_dict['CPU']['Any']['die_area_per_core']
+                    fixed_CPU_embodied_GWP_per_core = data_dict.cores_dict['CPU'][CPUmodel]['embodied_gwp_per_core']
+                    fixed_CPU_embodied_ADP_per_core = data_dict.cores_dict['CPU'][CPUmodel]['embodied_adp_per_core']
                 # Usage ration data
                 if usageCPUradio == 'Yes':
                     usageCPU_used = usageCPU
@@ -1010,7 +1010,7 @@ def get_form_blueprint(
                     GPUpower = tdpGPU
                 else:
                     # GPUmodel cannot be "other"
-                    GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
+                    GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP_per_core']
                 if usageGPUradio == 'Yes':
                     usageGPU_used = usageGPU
                 else:
