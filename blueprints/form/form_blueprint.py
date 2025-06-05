@@ -929,6 +929,8 @@ def get_form_blueprint(
             output['mult_factor'] = None
             output['mult_factor_radio'] = None
             output['appVersion'] = version
+            metrics['embodied_carbonEmissions'] = 0
+            metrics['embodied_abiotic_resources'] = 0
             metrics['energy_needed'] = 0
             metrics['carbonEmissions'] = 0
             metrics['runTime'] = None
@@ -1003,23 +1005,83 @@ def get_form_blueprint(
                 dynamic_powerNeeded_CPU = 0
                 CPUpower = 0
                 usageCPU_used = 0
+                embodied_per_hour_GWP_CPU = 0
+                embodied_per_hour_ADP_CPU = 0
 
             ### GPUs: DYNAMIC AND EMBODIED IMPACTS
             if coreType in ['GPU', 'Both']:
+                # Dealing with TDP and die area
                 if is_shown(tdpGPUstyle):
+                    # We asked the question about TDP, so the dafault GPU is selected
                     GPUpower = tdpGPU
+                    GPU_die_area = data_dict.cores_dict['GPU']['Any']['die_area']
+                    GPU_memory = data_dict.cores_dict['GPU']['Any']['memory']
                 else:
                     # GPUmodel cannot be "other"
                     GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP_per_core']
+                    GPU_die_area = data_dict.cores_dict['GPU'][GPUmodel]['die_area']
+                    GPU_memory = data_dict.cores_dict['GPU'][GPUmodel]['memory']
+                    # Checking we actually have the target die area value
+                    if not isinstance(GPU_die_area, float) or not (GPU_die_area > 0):
+                        GPU_die_area = data_dict.cores_dict['GPU']['Any']['die_area']
+                    # Checking we actually have the target memory value
+                    if not isinstance(GPU_memory, int) or not (GPU_memory > 0):
+                        GPU_memory = data_dict.cores_dict['GPU']['Any']['memory']
+                # Dealing with usage ratio
                 if usageGPUradio == 'Yes':
                     usageGPU_used = usageGPU
                 else:
                     usageGPU_used = 1.
-                powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
+                # Computation
+                dynamic_powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
+                # GWP
+                embodied_GWP_GPU_no_mem = GPU_die_area * data_dict.refValues_dict['gpu_die_impact_gwp'] + data_dict.refValues_dict['gpu_base_impact_gwp']
+                embodied_GWP_GPU_mem = data_dict.refValues_dict['ram_die_impact_gwp']* GPU_memory / data_dict.refValues_dict['ram_density']
+                embodied_per_hour_GWP_GPU = (embodied_GWP_GPU_no_mem + embodied_GWP_GPU_mem) / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                # ADP
+                embodied_ADP_GPU_no_mem = GPU_die_area * data_dict.refValues_dict['gpu_die_impact_adp'] + data_dict.refValues_dict['gpu_base_impact_adp']
+                embodied_ADP_GPU_mem = data_dict.refValues_dict['ram_die_impact_adp']* GPU_memory / data_dict.refValues_dict['ram_density']
+                embodied_per_hour_ADP_GPU = (embodied_ADP_GPU_no_mem + embodied_ADP_GPU_mem) / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
             else:
-                powerNeeded_GPU = 0
                 GPUpower = 0
                 usageGPU_used = 0
+                dynamic_powerNeeded_GPU = 0
+                embodied_per_hour_GWP_GPU = 0
+                embodied_per_hour_ADP_GPU = 0
+
+            ### MEMORY: EMBODIED IMPACTS
+            memory_strip_area = data_dict.refValues_dict['ram_default_strip_size'] / data_dict.refValues_dict['ram_density']
+            # GWP
+            embodied_GWP_memory_per_strip = memory_strip_area * data_dict.refValues_dict['ram_die_impact_gwp'] + data_dict.refValues_dict['ram_base_impact_gwp']
+            embodied_GWP_memory = embodied_GWP_memory_per_strip * memory / data_dict.refValues_dict['ram_default_strip_size']
+            embodied_per_hour_GWP_memory = embodied_GWP_memory / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+            # ADP
+            embodied_ADP_memory_per_strip = memory_strip_area * data_dict.refValues_dict['ram_die_impact_adp'] + data_dict.refValues_dict['ram_base_impact_adp']
+            embodied_ADP_memory = embodied_ADP_memory_per_strip * memory / data_dict.refValues_dict['ram_default_strip_size']
+            embodied_per_hour_ADP_memory = embodied_ADP_memory / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+
+            ### OTHER DEVICES EMBODIED IMPACTS
+            if selected_platform == 'personalComputer':
+                # GWP
+                embodied_GWP_other = data_dict.refValues_dict['motherboard_impact_gwp']
+                embodied_per_hour_GWP_other = embodied_GWP_other / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                # ADP
+                embodied_ADP_other = data_dict.refValues_dict['motherboard_impact_adp']
+                embodied_per_hour_ADP_other = embodied_ADP_other / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+            else:
+                # We need the number of cores used to deduce the number of servers used
+                if coreType == 'GPU':
+                    n_cores = 1
+                else:
+                    n_cores = n_CPUcores
+                # GWP
+                embodied_GWP_other = data_dict.refValues_dict['motherboard_impact_gwp'] + data_dict.refValues_dict['assembly_impact_gwp'] + data_dict.refValues_dict['rack_casing_impact_gwp']
+                embodied_GWP_other = embodied_GWP_other * (n_cores // data_dict.refValues_dict['nb_cpu_per_module'])
+                embodied_per_hour_GWP_other = embodied_GWP_other / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                # ADP
+                embodied_ADP_other = data_dict.refValues_dict['motherboard_impact_adp'] + data_dict.refValues_dict['assembly_impact_adp'] + data_dict.refValues_dict['rack_casing_impact_adp']
+                embodied_ADP_other = embodied_ADP_other * (n_cores // data_dict.refValues_dict['nb_cpu_per_module'])
+                embodied_per_hour_ADP_other = embodied_ADP_other / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
 
             ### SERVER/LOCATION
             carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
@@ -1033,14 +1095,22 @@ def get_form_blueprint(
             #############################################
             ### COMPUTATIONS: final outputs are computed
 
+            # Embodied carbon emissions, in gCO2e
+            embodied_GWP_per_hour_total = embodied_per_hour_GWP_CPU + embodied_per_hour_GWP_GPU + embodied_per_hour_GWP_memory + embodied_per_hour_GWP_other
+            embodied_GWP = runTime * embodied_GWP_per_hour_total
+
+            # Embodied abiotic resources depletion, in kgSb e
+            embodied_ADP_per_hour_total = embodied_per_hour_ADP_CPU + embodied_per_hour_ADP_GPU + embodied_per_hour_ADP_memory + embodied_per_hour_ADP_other
+            embodied_ADP = runTime * embodied_ADP_per_hour_total
+            
             # Power needed, in Watt
-            powerNeeded_core = dynamic_powerNeeded_CPU + powerNeeded_GPU
+            powerNeeded_core = dynamic_powerNeeded_CPU + dynamic_powerNeeded_GPU
             powerNeeded_memory = PUE_used * (memory * data_dict.refValues_dict['memoryPower'])
             powerNeeded = powerNeeded_core + powerNeeded_memory
 
             # Energy needed, in kWh (so dividing by 1000 to convert to kW)
             energyNeeded_CPU = runTime * dynamic_powerNeeded_CPU * mult_factor_used / 1000
-            energyNeeded_GPU = runTime * powerNeeded_GPU * mult_factor_used / 1000
+            energyNeeded_GPU = runTime * dynamic_powerNeeded_GPU * mult_factor_used / 1000
             energyNeeded_core = runTime * powerNeeded_core * mult_factor_used / 1000
             eneregyNeeded_memory = runTime * powerNeeded_memory * mult_factor_used / 1000
             energyNeeded = runTime * powerNeeded * mult_factor_used / 1000
@@ -1081,6 +1151,8 @@ def get_form_blueprint(
             output['mult_factor'] = mult_factor_used
             output['mult_factor_radio'] = mult_factor_radio
             output['appVersion'] = version
+            metrics['embodied_carbonEmissions'] = embodied_GWP
+            metrics['embodied_abiotic_resources'] = embodied_ADP
             metrics['energy_needed'] = energyNeeded
             metrics['carbonEmissions'] = carbonEmissions
             metrics['runTime'] = runTime

@@ -162,13 +162,14 @@ def load_data(data_dir: str, **kwargs):
                 'TDP_per_core',
                 'die_area_per_core',
                 'embodied_gwp_per_core',
-                'embodied_adp_per_core'
+                'embodied_adp_per_core',
             ]
         ].to_dict(orient='index'),
         'GPU': gpu_df[
             [
                 'TDP_per_core',
-                'die_area'
+                'die_area',
+                'memory',
             ]
         ].to_dict(orient='index')
     }
@@ -237,8 +238,7 @@ def load_data(data_dir: str, **kwargs):
         data_dict.platformName_byType[platformType] = pd.Series(providersNames_df.providerName.values, index=providersNames_df.provider).to_dict()
 
     ### REFERENCE VALUES
-    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
-                               sep=',', skiprows=1)
+    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
     refValues_df.drop(['source'], axis=1, inplace=True)
     data_dict.refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
 
