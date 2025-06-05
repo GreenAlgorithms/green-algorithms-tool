@@ -135,11 +135,7 @@ versions_choice = html.Div(
             [
                 html.Div('i', className='tooltip-icon'),
 
-                html.P(
-                    "The calculator data (carbon intensities, hardware...) is regularly updated. "
-                    "If you want to replicate results obtained in the past, select the corresponding data version.",
-                    className='tooltip-text'
-                ),
+                html.P(translatable_div_text('Version tooltip').embed(app), className='tooltip-text'),
             ],
             className='tooltip',
             id='data_version_tooltip'
@@ -254,7 +250,7 @@ app.layout = dmc.MantineProvider(
                     html.P([
                         "⏳ ",
                         html.B('We are in the process of updating the carbon intensity values '
-                               'for electricity consumption to the latest data.'),
+                        'for electricity consumption to the latest data.'),
                         " Due to a change of T&C with carbonfootprint, "
                         "this is taking a bit longer than planned.",
                     ]),
@@ -351,10 +347,12 @@ app.layout = dmc.MantineProvider(
                                             style={'margin-right': '4px'}
                                         ),
                                         translatable_div_text("on the GitHub or").embed(app),
+                                        html.P(' '),
                                         # TODO set up a better green algorithms email redirecting to someone
                                         html.A(
                                             translatable_div_text("email_us").embed(app),
-                                            href='mailto:green.algorithms@gmail.com', ),
+                                            href='mailto:green.algorithms@gmail.com', 
+                                        ),
                                     ]
                                 )
                             ),
@@ -406,22 +404,34 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("#ShowYourStripes"),
+                    html.H2(translatable_div_text("ShowYourStripes").embed(app)),
 
                     html.Center(
-                        html.P([html.P(
-                            "These coloured stripes in the background represent the change in world temperatures "
-                            "from 1850 to 2018. "
-                            "This striking design was made by Ed Hawkins from the University of Reading. "),
-                            html.P(["More on ",
-                                    html.A("ShowYourStripes.info",
+                        html.P(
+                            [
+                                html.P(translatable_div_text("ShowYourStripes description").embed(app)),
+                                html.P(
+                                    [
+                                        translatable_div_text("More on").embed(app),
+                                        html.A(
+                                            " ShowYourStripes.info",
                                             href='https://showyourstripes.info',
-                                            target='_blank')]),
-                            html.P(["Additional credits for the app can be found on the ",
-                                    html.A("GitHub",
+                                            target='_blank'
+                                        )
+                                    ]
+                                ),
+                                html.P(
+                                    [
+                                        translatable_div_text("Additional credits").embed(app),
+                                        html.A(
+                                            " GitHub",
                                             href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                            target='_blank'), ])
-                        ]),
+                                            target='_blank'
+                                        ),
+                                    ]
+                                )
+                            ]
+                        ),
                     ),
                 ],
                 className='container show-stripes footer'

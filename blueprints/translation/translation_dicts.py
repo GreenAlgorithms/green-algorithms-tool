@@ -19,11 +19,11 @@ TRANSLATIONS_DICT = {
     },
     "Classic-view": {
         "en": "Classic view",
-        "fr": "Disposition classique",
+        "fr": "Interface classique",
     },
     "AI-view": {
         "en": "AI view",
-        "fr": "Disposition IA",
+        "fr": "Interface IA",
     },
     "Change language": {
         "en": "Change language",
@@ -32,13 +32,23 @@ TRANSLATIONS_DICT = {
     "Change data version": {
         "en": "Change data version",
         "fr": "Version des données",
+    },
+    "Version tooltip": {
+        "en": "The calculator data (carbon intensities, hardware...) is regularly updated. "
+        "If you want to replicate results obtained in the past, select the corresponding data version.",
+        "fr": "The calculator data (carbon intensities, hardware...) is regularly updated. "
+        "If you want to replicate results obtained in the past, select the corresponding data version."
+    },
 
     ## NEWS SECTION
 
-    },
     "Some news": {
         "en": "Some news...",
         "fr": "Quelques actualités...",
+    },
+    "More on the project website": {
+        "en": "More on the project website!",
+        "fr": "En savoir plus sur le projet du site !",
     },
     "The GREENER principles": {
         "en": "The GREENER principles",
@@ -56,15 +66,21 @@ TRANSLATIONS_DICT = {
         "en": " discussing different options for carbon footprint estimation.",
         "fr": " des outils pour l'estimation de l'empreinte carbone.",
     },
-    "More on the project website": {
-        "en": "More on the project website!",
-        "fr": "En savoir plus sur le projet du site !",
-    },
-
     "Artificial intelligence dedicated page": {
         "en": "Artificial intelligence dedicated page",
         "fr": "Page dédiée à l'intelligence artificielle",
     },
+
+    #### FORM ####
+
+    ### HEADER
+
+    "Details about your algorithm": {
+        "en": "Details about your algorithm",
+        "fr": "Caractéristiques de votre algorithm",
+    },
+
+
 
     #### APP FOOTER ####
 
@@ -127,7 +143,27 @@ TRANSLATIONS_DICT = {
                     [Michael Inouye](https://www.inouyelab.org/home/people) à l'université de Cambridge,
                     mais a bénéficié de la contribution et du soutien de beaucoup : [liste complète des contributeurs](https://www.green-algorithms.org/about/)
                 '''
-    }
+    },
 
+    ### SHOW YOUR STRIPES
 
+    "ShowYourStripes": {
+        "en": "#ShowYourStripes",
+        "fr": "#ShowYourStripes",
+    },
+    "ShowYourStripes description": {
+        "en": "These coloured stripes in the background represent the change in world temperatures "
+                "from 1850 to 2018. "
+                "This striking design was made by Ed Hawkins from the University of Reading. ",
+        "fr": "#ShowYourStripes",
+    },
+    "More on": {
+        "en": "More on ",
+        "fr": "More on ",
+    },
+    "Additional credits": {
+        "en": "Additional credits for the app can be found on the ",
+        "fr": "Additional credits for the app can be found on the ",
+    },
+    
 }
