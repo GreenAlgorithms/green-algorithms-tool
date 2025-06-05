@@ -136,7 +136,8 @@ versions_choice = html.Div(
                 html.Div('i', className='tooltip-icon'),
 
                 html.P(
-                    "The calculator data (carbon intensities, hardware...) is regularly updated. If you want to replicate results computed in the past, select the corresponding data version.",
+                    "The calculator data (carbon intensities, hardware...) is regularly updated. "
+                    "If you want to replicate results obtained in the past, select the corresponding data version.",
                     className='tooltip-text'
                 ),
             ],
@@ -249,11 +250,19 @@ app.layout = dmc.MantineProvider(
             html.Div(
                 [
                     html.H2("Some news..."), # TODO align this left?
+
+                    html.P([
+                        "⏳ ",
+                        html.B('We are in the process of updating the carbon intensity values '
+                               'for electricity consumption to the latest data.'),
+                        " Due to a change of T&C with carbonfootprint, "
+                        "this is taking a bit longer than planned.",
+                    ]),
                     
                     html.P([
                         "🌱 ",
                         html.B('Interested in green computing?'),
-                        " We're recruiting for 2 research roles at the University of Cambridge! ",
+                        " We're recruiting for research roles at the University of Cambridge! ",
                         html.A("More info here", href="https://www.lannelongue-group.org/join/", target="_blank")
                     ]),
 
@@ -262,7 +271,7 @@ app.layout = dmc.MantineProvider(
                         html.B('The new major update of the calculator is here!'),
                         " Possibility to share your results as csv, more guidelines on how to use the tool, "
                         "and the addition of a brand-new AI-specific calculator! ",
-                        html.A("Check out the release notes", href="", target="_blank"),
+                        html.A("Check out the release notes", href="https://github.com/GreenAlgorithms/green-algorithms-tool/releases", target="_blank"),
                         " for the full list of new features."
                     ]),
 
@@ -405,7 +414,7 @@ app.layout = dmc.MantineProvider(
                             "from 1850 to 2018. "
                             "This striking design was made by Ed Hawkins from the University of Reading. "),
                             html.P(["More on ",
-                                    html.A("ShowYourStipes.info",
+                                    html.A("ShowYourStripes.info",
                                             href='https://showyourstripes.info',
                                             target='_blank')]),
                             html.P(["Additional credits for the app can be found on the ",

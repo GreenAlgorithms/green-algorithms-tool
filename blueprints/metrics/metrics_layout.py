@@ -1,4 +1,4 @@
-'''
+"""
 This script contains:
     - the layout of the metrics and "equivalents" (tree absorption, km driving and plane trip) section
     - the layout of the textual content that gives training and inference results
@@ -7,7 +7,7 @@ It is important to note that the electricity consumption and carbon emissions se
 have a different structure than the three "equivalents" sections.
 This is because the first also contain the training and inference results.
 The latter only display the total value.
-'''
+"""
 
 import os
 
@@ -18,6 +18,7 @@ image_dir = os.path.join('assets/images')
 
 ###################################################
 # METRICS MODULE LAYOUT
+
 
 def get_green_algo_metrics_layout(
         carbon_footprint_details: html.Div,

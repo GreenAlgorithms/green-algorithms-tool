@@ -13,6 +13,9 @@ from utils.handle_inputs import get_available_versions
 
 appVersions_options = get_available_versions()
 
+# FIXME the margins on the tooltips are a bit tight
+
+
 def get_green_algo_form_layout(
     title: str,
     subtitle: html.P,
@@ -24,7 +27,7 @@ def get_green_algo_form_layout(
         [
             #### BACKEND DATA ####
 
-            # Obtained throug intermediate processing applied to the import-content of a page
+            # Obtained through intermediate processing applied to the import-content of a page
             # Once it is updated, it is used to spread uploaded data to the corresponding form fields
             dcc.Store(id='form_data_imported_from_csv'),
 
@@ -59,7 +62,10 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "See the Help tab for more information about continuous inference. If chosen, then only report the computations falling within your ‘input data time span’. Scaling to the reporting period is done automatically.",
+                                        "See the Help tab for more information about continuous inference. "
+                                        "If chosen, then only report the computations falling "
+                                        "within your ‘input data time span’. "
+                                        "Scaling to the reporting period is done automatically.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -103,7 +109,8 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "The input data time span is the time length over which you are able to estimate your computation requirements in terms of continuous inference.",
+                                        "The `input data time span` is the length of time over which you are able "
+                                        "to estimate your resource usage for continuous inference.",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -212,7 +219,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Refers to the number of cores (a single CPU contains several cores).",
+                                        "Refers to the number of cores used (a single CPU contains several cores).",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -298,7 +305,7 @@ def get_green_algo_form_layout(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Refers to the number of GPUs (not the cores).",
+                                        "Refers to the number of GPUs used (no cores here).",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -383,7 +390,8 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Refers to the ‘allocated memory’, not the memory actually used by the program.",
+                                "Refers to the total memory allocated to the task, "
+                                "not the memory actually used.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -421,7 +429,8 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "This field is used retrieve the PUE and energy mix associated with your computations.",
+                                "This field is used to retrieve specific data centre efficiency metrics "
+                                "and location energy mixes.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -496,7 +505,7 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "In particular, the location is used to retrieve the energy mix.",
+                                "This is used to retrieve the energy mix in a location.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -560,7 +569,9 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Between 0 and 1. Should correspond to a temporal factor usage, accessible from log files for instance. Equals 1 by default.",
+                                "Between 0 and 1 (default: 1). This is the usage % of the cores, "
+                                "e.g. % of the time the cores were active. "
+                                "This can be obtained from log files for instance.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -597,7 +608,9 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Between 0 and 1. In most cases, should be 1.",
+                                "Between 0 and 1 (default: 1). This is the usage % of the GPUs, "
+                                "e.g. % of the time the GPUs were active. "
+                                "This can be obtained from log files for instance.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -635,7 +648,8 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "The PUE accounts for the extra energy consumption of the data centre, including cooling (1.67 by default).",
+                                "PUE is a standardised efficiency metrics measuring the"
+                                "energy consumption of data centre overheads (e.g. cooling).",
                                 className='tooltip-text'
                             ),
                         ],
@@ -675,7 +689,8 @@ def get_green_algo_form_layout(
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Refers to the number of repetitions of the computation.",
+                                "Used to multiply the final results, for example when a same task is repeated "
+                                "multiple times.",
                                 className='tooltip-text'
                             ),
                         ],
@@ -719,7 +734,7 @@ def get_additional_training_fields_layout():
             #### R&D TRAININGS ####
 
             html.H3(
-                "R&D TRAININGS",
+                "R&D TRAINING",
                 id='title_RandD_trainings',
             ),
             
@@ -748,8 +763,10 @@ def get_additional_training_fields_layout():
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "If your R&D trainings represent twice the computations requirements of your main training, fill '2'. " \
-                                "If they represent only 50% of your main training compute time, then fill in '0.5'. "
+                                "Used to add R&D compute to the final training impact. "
+                                "If in total you estimate your R&D training computes to represent "
+                                "twice the compute of your final training run, input '2'. "
+                                "If total R&D is about half of the final run, input '0.5'. "
                                 "The resulting value will be added to your main training footprint.",
                                 className='tooltip-text'
                             ),
@@ -771,7 +788,7 @@ def get_additional_training_fields_layout():
             ),
 
             html.H3(
-                "RETRAININGS",
+                "RETRAINING",
                 id='title_RandD_trainings',
             ),
 
@@ -779,7 +796,7 @@ def get_additional_training_fields_layout():
                 [
                     html.Div(
                         [
-                            html.Label("Do you want to add retrainings compute time?"),
+                            html.Label("Do you want to add retraining compute time?"),
 
                             html.Div(
                                 [
@@ -796,8 +813,7 @@ def get_additional_training_fields_layout():
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "If you plan to apply retrainings, select 'Yes'. " \
-                                        "Then, fill in the number of retrainings and their average relative requirements.",
+                                        "Used if you want to account for model retraining. ",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -811,7 +827,7 @@ def get_additional_training_fields_layout():
                         [
                             html.Div(
                                 [
-                                    html.Label("Number of retrainings"),
+                                    html.Label("Number of runs"),
 
                                     dcc.Input(
                                         min=0,
@@ -825,7 +841,8 @@ def get_additional_training_fields_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Simply the number of retrainings you plan to apply over your reporting scope.",
+                                                "Number of times you plan to retrain the model "
+                                                "over the reporting period.",
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -837,7 +854,8 @@ def get_additional_training_fields_layout():
 
                             html.Div(
                                 [
-                                    html.Label("What is the relative length of an average retraining compared to your main training?"),
+                                    html.Label("What is the relative runtime of an average retraining run "
+                                               "compared to the main training?"),
 
                                     dcc.Input(
                                         min=0,
@@ -849,7 +867,8 @@ def get_additional_training_fields_layout():
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "If an average retraining represents half the computations requirements of your main training, fill '0.5'. ",
+                                                "If retraining takes on average 10% of the "
+                                                "runtime of the main training, input '0.1'.",
                                                 className='tooltip-text'
                                             ),
                                         ],

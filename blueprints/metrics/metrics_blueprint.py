@@ -6,6 +6,7 @@ from utils.utils import custom_prefix_escape
 from blueprints.metrics.metrics_layout import get_green_algo_metrics_layout
 import blueprints.metrics.utils as utils
 
+
 def get_metrics_blueprint(
         id_prefix: str,
         energy_needed_details: html.Div = html.Div(style={"display": "none"}),
@@ -33,7 +34,6 @@ def get_metrics_blueprint(
 
     ##### DEFINE ITS CALLBACKS
     ##########################
-
 
     @results_blueprint.callback(
         [

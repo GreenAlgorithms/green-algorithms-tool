@@ -13,6 +13,7 @@ from utils.graphics import MY_COLORS
 
 from blueprints.form.form_layout import get_green_algo_form_layout
 
+
 def get_form_blueprint(
     id_prefix: str,
     title: str,
@@ -136,19 +137,19 @@ def get_form_blueprint(
 
     @form_blueprint.callback(
         Output('platformType_dropdown', 'options'),
-        Input('versioned_data','data'),
+        Input('versioned_data', 'data'),
     )
     def set_platform(data):
-        '''
+        """
         Loads platform options based on backend data.
-        '''
+        """
         if data is not None:
             data_dict = SimpleNamespace(**data)
             platformType_options = [
                 {'label': k,
-                'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                        [('personalComputer', 'Personal computer')] +
-                                        [('localServer', 'Local server')]
+                 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                         [('personalComputer', 'Personal computer')] +
+                                         [('localServer', 'Local server')]
             ]
             return platformType_options
         else:
@@ -162,8 +163,8 @@ def get_form_blueprint(
         [
             Input('platformType_dropdown', 'value'),
             Input('provider_dropdown', 'value'),
-            Input('server_dropdown','value'),
-            Input('versioned_data','data'),
+            Input('server_dropdown', 'value'),
+            Input('versioned_data', 'data'),
             Input('form_data_imported_from_csv', 'data'),
         ]
     )
@@ -185,7 +186,7 @@ def get_form_blueprint(
         show = {'display': 'flex'}
         hide = {'display': 'none'}
 
-        # The following is a kind of duplicata from the lines below,
+        # The following is a kind of duplicate from the lines below,
         # should help to better take into account inputs uploaded from csv
         # TODO: should be removed when the callback chain is made simpler.
         # This simplification refers to the above TO DO as well. In simple terms
@@ -220,9 +221,9 @@ def get_form_blueprint(
         Input('server_continent_dropdown', 'value'),
     )
     def set_server_style(selected_continent):
-        '''
+        """
         Show or not the choice of servers, don't if continent is on "Other"
-        '''
+        """
         if selected_continent == 'other':
             return {'display': 'none'}
 
@@ -234,9 +235,9 @@ def get_form_blueprint(
         Input('platformType_dropdown', 'value'),
     )
     def show_provider_field(selected_platform):
-        '''
+        """
         Shows or hide the "providers" box, based on the platform selected.
-        '''
+        """
         if selected_platform in ['cloudComputing']:
             # Only Cloud Computing need the providers box
             outputStyle = {'display': 'block'}
@@ -252,9 +253,9 @@ def get_form_blueprint(
         ],
     )
     def set_provider_options(selected_platform, data):
-        '''
+        """
         List options for the "provider" box.
-        '''
+        """
         if data is not None:
             data_dict = SimpleNamespace(**data)
 
@@ -283,9 +284,9 @@ def get_form_blueprint(
         ],
     )
     def set_provider_value(platform_type, versioned_data, upload_content, prev_provider):
-        '''
+        """
         Sets the provider value, either from the csv content of as a default value.
-        '''
+        """
         # reads data from input
         if ctx.triggered_id is not None:
             if 'form_data_imported_from_csv' in ctx.triggered_id:
@@ -297,8 +298,7 @@ def get_form_blueprint(
                 return prev_provider
                     
         return 'gcp'
-    
-    
+
     @form_blueprint.callback(
         Output('server_continent_dropdown','options'),
         [
@@ -307,14 +307,13 @@ def get_form_blueprint(
         ]
     )
     def set_server_continents_options(selected_provider, data):
-        '''
+        """
         List of options and default value for server's continent, based on the provider
-        '''
+        """
         availableOptions = availableLocations_continent(selected_provider, versioned_data=data)
         listOptions = [{'label': k, 'value': k} for k in sorted(availableOptions)] + [{'label': 'Other', 'value': 'other'}]
         return listOptions
 
-            
     @form_blueprint.callback(
         Output('server_dropdown','options'),
         [
@@ -324,9 +323,9 @@ def get_form_blueprint(
         ]
     )
     def set_server_options(selected_provider,selected_continent, data):
-        '''
+        """
         List of options for servers, based on provider and continent
-        '''
+        """
         availableOptions = availableOptions_servers(selected_provider,selected_continent,versioned_data=data)
         listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
         return listOptions  
@@ -347,7 +346,6 @@ def get_form_blueprint(
             return continentsDict
         else:
             return []
-
     
     @form_blueprint.callback(
         Output('server_continent_dropdown','value'),
@@ -394,11 +392,11 @@ def get_form_blueprint(
         ]
     )
     def set_server_value(selected_continent, versioned_data, upload_content, selected_provider, prev_server_value):
-        '''
+        """
         Sets the value for servers, based on provider and continent.
-        Here again we want to display a default value, to 
-        fecth the value from a csv or to show a value previously selected by the user.
-        '''
+        Here again we want to display a default value, to
+        fetch the value from a csv or to show a value previously selected by the user.
+        """
         # reads data from input
         if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             return upload_content['server']
@@ -418,7 +416,6 @@ def get_form_blueprint(
         except:
             defaultValue = None
         return defaultValue
-    
 
     @form_blueprint.callback(
         Output('location_continent_dropdown', 'value'),
@@ -432,10 +429,10 @@ def get_form_blueprint(
         ]
     )
     def set_continent_value(display_server, upload_content, selected_serverContinent, prev_locationContinent):
-        '''
+        """
         Sets the value for location continent.
         Same as for server and server continent regarding the different inputs.
-        '''
+        """
         # reads data from input
         if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             return upload_content['locationContinent']
@@ -466,11 +463,11 @@ def get_form_blueprint(
         ]
     )
     def set_countries_options(selected_continent, versioned_data, upload_content, prev_selectedCountry):
-        '''
+        """
         List of options and value for countries.
         Hides country dropdown if continent=World is selected.
         Must fetch the value from a csv as well.
-        '''
+        """
         availableOptions = availableOptions_country(selected_continent, versioned_data=versioned_data)
         listOptions = [{'label': k, 'value': k} for k in availableOptions]
         defaultValue = None
@@ -515,10 +512,10 @@ def get_form_blueprint(
 
     )
     def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, prev_selectedRegion):
-        '''
+        """
         List of options and value for regions.
         Hides region dropdown if only one possible region (or continent=World)
-        '''
+        """
         locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
         if versioned_data is not None:
             listOptions = [{'label': versioned_data['CI_dict_byLoc'][loc]['regionName'], 'value': loc} for loc in locs]
@@ -582,9 +579,9 @@ def get_form_blueprint(
         [Input('versioned_data','data')]
     )
     def set_coreOptions(data):
-        '''
+        """
         List of options for core models.
-        '''
+        """
         if data is not None:
             data_dict = SimpleNamespace(**data)
 
@@ -616,9 +613,9 @@ def get_form_blueprint(
         ]
     )
     def show_CPUGPUdiv(selected_coreType):
-        '''
+        """
         Shows or hides the CPU/GPU input blocks (and the titles) based on the selected core type.
-        '''
+        """
         show = {'display': 'block'}
         showFlex = {'display': 'flex'}
         hide = {'display': 'none'}
@@ -651,16 +648,13 @@ def get_form_blueprint(
         ]
     )
     def display_TDP4GPU(selected_coreModel):
-        '''
+        """
         Shows or hides the GPU TDP input box.
-        '''
+        """
         if selected_coreModel == "other":
             return {'display': 'flex'}
         else:
             return {'display': 'none'}
-    
-
-        
         
     ##################### USAGE FACTORS ###
 
@@ -672,9 +666,9 @@ def get_form_blueprint(
         ]
     )
     def display_usage_input(answer_usage, disabled):
-        '''
+        """
         Show or hide the usage factor input box, based on Yes/No input
-        '''
+        """
         if answer_usage == 'No':
             out = {'display': 'none'}
         else:
@@ -693,9 +687,9 @@ def get_form_blueprint(
         ]
     )
     def display_usage_input(answer_usage, disabled):
-        '''
+        """
         Show or hide the usage factor input box, based on Yes/No input
-        '''
+        """
         if answer_usage == 'No':
             out = {'display': 'none'}
         else:
@@ -705,7 +699,6 @@ def get_form_blueprint(
             out['background-color'] = MY_COLORS['boxesColor']
 
         return out
-
         
     ##################### PUE INPUTS ###
 
@@ -719,9 +712,9 @@ def get_form_blueprint(
         ]
     )
     def display_pue_question(_, selected_platform, selected_provider, selected_server):
-        '''
+        """
         Shows or hides the PUE question depending on the platform
-        '''
+        """
         if selected_platform == 'localServer':
             return {'display': 'flex'}
         elif (selected_platform == 'cloudComputing')&((selected_provider == 'other')|(selected_server == 'other')):
@@ -737,9 +730,9 @@ def get_form_blueprint(
         ]
     )
     def display_pue_input(answer_pue, disabled):
-        '''
+        """
         Shows or hides the PUE input box
-        '''
+        """
         if answer_pue == 'No':
             out = {'display': 'none'}
         else:
@@ -762,9 +755,9 @@ def get_form_blueprint(
         ]
     )
     def set_PUE(radio, versioned_data, upload_content, prev_pue):
-        '''
+        """
         Sets the PUE value, either from csv input or as a default value.
-        '''
+        """
         if versioned_data is not None:
             data_dict = SimpleNamespace(**versioned_data)
             defaultPUE = data_dict.pueDefault_dict['Unknown']
@@ -779,7 +772,6 @@ def get_form_blueprint(
             return upload_content['PUE']
 
         return defaultPUE
-    
 
     ##################### MULTIPLICATIVE FACTOR INPUTS ###
 
@@ -791,9 +783,9 @@ def get_form_blueprint(
         ]
     )
     def display_mult_factor_input(answer_mult_factor, disabled):
-        '''
+        """
         Shows or hides the MULTIPLICATIVE FACTOR input box
-        '''
+        """
         if answer_mult_factor == 'No':
             out = {'display': 'none'}
         else:
@@ -803,7 +795,6 @@ def get_form_blueprint(
             out['background-color'] = MY_COLORS['boxesColor']
 
         return out
-       
 
     ##################### PROCESS INPUTS ###
     
@@ -851,11 +842,11 @@ def get_form_blueprint(
                             memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                             serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                             PUEdivStyle, PUEradio, PUE, mult_factor_radio, mult_factor, selected_platform, selected_provider, providerStyle):
-        '''
+        """
         Computes all the metrics and gathers the information provided by the inputs of the form.
-        '''
-        output = dict()
-        metrics = dict()
+        """
+        output = {}
+        metrics = {}
 
         #############################################
         ### PREPROCESS: check if computations can be performed
@@ -909,8 +900,8 @@ def get_form_blueprint(
             notReady = True
 
         ### Other required inputs
-        if (memory is None)|(tdpCPU is None)|(tdpGPU is None)|(locationVar is None)| \
-                (usageCPU is None)|(usageGPU is None)|(PUE is None)|(mult_factor is None):
+        if (memory is None) | (tdpCPU is None) | (tdpGPU is None) | (locationVar is None) | \
+                (usageCPU is None) | (usageGPU is None) | (PUE is None) | (mult_factor is None):
             notReady = True
 
         ### If any of the required inputs is note ready: do not compute

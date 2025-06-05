@@ -61,24 +61,25 @@ BLANK_FIGURE = {
 ###################################################
 ## UTILS
 
+
 def loading_wrapper(component):
     """ Defines the loading icon when results are being computed. """
     return dash.html.P(dash.dcc.Loading(component, type='circle', color='#96BA6E'))
+
 
 def colours_hex2rgba(hex):
     h = hex.lstrip('#')
     return('rgba({},{},{})'.format(*tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))))
 
+
 def convertList_hex2rgba(hex_list):
-    out = []
-    for hex in hex_list:
-        out.append(colours_hex2rgba(hex))
-    return out
+    return [colours_hex2rgba(hex) for hex in hex_list]
 
 
 
 ###################################################
 ## CORES BAR CHART 
+
 
 def get_cores_bar_layout():
     layout_bar = copy.deepcopy(PLOTS_LAYOUT)
@@ -93,6 +94,7 @@ def get_cores_bar_layout():
         gridcolor=MY_COLORS['plotGrid'],
     )
     return layout_bar
+
 
 def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     
@@ -163,7 +165,7 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     lines_thickness[power_df.index.get_loc(coreModel)] = 4
 
     fig = go.Figure(
-        data = [
+        data=[
             go.Bar(
                 x=list(power_df.index),
                 y=power_df.corePower.values,
@@ -184,7 +186,7 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
 
             )
         ],
-        layout = layout_bar
+        layout=layout_bar
     )
 
     return fig
@@ -214,15 +216,15 @@ def create_ci_bar_chart_graphic(form_metrics, versioned_data):
 
     # list of countries displayed
     loc_ref = {
-        'CH':{'name':'Switzerland'},
-        'SE':{'name':'Sweden'},
-        'FR':{'name':'France'},
-        'CA':{'name':'Canada'},
-        'GB':{'name':'United Kingdom'},
-        'US':{'name':'USA'},
-        'CN':{'name':'China'},
-        'IN':{'name':'India'},
-        'AU':{'name':'Australia'}
+        'CH': {'name': 'Switzerland'},
+        'SE': {'name': 'Sweden'},
+        'FR': {'name': 'France'},
+        'CA': {'name': 'Canada'},
+        'GB': {'name': 'United Kingdom'},
+        'US': {'name': 'USA'},
+        'CN': {'name': 'China'},
+        'IN': {'name': 'India'},
+        'AU': {'name': 'Australia'}
     }
 
     # calculate carbon emissions for each location
@@ -243,7 +245,7 @@ def create_ci_bar_chart_graphic(form_metrics, versioned_data):
 
     # create the end figure
     fig = go.Figure(
-        data = [
+        data=[
             go.Bar(
                 x=loc_df.name.values,
                 y=loc_df.carbonEmissions.values,
@@ -263,15 +265,14 @@ def create_ci_bar_chart_graphic(form_metrics, versioned_data):
                 ),
             )
         ],
-        layout = get_ci_bar_chart_layout()
+        layout=get_ci_bar_chart_layout()
     )
 
     return fig
 
-
-
 ###################################################
 ## CORES AND MEMORY CONSUMPTION PIE GRAH
+
 
 def get_cores_memory_pie_chart_layout(aggregated_data):
     layout_pie = copy.deepcopy(PLOTS_LAYOUT)
@@ -298,7 +299,7 @@ def create_cores_memory_pie_graphic(form_agg_data, form_metrics):
     annotations = []
     percentages = [x/sum(values) if sum(values)!=0 else 0 for x in values]
     to_del = []
-    for i,j in enumerate(percentages):
+    for i, j in enumerate(percentages):
         if j < 1e-8:
             text = '{} makes up < 1e-6% ({:.0f} gCO2e)'.format(labels[i],values[i])
             annotations.append(text)
@@ -339,9 +340,9 @@ def create_cores_memory_pie_graphic(form_agg_data, form_metrics):
 
     fig.update_layout(
         # Add annotations of trace (<1e-6%) variables
-        title = {
-            'text':annotation,
-            'font':{'size':12},
+        title={
+            'text': annotation,
+            'font': {'size': 12},
             'x': 1,
             'xanchor': 'right',
             'y': 0.97,
