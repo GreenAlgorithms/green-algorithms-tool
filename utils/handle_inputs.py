@@ -163,6 +163,7 @@ def load_data(data_dir: str, **kwargs):
                 'die_area_per_core',
                 'embodied_gwp_per_core',
                 'embodied_adp_per_core',
+                'n_cores'
             ]
         ].to_dict(orient='index'),
         'GPU': gpu_df[
