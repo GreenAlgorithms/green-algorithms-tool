@@ -10,7 +10,7 @@ AMD EPYC 7763,,280,64,4.4,,,,0,142.8125,3.19E-04,https://www.amd.com/en/products
 AMD EPYC 7773X,,280,64,4.4,,,,0,142.8125,3.19E-04,https://www.amd.com/en/products/cpu/amd-epyc-7773x ,
 AMD EPYC 7H12,,280,64,4.4,,,,0,142.8125,3.19E-04,https://www.amd.com/en/product/9131 ,
 AMD EPYC 7V73X,,280,64,4.4,,,,0,142.8125,3.19E-04,https://wccftech.com/amd-epyc-7v73x-cpu-with-3d-v-cache-tested-milan-x-offers-impressive-cache-latency-better-boost-clocks-versus-standard-milan/,
-Any,,,12,12.0,,,,0,761.6666667,1.70E-03,,
+Any,,,12,12.0,,,,0.916,761.6666667,1.70E-03,,
 Athlon 3000G,,35,2,17.5,,,,0,4570,1.02E-02,https://www.techpowerup.com/cpu-specs/,
 Core 2 Quad Q6600,,95,4,23.8,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,
 Core i3-10100,,65,4,16.3,,,,0,2285,5.10E-03,https://www.techpowerup.com/cpu-specs/,

@@ -986,18 +986,19 @@ def get_form_blueprint(
                 if is_shown(tdpCPUstyle):
                     # We asked the question about TDP, so the dafault CPU is selected
                     CPUpower = tdpCPU
-                    CPU_die_area_per_core = data_dict.cores['CPU']['Any']['die_area_per_core']
-                    fixed_CPU_embodied_GWP_per_core = data_dict.cores_dict['CPU']['Any']['embodied_gwp_per_core']
-                    fixed_CPU_embodied_ADP_per_core = data_dict.cores_dict['CPU']['Any']['embodied_adp_per_core']
+                    CPU_model_n_cores = data_dict.cores_dict['CPU']['Any']['n_cores']
+                    CPU_die_area_per_core = data_dict.cores_dict['CPU']['Any']['die_area_per_core']
                 else:
                     # CPUmodel cannot be "other", so we retrieve the data of the selected CPU
                     CPUpower = data_dict.cores_dict['CPU'][CPUmodel]['TDP_per_core']
                     CPU_die_area_per_core = data_dict.cores_dict['CPU'][CPUmodel]['die_area_per_core']
+                    CPU_model_n_cores = data_dict.cores_dict['CPU'][CPUmodel]['n_cores']
                     # Checking if we actually have the die area for the selected CPU
+                    # TODO: remove it because we should not be using default, all available CPUs should have full values filled in
                     if CPU_die_area_per_core is None or CPU_die_area_per_core==0:
                         CPU_die_area_per_core = data_dict.cores_dict['CPU']['Any']['die_area_per_core']
-                    fixed_CPU_embodied_GWP_per_core = data_dict.cores_dict['CPU'][CPUmodel]['embodied_gwp_per_core']
-                    fixed_CPU_embodied_ADP_per_core = data_dict.cores_dict['CPU'][CPUmodel]['embodied_adp_per_core']
+                fixed_CPU_embodied_GWP_per_core = data_dict.refValues_dict['cpu_base_impact_gwp'] / CPU_model_n_cores
+                fixed_CPU_embodied_ADP_per_core = data_dict.refValues_dict['cpu_base_impact_adp'] / CPU_model_n_cores
                 # Usage ration data
                 if usageCPUradio == 'Yes':
                     usageCPU_used = usageCPU
@@ -1081,7 +1082,7 @@ def get_form_blueprint(
                 if coreType == 'GPU':
                     n_servers = 1
                 else:
-                    n_servers = 1 + (n_CPUcores-0.0001 // data_dict.cores_dict['CPU'][CPUmodel]['n_cores'])
+                    n_servers = 1 + (n_CPUcores-0.0001) // CPU_model_n_cores
                 # GWP
                 embodied_GWP_other_raw = data_dict.refValues_dict['motherboard_impact_gwp'] + data_dict.refValues_dict['assembly_impact_gwp'] + data_dict.refValues_dict['rack_casing_impact_gwp']
                 embodied_GWP_other_raw = embodied_GWP_other_raw * (1 + (n_servers-0.0001) // data_dict.refValues_dict['nb_cpu_per_module'])
