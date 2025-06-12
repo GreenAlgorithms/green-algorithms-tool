@@ -78,7 +78,9 @@ def get_form_blueprint(
             Output('coreType_dropdown', 'value'),
             Output('numberCPUs_input', 'value'),
             Output('CPUmodel_dropdown', 'value'),
+            Output('CPU_model_n_cores_input', 'value'),
             Output('tdpCPU_input', 'value'),
+            Output('CPU_die_area_input', 'value'),
             Output('numberGPUs_input', 'value'),
             Output('GPUmodel_dropdown', 'value'),
             Output('tdpGPU_input', 'value'),
@@ -627,7 +629,8 @@ def get_form_blueprint(
             return show, show, showFlex, show, show, showFlex
         
     @form_blueprint.callback(
-        Output('tdpCPU_div', 'style'),
+        Output('custom_CPU_inputs_div', 'style'),
+        Output('model-and-custom-inputs', 'style'),
         [
             Input('CPUmodel_dropdown', 'value'),
         ]
@@ -637,9 +640,9 @@ def get_form_blueprint(
         Shows or hides the CPU TDP input box.
         '''
         if selected_coreModel == "other":
-            return {'display': 'flex'}
+            return {'display': 'flex'}, {'padding': '6px 24px', 'border': 'rgb(220, 220, 220)', 'border-radius': '10px', 'border-style': 'dashed', 'border-width': '2px'}
         else:
-            return {'display': 'none'}
+            return {'display': 'none'}, {'border': 'none'}
         
     @form_blueprint.callback(
         Output('tdpGPU_div', 'style'),
@@ -808,8 +811,10 @@ def get_form_blueprint(
             Input('coreType_dropdown', "value"),
             Input('numberCPUs_input', "value"),
             Input('CPUmodel_dropdown', "value"),
-            Input('tdpCPU_div', "style"),
+            Input('custom_CPU_inputs_div', "style"),
+            Input('CPU_model_n_cores_input', "value"),
             Input('tdpCPU_input', "value"),
+            Input('CPU_die_area_input', "value"),
             Input('numberGPUs_input', "value"),
             Input('GPUmodel_dropdown', "value"),
             Input('tdpGPU_div', "style"),
@@ -838,7 +843,7 @@ def get_form_blueprint(
             Input('provider_dropdown_div', 'style'),
         ],
     )
-    def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
+    def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, custom_CPu_inputs_style, CPU_model_n_cores_input, tdpCPU, CPU_die_area_input, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
                             memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                             serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                             PUEdivStyle, PUEradio, PUE, mult_factor_radio, mult_factor, selected_platform, selected_provider, providerStyle):
@@ -983,20 +988,23 @@ def get_form_blueprint(
             ### CPUs: DYNAMIC AND EMBODIED IMPACTS
             if coreType in ['CPU', 'Both']:
                 # Retrieving the CPU data
-                if is_shown(tdpCPUstyle):
+                if is_shown(custom_CPu_inputs_style):
                     # We asked the question about TDP, so the dafault CPU is selected
+                    CPU_model_n_cores = CPU_model_n_cores_input
                     CPUpower = tdpCPU
-                    CPU_model_n_cores = data_dict.cores_dict['CPU']['Any']['n_cores']
-                    CPU_die_area_per_core = data_dict.cores_dict['CPU']['Any']['die_area_per_core']
+                    CPU_die_area = CPU_die_area_input
                 else:
                     # CPUmodel cannot be "other", so we retrieve the data of the selected CPU
-                    CPUpower = data_dict.cores_dict['CPU'][CPUmodel]['TDP_per_core']
-                    CPU_die_area_per_core = data_dict.cores_dict['CPU'][CPUmodel]['die_area_per_core']
                     CPU_model_n_cores = data_dict.cores_dict['CPU'][CPUmodel]['n_cores']
+                    CPUpower = data_dict.cores_dict['CPU'][CPUmodel]['TDP']
+                    CPU_die_area = data_dict.cores_dict['CPU'][CPUmodel]['die_area']
                     # Checking if we actually have the die area for the selected CPU
                     # TODO: remove it because we should not be using default, all available CPUs should have full values filled in
-                    if CPU_die_area_per_core is None or CPU_die_area_per_core==0:
-                        CPU_die_area_per_core = data_dict.cores_dict['CPU']['Any']['die_area_per_core']
+                    if CPU_die_area is None or CPU_die_area==0:
+                        CPU_die_area = 12
+                    ##### TODO: TO REMOVE ABOVE
+                CPUpower_per_core = CPUpower / CPU_model_n_cores
+                CPU_die_area_per_core = CPU_die_area / CPU_model_n_cores
                 fixed_CPU_embodied_GWP_per_core = data_dict.refValues_dict['cpu_base_impact_gwp'] / CPU_model_n_cores
                 fixed_CPU_embodied_ADP_per_core = data_dict.refValues_dict['cpu_base_impact_adp'] / CPU_model_n_cores
                 # Usage ration data
@@ -1005,14 +1013,14 @@ def get_form_blueprint(
                 else:
                     usageCPU_used = 1.
                 # CPU impact values
-                dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
+                dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower_per_core * usageCPU_used
                 embodied_GWP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.refValues_dict['cpu_die_impact_gwp'] + fixed_CPU_embodied_GWP_per_core)
                 embodied_per_hour_GWP_CPU = embodied_GWP_CPU_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
                 embodied_ADP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.refValues_dict['cpu_die_impact_adp'] + fixed_CPU_embodied_ADP_per_core)
                 embodied_per_hour_ADP_CPU = embodied_ADP_CPU_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
             else:
                 dynamic_powerNeeded_CPU = 0
-                CPUpower = 0
+                CPUpower_per_core = 0
                 usageCPU_used = 0
                 embodied_per_hour_GWP_CPU = 0
                 embodied_per_hour_ADP_CPU = 0
@@ -1023,6 +1031,7 @@ def get_form_blueprint(
                 if is_shown(tdpGPUstyle):
                     # We asked the question about TDP, so the dafault GPU is selected
                     GPUpower = tdpGPU
+        
                     GPU_die_area = data_dict.cores_dict['GPU']['Any']['die_area']
                     GPU_memory = data_dict.cores_dict['GPU']['Any']['memory']
                 else:
@@ -1030,12 +1039,14 @@ def get_form_blueprint(
                     GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP_per_core']
                     GPU_die_area = data_dict.cores_dict['GPU'][GPUmodel]['die_area']
                     GPU_memory = data_dict.cores_dict['GPU'][GPUmodel]['memory']
+                    ## TODO: Remove the following, we should never use default values except if they are the custom ones
                     # Checking we actually have the target die area value
                     if not isinstance(GPU_die_area, float) or not (GPU_die_area > 0):
                         GPU_die_area = data_dict.cores_dict['GPU']['Any']['die_area']
                     # Checking we actually have the target memory value
                     if not isinstance(GPU_memory, int) or not (GPU_memory > 0):
                         GPU_memory = data_dict.cores_dict['GPU']['Any']['memory']
+                    ## TODO: REMOVE ABOVE
                 # Dealing with usage ratio
                 if usageGPUradio == 'Yes':
                     usageGPU_used = usageGPU
@@ -1141,7 +1152,9 @@ def get_form_blueprint(
             output['coreType'] = coreType
             output['CPUmodel'] = CPUmodel
             output['numberCPUs'] = n_CPUcores
-            output['tdpCPU'] = CPUpower
+            output['CPU_model_n_cores_input'] = CPU_model_n_cores_input
+            output['tdpCPU'] = CPUpower_per_core
+            output['CPU_die_area_input'] = CPU_die_area_input
             output['usageCPUradio'] = usageCPUradio
             output['usageCPU'] = usageCPU_used
             output['GPUmodel'] = GPUmodel

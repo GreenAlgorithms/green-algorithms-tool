@@ -41,7 +41,9 @@ DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     coreType='CPU',
     numberCPUs=12,
     CPUmodel='Xeon E5-2683 v4',
-    tdpCPU=12,
+    CPU_model_n_cores_input=22, #average value from the TDP_cpu (just CPU) csv
+    tdpCPU=170,
+    CPU_die_area_input=12, #average value from the TDP_cpu (just CPU) csv
     numberGPUs=1,
     GPUmodel='NVIDIA Tesla V100',
     tdpGPU=200,
@@ -137,20 +139,14 @@ def load_data(data_dir: str, **kwargs):
     data_dict = SimpleNamespace(**data_dict0)
 
     ### CPU ###
-    ############# DRAFT
-    # cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"), sep=',', skiprows=1)
-    cpu_df = pd.read_csv(os.path.join(data_dir, "Draft_LCA_TDP_cpu.csv"), sep=',', skiprows=1)
+    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"), sep=',', skiprows=1)
     cpu_df.set_index('model', inplace=True)
-    ############# DRAFT
 
     cpu_df.drop(['source'], axis=1, inplace=True)
 
     ### GPU ###
-    ############# DRAFT
-    # gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"), sep=',', skiprows=1)
-    gpu_df = pd.read_csv(os.path.join(data_dir, "Draft_LCA_TDP_gpu.csv"), sep=',', skiprows=1)
+    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"), sep=',', skiprows=1)
     gpu_df.set_index('model', inplace=True)
-    ############# DRAFT
     gpu_df.drop(['source'], axis=1, inplace=True)
 
     ### AGGREGATED CORES ###
@@ -159,8 +155,8 @@ def load_data(data_dir: str, **kwargs):
     data_dict.cores_dict = {
         'CPU': cpu_df[
             [
-                'TDP_per_core',
-                'die_area_per_core',
+                'TDP',
+                'die_area',
                 'n_cores'
             ]
         ].to_dict(orient='index'),

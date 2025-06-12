@@ -207,7 +207,7 @@ def get_green_algo_form_layout(
 
                     html.Div(
                         [
-                            html.Label("Number of cores"),
+                            html.Label("Number of cores used"),
 
                             dcc.Input(
                                 type='number',
@@ -231,56 +231,133 @@ def get_green_algo_form_layout(
 
                     html.Div(
                         [
-                            html.Label("Model"),
-
                             html.Div(
                                 [
-                                    dcc.Dropdown(
-                                        id='CPUmodel_dropdown',
-                                        className='bottom-dropdown',
-                                        clearable=False,
+                                    html.Label("Model"),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id='CPUmodel_dropdown',
+                                                className='bottom-dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className="box-fields"
                                     ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "Select 'Other' to fill-in custom core characteristics.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                    
                                 ],
-                                className="box-fields"
+                                className='form-row short-input'
                             ),
 
+                            #### CUSTOM CPU INPUTS
+
                             html.Div(
                                 [
-                                    html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Select 'other' to fill-in a custom core power usage (TDP).",
-                                        className='tooltip-text'
+                                        'If your CPU is not in the list, you can manually input the few key specs used by the calculator.\n' \
+                                        ' Pre-filled values are average ones.',
+                                        style={'font-size': '0.9em'}
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Number of cores'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='CPU_model_n_cores_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "Refers to the number of cores of the CPU model. It is not the number of cores used.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='CPU_model_n_cores_div',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('TDP (in Watt)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='tdpCPU_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The TDP is the Thermal Design Power (TDP) of your CPU, in Watt. It is not a 'per core' value.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='tdpCPU_div',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Die area (in cm2)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='CPU_die_area_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The die area of your CPU is expected in cm2. Should include the I/O die size.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='CPU_die_area_div',
                                     ),
                                 ],
-                                className='tooltip',
-                            ),
-                            
-                        ],
-                        className='form-row short-input'
-                    ),
-
-                    #### CPU TDP
-
-                    html.Div(
-                        [
-                            html.Label(
-                                'What is the Thermal Design Power (TDP) value per core of your CPU? '
-                                'This can easily be found online (usually 10-15W per core)'),
-
-                            dcc.Input(
-                                type='number',
-                                id='tdpCPU_input',
-                                min=0,
+                                style=dict(display='none'),
+                                id='custom_CPU_inputs_div',
+                                className="subform-div",
                             )
                         ],
-                        className='form-row TDP',
-                        id='tdpCPU_div',
-                        style=dict(display='none')
-                    ),
+                        id='model-and-custom-inputs'
+                    )
                 ],
                 className="group-of-rows",
                 id='CPU_div',
             ),
+
 
             #### GPUs ####
 
