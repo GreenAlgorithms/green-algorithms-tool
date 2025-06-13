@@ -43,7 +43,7 @@ form = get_form_blueprint(
     title="Details about your algorithm",
     subtitle=html.P(
         [
-            "To understand how each parameter impacts your carbon footprint, "
+            "To understand how each parameter impacts your environmental footprint, "
             "check out the formula below and the ",
             html.A(
                 "methods article",

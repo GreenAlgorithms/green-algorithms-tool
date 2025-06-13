@@ -11,7 +11,7 @@ from utils.utils import put_value_first, is_shown, custom_prefix_escape
 from utils.handle_inputs import availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region, DEFAULT_VALUES_FOR_PAGE_LOAD
 from utils.graphics import MY_COLORS
 
-from blueprints.form.form_layout import get_green_algo_form_layout
+from blueprints.form.form_layout import get_green_algo_form_layout, custom_core_box_style
 
 
 def get_form_blueprint(
@@ -84,6 +84,8 @@ def get_form_blueprint(
             Output('numberGPUs_input', 'value'),
             Output('GPUmodel_dropdown', 'value'),
             Output('tdpGPU_input', 'value'),
+            Output('GPU_die_area_input', "value"),
+            Output('GPU_memory_input', "value"),
             Output('memory_input', 'value'),
             Output('platformType_dropdown', 'value'),
             Output('usageCPU_radio', 'value'),
@@ -629,35 +631,40 @@ def get_form_blueprint(
             return show, show, showFlex, show, show, showFlex
         
     @form_blueprint.callback(
-        Output('custom_CPU_inputs_div', 'style'),
-        Output('model-and-custom-inputs', 'style'),
+        [       
+            Output('custom_CPU_inputs_div', 'style'),
+            Output('CPU-model-and-custom-inputs', 'style'),
+        ],
         [
             Input('CPUmodel_dropdown', 'value'),
         ]
     )
-    def display_TDP4CPU(selected_coreModel):
+    def display_custom_cpu_inputs(selected_coreModel):
         '''
-        Shows or hides the CPU TDP input box.
+        Shows or hides the boxes for custom CPU specs.
         '''
         if selected_coreModel == "other":
-            return {'display': 'flex'}, {'padding': '6px 24px', 'border': 'rgb(220, 220, 220)', 'border-radius': '10px', 'border-style': 'dashed', 'border-width': '2px'}
+            return {'display': 'flex'}, custom_core_box_style
         else:
             return {'display': 'none'}, {'border': 'none'}
         
     @form_blueprint.callback(
-        Output('tdpGPU_div', 'style'),
+        [
+            Output('custom_GPU_inputs_div', 'style'),
+            Output('GPU-model-and-custom-inputs', 'style'),
+        ],
         [
             Input('GPUmodel_dropdown', 'value'),
         ]
     )
-    def display_TDP4GPU(selected_coreModel):
+    def display_custom_GPU_inputs(selected_coreModel):
         """
-        Shows or hides the GPU TDP input box.
+        Shows or hides the boxes for custom GPU specs.
         """
         if selected_coreModel == "other":
-            return {'display': 'flex'}
+            return {'display': 'flex'}, custom_core_box_style
         else:
-            return {'display': 'none'}
+            return {'display': 'none'}, {'border': 'none'}
         
     ##################### USAGE FACTORS ###
 
@@ -817,8 +824,10 @@ def get_form_blueprint(
             Input('CPU_die_area_input', "value"),
             Input('numberGPUs_input', "value"),
             Input('GPUmodel_dropdown', "value"),
-            Input('tdpGPU_div', "style"),
+            Input('custom_GPU_inputs_div', "style"),
             Input('tdpGPU_input', "value"),
+            Input('GPU_die_area_input', "value"),
+            Input('GPU_memory_input', "value"),
             Input('memory_input', "value"),
             Input('runTime_hour_input', "value"),
             Input('runTime_min_input', "value"),
@@ -843,7 +852,8 @@ def get_form_blueprint(
             Input('provider_dropdown_div', 'style'),
         ],
     )
-    def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, custom_CPu_inputs_style, CPU_model_n_cores_input, tdpCPU, CPU_die_area_input, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
+    def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, custom_CPu_inputs_style, CPU_model_n_cores_input, tdpCPU,
+                            CPU_die_area_input, n_GPUs, GPUmodel, custom_GPu_inputs_style, tdpGPU, GPU_die_area_input, GPU_memory_input,
                             memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
                             serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                             PUEdivStyle, PUEradio, PUE, mult_factor_radio, mult_factor, selected_platform, selected_provider, providerStyle):
@@ -916,10 +926,14 @@ def get_form_blueprint(
             output['numberCPUs'] = None
             output['usageCPU'] = None
             output['usageCPUradio'] = None
+            output['CPU_model_n_cores_input'] = None
             output['tdpCPU'] = None
+            output['CPU_die_area_input'] = None
             output['GPUmodel'] = None
             output['numberGPUs'] = None
             output['tdpGPU'] = None
+            output['GPU_die_area_input'] = None
+            output['GPU_memory_input'] = None
             output['usageGPU'] = None
             output['usageGPUradio'] = None
             output['GPUpower'] = None
@@ -1028,12 +1042,11 @@ def get_form_blueprint(
             ### GPUs: DYNAMIC AND EMBODIED IMPACTS
             if coreType in ['GPU', 'Both']:
                 # Dealing with TDP and die area
-                if is_shown(tdpGPUstyle):
+                if is_shown(custom_GPu_inputs_style):
                     # We asked the question about TDP, so the dafault GPU is selected
                     GPUpower = tdpGPU
-        
-                    GPU_die_area = data_dict.cores_dict['GPU']['Any']['die_area']
-                    GPU_memory = data_dict.cores_dict['GPU']['Any']['memory']
+                    GPU_die_area =GPU_die_area_input
+                    GPU_memory = GPU_memory_input
                 else:
                     # GPUmodel cannot be "other"
                     GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP_per_core']
@@ -1064,6 +1077,8 @@ def get_form_blueprint(
                 embodied_per_hour_ADP_GPU = n_GPUs * (embodied_ADP_GPU_no_mem + embodied_ADP_GPU_mem) / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
             else:
                 GPUpower = 0
+                GPU_die_area = 0
+                GPU_memory = 0
                 usageGPU_used = 0
                 dynamic_powerNeeded_GPU = 0
                 embodied_per_hour_GWP_GPU = 0
@@ -1160,6 +1175,8 @@ def get_form_blueprint(
             output['GPUmodel'] = GPUmodel
             output['numberGPUs'] = n_GPUs
             output['tdpGPU'] = GPUpower
+            output['GPU_die_area_input'] = GPU_die_area
+            output['GPU_memory_input'] = GPU_memory
             output['usageGPUradio'] = usageGPUradio
             output['usageGPU'] = usageGPU_used
             output['memory'] = memory
