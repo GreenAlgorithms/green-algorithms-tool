@@ -19,10 +19,13 @@ from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
 
 from dash_extensions.enrich import DashBlueprint, html
-from blueprints.form.form_blueprint import get_form_blueprint
+from blueprints.form.form_blueprint import FormBlueprint
 from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
+
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
 
 
 ###################################################
@@ -37,21 +40,12 @@ HOME_PAGE_ID_PREFIX = 'main'
 # MODULES CREATION
 
 # TODO add a "help" tab on the home form as well (similar to the AI one)
-form = get_form_blueprint(
+form = FormBlueprint(
     id_prefix=HOME_PAGE_ID_PREFIX,
     title="Details about your algorithm",
-    subtitle=html.P(
-        [
-            "To understand how each parameter impacts your carbon footprint, "
-            "check out the formula below and the ",
-            html.A(
-                "methods article",
-                href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                target='_blank'
-            )
-        ]
-    )
+    subtitle= 'Home_form_subtitle'
 )
+
 
 methodology_content = get_methodology_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 

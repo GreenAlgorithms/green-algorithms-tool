@@ -71,16 +71,58 @@ TRANSLATIONS_DICT = {
         "fr": "Page dédiée à l'intelligence artificielle",
     },
 
-    #### FORM ####
+    #### HOME PAGE ####
 
-    ### HEADER
+    ### FORM
+
+    ### Header
 
     "Details about your algorithm": {
         "en": "Details about your algorithm",
-        "fr": "Caractéristiques de votre algorithm",
+        "fr": "Caractéristiques de votre algorithme",
+    },
+    "Home_form_subtitle": {
+        "en": '''
+                To understand how each parameter impacts your environmental footprint, 
+                check out the formula below and the [methods article](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707)
+            ''',
+        "fr": '''
+                To understand how each parameter impacts your environmental footprint, 
+                check out the formula below and the [methods article](https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707)
+            ''',
     },
 
+    ### AI PAGE ###
 
+    ### TRAINING FORM
+
+    ### Header
+
+    "Training_form_subtitle": {
+        "en": '''
+                Report your training-related computations. For more information about R&D experiments, 
+                retraining or overall tips regarding your reporting, please refer to the Help tab.
+            ''',
+        "fr": '''
+                Report your training-related computations. For more information about R&D experiments, 
+                retraining or overall tips regarding your reporting, please refer to the Help tab.
+            ''',
+    },
+
+    ### INFERENCE FORM
+    
+    ### Header
+
+    "Inference_form_subtitle": {
+        "en": '''
+                Report your inference-related computations. For more information about continuous inference, 
+                or overall tips regarding your reporting, please refer to the Help tab..
+            ''',
+        "fr": '''
+                Report your inference-related computations. For more information about continuous inference, 
+                or overall tips regarding your reporting, please refer to the Help tab..
+            ''',
+    },
 
     #### APP FOOTER ####
 
@@ -90,9 +132,15 @@ TRANSLATIONS_DICT = {
         "en": "Data and code",
         "fr": "Code et données",
     },
-    "Data_and_code_explanation": {
-        "en": "All the data and code used to run this calculator can be found on ",
-        "fr": "Toutes les données et le code du calculateur se trouvent sur ",
+    "Data_and_code_text": {
+        "en": '''
+                All the data and code used to run this calculator can be found on 
+                [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool)
+            ''',
+        "fr": '''
+                Toutes les données et le code du calculateur se trouvent sur 
+                [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool)
+            ''',
     },
     
     ### SUGGESTIONS
@@ -102,20 +150,16 @@ TRANSLATIONS_DICT = {
         "fr": "Questions / suggestions ?",
     },
     "Questions_suggestions_text": {
-        "en": "If you have questions or suggestions about the tool, you can ",
-        "fr": "Si vous avez des questions ou des suggestions concernant l'outil, vous pouvez ",
-    },
-    "open an issue": {
-        "en": "open an issue",
-        "fr": "ouvrir une 'issue'",
-    },
-    "on the GitHub or": {
-        "en": " on the GitHub or ",
-        "fr": " sur le Github ou ",
-    },
-    "email_us": {
-        "en": "email us.",
-        "fr": "nous envoyer un mail.",
+        "en": '''
+                If you have questions or suggestions about the tool, you can 
+                [open an issue](https://github.com/GreenAlgorithms/green-algorithms-tool/issues)
+                on the Github or [email us](mailto:green.algorithms@gmail.com).
+            ''',
+        "fr": '''
+                Si vous avez des questions ou des suggestions concernant l'outil, vous pouvez 
+                [ouvrir une 'issue'](https://github.com/GreenAlgorithms/green-algorithms-tool/issues) 
+                sur le Github ou [nous envoyer un mail](mailto:green.algorithms@gmail.com).
+            ''',
     },
 
     ### HOW TO CITE
@@ -124,6 +168,17 @@ TRANSLATIONS_DICT = {
         "en": "How to cite this work",
         "fr": "Citer ce travail",
     },
+    "How_to_cite_text": {
+        "en": '''
+                Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. 
+                Adv. Sci. 2021, 2100707 [https://doi.org/10.1002/advs.202100707](https://doi.org/10.1002/advs.202100707).
+            ''',
+        "fr": '''
+                Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. 
+                Adv. Sci. 2021, 2100707 [https://doi.org/10.1002/advs.202100707](https://doi.org/10.1002/advs.202100707).
+            ''',
+    },
+
 
     ### ABOUT US
 
@@ -131,17 +186,26 @@ TRANSLATIONS_DICT = {
         "en": "About us",
         "fr": "Qui nous sommes",
     },
-
-    "Green Algorithms project": {
+    "About_us_text": {
         "en":  '''
                     The Green Algorithms project is led by [Loïc Lannelongue](www.lannelongue-group.org) and 
                     [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge, 
-                    but made possible by the contribution and support of many: [full list here](https://www.green-algorithms.org/about/)
+                    but made possible by the contribution and support of many: [full list here](https://www.green-algorithms.org/about/).
                 ''',
         "fr":  '''
                     Le projet Green Algorithms est piloté par [Loïc Lannelongue](www.lannelongue-group.org) et 
                     [Michael Inouye](https://www.inouyelab.org/home/people) à l'université de Cambridge,
-                    mais a bénéficié de la contribution et du soutien de beaucoup : [liste complète des contributeurs](https://www.green-algorithms.org/about/)
+                    mais a bénéficié de la contribution et du soutien de beaucoup : [liste complète des contributeurs](https://www.green-algorithms.org/about/).
+                '''
+    },
+    "About_us_text_2": {
+        "en":  '''
+                    *In particular, we are thankful for the development work of Even Matencio and the support of the Wellcome Trust,
+                    NIHR Cambridge Biomedical Research Centre, and French Department for the Ecological Transition.*
+                ''',
+        "fr":  '''
+                    *En particulier, nous sommes reconnaissants pour le travail d'implémentation mené par Even Matencio et pour le soutien 
+                    du Wellcome Trust, du NIHR Cambridge Biomedical Research Centre et celui du Ministère en charge de la transition écologique français.*
                 '''
     },
 
@@ -151,19 +215,36 @@ TRANSLATIONS_DICT = {
         "en": "#ShowYourStripes",
         "fr": "#ShowYourStripes",
     },
-    "ShowYourStripes description": {
-        "en": "These coloured stripes in the background represent the change in world temperatures "
-                "from 1850 to 2018. "
-                "This striking design was made by Ed Hawkins from the University of Reading. ",
-        "fr": "#ShowYourStripes",
+    "ShowYourStripes_text": {
+        "en": '''
+                These coloured stripes in the background represent the change in world temperatures 
+                from 1850 to 2018. This striking design was made by Ed Hawkins from the University of Reading. 
+            ''',
+        "fr": '''
+                These coloured stripes in the background represent the change in world temperatures 
+                from 1850 to 2018. This striking design was made by Ed Hawkins from the University of Reading. 
+            ''',
     },
-    "More on": {
-        "en": "More on ",
-        "fr": "More on ",
+    "More_on": {
+        "en": '''More on [ShowYourStripes.info](https://showyourstripes.info)''',
+        "fr": '''More on [ShowYourStripes.info](https://showyourstripes.info)''',
     },
-    "Additional credits": {
-        "en": "Additional credits for the app can be found on the ",
-        "fr": "Additional credits for the app can be found on the ",
+    "Additional_credits": {
+        "en": '''
+                Additional credits for the app can be found on the 
+                [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool)
+            ''',
+        "fr": '''
+                Additional credits for the app can be found on the 
+                [GitHub](https://github.com/GreenAlgorithms/green-algorithms-tool)
+            ''',
     },
-    
+
+    ### MISCELLANEOUS
+
+    '': { # For empty texts
+        "en": '',
+        "fr": ''
+    }
+
 }

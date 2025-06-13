@@ -112,8 +112,6 @@ pages_navbar = html.Div(
             className='page-navlink',
         ),
 
-        # dmc.Divider(orientation="vertical", style={'height': '20', '--divider-color': 'rgb(60, 60, 60)'}),
-
         dmc.NavLink(
             label=html.Div(
                 name_per_page[pages[1]['name']],
@@ -310,52 +308,24 @@ app.layout = dmc.MantineProvider(
         
             html.Div(
                 [
+                    ### DATA AND CODE ###
+
                     html.Div(
                         [
                             html.H2(translatable_div_text("Data and code").embed(app)),
 
-                            html.Center(
-                                html.P(
-                                    [
-                                        translatable_div_text("Data_and_code_explanation").embed(app),
-                                        html.A(
-                                            "GitHub",
-                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                            target='_blank',
-                                            style={'display': 'inline-block'}
-                                        )
-                                    ],
-                                    style={'display': 'inline-block'}
-                                ),
-                            ),
+                            html.Div(translatable_markdown_text("Data_and_code_text").embed(app)),
                         ],
                         className='container footer'
                     ),
+
+                    ### QUESTIONS AND SUGGESTIONS ###
 
                     html.Div(
                         [
                             html.H2(translatable_div_text('Questions_suggestions').embed(app)),
 
-                            html.Center(
-                                html.P(
-                                    [
-                                        translatable_div_text("Questions_suggestions_text").embed(app),
-                                        html.A(
-                                            translatable_div_text("open an issue").embed(app),
-                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
-                                            target='_blank',
-                                            style={'margin-right': '4px'}
-                                        ),
-                                        translatable_div_text("on the GitHub or").embed(app),
-                                        html.P(' '),
-                                        # TODO set up a better green algorithms email redirecting to someone
-                                        html.A(
-                                            translatable_div_text("email_us").embed(app),
-                                            href='mailto:green.algorithms@gmail.com', 
-                                        ),
-                                    ]
-                                )
-                            ),
+                            html.Div(translatable_markdown_text("Questions_suggestions_text").embed(app)),
                         ],
                         className='container footer'
                     )
@@ -369,15 +339,7 @@ app.layout = dmc.MantineProvider(
                 [
                     html.H2(translatable_div_text("How to cite this work").embed(app)),
 
-                    html.Center(
-                        html.P([
-                            "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
-                            "Adv. Sci. 2021, 2100707. ",
-                            html.A("https://doi.org/10.1002/advs.202100707",
-                                    href='https://doi.org/10.1002/advs.202100707',
-                                    target='_blank')
-                        ]),
-                    ),
+                    html.Div(translatable_markdown_text("How_to_cite_text").embed(app))
                 ],
                 className='container citation footer'
             ),
@@ -388,10 +350,9 @@ app.layout = dmc.MantineProvider(
                 [
                     html.H2(translatable_div_text("About us").embed(app)),
 
-                    html.Div(
-                        translatable_markdown_text('Green Algorithms project').embed(app),
-                        className='authors'
-                    ),
+                    html.Div(translatable_markdown_text('About_us_text').embed(app), className='authors'),
+
+                    html.Div(translatable_markdown_text('About_us_text_2').embed(app), className='authors'),
                 ],
                 className='container about-us footer'
             ),
@@ -406,33 +367,12 @@ app.layout = dmc.MantineProvider(
                 [
                     html.H2(translatable_div_text("ShowYourStripes").embed(app)),
 
-                    html.Center(
-                        html.P(
-                            [
-                                html.P(translatable_div_text("ShowYourStripes description").embed(app)),
-                                html.P(
-                                    [
-                                        translatable_div_text("More on").embed(app),
-                                        html.A(
-                                            " ShowYourStripes.info",
-                                            href='https://showyourstripes.info',
-                                            target='_blank'
-                                        )
-                                    ]
-                                ),
-                                html.P(
-                                    [
-                                        translatable_div_text("Additional credits").embed(app),
-                                        html.A(
-                                            " GitHub",
-                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                            target='_blank'
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                    ),
+                    html.Div(translatable_markdown_text("ShowYourStripes_text").embed(app)),
+
+                    html.Div(translatable_markdown_text("More_on").embed(app)),
+                    
+                    html.Div(translatable_markdown_text("Additional_credits").embed(app)),
+
                 ],
                 className='container show-stripes footer'
             ),
