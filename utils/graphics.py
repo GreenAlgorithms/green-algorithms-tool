@@ -106,12 +106,12 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
         list_cores0 = [
             'NVIDIA Jetson AGX Xavier',
             'NVIDIA Tesla T4',
-            'NVIDIA GTX 1080',
-            'TPU v3',
-            'NVIDIA RTX 2080 Ti',
+            'NVIDIA GeForce GTX 1080',
+            # 'TPU v3',
+            'NVIDIA GeForce RTX 2080 Ti 11GB',
             'NVIDIA GTX TITAN X',
             'NVIDIA Tesla P100 PCIe',
-            'NVIDIA Tesla V100'
+            'NVIDIA Tesla V100 PCIe 32 GB'
         ]
         list_cores = [x for x in list_cores0 if x in versioned_data.cores_dict['GPU']]
 
@@ -121,17 +121,16 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
         layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
 
         list_cores0 = [
-            'Ryzen 5 3500U',
-            'Xeon Platinum 9282',
-            'Xeon E5-2683 v4',
-            'Core i7-10700',
-            'Xeon Gold 6142',
-            'Core i5-10600',
-            'Ryzen 5 3600',
-            'Core i9-10920XE',
-            'Core i5-10600K',
-            'Ryzen 5 3400G',
-            'Core i3-10320',
+            'Ryzen 5 7600',
+            'Xeon Platinum 8174',
+            'Xeon E5-2620 v4',
+            'AMD EPYC 7551',
+            'AMD EPYC Embedded 9454',
+            'Core i7-13700F',
+            'Xeon Gold 6148',
+            'Core i5-13500',
+            'Core i9-13900E',
+            'Core i3-13100E',
             'Xeon X3430'
         ]
         list_cores = [x for x in list_cores0 if x in versioned_data.cores_dict['CPU']]
@@ -149,7 +148,7 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
             if gpu == 'other':
                 power_list.append(aggregated_data['tdpGPU'])
             else:
-                power_list.append(versioned_data.cores_dict['GPU'][gpu]['TDP_per_core'])
+                power_list.append(versioned_data.cores_dict['GPU'][gpu]['TDP'])
     else:
         for cpu in list_cores:
             if cpu == 'other':

@@ -704,10 +704,14 @@ def process_inference_form_outputs_based_on_reporting_scope(
         mult_coef = input_scope_mutiplicative_factor * reporting_multiplicative_factor
     else:
         mult_coef = 1
-    processed_inference_metrics['energy_needed_before_scaling'] =  inference_form_metrics['energy_needed']
     processed_inference_metrics['energy_needed'] = mult_coef * inference_form_metrics['energy_needed']
-    processed_inference_metrics['carbonEmissions_before_scaling'] =  inference_form_metrics['carbonEmissions']
     processed_inference_metrics['carbonEmissions'] = mult_coef * inference_form_metrics['carbonEmissions']
+    processed_inference_metrics['manufacturing_carbonEmissions'] = mult_coef * inference_form_metrics['manufacturing_carbonEmissions']
+    processed_inference_metrics['manufacturing_abiotic_resources'] = mult_coef * inference_form_metrics['manufacturing_abiotic_resources']
+    processed_inference_metrics['energy_needed_before_scaling'] =  inference_form_metrics['energy_needed']
+    processed_inference_metrics['carbonEmissions_before_scaling'] =  inference_form_metrics['carbonEmissions']
+    processed_inference_metrics['manufacturing_carbonEmissions_before_scaling'] = inference_form_metrics['manufacturing_carbonEmissions']
+    processed_inference_metrics['manufacturing_abiotic_resources'] = inference_form_metrics['manufacturing_abiotic_resources']
     return processed_inference_metrics
     
 
@@ -751,14 +755,13 @@ def add_retrainings_and_RandD_to_training_outputs(
         RandD_MF_val = 0
     # Add values to main training metrics
     detailed_training_metrics = {}
-    detailed_training_metrics['main_energy_needed'] = training_form_metrics['energy_needed']
-    detailed_training_metrics['R&D_energy_needed'] = training_form_metrics['energy_needed'] * RandD_MF_val 
-    detailed_training_metrics['retrainings_energy_needed'] = training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val
     detailed_training_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
-    detailed_training_metrics['main_carbonEmissions'] = training_form_metrics['carbonEmissions']
-    detailed_training_metrics['R&D_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  RandD_MF_val 
-    detailed_training_metrics['retrainings_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  retraining_MF_val * retraining_number_val
     detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
+    detailed_training_metrics['manufacturing_carbonEmissions'] = training_form_metrics['manufacturing_carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
+    detailed_training_metrics['manufacturing_abiotic_resources'] = training_form_metrics['manufacturing_abiotic_resources'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
+    detailed_training_metrics['main_training_share'] = training_form_metrics['energy_needed'] / detailed_training_metrics['energy_needed'] 
+    detailed_training_metrics['R&D_share'] = (training_form_metrics['energy_needed'] * RandD_MF_val ) / detailed_training_metrics['energy_needed']
+    detailed_training_metrics['retrainings_share'] = (training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val) / detailed_training_metrics['energy_needed']
     return detailed_training_metrics
 
 

@@ -40,15 +40,15 @@ DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_min=0,
     coreType='CPU',
     numberCPUs=12,
-    CPUmodel='Xeon E5-2683 v4',
-    CPU_model_n_cores_input=22, #average value from the CPU csv
-    tdpCPU=170,
-    CPU_die_area_input=12, #average value from the CPU csv
+    CPUmodel='Core i7-4790',
+    CPU_model_n_cores=26, #average value from the CPU csv
+    tdpCPU=200, #average value from the CPU csv
+    CPU_die_area=12, #average value from the CPU csv
     numberGPUs=1,
-    GPUmodel='NVIDIA Tesla V100',
+    GPUmodel='NVIDIA A100 PCIe 40 GB',
     tdpGPU=223,
-    GPU_die_area_input = 6, #average value from the GPU csv
-    GPU_memory_input = 25,  #average value from the GPU csv
+    GPU_die_area = 6, #average value from the GPU csv
+    GPU_memory = 25,  #average value from the GPU csv
     memory=64,
     platformType= 'localServer',
     usageCPUradio='No',
@@ -115,12 +115,20 @@ INPUT_KEYS_TO_IGNORE = [
     'flying_text',
     'energy_needed_before_scaling',
     'carbonEmissions_before_scaling',
-    'main_energy_needed',
-    'R&D_energy_needed',
-    'retrainings_energy_needed',
-    'main_carbonEmissions',
-    'R&D_carbonEmissions',
-    'retrainings_carbonEmissions',
+    'main_training_share',
+    'R&D_share',
+    'retrainings_share',
+    'manufacturing_carbonEmissions_before_scaling',
+    'manufacturing_carbonEmissions',
+    'manufacturing_abiotic_resources',
+    'manufacturing_CE_CPU',
+    'manufacturing_CE_GPU',
+    'manufacturing_CE_memory',
+    'manufacturing_CE_other',
+    'manufacturing_ADP_CPU',
+    'manufacturing_ADP_GPU',
+    'manufacturing_ADP_memory',
+    'manufacturing_ADP_other',
 ]
 
 
@@ -141,15 +149,30 @@ def load_data(data_dir: str, **kwargs):
     data_dict = SimpleNamespace(**data_dict0)
 
     ### CPU ###
-    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"), sep=',', skiprows=1)
+    cpu_df = pd.read_csv(os.path.join(data_dir, "CPUs.csv"), sep=',', skiprows=1)
     cpu_df.set_index('model', inplace=True)
-
     cpu_df.drop(['source'], axis=1, inplace=True)
+    # In previous versions, there was no column for the die area of the cpus
+    # so we artificially add it with null values. This tweak avoids modifying the
+    # form calculator itself. Otherwise we would have to implement different
+    # form behavious for the different versions depending on the data content
+    ## TODO: change 'v2.2' into 'v.3'
+    if data_dict0['version'] <= 'v2.2':
+        cpu_df['die_area'] = 0
 
     ### GPU ###
-    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"), sep=',', skiprows=1)
+    gpu_df = pd.read_csv(os.path.join(data_dir, "GPUs.csv"), sep=',', skiprows=1)
     gpu_df.set_index('model', inplace=True)
     gpu_df.drop(['source'], axis=1, inplace=True)
+    # In previous versions, there was no column for the die area and memory of the gpus
+    # so we artificially add it with null values. This tweak avoids modifying the
+    # form calculator itself. Otherwise we would have to implement different
+    # form behavious for the different versions depending on the data content
+    ## TODO: change 'v2.2' into 'v.3'
+    if data_dict0['version'] <= 'v2.2':
+        gpu_df['die_area'] = 0
+        gpu_df['memory'] = 0
+    
 
     ### AGGREGATED CORES ###
     # Dict of dict with all the possible models
@@ -164,7 +187,7 @@ def load_data(data_dir: str, **kwargs):
         ].to_dict(orient='index'),
         'GPU': gpu_df[
             [
-                'TDP_per_core',
+                'TDP',
                 'die_area',
                 'memory',
             ]
@@ -235,10 +258,64 @@ def load_data(data_dir: str, **kwargs):
         data_dict.platformName_byType[platformType] = pd.Series(providersNames_df.providerName.values, index=providersNames_df.provider).to_dict()
 
     ### REFERENCE VALUES
-    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
-    refValues_df.drop(['source'], axis=1, inplace=True)
-    data_dict.refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
+    # When implementing the manufacturing impacts backend, we added dozens of 
+    # 'reference values' that are stored in a new csv: 'hardware_impacts'. When data from a previous
+    # version is used, we artificially create this data so we do not have to adapt
+    # the form calculator itself based on the data version. 
+    ## TODO: change 'v2.2' into 'v.3'
+    if data_dict0['version'] <= 'v2.2':
+        refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
+        refValues_df.drop(['source'], axis=1, inplace=True)
+        memory_power = refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
+    else: 
+        refValues_df = pd.read_csv(os.path.join(data_dir, "context.csv"), sep=',')
+    data_dict.refValues_dict = pd.Series(refValues_df.value.values, index=refValues_df.variable).to_dict()
 
+    ### HARDWARE IMPACTS
+    # WARNING: when changing indexes og this CSV, one also has to change the keys below
+    ## TODO: change 'v2.2' into 'v.3'
+    if data_dict0['version'] <= 'v2.2':
+        data_dict.hardware_impacts_dict = {
+            'cpu_die_impact_gwp': 0,
+            'cpu_base_impact_gwp': 0,
+            'cpu_die_impact_adp': 0,
+            'cpu_base_impact_adp': 0,
+            'ram_die_impact_gwp': 0,
+            'ram_base_impact_gwp': 0,
+            'ram_die_impact_adp': 0,
+            'ram_base_impact_adp': 0,
+            'ram_density': 1.8762,
+            'ram_default_strip_size': 32,
+            'gpu_die_impact_gwp': 0,
+            'gpu_base_impact_gwp': 0,
+            'gpu_die_impact_adp': 0,
+            'gpu_base_impact_adp': 0,
+            'PSU_impact_gwp': 0,
+            'PSU_impact_adp': 0,
+            'motherboard_impact_gwp': 0,
+            'motherboard_impact_adp': 0,
+            'rack_casing_impact_gwp': 0,
+            'rack_casing_impact_adp': 0,
+            'assembly_impact_gwp': 0,
+            'assembly_impact_adp': 0,
+            'laptop_base_impact_gwp': 0,
+            'laptop_base_impact_adp': 0,
+            'workstation_base_impact_gwp': 0,
+            'workstation_base_impact_adp': 0,
+            'active_lifespan_local_server': 1,
+            'active_lifespan_cloud_server': 1,
+            'active_lifespan_laptop': 1,
+            'active_lifespan_workstation': 1,
+            'nb_CPU_per_server': 2,
+            'nb_GPU_local_per_server': 2,
+            'nb_GPU_cloud_per_server': 4,
+        }
+        data_dict.hardware_impacts_dict['memoryPower'] = memory_power
+    else: 
+        hardware_impacts_df = pd.read_csv(os.path.join(data_dir, "hardware_impacts.csv"), sep=',')
+        hardware_impacts_df.drop(['source'], axis=1, inplace=True)
+        data_dict.hardware_impacts_dict = pd.Series(hardware_impacts_df.value.values, index=hardware_impacts_df.variable).to_dict()
+    
     return data_dict # This is a SimpleNamespace
 
 
@@ -369,10 +446,10 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         coreModels_options = dict()
         for coreType in ['CPU', 'GPU']:
             availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-            availableOptions = put_value_first(availableOptions, 'Any')
+            availableOptions = put_value_first(availableOptions, 'Average')
             coreModels_options[coreType] = [
                 {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                                    [("Other", "other")]
+                                                    [("I can't find my CPU", "other")]
             ]
     else:
         coreModels_options = None
@@ -382,7 +459,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         platformType_options = [
             {'label': k,
             'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                    [('personalComputer', 'Personal computer')] +
+                                    [('personal_workstation', 'Personal workstation')] +
                                     [('localServer', 'Local server')]
         ]
     else:
@@ -397,15 +474,16 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         in the DEFAULT_VALUES and aggregate_data.
         """
         new_val = copy.copy(value)
-        if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
+        if key in ['runTime_hour', 'numberCPUs', 'numberGPUs', 'CPU_model_n_cores']:
             new_val = int(float(new_val))
+            assert new_val >= 0
         elif key in ['runTime_min']:
             new_val = float(new_val)
             assert new_val >= 0
         elif key in ['mult_factor']:
             new_val = int(new_val)
             assert new_val >= 1
-        elif key in ['tdpCPU', 'tdpGPU', 'memory']:
+        elif key in ['tdpCPU', 'CPU_die_area', 'tdpGPU', 'GPU_memory', 'GPU_die_area', 'memory']:
             new_val = float(new_val)
             assert new_val >= 0
         elif key in ['usageCPU', 'usageGPU']:
@@ -418,6 +496,10 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         elif key in ['CPUmodel', 'GPUmodel']:
             assert new_val in [x['value'] for x in coreModels_options[key[:3]]]
         elif key == 'platformType':
+            # The following line is intended to correct the 'personalComputer' platform that was used in previous version
+            # TODO: maybe delete it because serves only very few use cases
+            if new_val == 'personalComputer' and unlist(input_dict['appVersion']) <= 'v2.2':
+                new_val = 'personal_workstation'
             assert new_val in [x['value'] for x in platformType_options]
         elif key == 'provider':
             if unlist(input_dict['platformType']) == 'cloudComputing':  # TODO: I don't think this if is necessary?
@@ -542,7 +624,7 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     decoded = base64.b64decode(upload_string)
     try:
         # TODO: extract content from .xlsx files as well.
-        if 'csv' in filename:
+        if '.csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
             return {}, 'CSV file can’t be read, doing nothing…', 'The file extension is not "csv".'
@@ -587,9 +669,9 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     # Returns the verified inputs, where wrong keys are replaced
     # by default values, hence the importance of the order of the keys
     clean_values = copy.deepcopy(DEFAULT_VALUES)
-    # adding required values that were not found as expected in the input
+    # adding required values that were not found as expected in the processed inputs
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
-    # enforcing input values for entries that are correct
+    # enforcing processed input values for entries that are correct
     clean_values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
     # Small fix for special case: when the provider is not Google Cloud we should not
     # replace the serverContinent and server values by default ones, because it has

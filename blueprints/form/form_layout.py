@@ -253,7 +253,8 @@ def get_green_algo_form_layout(
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Select 'Other' to fill-in custom core characteristics.",
+                                                "Select 'Average' to run the calculator with the average CPU specs. If you want to enter custom "
+                                                "CPU characteristics, please select 'I can't find my CPU' at the top of the list.",
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -416,7 +417,8 @@ def get_green_algo_form_layout(
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Select 'other' to fill-in custom core characteristics.",
+                                                "Select 'Average' to run the calculator with the average GPU specs. If you want to enter custom "
+                                                "GPU characteristics, please select 'I can't find my GPU' at the top of the list.",
                                                 className='tooltip-text'
                                             ),
                                         ],

@@ -152,7 +152,7 @@ def get_form_blueprint(
             platformType_options = [
                 {'label': k,
                  'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                         [('personalComputer', 'Personal computer')] +
+                                         [('personal_workstation', 'Personal workstation')] +
                                          [('localServer', 'Local server')]
             ]
             return platformType_options
@@ -592,10 +592,10 @@ def get_form_blueprint(
             coreModels_options = dict()
             for coreType in ['CPU', 'GPU']:
                 availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-                availableOptions = put_value_first(availableOptions, 'Any')
+                availableOptions = put_value_first(availableOptions, 'Average')
                 coreModels_options[coreType] = [
-                    {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                    [("Other", "other")]
+                    {'label': k, 'value': v} for k, v in [(f"I can't find my {coreType}", "other")] + 
+                    list(zip(availableOptions, availableOptions))
                 ]
 
             return coreModels_options['CPU'], coreModels_options['GPU']
@@ -926,14 +926,14 @@ def get_form_blueprint(
             output['numberCPUs'] = None
             output['usageCPU'] = None
             output['usageCPUradio'] = None
-            output['CPU_model_n_cores_input'] = None
+            output['CPU_model_n_cores'] = None
             output['tdpCPU'] = None
-            output['CPU_die_area_input'] = None
+            output['CPU_die_area'] = None
             output['GPUmodel'] = None
             output['numberGPUs'] = None
             output['tdpGPU'] = None
-            output['GPU_die_area_input'] = None
-            output['GPU_memory_input'] = None
+            output['GPU_die_area'] = None
+            output['GPU_memory'] = None
             output['usageGPU'] = None
             output['usageGPUradio'] = None
             output['GPUpower'] = None
@@ -950,22 +950,22 @@ def get_form_blueprint(
             output['appVersion'] = version
             metrics['energy_needed'] = 0
             metrics['carbonEmissions'] = 0
-            metrics['embodied_carbonEmissions'] = 0
-            metrics['embodied_abiotic_resources'] = 0
+            metrics['manufacturing_carbonEmissions'] = 0
+            metrics['manufacturing_abiotic_resources'] = 0
             metrics['runTime'] = None
             metrics['power_needed'] = 0
             metrics['CE_CPU'] = 0
             metrics['CE_GPU'] = 0
             metrics['CE_core'] = 0
             metrics['CE_memory'] = 0
-            metrics['embodied_CE_CPU'] = 0
-            metrics['embodied_CE_GPU'] = 0
-            metrics['embodied_CE_memory'] = 0
-            metrics['embodied_CE_other'] = 0
-            metrics['embodied_ADP_CPU'] = 0
-            metrics['embodied_ADP_GPU'] = 0
-            metrics['embodied_ADP_memory'] = 0
-            metrics['embodied_ADP_other'] = 0
+            metrics['manufacturing_CE_CPU'] = 0
+            metrics['manufacturing_CE_GPU'] = 0
+            metrics['manufacturing_CE_memory'] = 0
+            metrics['manufacturing_CE_other'] = 0
+            metrics['manufacturing_ADP_CPU'] = 0
+            metrics['manufacturing_ADP_GPU'] = 0
+            metrics['manufacturing_ADP_memory'] = 0
+            metrics['manufacturing_ADP_other'] = 0
 
         #############################################
         ### PRE-COMPUTATIONS: update variables used in the calcul based on inputs
@@ -973,33 +973,36 @@ def get_form_blueprint(
         else:
             ### PUE
             defaultPUE = data_dict.pueDefault_dict['Unknown']
+
+            ### PUE and HARDWARE LIFESPAN
+            if selected_platform in ['personal_workstation', 'personalComputer']:
+                PUE_used = 1
+                hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_workstation']
+            elif selected_platform == 'localServer':
+                PUE_used = defaultPUE
+                hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_local_server']
+            else:
+                # Cloud
+                hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_cloud_server']
+                if selected_provider == 'other':
+                    PUE_used = defaultPUE
+                else:
+                    # if we don't know the PUE of this specific data centre, or if we 
+                    # don't know the data centre, we use the provider's default
+                    server_data = data_dict.datacenters_dict_byName.get(server)
+                    if server_data is not None:
+                        if pd.isnull(server_data['PUE']):
+                            PUE_used = data_dict.pueDefault_dict[selected_provider]
+                        else:
+                            PUE_used = server_data['PUE']
+                    else:
+                        PUE_used = data_dict.pueDefault_dict[selected_provider]
+                        
             # the input PUE is used only if the PUE box is shown AND the radio button is "Yes"
             if (is_shown(PUEdivStyle)) & (PUEradio == 'Yes'):
                 PUE_used = PUE
             
-            ### PLATFORM ALONG WITH PUE
-            else:
-                if selected_platform == 'personalComputer':
-                    PUE_used = 1
-                elif selected_platform == 'localServer':
-                    PUE_used = defaultPUE
-                else:
-                    # Cloud
-                    if selected_provider == 'other':
-                        PUE_used = defaultPUE
-                    else:
-                        # if we don't know the PUE of this specific data centre, or if we 
-                        # don't know the data centre, we use the provider's default
-                        server_data = data_dict.datacenters_dict_byName.get(server)
-                        if server_data is not None:
-                            if pd.isnull(server_data['PUE']):
-                                PUE_used = data_dict.pueDefault_dict[selected_provider]
-                            else:
-                                PUE_used = server_data['PUE']
-                        else:
-                            PUE_used = data_dict.pueDefault_dict[selected_provider]
-
-            ### CPUs: DYNAMIC AND EMBODIED IMPACTS
+            ### CPUs: DYNAMIC AND MANUFACTURING IMPACTS
             if coreType in ['CPU', 'Both']:
                 # Retrieving the CPU data
                 if is_shown(custom_CPu_inputs_style):
@@ -1012,15 +1015,11 @@ def get_form_blueprint(
                     CPU_model_n_cores = data_dict.cores_dict['CPU'][CPUmodel]['n_cores']
                     CPUpower = data_dict.cores_dict['CPU'][CPUmodel]['TDP']
                     CPU_die_area = data_dict.cores_dict['CPU'][CPUmodel]['die_area']
-                    # Checking if we actually have the die area for the selected CPU
-                    # TODO: remove it because we should not be using default, all available CPUs should have full values filled in
-                    if CPU_die_area is None or CPU_die_area==0:
-                        CPU_die_area = 12
-                    ##### TODO: TO REMOVE ABOVE
+                # Per core computations
                 CPUpower_per_core = CPUpower / CPU_model_n_cores
                 CPU_die_area_per_core = CPU_die_area / CPU_model_n_cores
-                fixed_CPU_embodied_GWP_per_core = data_dict.refValues_dict['cpu_base_impact_gwp'] / CPU_model_n_cores
-                fixed_CPU_embodied_ADP_per_core = data_dict.refValues_dict['cpu_base_impact_adp'] / CPU_model_n_cores
+                fixed_CPU_manufacturing_GWP_per_core = data_dict.hardware_impacts_dict['cpu_base_impact_gwp'] / CPU_model_n_cores
+                fixed_CPU_manufacturing_ADP_per_core = data_dict.hardware_impacts_dict['cpu_base_impact_adp'] / CPU_model_n_cores
                 # Usage ration data
                 if usageCPUradio == 'Yes':
                     usageCPU_used = usageCPU
@@ -1028,18 +1027,20 @@ def get_form_blueprint(
                     usageCPU_used = 1.
                 # CPU impact values
                 dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower_per_core * usageCPU_used
-                embodied_GWP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.refValues_dict['cpu_die_impact_gwp'] + fixed_CPU_embodied_GWP_per_core)
-                embodied_per_hour_GWP_CPU = embodied_GWP_CPU_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
-                embodied_ADP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.refValues_dict['cpu_die_impact_adp'] + fixed_CPU_embodied_ADP_per_core)
-                embodied_per_hour_ADP_CPU = embodied_ADP_CPU_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+                manufacturing_GWP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.hardware_impacts_dict['cpu_die_impact_gwp'] + fixed_CPU_manufacturing_GWP_per_core)
+                manufacturing_per_hour_GWP_CPU = manufacturing_GWP_CPU_raw / hardware_lifespan ## in gCO2e/hour
+                manufacturing_ADP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.hardware_impacts_dict['cpu_die_impact_adp'] + fixed_CPU_manufacturing_ADP_per_core)
+                manufacturing_per_hour_ADP_CPU = manufacturing_ADP_CPU_raw / hardware_lifespan ## in kgSbe/hour
             else:
                 dynamic_powerNeeded_CPU = 0
-                CPUpower_per_core = 0
                 usageCPU_used = 0
-                embodied_per_hour_GWP_CPU = 0
-                embodied_per_hour_ADP_CPU = 0
+                CPU_model_n_cores = 0
+                CPUpower = 0
+                CPU_die_area = 0
+                manufacturing_per_hour_GWP_CPU = 0
+                manufacturing_per_hour_ADP_CPU = 0
 
-            ### GPUs: DYNAMIC AND EMBODIED IMPACTS
+            ### GPUs: DYNAMIC AND MANUFACTURING IMPACTS
             if coreType in ['GPU', 'Both']:
                 # Dealing with TDP and die area
                 if is_shown(custom_GPu_inputs_style):
@@ -1049,17 +1050,10 @@ def get_form_blueprint(
                     GPU_memory = GPU_memory_input
                 else:
                     # GPUmodel cannot be "other"
-                    GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP_per_core']
+                    GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP']
                     GPU_die_area = data_dict.cores_dict['GPU'][GPUmodel]['die_area']
                     GPU_memory = data_dict.cores_dict['GPU'][GPUmodel]['memory']
                     ## TODO: Remove the following, we should never use default values except if they are the custom ones
-                    # Checking we actually have the target die area value
-                    if not isinstance(GPU_die_area, float) or not (GPU_die_area > 0):
-                        GPU_die_area = data_dict.cores_dict['GPU']['Any']['die_area']
-                    # Checking we actually have the target memory value
-                    if not isinstance(GPU_memory, int) or not (GPU_memory > 0):
-                        GPU_memory = data_dict.cores_dict['GPU']['Any']['memory']
-                    ## TODO: REMOVE ABOVE
                 # Dealing with usage ratio
                 if usageGPUradio == 'Yes':
                     usageGPU_used = usageGPU
@@ -1068,55 +1062,66 @@ def get_form_blueprint(
                 # Computation
                 dynamic_powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
                 # GWP
-                embodied_GWP_GPU_no_mem = GPU_die_area * data_dict.refValues_dict['gpu_die_impact_gwp'] + data_dict.refValues_dict['gpu_base_impact_gwp']
-                embodied_GWP_GPU_mem = data_dict.refValues_dict['ram_die_impact_gwp']* GPU_memory / data_dict.refValues_dict['ram_density']
-                embodied_per_hour_GWP_GPU = n_GPUs * (embodied_GWP_GPU_no_mem + embodied_GWP_GPU_mem) / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                manufacturing_GWP_GPU_no_mem = GPU_die_area * data_dict.hardware_impacts_dict['gpu_die_impact_gwp'] + data_dict.hardware_impacts_dict['gpu_base_impact_gwp']
+                manufacturing_GWP_GPU_mem = data_dict.hardware_impacts_dict['ram_die_impact_gwp']* GPU_memory / data_dict.hardware_impacts_dict['ram_density']
+                manufacturing_per_hour_GWP_GPU = n_GPUs * (manufacturing_GWP_GPU_no_mem + manufacturing_GWP_GPU_mem) / hardware_lifespan ## in gCO2e/hour
                 # ADP
-                embodied_ADP_GPU_no_mem = GPU_die_area * data_dict.refValues_dict['gpu_die_impact_adp'] + data_dict.refValues_dict['gpu_base_impact_adp']
-                embodied_ADP_GPU_mem = data_dict.refValues_dict['ram_die_impact_adp']* GPU_memory / data_dict.refValues_dict['ram_density']
-                embodied_per_hour_ADP_GPU = n_GPUs * (embodied_ADP_GPU_no_mem + embodied_ADP_GPU_mem) / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+                manufacturing_ADP_GPU_no_mem = GPU_die_area * data_dict.hardware_impacts_dict['gpu_die_impact_adp'] + data_dict.hardware_impacts_dict['gpu_base_impact_adp']
+                manufacturing_ADP_GPU_mem = data_dict.hardware_impacts_dict['ram_die_impact_adp']* GPU_memory / data_dict.hardware_impacts_dict['ram_density']
+                manufacturing_per_hour_ADP_GPU = n_GPUs * (manufacturing_ADP_GPU_no_mem + manufacturing_ADP_GPU_mem) / hardware_lifespan ## in kgSbe/hour
             else:
                 GPUpower = 0
                 GPU_die_area = 0
                 GPU_memory = 0
                 usageGPU_used = 0
                 dynamic_powerNeeded_GPU = 0
-                embodied_per_hour_GWP_GPU = 0
-                embodied_per_hour_ADP_GPU = 0
+                manufacturing_per_hour_GWP_GPU = 0
+                manufacturing_per_hour_ADP_GPU = 0
 
-            ### MEMORY: EMBODIED IMPACTS
-            memory_strip_area = data_dict.refValues_dict['ram_default_strip_size'] / data_dict.refValues_dict['ram_density']
+            ### MEMORY: MANUFACTURING IMPACTS
+            memory_strip_area = data_dict.hardware_impacts_dict['ram_default_strip_size'] / data_dict.hardware_impacts_dict['ram_density']
             # GWP
-            embodied_GWP_memory_per_strip = memory_strip_area * data_dict.refValues_dict['ram_die_impact_gwp'] + data_dict.refValues_dict['ram_base_impact_gwp']
-            embodied_GWP_memory_raw = embodied_GWP_memory_per_strip * memory / data_dict.refValues_dict['ram_default_strip_size']
-            embodied_per_hour_GWP_memory = embodied_GWP_memory_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+            manufacturing_GWP_memory_per_strip = memory_strip_area * data_dict.hardware_impacts_dict['ram_die_impact_gwp'] + data_dict.hardware_impacts_dict['ram_base_impact_gwp']
+            manufacturing_GWP_memory_raw = manufacturing_GWP_memory_per_strip * memory / data_dict.hardware_impacts_dict['ram_default_strip_size']
+            manufacturing_per_hour_GWP_memory = manufacturing_GWP_memory_raw / hardware_lifespan ## in gCO2e/hour
             # ADP
-            embodied_ADP_memory_per_strip = memory_strip_area * data_dict.refValues_dict['ram_die_impact_adp'] + data_dict.refValues_dict['ram_base_impact_adp']
-            embodied_ADP_memory_raw = embodied_ADP_memory_per_strip * memory / data_dict.refValues_dict['ram_default_strip_size']
-            embodied_per_hour_ADP_memory = embodied_ADP_memory_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+            manufacturing_ADP_memory_per_strip = memory_strip_area * data_dict.hardware_impacts_dict['ram_die_impact_adp'] + data_dict.hardware_impacts_dict['ram_base_impact_adp']
+            manufacturing_ADP_memory_raw = manufacturing_ADP_memory_per_strip * memory / data_dict.hardware_impacts_dict['ram_default_strip_size']
+            manufacturing_per_hour_ADP_memory = manufacturing_ADP_memory_raw / hardware_lifespan ## in kgSbe/hour
 
-            ### OTHER DEVICES EMBODIED IMPACTS
-            if selected_platform == 'personalComputer':
+            ### OTHER DEVICES (casing, motherboard...) MANUFACTURING IMPACTS
+            # If a personal computer is used, we consider that its other resources are fully dedicated to the 
+            # computation during it. Otherwise, we apply a multiplier based on the ratio of the number of cores
+            # used over the number of cores contained in a server.
+            # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation'
+            # which is quite unlikely.
+            if selected_platform == 'personal_workstation':
                 # GWP
-                embodied_GWP_other_raw = data_dict.refValues_dict['motherboard_impact_gwp']
-                embodied_per_hour_GWP_other = embodied_GWP_other_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_gwp']
+                manufacturing_per_hour_GWP_other = manufacturing_GWP_other_raw / hardware_lifespan ## in gCO2e/hour
                 # ADP
-                embodied_ADP_other_raw = data_dict.refValues_dict['motherboard_impact_adp']
-                embodied_per_hour_ADP_other = embodied_ADP_other_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+                manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_adp']
+                manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
             else:
                 # We need the number of cores used to deduce the number of servers used
+                # so we distinguish between cases where only GPUs are used and cases where both core types
+                # are used. We also adapt to the kind of servers used.
                 if coreType == 'GPU':
-                    n_servers = 1
+                    if selected_platform == 'cloudComputing':
+                        n_gpus_per_server = data_dict.hardware_impacts_dict['nb_GPU_cloud_per_server']
+                    else:
+                        n_gpus_per_server = data_dict.hardware_impacts_dict['nb_GPU_local_per_server']
+                    n_servers = n_GPUs / n_gpus_per_server
                 else:
-                    n_servers = 1 + (n_CPUcores-0.0001) // CPU_model_n_cores
+                    n_servers = n_CPUcores / (CPU_model_n_cores * data_dict.hardware_impacts_dict['nb_CPU_per_server'])
                 # GWP
-                embodied_GWP_other_raw = data_dict.refValues_dict['motherboard_impact_gwp'] + data_dict.refValues_dict['assembly_impact_gwp'] + data_dict.refValues_dict['rack_casing_impact_gwp']
-                embodied_GWP_other_raw = embodied_GWP_other_raw * (1 + (n_servers-0.0001) // data_dict.refValues_dict['nb_cpu_per_module'])
-                embodied_per_hour_GWP_other = embodied_GWP_other_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in gCO2e/hour
+                manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['motherboard_impact_gwp'] + data_dict.hardware_impacts_dict['assembly_impact_gwp'] + data_dict.hardware_impacts_dict['rack_casing_impact_gwp'] + data_dict.hardware_impacts_dict['PSU_impact_gwp']
+                manufacturing_GWP_other_raw = manufacturing_GWP_other_raw * n_servers
+                manufacturing_per_hour_GWP_other = manufacturing_GWP_other_raw / hardware_lifespan ## in gCO2e/hour
                 # ADP
-                embodied_ADP_other_raw = data_dict.refValues_dict['motherboard_impact_adp'] + data_dict.refValues_dict['assembly_impact_adp'] + data_dict.refValues_dict['rack_casing_impact_adp']
-                embodied_ADP_other_raw = embodied_ADP_other_raw * (1 + (n_servers-0.0001) // data_dict.refValues_dict['nb_cpu_per_module'])
-                embodied_per_hour_ADP_other = embodied_ADP_other_raw / data_dict.refValues_dict['default_lifespan_all_hardware'] ## in kgSbe/hour
+                manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['motherboard_impact_adp'] + data_dict.hardware_impacts_dict['assembly_impact_adp'] + data_dict.hardware_impacts_dict['rack_casing_impact_adp'] + data_dict.hardware_impacts_dict['PSU_impact_adp']
+                manufacturing_ADP_other_raw = manufacturing_ADP_other_raw * n_servers
+                manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
 
             ### SERVER/LOCATION
             carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
@@ -1130,23 +1135,23 @@ def get_form_blueprint(
             #############################################
             ### COMPUTATIONS: final outputs are computed
 
-            # Embodied carbon emissions, in gCO2e
-            embodied_GWP_CPU = runTime * embodied_per_hour_GWP_CPU * mult_factor_used
-            embodied_GWP_GPU = runTime * embodied_per_hour_GWP_GPU * mult_factor_used
-            embodied_GWP_memory = runTime * embodied_per_hour_GWP_memory * mult_factor_used
-            embodied_GWP_other = runTime * embodied_per_hour_GWP_other * mult_factor_used
-            embodied_GWP = embodied_GWP_CPU + embodied_GWP_GPU + embodied_GWP_memory + embodied_GWP_other
+            # Manufacturing carbon emissions, in gCO2e
+            manufacturing_GWP_CPU = runTime * manufacturing_per_hour_GWP_CPU * mult_factor_used
+            manufacturing_GWP_GPU = runTime * manufacturing_per_hour_GWP_GPU * mult_factor_used
+            manufacturing_GWP_memory = runTime * manufacturing_per_hour_GWP_memory * mult_factor_used
+            manufacturing_GWP_other = runTime * manufacturing_per_hour_GWP_other * mult_factor_used
+            manufacturing_GWP = manufacturing_GWP_CPU + manufacturing_GWP_GPU + manufacturing_GWP_memory + manufacturing_GWP_other
 
-            # Embodied abiotic resources depletion, in kgSb e
-            embodied_ADP_CPU = runTime * embodied_per_hour_ADP_CPU * mult_factor_used
-            embodied_ADP_GPU = runTime * embodied_per_hour_ADP_GPU * mult_factor_used
-            embodied_ADP_memory = runTime * embodied_per_hour_ADP_memory * mult_factor_used
-            embodied_ADP_other = runTime * embodied_per_hour_ADP_other * mult_factor_used
-            embodied_ADP = embodied_ADP_CPU + embodied_ADP_GPU + embodied_ADP_memory + embodied_ADP_other
+            # Manufacturing abiotic resources depletion, in kgSb e
+            manufacturing_ADP_CPU = runTime * manufacturing_per_hour_ADP_CPU * mult_factor_used
+            manufacturing_ADP_GPU = runTime * manufacturing_per_hour_ADP_GPU * mult_factor_used
+            manufacturing_ADP_memory = runTime * manufacturing_per_hour_ADP_memory * mult_factor_used
+            manufacturing_ADP_other = runTime * manufacturing_per_hour_ADP_other * mult_factor_used
+            manufacturing_ADP = manufacturing_ADP_CPU + manufacturing_ADP_GPU + manufacturing_ADP_memory + manufacturing_ADP_other
             
             # Power needed, in Watt
             powerNeeded_core = dynamic_powerNeeded_CPU + dynamic_powerNeeded_GPU
-            powerNeeded_memory = PUE_used * (memory * data_dict.refValues_dict['memoryPower'])
+            powerNeeded_memory = PUE_used * (memory * data_dict.hardware_impacts_dict['memoryPower'])
             powerNeeded = powerNeeded_core + powerNeeded_memory
 
             # Energy needed, in kWh (so dividing by 1000 to convert to kW)
@@ -1167,16 +1172,16 @@ def get_form_blueprint(
             output['coreType'] = coreType
             output['CPUmodel'] = CPUmodel
             output['numberCPUs'] = n_CPUcores
-            output['CPU_model_n_cores_input'] = CPU_model_n_cores_input
-            output['tdpCPU'] = CPUpower_per_core
-            output['CPU_die_area_input'] = CPU_die_area_input
+            output['CPU_model_n_cores'] = CPU_model_n_cores
+            output['tdpCPU'] = CPUpower
+            output['CPU_die_area'] = CPU_die_area
             output['usageCPUradio'] = usageCPUradio
             output['usageCPU'] = usageCPU_used
             output['GPUmodel'] = GPUmodel
             output['numberGPUs'] = n_GPUs
             output['tdpGPU'] = GPUpower
-            output['GPU_die_area_input'] = GPU_die_area
-            output['GPU_memory_input'] = GPU_memory
+            output['GPU_die_area'] = GPU_die_area
+            output['GPU_memory'] = GPU_memory
             output['usageGPUradio'] = usageGPUradio
             output['usageGPU'] = usageGPU_used
             output['memory'] = memory
@@ -1198,22 +1203,22 @@ def get_form_blueprint(
             output['appVersion'] = version
             metrics['energy_needed'] = energyNeeded
             metrics['carbonEmissions'] = carbonEmissions
-            metrics['embodied_carbonEmissions'] = embodied_GWP
-            metrics['embodied_abiotic_resources'] = embodied_ADP
+            metrics['manufacturing_carbonEmissions'] = manufacturing_GWP
+            metrics['manufacturing_abiotic_resources'] = manufacturing_ADP
             metrics['runTime'] = runTime
             metrics['power_needed'] = powerNeeded
             metrics['CE_CPU'] = CE_CPU
             metrics['CE_GPU'] = CE_GPU
             metrics['CE_core'] = CE_core
             metrics['CE_memory'] = CE_memory
-            metrics['embodied_CE_CPU'] = embodied_GWP_CPU
-            metrics['embodied_CE_GPU'] = embodied_GWP_GPU
-            metrics['embodied_CE_memory'] = embodied_GWP_memory
-            metrics['embodied_CE_other'] = embodied_GWP_other
-            metrics['embodied_ADP_CPU'] = embodied_ADP_CPU
-            metrics['embodied_ADP_GPU'] = embodied_ADP_GPU
-            metrics['embodied_ADP_memory'] = embodied_ADP_memory
-            metrics['embodied_ADP_other'] = embodied_ADP_other
+            metrics['manufacturing_CE_CPU'] = manufacturing_GWP_CPU
+            metrics['manufacturing_CE_GPU'] = manufacturing_GWP_GPU
+            metrics['manufacturing_CE_memory'] = manufacturing_GWP_memory
+            metrics['manufacturing_CE_other'] = manufacturing_GWP_other
+            metrics['manufacturing_ADP_CPU'] = manufacturing_ADP_CPU
+            metrics['manufacturing_ADP_GPU'] = manufacturing_ADP_GPU
+            metrics['manufacturing_ADP_memory'] = manufacturing_ADP_memory
+            metrics['manufacturing_ADP_other'] = manufacturing_ADP_other
 
         return output, metrics
 
