@@ -761,9 +761,14 @@ def add_retrainings_and_RandD_to_training_outputs(
     detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
     detailed_training_metrics['manufacturing_carbonEmissions'] = training_form_metrics['manufacturing_carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
     detailed_training_metrics['manufacturing_abiotic_resources'] = training_form_metrics['manufacturing_abiotic_resources'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
-    detailed_training_metrics['main_training_share'] = training_form_metrics['energy_needed'] / detailed_training_metrics['energy_needed'] 
-    detailed_training_metrics['R&D_share'] = (training_form_metrics['energy_needed'] * RandD_MF_val ) / detailed_training_metrics['energy_needed']
-    detailed_training_metrics['retrainings_share'] = (training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val) / detailed_training_metrics['energy_needed']
+    if detailed_training_metrics['energy_needed'] > 0:
+        detailed_training_metrics['main_training_share'] = training_form_metrics['energy_needed'] / detailed_training_metrics['energy_needed'] 
+        detailed_training_metrics['R&D_share'] = (training_form_metrics['energy_needed'] * RandD_MF_val ) / detailed_training_metrics['energy_needed']
+        detailed_training_metrics['retrainings_share'] = (training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val) / detailed_training_metrics['energy_needed']
+    else: 
+        detailed_training_metrics['main_training_share'] = 0
+        detailed_training_metrics['R&D_share'] = 0
+        detailed_training_metrics['retrainings_share'] = 0
     return detailed_training_metrics
 
 
