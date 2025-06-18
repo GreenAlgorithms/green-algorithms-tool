@@ -260,7 +260,8 @@ def load_data(data_dir: str, **kwargs):
     # When implementing the manufacturing impacts backend, we added dozens of 
     # 'reference values' that are stored in a new csv: 'hardware_impacts'. When data from a previous
     # version is used, we artificially create this data so we do not have to adapt
-    # the form calculator itself based on the data version. 
+    # the form calculator itself based on the data version. We do the same for some reference values
+    # added to the new file 'context.csv'
     if 'context.csv' not in os.listdir(data_dir):
         refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
         refValues_df.drop(['source'], axis=1, inplace=True)
@@ -268,6 +269,11 @@ def load_data(data_dir: str, **kwargs):
     else: 
         refValues_df = pd.read_csv(os.path.join(data_dir, "context.csv"), sep=',')
     data_dict.refValues_dict = pd.Series(refValues_df.value.values, index=refValues_df.variable).to_dict()
+
+    if 'PB_GWP_per_capita' not in data_dict.refValues_dict.keys():
+        data_dict.refValues_dict['PB_GWP_per_capita'] = 1
+    if 'PB_ADP_per_capita' not in data_dict.refValues_dict.keys():
+        data_dict.refValues_dict['PB_ADP_per_capita'] = 1
 
     ### HARDWARE IMPACTS
     # WARNING: when changing indexes og this CSV, one also has to change the keys below

@@ -11,5 +11,5 @@ flight_NYC-MEL,2310000,gCO2e from https://calculator.carbonfootprint.com/calcula
 streaming_netflix_perhour,55,gCO2 from https://www.carbontrust.com/resources/carbon-impact-of-video-streaming (update)
 google_search,10,gCO2 from http://www.janavirgin.com/CO2/CO2GLE_about.html
 tree_month,917,gCO2 same source as treeYear
-PB_GWP_per_capita,985000,"gCO2 e from Sala et al. (2020) ""Environmental sustanability of European production and consumption assessed against panetary boundaries"" https://doi.org/10.1016/j.jenvman.2020.110686"
-PB_ADP_per_capita,2.63E+04,kgSbe same source as PB_GWP_per_capita
+PB_GWP_per_capita,985000,"gCO2e/year/person from Sala et al. (2020) ""Environmental sustanability of European production and consumption assessed against panetary boundaries"" https://doi.org/10.1016/j.jenvman.2020.110686"
+PB_ADP_per_capita,2.63E+04,kgSbe/year/person same source as PB_GWP_per_capita
