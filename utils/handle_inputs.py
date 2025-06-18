@@ -155,9 +155,8 @@ def load_data(data_dir: str, **kwargs):
     # In previous versions, there was no column for the die area of the cpus
     # so we artificially add it with null values. This tweak avoids modifying the
     # form calculator itself. Otherwise we would have to implement different
-    # form behavious for the different versions depending on the data content
-    ## TODO: change 'v2.2' into 'v.3'
-    if data_dict0['version'] <= 'v2.2':
+    # form behaviours for the different versions depending on the data content
+    if 'die_area' not in cpu_df.columns:
         cpu_df['die_area'] = 0
 
     ### GPU ###
@@ -167,10 +166,10 @@ def load_data(data_dir: str, **kwargs):
     # In previous versions, there was no column for the die area and memory of the gpus
     # so we artificially add it with null values. This tweak avoids modifying the
     # form calculator itself. Otherwise we would have to implement different
-    # form behavious for the different versions depending on the data content
-    ## TODO: change 'v2.2' into 'v.3'
-    if data_dict0['version'] <= 'v2.2':
+    # form behaviours for the different versions depending on the data content
+    if 'die_area' not in gpu_df.columns:
         gpu_df['die_area'] = 0
+    if 'memory' not in gpu_df.columns:
         gpu_df['memory'] = 0
     
 
@@ -262,8 +261,7 @@ def load_data(data_dir: str, **kwargs):
     # 'reference values' that are stored in a new csv: 'hardware_impacts'. When data from a previous
     # version is used, we artificially create this data so we do not have to adapt
     # the form calculator itself based on the data version. 
-    ## TODO: change 'v2.2' into 'v.3'
-    if data_dict0['version'] <= 'v2.2':
+    if 'context.csv' not in os.listdir(data_dir):
         refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
         refValues_df.drop(['source'], axis=1, inplace=True)
         memory_power = refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
@@ -273,8 +271,7 @@ def load_data(data_dir: str, **kwargs):
 
     ### HARDWARE IMPACTS
     # WARNING: when changing indexes og this CSV, one also has to change the keys below
-    ## TODO: change 'v2.2' into 'v.3'
-    if data_dict0['version'] <= 'v2.2':
+    if 'hardware_impacts.csv' not in os.listdir(data_dir):
         data_dict.hardware_impacts_dict = {
             'cpu_die_impact_gwp': 0,
             'cpu_base_impact_gwp': 0,
@@ -498,7 +495,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         elif key == 'platformType':
             # The following line is intended to correct the 'personalComputer' platform that was used in previous version
             # TODO: maybe delete it because serves only very few use cases
-            if new_val == 'personalComputer' and unlist(input_dict['appVersion']) <= 'v2.2':
+            if new_val == 'personalComputer' and  'personalComputer' not in platformType_options:
                 new_val = 'personal_workstation'
             assert new_val in [x['value'] for x in platformType_options]
         elif key == 'provider':
