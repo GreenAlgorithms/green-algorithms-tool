@@ -187,18 +187,6 @@ def get_ai_page_layout():
                                         ],
                                         className='box-fields'
                                     ),
-
-                                    # I don't think a tooltip is needed there
-                                    # html.Div(
-                                    #     [
-                                    #         html.Div('i', className='tooltip-icon'),
-                                    #         html.P(
-                                    #             "Fill in your reporting period.",
-                                    #             className='tooltip-text'
-                                    #         ),
-                                    #     ],
-                                    #     className='tooltip',
-                                    # ),
                                 ],
                                 className="reporting-row short-input"
                             ),
