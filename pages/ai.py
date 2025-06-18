@@ -646,6 +646,8 @@ def forward_form_input_to_export_module(
     forms_aggregate_data.update(inference_outputs)
     forms_aggregate_data['tot_energy_needed'] = ai_aggregated_results['energy_needed']
     forms_aggregate_data['tot_carbonEmissions'] = ai_aggregated_results['carbonEmissions']
+    forms_aggregate_data['tot_manufacturing_carbonEmissions'] = ai_aggregated_results['manufacturing_carbonEmissions']
+    forms_aggregate_data['tot_manufacturing_abiotic_resources'] = ai_aggregated_results['manufacturing_abiotic_resources']
     return forms_aggregate_data
 
 
@@ -711,7 +713,7 @@ def process_inference_form_outputs_based_on_reporting_scope(
     processed_inference_metrics['energy_needed_before_scaling'] =  inference_form_metrics['energy_needed']
     processed_inference_metrics['carbonEmissions_before_scaling'] =  inference_form_metrics['carbonEmissions']
     processed_inference_metrics['manufacturing_carbonEmissions_before_scaling'] = inference_form_metrics['manufacturing_carbonEmissions']
-    processed_inference_metrics['manufacturing_abiotic_resources'] = inference_form_metrics['manufacturing_abiotic_resources']
+    processed_inference_metrics['manufacturing_abiotic_resources_before_scaling'] = inference_form_metrics['manufacturing_abiotic_resources']
     return processed_inference_metrics
     
 
@@ -775,9 +777,13 @@ def add_retrainings_and_RandD_to_training_outputs(
 def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, inference_form_metrics,):
     tot_energy_needed = training_form_metrics['energy_needed'] + inference_form_metrics['energy_needed']
     tot_carbon_emissions = training_form_metrics['carbonEmissions'] + inference_form_metrics['carbonEmissions']
+    tot_manufacturing_carbonEmissions = training_form_metrics['manufacturing_carbonEmissions'] + inference_form_metrics['manufacturing_carbonEmissions']
+    tot_manufacturing_abiotic_resources = training_form_metrics['manufacturing_abiotic_resources'] + inference_form_metrics['manufacturing_abiotic_resources']
     return {
         'energy_needed': tot_energy_needed,
         'carbonEmissions': tot_carbon_emissions,
+        'manufacturing_carbonEmissions': tot_manufacturing_carbonEmissions,
+        'manufacturing_abiotic_resources': tot_manufacturing_abiotic_resources,
     }
 
 ### DETAILED METRICS PER FORM
