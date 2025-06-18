@@ -133,18 +133,28 @@ INPUT_KEYS_TO_IGNORE = [
 ###################################################
 ## DATA LOADING 
 
-def load_data(data_dir: str, **kwargs):
+def load_data(data_dir: str, version: str):
     """
-    Download each CSV and store it in a pd.DataFrame.
-    We ignore the first row, as it contains metadata.
+    Download each CSV and store it in a SimpleNamespace.
+    We often ignore the first row, as it contains metadata.
     All these CSV correspond to tabs of the spreadsheet on the Google Drive.
+
+    Args:
+        data_dir (str): the local directory containing the versioned data to load
+        version (str): the version value, for later usage
+
+    Returns:
+        data_dict (SimpleNamespace): works as a NameSpace (dot commands work) but is structured
+        as a dictionnary. Its different 'attributes' are `cores_dict` (CPUs and GPUs data), 
+        `pueDefault_dict` (PUE per provider), `CI_dict_byLoc` (carbon intensities per location, where location
+        is a shortname like CA-ON for "Canada - Ontario"), `CI_dict_byName` (a nested dictionnary for carbon intensities per
+        continent / country / region), `datacenters_dict_byProvider`, `datacenters_dict_byName`, `refValues_dict` (miscellaneous 
+        reference values, most of them for metrics computation) and `hardware_impacts_dict` (all required values for manufacturing
+        impacts computation).
     """
-    data_dict0 = {}
-
-    for k, v in kwargs.items():
-        data_dict0[k] = v
-
-    data_dict = SimpleNamespace(**data_dict0)
+    
+    # We want to include the version itself in the versioned_data
+    data_dict = SimpleNamespace(**{'version': version})
 
     ### CPU ###
     cpu_df = pd.read_csv(os.path.join(data_dir, "CPUs.csv"), sep=',', skiprows=1)
@@ -423,11 +433,11 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
     """
     Validates the inputs: ensures the consistency between the keys and corresponding 
     value but also between some values.
-    args:
+    Args:
         - input_dict: inputs to process
         - data_dict: backend data used to check consistency between provided values.
         - keyOfInterest [list]: a list of keys to process.
-    returns: 
+    Returns: 
         - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
         - wrong_imputs [dict]: a subset of the input_dict containing inputs
