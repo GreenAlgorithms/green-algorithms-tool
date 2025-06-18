@@ -77,12 +77,10 @@ def get_form_blueprint(
             Output('runTime_min_input', 'value'),
             Output('coreType_dropdown', 'value'),
             Output('numberCPUs_input', 'value'),
-            Output('CPUmodel_dropdown', 'value'),
             Output('CPU_model_n_cores_input', 'value'),
             Output('tdpCPU_input', 'value'),
             Output('CPU_die_area_input', 'value'),
             Output('numberGPUs_input', 'value'),
-            Output('GPUmodel_dropdown', 'value'),
             Output('tdpGPU_input', 'value'),
             Output('GPU_die_area_input', "value"),
             Output('GPU_memory_input', "value"),
@@ -102,7 +100,7 @@ def get_form_blueprint(
             Input('form_data_imported_from_csv', 'data'),
         ],
     )
-    def filling_form(_, upload_content): 
+    def filling_form(_, upload_content: dict): 
         if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             to_return = {k: upload_content[k] for k in DEFAULT_VALUES_FOR_PAGE_LOAD.keys()}
             return tuple(to_return.values())
@@ -138,6 +136,7 @@ def get_form_blueprint(
     #       ~ if the server div is not rendered, never apply callback related to server
     #       (could be done by passing 'form_data_imported_from_csv' as a State, not as an Input)  
     ###########################################
+        
 
     @form_blueprint.callback(
         Output('platformType_dropdown', 'options'),
@@ -602,6 +601,49 @@ def get_form_blueprint(
 
         else:
             return [],[]
+        
+    @form_blueprint.callback(
+        [
+            Output('CPUmodel_dropdown', 'value'),
+        ],
+        [
+            Input('form_data_imported_from_csv', 'data'),
+            Input('CPUmodel_dropdown', 'options'),
+        ],
+    )
+    def set_CPU_model_value(upload_content: dict, cpu_options: list[dict]):
+        """
+        When a csv is loaded with a proper cpu model, it is filled in the form.
+        Otherwise we select the first available model in the current data version.
+        """
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
+            if 'CPUmodel' in upload_content.keys():
+                return upload_content['CPUmodel']
+        # The fist two items of the cpu options are the Average and Custom (I can't find my cpu)
+        # so we select the next one
+        return cpu_options[2]['label']
+    
+    @form_blueprint.callback(
+        [
+            Output('GPUmodel_dropdown', 'value'),
+        ],
+        [
+            Input('form_data_imported_from_csv', 'data'),
+            Input('GPUmodel_dropdown', 'options'),
+        ],
+    )
+    def set_GPU_model_value(upload_content: dict, gpu_options: list[dict]):
+        """
+        When a csv is loaded with a proper gpu model, it is filled in the form.
+        Otherwise we select the first available model in the current data version.
+        """
+        if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
+            if 'GPUmodel' in upload_content.keys():
+                return upload_content['GPUmodel']
+        # The fist two items of the gpu options are the Average and Custom (I can't find my cpu)
+        # so we select the next one
+        return gpu_options[2]['label']
+        
         
     @form_blueprint.callback(
         [

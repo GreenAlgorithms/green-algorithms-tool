@@ -40,12 +40,10 @@ DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_min=0,
     coreType='CPU',
     numberCPUs=12,
-    CPUmodel='Core i7-4790',
     CPU_model_n_cores=26, #average value from the CPU csv
     tdpCPU=200, #average value from the CPU csv
     CPU_die_area=12, #average value from the CPU csv
     numberGPUs=1,
-    GPUmodel='NVIDIA A100 PCIe 40 GB',
     tdpGPU=223,
     GPU_die_area = 6, #average value from the GPU csv
     GPU_memory = 25,  #average value from the GPU csv
@@ -68,7 +66,7 @@ DEFAULT_VALUES.update(
     {
         'locationContinent': 'North America',
         'locationCountry': 'Canada', 
-        'locationRegion': 'Ontario', 
+        'locationRegion': 'CA-ON', 
         'provider': 'gcp', 
         'serverContinent': 'Europe',
         'server': 'gcp--europe-west1',
