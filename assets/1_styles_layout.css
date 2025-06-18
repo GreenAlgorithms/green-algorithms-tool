@@ -464,6 +464,24 @@ hr {
     margin-bottom: 12px;
 }
 
+.error-message-title {
+    margin-bottom: 14px;
+}
+
+.log-error-subtitle {
+    margin-bottom: 8px;
+}
+
+.log-error-content {
+    width:100%;
+    text-align: center;
+    padding: 5px;
+    border: rgb(220, 220, 220);
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 2px;
+}
+
 .import-result{
     margin-bottom: 6px;
     border-width: 2px;

@@ -17,6 +17,7 @@ from types import SimpleNamespace
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, open_input_csv_and_comment, read_base_form_inputs_from_csv
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
+from utils.utils import write_error_message
 
 from dash_extensions.enrich import DashBlueprint, html
 from blueprints.form.form_blueprint import get_form_blueprint
@@ -230,8 +231,15 @@ HOME_PAGE.layout = get_home_page_layout()
 def forward_imported_content_to_form(import_data, filename, current_form_data, current_app_version):
     """
     Processes the raw input dictionnary and checks content before
-    forwarding it to the main page form.
-    Produces error messages depending on the csv content.
+    forwarding it to fill the main page form in.
+    Produces error messages depending on the csv content. 
+
+    The error message is designed so the user better knows what to do
+    in order to fix its csv. Details are given regarding the nature of the error
+    and the fields of the csv containing the error. However, there is a very
+    wide range of error kinds and we do not pretend to cover all of them.
+    We focus on the use cases that are more likely.
+    TODO: create an 'unknow_inputs' category.
     """
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
@@ -245,15 +253,28 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
     
     # If input data could be read, we check its validity and consistency
     else:
-        clean_inputs, invalid_inputs, app_version = read_base_form_inputs_from_csv(input_data)
+        clean_inputs, invalid_inputs, missing_inputs, app_version = read_base_form_inputs_from_csv(input_data)
+        # We want to detect whether an imported csv has been produced before we implemented the manufacturing impacts
+        # because at that time the fields 'TDPcpu' and 'TDPgpu' were actually per core values, which is not anymore
+        # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
+        if ('CPU_model_n_cores' in missing_inputs) and ('CPU_die_area' in missing_inputs):
+            mess_subtitle = '''
+                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
+                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
+                            in the calculator and reexport a fresh csv.** 
+                        '''
+        else:
+            mess_subtitle = '''
+                            **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
+                            See below for more details** 
+
+                            If you are trying to import a csv file from previous versions of the calculator, the easiest way to fix this is to manually
+                            input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
+                            csv file from the AI page into the home page, which does not work.
+                        '''
         invalid_inputs = filter_wrong_inputs(clean_inputs, invalid_inputs)
-        mess_subtitle = 'Filling in values from the input csv file.'
-        mess_content = ''
-        if len(invalid_inputs) > 0:
-            show_err_mess = True
-            mess_content += f'\n\nThere seems to be some typos in the csv columns name or inconsistencies in its values, ' \
-                            f'so we use default values for the following fields: \n'
-            mess_content += f"{', '.join(list(invalid_inputs.keys()))}." 
+        show_err_mess, mess_content = write_error_message(missing_inputs, list(invalid_inputs.keys()), show_err_mess)
         return clean_inputs, show_err_mess, mess_subtitle, mess_content, app_version
     
 

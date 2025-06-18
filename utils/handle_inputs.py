@@ -527,8 +527,11 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         elif key == 'locationCountry':
             assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), versioned_data=vars(data_dict))
         elif key == 'locationRegion':
-            list_loc = availableOptions_region(unlist(input_dict['locationContinent']),
-                                               unlist(input_dict['locationCountry']), data=vars(data_dict))
+            list_loc = availableOptions_region(
+                unlist(input_dict['locationContinent']),
+                unlist(input_dict['locationCountry']), 
+                data=vars(data_dict)
+            )
             assert new_val in list_loc
         elif key == 'PUE':
             new_val = float(new_val)
@@ -562,15 +565,15 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
     the keys and correspondind values. 
 
     Args:
-        - input_dict: inputs to process
-        - keyOfInterest [list]: a list of keys to process.
+        input_dict[dict]: inputs to process
+        keyOfInterest [list]: a list of keys to process.
 
     Returns: 
-        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
+        clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
-        - wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
+        wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
         (TO IMPLEMENT : with an expected key and a value raising an error).
-        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
+        TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
         an unknown key.
     """
 
@@ -638,9 +641,9 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
         if '.csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
-            return {}, 'CSV file can’t be read, doing nothing…', 'The file extension is not "csv".'
+            return {}, 'The CSV file can’t be read, so doing nothing…', 'The file extension is not "csv".'
     except Exception as e:
-        subtitle = 'CSV file can’t be read, doing nothing…'
+        subtitle = 'The CSV file can’t be read, so doing nothing…'
         message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
         return {}, subtitle, message
     # TODO : raise a warning if there are several rows in the input csv
@@ -652,11 +655,14 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     Reads the input dataframe to extract all the keys supposed to be verified.
     When an input raises an error, it is replaced by its corresponding default value.
 
+    Args:
+        upload_csv (dict): the input csv content
+
     Returns:
-    - clean_values [dict]: curated inputs
-    - invalid_inputs [dict]: inputs that could not be read properly
-    - not_provided_inputs [list]: expected inputs that were not provided
-    - new_version [str]: app version to use, maybe coming from input data
+        clean_values (dict): curated inputs.
+        invalid_inputs (dict): inputs that could not be read properly.
+        missing_inputs (list): expected inputs that were not provided.
+        new_version (str): app version to use, maybe coming from input data.
     """
     appVersions_options_list = get_available_versions()
     # Retrieve the target data version if correctly provided
@@ -670,6 +676,10 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
         newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
     else:
         newData = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+
+    # Missing inputs: we need to manually add CPUmodel and GPUmodel because they do not have static default value
+    expected_inputs = list(DEFAULT_VALUES.keys()) + ['CPUmodel', 'GPUmodel']
+    missing_inputs = list(set(expected_inputs).difference(set((upload_csv.keys()))))
 
     # Validates the inputs against the data
     processed_inputs, invalid_inputs = validate_main_form_inputs(
@@ -690,7 +700,7 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     if clean_values['provider'] != 'gcp':
         clean_values['serverContinent'] = None
         clean_values['server'] = None
-    return clean_values, invalid_inputs, new_version
+    return clean_values, invalid_inputs, missing_inputs, new_version
 
 
 def clean_non_used_inputs_for_export(form_aggregate_data: dict):
@@ -742,7 +752,7 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         wrong_inputs_from_csv (dict): the raw wrong inputs as returned by the checking function.
 
     Returns:
-        dict: filtered wrong inputs.
+        wrong_inputs_from_csv (dict): filtered wrong inputs.
     """
     ### Cores processing
     if clean_inputs_from_csv['coreType'] == 'CPU':

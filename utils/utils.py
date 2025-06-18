@@ -62,3 +62,31 @@ def custom_prefix_escape(component_id: str):
         if component_id in ['versioned_data', 'url_content']:
             return True
     return False
+
+
+def write_error_message(missing_inputs: list, invalid_inputs: list, show_err_mess: bool=False):
+    '''
+    Format the error message to display when csv containing errors are loaded.
+    Currently distinguishes between:
+    
+    Args
+        missing_inputs (list): inputs expected in the csv but not found
+        invalid_inputs (list): unkown inputs and expected inputs with wrong value
+        show_err_mess (bool): whether an error previously existed or not
+
+    Returns
+        show_err_mess (bool): whether an error exists or not
+        mess_content (str): the error message itself
+    '''
+    mess_content = ''
+    # The first part of the error message contains missing inputs, ie expected inputs that were not found in the csv
+    if len(missing_inputs) > 0:
+        show_err_mess = True
+        mess_content += 'The following fields should be in the csv: '
+        mess_content += f"*{', '.join(missing_inputs)}.*"
+    # The second part of the error message gathers all other inputs from the csv raising an error
+    if len(invalid_inputs) > 0:
+        show_err_mess = True
+        mess_content += ' There seems to be typos in the csv columns name or inconsistencies in the values of the following fields: '
+        mess_content += f"*{', '.join(invalid_inputs)}.*"
+    return show_err_mess, mess_content

@@ -30,6 +30,7 @@ import blueprints.form.form_layout as form_layout
 
 from utils.graphics import MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
+from utils.utils import write_error_message
 
 
 ###################################################
@@ -198,7 +199,7 @@ def get_ai_page_layout():
 
                     # Variable containing the "final" training related results.
                     # It is computed from the training form's 'form_output_metrics'
-                    #  and the retrainings/R&D training fields
+                    # and the retrainings/R&D training fields
                     dcc.Store(id='training_processed_output_metrics'),
 
                     dmc.Tabs(
@@ -321,7 +322,15 @@ def forward_imported_content_to_form(
     """
     Read input from uploaded CSV, split data between training and inference forms.
     Process specific inputs such as retraining, R&D training and continuous inference related fields.
-    Then process and check content, filtering wrong inputs and displaying error message if required.
+    Then process and check content, filtering wrong inputs and displaying error message if required
+    for both the training and inference data.
+
+    The error message is designed so the user better knows what to do
+    in order to fix its csv. Details are given regarding the nature of the error
+    and the fields of the csv containing the error. However, there is a very
+    wide range of error kinds and we do not pretend to cover all of them.
+    We focus on the use cases that are more likely.
+    TODO: create an 'unknow_inputs' category.
     """
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
@@ -341,44 +350,65 @@ def forward_imported_content_to_form(
     
     # If input data could be read, we check its validity and consistency
     else:
-        mess_subtitle = ''
+        # Default error subtitle information
+        mess_subtitle = '''
+                            **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
+                            See below for more details** 
+
+                            If you are trying to import a csv file from previous versions, the easiest way to fix this is to manually
+                            input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
+                            csv file from the home page into the AI page, which does not work.
+                        '''
         # Processing inputs specific to the AI page
-        # TODO: improve the error message based on the different error categories
         ai_page_specific_inputs_keys = [
             'reporting_time_scope_unit', 'reporting_time_scope_value', 'R&D_radio', 'R&D_MF_value',
             'retrainings_radio', 'retrainings_number_input', 'retrainings_MF_value', 'continuous_inference_switcher',
             'input_data_time_scope_unit', 'input_data_time_scope_val'
         ]
-        clean_AI_inputs, invalid_AI_inputs = validate_ai_page_specific_inputs(input_dict=input_data, keys_of_interest=ai_page_specific_inputs_keys)
+        missing_ai_inputs = list(set(ai_page_specific_inputs_keys).difference(set(input_data.keys())))
+        keys_of_interest = list(set(ai_page_specific_inputs_keys).difference(set(missing_ai_inputs)))
+        clean_AI_inputs, invalid_AI_inputs = validate_ai_page_specific_inputs(input_data, keys_of_interest)
         for key in ai_page_specific_inputs_keys:
             if key not in clean_AI_inputs:
                 clean_AI_inputs[key] = AI_PAGE_DEFAULT_VALUES[key]
+        # Building the corresponding error message
+        show_err_mess, mess_content = write_error_message(missing_ai_inputs, list(invalid_AI_inputs.keys()))
+        if show_err_mess:
+            mess_content = '**Overall: **' + mess_content
         # Processing training data
         training_input_data = {key.replace(f'{TRAINING_ID_PREFIX}-', ''): value for key, value in input_data.items() if TRAINING_ID_PREFIX in key}
         if 'appVersion' in input_data:
             training_input_data['appVersion'] = input_data['appVersion']
-        clean_training_input_data, invalid_training_inputs, app_version = read_base_form_inputs_from_csv(training_input_data)
+        clean_training_input_data, invalid_training_inputs, missing_training_inputs, app_version = read_base_form_inputs_from_csv(training_input_data)
+        # We want to detect whether an imported csv has been produced before we implemented the manufacturing impacts
+        # because at that time the fields 'TDPcpu' and 'TDPgpu' were actually per core values, which is not anymore
+        # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
+        if ('CPU_model_n_cores' in missing_training_inputs) and ('CPU_die_area' in missing_training_inputs):
+            mess_subtitle = '''
+                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
+                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
+                            in the calculator and reexport a fresh csv.** 
+                        '''
         invalid_training_inputs = filter_wrong_inputs(clean_training_input_data, invalid_training_inputs)
+        # Building the corresponding error message
+        training_show_err_mess, training_mess_content = write_error_message(missing_training_inputs, invalid_training_inputs)
+        if training_show_err_mess:
+            show_err_mess = True
+            mess_content = mess_content +  ' **Training: **' + training_mess_content
         # Processing inference data
         inference_input_data = {key.replace(f'{INFERENCE_ID_PREFIX}-', ''): value for key, value in input_data.items() if INFERENCE_ID_PREFIX in key}
         if 'appVersion' in input_data:
             inference_input_data['appVersion'] = input_data['appVersion']
-        clean_inference_input_data, invalid_inference_inputs, _ = read_base_form_inputs_from_csv(inference_input_data)
+        clean_inference_input_data, invalid_inference_inputs, missing_inference_inputs, _ = read_base_form_inputs_from_csv(inference_input_data)
         invalid_inference_inputs = filter_wrong_inputs(clean_inference_input_data, invalid_inference_inputs)
-        # Building error message
-        if len(invalid_training_inputs) or len(invalid_inference_inputs) or len(invalid_AI_inputs):
+        # Building the corresponding error message
+        # We could do the same test as above to check fi the
+        #  imported csv comes from a previous version
+        inference_show_err_mess, inference_mess_content = write_error_message(missing_inference_inputs, invalid_inference_inputs)
+        if inference_show_err_mess:
             show_err_mess = True
-            mess_subtitle += f'\n\nThere seems to be some typos in the csv columns name or ' \
-                             f'inconsistencies in its values. We use default values for the following fields. \n'
-            if len(invalid_AI_inputs):
-                mess_content += 'Regarding the AI page specific inputs: '
-                mess_content += f"{', '.join(list(invalid_AI_inputs.keys()))}. \n"
-            if len(invalid_training_inputs):
-                mess_content += 'For the training form: '
-                mess_content += f"{', '.join(list(invalid_training_inputs.keys()))}. \n"
-            if len(invalid_inference_inputs):
-                mess_content += 'For the inference form: '
-                mess_content += f"{', '.join(list(invalid_inference_inputs.keys()))}."
+            mess_content = mess_content +  ' **Inference:** ' + inference_mess_content
         return (
             clean_training_input_data, 
             clean_inference_input_data, 

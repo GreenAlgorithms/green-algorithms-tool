@@ -67,9 +67,9 @@ def get_green_algo_import_export_layout(
 
             dbc.Alert(
                 [
-                    html.B('Filling values from csv: error'),
-                    html.Div(id='log-error-subtitle'),
-                    html.Div(id='log-error-content'),
+                    html.H3('⚠️ Error when filling values from csv ⚠️', id='error-message-title', className='error-message-title'),
+                    dcc.Markdown(id='log-error-subtitle', className='log-error-subtitle'),
+                    dcc.Markdown(id='log-error-content', className='log-error-content'),
                 ],
                 className='container footer import-error-message',
                 id='import-error-message',

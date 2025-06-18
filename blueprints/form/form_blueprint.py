@@ -640,7 +640,7 @@ def get_form_blueprint(
         if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
             if 'GPUmodel' in upload_content.keys():
                 return upload_content['GPUmodel']
-        # The fist two items of the gpu options are the Average and Custom (I can't find my cpu)
+        # The fist two items of the gpu options are the Average and Custom (I can't find my gpu)
         # so we select the next one
         return gpu_options[2]['label']
         
