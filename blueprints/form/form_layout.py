@@ -643,32 +643,80 @@ def get_green_algo_form_layout(
             #### LOCATION ####
 
             # TODO add a display of the carbon intensity value used
-            # TODO Give the option to input a custom carbon intensity value
 
             html.Div(
                 [
-                    html.Label("Select location"),
-
                     html.Div(
                         [
-                            dcc.Dropdown(
-                                id='location_continent_dropdown',
-                                clearable=False,
+                            html.Div(
+                                [
+                                    html.Label("Select location"),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id='location_continent_dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className="box-fields",
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "The location section is used to retrieve the electricity mix and the associated carbon intensity." \
+                                                "If you want to enter a custom value, please enter 'Use a custom carbon intensity'",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className='location-head-row'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.P(
+                                        'Enter your custom carbon intensity below in gCO2e/kWh. ' \
+                                        ' The pre-filled value corresponds to the world average electricity mix.',
+                                        style={'font-size': '0.9em', 'margin-top': '20px'}
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Carbon intensity'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='custom_carbon_intensity_input',
+                                                min=0
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "Must be in gCO2e/kWh.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input'
+                                    )
+                                ],
+                                style=dict(display='none'),
+                                id='custom_carbon_intensity_div',
+                                className="subform-div",
                             ),
                         ],
-                        className="box-fields",
+                        id='location-and-custom-carbon-intensity',
+                        className='location-and-custom-carbon-intensity'
                     ),
-
-                    html.Div(
-                        [
-                            html.Div('i', className='tooltip-icon'),
-                            html.P(
-                                "This is used to retrieve the energy mix in a location.",
-                                className='tooltip-text'
-                            ),
-                        ],
-                        className='tooltip',
-                    ),   
 
                     html.Div(
                         [

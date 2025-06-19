@@ -86,6 +86,7 @@ def get_form_blueprint(
             Output('GPU_memory_input', "value"),
             Output('memory_input', 'value'),
             Output('platformType_dropdown', 'value'),
+            Output('custom_carbon_intensity_input', 'value'),
             Output('usageCPU_radio', 'value'),
             Output('usageCPU_input', 'value'),
             Output('usageGPU_radio', 'value'),
@@ -151,8 +152,8 @@ def get_form_blueprint(
             platformType_options = [
                 {'label': k,
                  'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                         [('personal_workstation', 'Personal workstation')] +
-                                         [('localServer', 'Local server')]
+                                        [('personal_workstation', 'Personal workstation')] +
+                                        [('localServer', 'Local server')]
             ]
             return platformType_options
         else:
@@ -217,6 +218,7 @@ def get_form_blueprint(
         else:
             return show, hide
         
+
     ### Server (only for Cloud computing for now)
     
     @form_blueprint.callback(
@@ -333,23 +335,6 @@ def get_form_blueprint(
         listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
         return listOptions  
     
-    ## Location (only for local server, personal device or "other" cloud server)
-
-    @form_blueprint.callback(
-        Output('location_continent_dropdown', 'options'),
-        [Input('versioned_data','data')]
-    )
-    def set_continentOptions(data):
-        if data is not None:
-            data_dict = SimpleNamespace(**data)
-
-            continentsList = list(data_dict.CI_dict_byName.keys())
-            continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
-
-            return continentsDict
-        else:
-            return []
-    
     @form_blueprint.callback(
         Output('server_continent_dropdown','value'),
         [
@@ -420,6 +405,22 @@ def get_form_blueprint(
             defaultValue = None
         return defaultValue
 
+
+    ## Location (only for local server, personal device or "other" cloud server)
+
+    @form_blueprint.callback(
+        Output('location_continent_dropdown', 'options'),
+        Input('versioned_data','data')
+    )
+    def set_continentOptions(versioned_data):
+        if versioned_data is not None:
+            data_dict = SimpleNamespace(**versioned_data)
+            continentsList = list(data_dict.CI_dict_byName.keys())
+            continentsDict = [{'label': 'Use a custom carbon intensity', 'value': 'custom'}] + [{'label': k, 'value': k} for k in sorted(continentsList)]
+            return continentsDict
+        else:
+            return []
+        
     @form_blueprint.callback(
         Output('location_continent_dropdown', 'value'),
         [
@@ -449,6 +450,22 @@ def get_form_blueprint(
             return selected_serverContinent
         
         return 'Europe'
+
+    @form_blueprint.callback(
+        [
+            Output('custom_carbon_intensity_div', 'style'),
+            Output('location-and-custom-carbon-intensity', 'style'),
+        ],
+        Input(f'location_continent_dropdown', 'value'),
+    )
+    def display_custom_carbon_intensity(selected_continent):
+        '''
+        Shows the custom carbon intensity box and adapts border attributes.
+        '''
+        if selected_continent == 'custom':
+            return {'display': 'flex'}, custom_core_box_style
+        else:
+            return {'display': 'none'}, {'border': 'none'}
     
     @form_blueprint.callback(
         [
@@ -468,7 +485,7 @@ def get_form_blueprint(
     def set_countries_options(selected_continent, versioned_data, upload_content, prev_selectedCountry):
         """
         List of options and value for countries.
-        Hides country dropdown if continent=World is selected.
+        Hides country dropdown if continent=World or if a custom carbon intensity is selected.
         Must fetch the value from a csv as well.
         """
         availableOptions = availableOptions_country(selected_continent, versioned_data=versioned_data)
@@ -490,7 +507,7 @@ def get_form_blueprint(
                 except:
                     defaultValue = None
 
-        if selected_continent == 'World':
+        if (selected_continent == 'World') or (selected_continent == 'custom'):
             country_style = {'display': 'none'}
         else:
             country_style = {'display': 'block'}
@@ -517,7 +534,8 @@ def get_form_blueprint(
     def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, prev_selectedRegion):
         """
         List of options and value for regions.
-        Hides region dropdown if only one possible region (or continent=World)
+        Hides region dropdown if only one possible region or
+        if continent=World or custom carbon intensity are selected
         """
         locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
         if versioned_data is not None:
@@ -541,7 +559,7 @@ def get_form_blueprint(
                 except:
                     defaultValue = None
 
-        if (selected_continent == 'World')|(len(listOptions) == 1):
+        if (selected_continent == 'World') or (len(listOptions) == 1) or (selected_continent == 'custom'):
             region_style = {'display': 'none'}
         else:
             region_style = {'display': 'block'}
@@ -683,7 +701,7 @@ def get_form_blueprint(
     )
     def display_custom_cpu_inputs(selected_coreModel):
         '''
-        Shows or hides the boxes for custom CPU specs.
+        Shows or hides the boxes for custom CPU specs and adapts border attributes.
         '''
         if selected_coreModel == "other":
             return {'display': 'flex'}, custom_core_box_style
@@ -701,7 +719,7 @@ def get_form_blueprint(
     )
     def display_custom_GPU_inputs(selected_coreModel):
         """
-        Shows or hides the boxes for custom GPU specs.
+        Shows or hides the boxes for custom GPU specs and adapts the border attributes.
         """
         if selected_coreModel == "other":
             return {'display': 'flex'}, custom_core_box_style
@@ -876,6 +894,8 @@ def get_form_blueprint(
             Input('location_continent_dropdown', "value"),
             Input('location_country_dropdown', "value"),
             Input('location_region_dropdown', "value"),
+            Input('custom_carbon_intensity_div', 'style'),
+            Input('custom_carbon_intensity_input', 'value'),
             Input('server_continent_dropdown', "value"),
             Input('server_dropdown', "value"),
             Input('location_div', 'style'),
@@ -896,7 +916,7 @@ def get_form_blueprint(
     )
     def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, custom_CPu_inputs_style, CPU_model_n_cores_input, tdpCPU,
                             CPU_die_area_input, n_GPUs, GPUmodel, custom_GPu_inputs_style, tdpGPU, GPU_die_area_input, GPU_memory_input,
-                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
+                            memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion, custom_carbon_intensity_style, custom_carbon_intensity_input,
                             serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                             PUEdivStyle, PUEradio, PUE, mult_factor_radio, mult_factor, selected_platform, selected_provider, providerStyle):
         """
@@ -942,9 +962,12 @@ def get_form_blueprint(
             notReady = True
 
         ### Location
+        # The locationVar is the most fine-grained data on location available through the form.
         if is_shown(locationStyle):
             # this means the "location" input is shown, so we use location instead of server
             locationVar = locationRegion
+            if is_shown(custom_carbon_intensity_style):
+                locationVar ='custom'
         elif (server is None) | (server == 'other') | (data is None):
             locationVar = None
         else:
@@ -1166,7 +1189,10 @@ def get_form_blueprint(
                 manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
 
             ### SERVER/LOCATION
-            carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
+            if is_shown(custom_carbon_intensity_style):
+                carbonIntensity = custom_carbon_intensity_input
+            else:
+                carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
             ### MULTIPLICATIVE FACTOR
             if mult_factor_radio == 'Yes':

@@ -30,9 +30,9 @@ def get_available_versions():
     return appVersions_options
 
 # The default values used to fill in the form when no other input is provided
-# WARNING: do not modify the order unless modifying the order of the outputs of 
-# the filling_from_inputs callback accordingly
 #-----------------------------------------------------------------------------
+# WARNING n°1: do not modify the order unless modifying the order of the outputs of 
+# the filling_from_inputs callback accordingly
 # TODO: make it more robust by using a dictionary or dataclass for storing ids
 #-----------------------------------------------------------------------------
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
@@ -49,6 +49,7 @@ DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     GPU_memory = 25,  #average value from the GPU csv
     memory=64,
     platformType= 'localServer',
+    carbonIntensity= 475, # in gCO2e/kWh, the world average value
     usageCPUradio='No',
     usageCPU=1.0,
     usageGPUradio='No',
@@ -94,7 +95,6 @@ AI_PAGE_DEFAULT_VALUES = {
 INPUT_KEYS_TO_IGNORE = [
     'runTime',
     'location',
-    'carbonIntensity',
     'carbonEmissions',
     'CE_CPU',
     'CE_GPU',
@@ -494,7 +494,12 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         elif key in ['mult_factor']:
             new_val = int(new_val)
             assert new_val >= 1
-        elif key in ['tdpCPU', 'CPU_die_area', 'tdpGPU', 'GPU_memory', 'GPU_die_area', 'memory']:
+        elif key in ['tdpCPU', 'CPU_die_area', 'tdpGPU', 'GPU_memory', 'GPU_die_area', 'memory', 'carbonIntensity']:
+            if key == 'carbonIntensity':
+                # The custom carbon intensity field should not be pre-filled with the regular
+                # carbonIntensity column of the exported csv, except if the field is being used (i.e if locationContinent='custom')
+                if unlist(input_dict['locationContinent']) != 'custom':
+                    new_val = DEFAULT_VALUES['carbonIntensity']
             new_val = float(new_val)
             assert new_val >= 0
         elif key in ['usageCPU', 'usageGPU']:
@@ -523,7 +528,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
                                                     versioned_data=vars(data_dict))
             assert new_val in [x['name_unique'] for x in list_servers] + ["other"]
         elif key == 'locationContinent':
-            assert new_val in list(data_dict.CI_dict_byName.keys())
+            assert new_val in list(data_dict.CI_dict_byName.keys()) + ['custom']
         elif key == 'locationCountry':
             assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), versioned_data=vars(data_dict))
         elif key == 'locationRegion':
@@ -780,6 +785,10 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         else:
             wrong_inputs_from_csv.pop('serverContinent', None)
             wrong_inputs_from_csv.pop('server', None)
+    ### Location related
+    if clean_inputs_from_csv['locationContinent'] == 'custom':
+        wrong_inputs_from_csv.pop('locationCountry', None)
+        wrong_inputs_from_csv.pop('locationRegion', None)
     ### For consistency with AI page utilities
     wrong_inputs_from_csv.pop('R&D_radio', None)
     wrong_inputs_from_csv.pop('R&D_MF_value', None)

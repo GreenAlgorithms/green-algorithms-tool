@@ -282,6 +282,30 @@ hr {
     margin-top: 5px;
 }
 
+.location-and-custom-carbon-intensity {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-head-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.location-head-row .box-fields {
+    width: 92%;
+}
+
+.location-head-row > label {
+    margin-bottom: 7px;
+    width: 100%;
+}
+
 
 /* REPORTING SCOPE */
 

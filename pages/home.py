@@ -407,18 +407,22 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
                 suffixProcessor = ''
             textCores += f"{form_agg_data['numberCPUs']} CPU{suffixProcessor} {form_agg_data['CPUmodel']}"
 
-        country = versioned_data.CI_dict_byLoc[form_agg_data['location']]['countryName']
-        region = versioned_data.CI_dict_byLoc[form_agg_data['location']]['regionName']
+        if form_agg_data['location'] == 'custom':
+            location_text = f'Based on a custom carbon intensity of {form_agg_data["carbonIntensity"]} gCO2e/kWh,'
 
-        if region == 'Any':
-            textRegion = ''
         else:
-            textRegion = ' ({})'.format(region)
-
-        if country in ['United States of America', 'United Kingdom']:
-            prefixCountry = 'the '
-        else:
-            prefixCountry = ''
+            location_text = 'Based in '
+            country = versioned_data.CI_dict_byLoc[form_agg_data['location']]['countryName']
+            region = versioned_data.CI_dict_byLoc[form_agg_data['location']]['regionName']
+            if region == 'Any':
+                textRegion = ''
+            else:
+                textRegion = ' ({})'.format(region)
+            if country in ['United States of America', 'United Kingdom']:
+                prefixCountry = 'the '
+            else:
+                prefixCountry = ''
+            location_text = location_text + prefixCountry + country + textRegion
 
         if form_agg_data['mult_factor'] > 1:
             text_mult_factor = ' and ran {} times in total,'.format(form_agg_data['mult_factor'])
@@ -428,7 +432,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         myText = f'''
         > This algorithm runs in {textRuntime} on {textCores},
         > and draws {text_energy}. 
-        > Based in {prefixCountry}{country}{textRegion},{text_mult_factor} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
+        > {location_text},{text_mult_factor} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
         (calculated using green-algorithms.org {form_agg_data['appVersion']} \[1\]).
         '''
 
