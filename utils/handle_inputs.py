@@ -40,7 +40,7 @@ def get_available_versions():
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,
     runTime_min=0,
-    coreType='CPU',
+    coreType='Both',
     numberCPUs=12,
     CPU_model_n_cores=26, #average value from the CPU csv
     tdpCPU=200, #average value from the CPU csv
