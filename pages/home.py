@@ -363,8 +363,8 @@ def create_bar_chart_cores(form_agg_data, versioned_data):
     [
         Input(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', "data"),
         Input('versioned_data', 'data'),
-        Input(f'{HOME_PAGE_ID_PREFIX}-energy_text', 'children'),
         Input(f'{HOME_PAGE_ID_PREFIX}-carbonEmissions_text', 'children'),
+        Input(f'{HOME_PAGE_ID_PREFIX}-energy_text', 'children'),
         Input(f'{HOME_PAGE_ID_PREFIX}-treeMonths_text', 'children'),
     ],
 )
@@ -408,7 +408,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
             textCores += f"{form_agg_data['numberCPUs']} CPU{suffixProcessor} {form_agg_data['CPUmodel']}"
 
         if form_agg_data['location'] == 'custom':
-            location_text = f'Based on a custom carbon intensity of {form_agg_data["carbonIntensity"]} gCO2e/kWh,'
+            location_text = f'Based on a custom carbon intensity of {form_agg_data["carbonIntensity"]} gCO2e/kWh'
 
         else:
             location_text = 'Based in '

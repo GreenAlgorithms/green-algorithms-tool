@@ -33,6 +33,8 @@ def get_available_versions():
 #-----------------------------------------------------------------------------
 # WARNING n°1: do not modify the order unless modifying the order of the outputs of 
 # the filling_from_inputs callback accordingly
+# WARNING n°2: the keys must absolutely match the columns name of the exported csv, 
+# otherwise the value attribution after csv import fails
 # TODO: make it more robust by using a dictionary or dataclass for storing ids
 #-----------------------------------------------------------------------------
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
