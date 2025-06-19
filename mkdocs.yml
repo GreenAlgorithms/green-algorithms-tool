@@ -1,0 +1,11 @@
+site_name: Green Algorithms calculator
+site_url: https://sitename.example
+
+plugins:
+  - mkdocstrings
+
+nav:
+- Home: index.md
+
+theme:
+  name: material
