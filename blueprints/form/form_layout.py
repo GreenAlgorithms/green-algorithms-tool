@@ -667,7 +667,7 @@ def get_green_algo_form_layout(
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
                                                 "The location section is used to retrieve the electricity mix and the associated carbon intensity." \
-                                                "If you want to enter a custom value, please enter 'Use a custom carbon intensity'",
+                                                "If you want to enter a custom value, please enter 'Use a custom carbon intensity' in the continent dropdown.",
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -687,7 +687,7 @@ def get_green_algo_form_layout(
 
                                     html.Div(
                                         [
-                                            html.Label('Carbon intensity'),
+                                            html.Label('Carbon intensity (in gCO2e/kWh)'),
 
                                             dcc.Input(
                                                 type='number',

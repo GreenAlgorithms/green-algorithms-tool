@@ -586,7 +586,7 @@ def get_form_blueprint(
             data_dict = SimpleNamespace(**data)
 
             availableOptions = data_dict.cores_dict.keys()
-            listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
+            listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions)) + ['CPU + GPU']]
 
             return listOptions
         else:
@@ -948,9 +948,9 @@ def get_form_blueprint(
         ### Core type
         if coreType is None:
             notReady = True
-        elif (coreType in ['CPU','Both'])&((n_CPUcores is None)|(CPUmodel is None)):
+        elif (coreType in ['CPU','CPU + GPU'])&((n_CPUcores is None)|(CPUmodel is None)):
             notReady = True
-        elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
+        elif (coreType in ['GPU','CPU + GPU'])&((n_GPUs is None)|(GPUmodel is None)):
             notReady = True
 
         ### Versioned data
@@ -1068,7 +1068,7 @@ def get_form_blueprint(
                 PUE_used = PUE
             
             ### CPUs: DYNAMIC AND MANUFACTURING IMPACTS
-            if coreType in ['CPU', 'Both']:
+            if coreType in ['CPU', 'CPU + GPU']:
                 # Retrieving the CPU data
                 if is_shown(custom_CPu_inputs_style):
                     # We asked the question about TDP, so the dafault CPU is selected
@@ -1106,7 +1106,7 @@ def get_form_blueprint(
                 manufacturing_per_hour_ADP_CPU = 0
 
             ### GPUs: DYNAMIC AND MANUFACTURING IMPACTS
-            if coreType in ['GPU', 'Both']:
+            if coreType in ['GPU', 'CPU + GPU']:
                 # Dealing with TDP and die area
                 if is_shown(custom_GPu_inputs_style):
                     # We asked the question about TDP, so the dafault GPU is selected

@@ -100,7 +100,7 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     
     layout_bar = get_cores_bar_layout()
 
-    if aggregated_data['coreType'] in ['GPU','Both']:
+    if aggregated_data['coreType'] in ['GPU','CPU + GPU']:
         layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
 
         list_cores0 = [
@@ -143,7 +143,7 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     power_list = []
 
     # calculate carbon emissions for each core
-    if aggregated_data['coreType'] in ['GPU','Both']:
+    if aggregated_data['coreType'] in ['GPU','CPU + GPU']:
         for gpu in list_cores:
             if gpu == 'other':
                 power_list.append(aggregated_data['tdpGPU'])
@@ -276,7 +276,7 @@ def create_ci_bar_chart_graphic(form_metrics, versioned_data):
 def get_cores_memory_pie_chart_layout(aggregated_data):
     layout_pie = copy.deepcopy(PLOTS_LAYOUT)
     layout_pie['margin'] = dict(l=0, r=0, b=0, t=60)
-    if aggregated_data['coreType'] == 'Both':
+    if aggregated_data['coreType'] == 'CPU + GPU':
         layout_pie['height'] = 400
     else:
         layout_pie['height'] = 350
@@ -288,11 +288,11 @@ def create_cores_memory_pie_graphic(form_agg_data, form_metrics):
     labels = ['Memory']
     values = [form_metrics['CE_memory']]
 
-    if form_agg_data['coreType'] in ['CPU', 'Both']:
+    if form_agg_data['coreType'] in ['CPU', 'CPU + GPU']:
         labels.append('CPU')
         values.append(form_metrics['CE_CPU'])
 
-    if form_agg_data['coreType'] in ['GPU', 'Both']:
+    if form_agg_data['coreType'] in ['GPU', 'CPU + GPU']:
         labels.append('GPU')
         values.append(form_metrics['CE_GPU'])
     annotations = []

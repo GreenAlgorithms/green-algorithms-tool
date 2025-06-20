@@ -40,7 +40,7 @@ def get_available_versions():
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,
     runTime_min=0,
-    coreType='Both',
+    coreType='CPU + GPU',
     numberCPUs=12,
     CPU_model_n_cores=26, #average value from the CPU csv
     tdpCPU=200, #average value from the CPU csv
@@ -510,7 +510,11 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'mult_factor_radio']:
             assert new_val in ['Yes', 'No']
         elif key == 'coreType':
-            assert new_val in ['CPU', 'GPU', 'Both']
+            if new_val == 'Both':
+                # Retro-compatibility with previous terminology!
+                # TODO: has no possible negative impacts but delete it when we are sure no more csv are concerned
+                new_val = 'CPU + GPU'
+            assert new_val in ['CPU', 'GPU', 'CPU + GPU']
         elif key in ['CPUmodel', 'GPUmodel']:
             assert new_val in [x['value'] for x in coreModels_options[key[:3]]]
         elif key == 'platformType':

@@ -392,15 +392,15 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
 
         # text cores
         textCores = ""
-        if form_agg_data['coreType'] in ['GPU','Both']:
+        if form_agg_data['coreType'] in ['GPU','CPU + GPU']:
             if form_agg_data['numberGPUs'] > 1:
                 suffixProcessor = 's'
             else:
                 suffixProcessor = ''
             textCores += f"{form_agg_data['numberGPUs']} GPU{suffixProcessor} {form_agg_data['GPUmodel']}"
-        if form_agg_data['coreType'] == 'Both':
+        if form_agg_data['coreType'] == 'CPU + GPU':
             textCores += " and "
-        if form_agg_data['coreType'] in ['CPU','Both']:
+        if form_agg_data['coreType'] in ['CPU','CPU + GPU']:
             if form_agg_data['numberCPUs'] > 1:
                 suffixProcessor = 's'
             else:
