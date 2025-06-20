@@ -1,9 +1,9 @@
 '''
--*- coding: utf-8 -*-
+The Green Algorithms calculator is a modularized two-pages application
+fully implemented in [Dash](https://dash.plotly.com/). The modularization relies 
+on the [DashBlueprint](https://www.dash-extensions.com/sections/enrich#a-dashblueprint)
+class from the `dash_extensions.enrich module`.
 
-The current Green Algorithms is a modularized two-pages application fully implemented in Dash. 
-The modularization relies on the DashBlueprint class from the dash_extensions.enrich module. 
-(https://www.dash-extensions.com/sections/enrich)
 Each module <module> is implemented in a function defined in blueprints/<module>/<module>_blueprint.py.
 These modules are inserted in the app at the page level (see pages/home.py and pages/ai.py).
 They communicate with each other through intermediate variables stored in dcc.Store instances.

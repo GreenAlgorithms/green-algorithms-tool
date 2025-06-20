@@ -32,8 +32,7 @@ def get_form_blueprint(
         id_prefix (str): id prefix automatically applied to all components and callbacks.
         title (str): form title (at the top of the layout)
         subtitle (html.P): form subtitle (below the title)
-        continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main
-        form and the training form. Defaults to {'display': 'none'}.
+        continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main form and the training form. Defaults to {'display': 'none'}.
         mult_factor_properties (dict, optional): used to hide the MF fields. Defaults to {}.
         additional_bottom_fields (html.Div, optional): used to add retraining and R&D training fields for instance.
         Defaults to html.Div().

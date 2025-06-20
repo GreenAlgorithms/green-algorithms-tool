@@ -1,8 +1,5 @@
 # Welcome to the calculator documentation
 
-This documentation is **developer-oriented**. It is intended to ease contributions to the calculator.
+The world wide known [Green Algorithms](https://calculator.green-algorithms.org/) calculator.
 
 ## Overall description
-
-::: app
-    handler: python
