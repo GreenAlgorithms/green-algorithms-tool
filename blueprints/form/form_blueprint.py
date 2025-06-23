@@ -150,8 +150,8 @@ def get_form_blueprint(
         if data is not None:
             data_dict = SimpleNamespace(**data)
             platformType_options = [
-                {'label': k,
-                 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                        [('personal_laptop', 'Personal laptop')] +
                                         [('personal_workstation', 'Personal workstation')] +
                                         [('localServer', 'Local server')]
             ]
@@ -1040,9 +1040,12 @@ def get_form_blueprint(
             defaultPUE = data_dict.pueDefault_dict['Unknown']
 
             ### PUE and HARDWARE LIFESPAN
-            if selected_platform in ['personal_workstation', 'personalComputer']:
+            if selected_platform in ['personal_workstation', 'personal_laptop']:
                 PUE_used = 1
-                hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_workstation']
+                if selected_platform == 'personal_workstation':
+                    hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_workstation']
+                else:
+                    hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_laptop']
             elif selected_platform == 'localServer':
                 PUE_used = defaultPUE
                 hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_local_server']
@@ -1158,15 +1161,17 @@ def get_form_blueprint(
             # If a personal computer is used, we consider that its other resources are fully dedicated to the 
             # computation during it. Otherwise, we apply a multiplier based on the ratio of the number of cores
             # used over the number of cores contained in a server.
-            # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation'
-            # which is quite unlikely.
+            # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation' which is quite unlikely.
             if selected_platform == 'personal_workstation':
                 # GWP
                 manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_gwp']
-                manufacturing_per_hour_GWP_other = manufacturing_GWP_other_raw / hardware_lifespan ## in gCO2e/hour
                 # ADP
                 manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_adp']
-                manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
+            elif selected_platform == 'personal_laptop':
+                # GWP
+                manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['laptop_base_impact_gwp']
+                # ADP
+                manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['laptop_base_impact_adp']
             else:
                 # We need the number of cores used to deduce the number of servers used
                 # so we distinguish between cases where only GPUs are used and cases where both core types
@@ -1182,11 +1187,12 @@ def get_form_blueprint(
                 # GWP
                 manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['motherboard_impact_gwp'] + data_dict.hardware_impacts_dict['assembly_impact_gwp'] + data_dict.hardware_impacts_dict['rack_casing_impact_gwp'] + data_dict.hardware_impacts_dict['PSU_impact_gwp']
                 manufacturing_GWP_other_raw = manufacturing_GWP_other_raw * n_servers
-                manufacturing_per_hour_GWP_other = manufacturing_GWP_other_raw / hardware_lifespan ## in gCO2e/hour
                 # ADP
                 manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['motherboard_impact_adp'] + data_dict.hardware_impacts_dict['assembly_impact_adp'] + data_dict.hardware_impacts_dict['rack_casing_impact_adp'] + data_dict.hardware_impacts_dict['PSU_impact_adp']
                 manufacturing_ADP_other_raw = manufacturing_ADP_other_raw * n_servers
-                manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
+            # Compute per-hour values
+            manufacturing_per_hour_GWP_other = manufacturing_GWP_other_raw / hardware_lifespan ## in gCO2e/hour
+            manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
 
             ### SERVER/LOCATION
             if is_shown(custom_carbon_intensity_style):

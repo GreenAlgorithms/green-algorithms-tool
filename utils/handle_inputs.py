@@ -470,8 +470,8 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
     ### PLATFORM TYPE options
     if 'platformType' in input_dict:
         platformType_options = [
-            {'label': k,
-            'value': v} for v, k in list(data_dict.providersTypes.items()) +
+            {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                    [('personal_laptop', 'Personal laptop')] +
                                     [('personal_workstation', 'Personal workstation')] +
                                     [('localServer', 'Local server')]
         ]
@@ -519,9 +519,9 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
             assert new_val in [x['value'] for x in coreModels_options[key[:3]]]
         elif key == 'platformType':
             # The following line is intended to correct the 'personalComputer' platform that was used in previous version
-            # TODO: maybe delete it because serves only very few use cases
+            # TODO: maybe delete it because only motivated by csv potentially exported before
             if new_val == 'personalComputer' and  'personalComputer' not in platformType_options:
-                new_val = 'personal_workstation'
+                new_val = 'personal_laptop'
             assert new_val in [x['value'] for x in platformType_options]
         elif key == 'provider':
             if unlist(input_dict['platformType']) == 'cloudComputing':  # TODO: I don't think this if is necessary?
