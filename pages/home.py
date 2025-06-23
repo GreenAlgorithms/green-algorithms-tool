@@ -20,10 +20,11 @@ from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_g
 from utils.utils import write_error_message
 
 from dash_extensions.enrich import DashBlueprint, html
-from blueprints.form.form_blueprint import get_form_blueprint
-from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
-from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
-from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
+
+from blueprints.form.form_blueprint import FormBlueprint
+from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
+from blueprints.metrics.metrics_blueprint import MetricsBlueprint
+from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
 
 
 ###################################################
@@ -38,11 +39,10 @@ HOME_PAGE_ID_PREFIX = 'main'
 # MODULES CREATION
 
 # TODO add a "help" tab on the home form as well (similar to the AI one)
-
-form = get_form_blueprint(
+form = FormBlueprint(
     id_prefix=HOME_PAGE_ID_PREFIX,
     title="Details about your algorithm",
-    subtitle=html.P(
+    subtitle= html.P(
         [
             "To understand how each parameter impacts your environmental footprint, "
             "check out the formula below and the ",
@@ -55,11 +55,11 @@ form = get_form_blueprint(
     )
 )
 
-methodology_content = get_methodology_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
+methodology_content = MethodologyBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
-metrics = get_metrics_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
+metrics = MetricsBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
-import_export = get_import_expot_blueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
+import_export = ImportExportBlueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
 
 
 ###################################################
@@ -392,15 +392,15 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
 
         # text cores
         textCores = ""
-        if form_agg_data['coreType'] in ['GPU','Both']:
+        if form_agg_data['coreType'] in ['GPU','CPU + GPU']:
             if form_agg_data['numberGPUs'] > 1:
                 suffixProcessor = 's'
             else:
                 suffixProcessor = ''
             textCores += f"{form_agg_data['numberGPUs']} GPU{suffixProcessor} {form_agg_data['GPUmodel']}"
-        if form_agg_data['coreType'] == 'Both':
+        if form_agg_data['coreType'] == 'CPU + GPU':
             textCores += " and "
-        if form_agg_data['coreType'] in ['CPU','Both']:
+        if form_agg_data['coreType'] in ['CPU','CPU + GPU']:
             if form_agg_data['numberCPUs'] > 1:
                 suffixProcessor = 's'
             else:

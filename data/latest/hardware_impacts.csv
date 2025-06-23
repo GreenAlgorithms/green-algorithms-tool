@@ -41,7 +41,7 @@ RAM ordinateur professionnel par défaut,8,"GB, hypothesis for 'other devices' i
 ordinateur fixe professionnel + écran,267177.6901,"gCO2 eq ADEME's database for digital footprint (v 2.0) https://base-empreinte.ademe.fr/documentation/base-impact (last access on 19th may 2025) after creating an account on the ADEME website, going to section ""4 - AI - Base Impacts®- Documentation"" and by clicking on the file ""Numérique"".",
 ordinateur fixe professionnel + écran,0.0313986,"kgSb eq ADEME's database for digital footprint (v 2.0) https://base-empreinte.ademe.fr/documentation/base-impact (last access on 19th may 2025) after creating an account on the ADEME website, going to section ""4 - AI - Base Impacts®- Documentation"" and by clicking on the file ""Numérique"".",
 laptop_base_impact_gwp,1.25E+05,gCO2 eq,
-laptop_base_impact_adp,-1.19E-02,"kgSb eq (la valeur de base de l'ADEME semble pas très grande. À priori une fois qu'on rajoute les informations sur CPU + RAM, on aura forcément une valeur positive, donc pas de soucis)",
+laptop_base_impact_adp,0,"kgSb eq (la valeur de base de l'ADEME semble pas très grande. À priori une fois qu'on rajoute les informations sur CPU + RAM, on aura forcément une valeur positive, donc pas de soucis)",
 workstation_base_impact_gwp,225682.0271,gC02 eq,
 workstation_base_impact_adp,1.03E-02,kgSb eq,
 lifespan_local-server,5,"years,",
