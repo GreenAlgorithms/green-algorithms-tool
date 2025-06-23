@@ -18,7 +18,7 @@ from dash_iconify import DashIconify
 
 from dash_extensions.enrich import DashBlueprint, html
 
-from blueprints.form.form_blueprint import get_form_blueprint
+from blueprints.form.form_blueprint import FormBlueprint
 from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
@@ -26,7 +26,6 @@ from blueprints.methodology.methodology_blueprint import get_methodology_bluepri
 import blueprints.metrics.metrics_layout as metrics_layout
 import blueprints.metrics.utils as metrics_utils
 import blueprints.methodology.methodology_layout as methodo_layout
-import blueprints.form.form_layout as form_layout
 
 from utils.graphics import MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
@@ -45,22 +44,22 @@ AI_PAGE_ID_PREFIX = 'ai'
 # MODULES CREATION
 
 TRAINING_ID_PREFIX = 'training'
-training_form = get_form_blueprint(
+training_form = FormBlueprint(
     id_prefix=TRAINING_ID_PREFIX,
     title='',
     subtitle=html.P('Report your training-related computations. For more information about R&D experiments, '
                     'retraining or overall tips regarding your reporting, please refer to the Help tab.'),
     mult_factor_properties={'display': 'none'},
-    additional_bottom_fields=form_layout.get_additional_training_fields_layout()
+    to_add_bottom_training_fields=True
 )
 
 INFERENCE_ID_PREFIX = 'inference'
-inference_form = get_form_blueprint(
+inference_form = FormBlueprint(
     id_prefix=INFERENCE_ID_PREFIX,
     title='',
     subtitle=html.P('Report your inference-related computations. For more information about continuous inference'
                     ' or overall tips regarding your reporting, please refer to the Help tab.'),
-    continuous_inf_scheme_properties={'display': 'block'}
+    continuous_inf_scheme_properties={'display': 'block'},
 )
 
 ### WARNING: the csv_flushing_delay below should not be lower than 
