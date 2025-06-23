@@ -22,7 +22,7 @@ from utils.utils import write_error_message
 from dash_extensions.enrich import DashBlueprint, html
 
 from blueprints.form.form_blueprint import FormBlueprint
-from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
+from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
 
@@ -55,7 +55,7 @@ form = FormBlueprint(
     )
 )
 
-methodology_content = get_methodology_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
+methodology_content = MethodologyBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
 metrics = get_metrics_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
