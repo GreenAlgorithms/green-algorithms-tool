@@ -20,11 +20,11 @@ from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_g
 from utils.utils import write_error_message
 
 from dash_extensions.enrich import DashBlueprint, html
-# from blueprints.form.form_blueprint import get_form_blueprint
+
 from blueprints.form.form_blueprint import FormBlueprint
 from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
-from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
+from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
 
 
 ###################################################
@@ -59,7 +59,7 @@ methodology_content = get_methodology_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
 metrics = get_metrics_blueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
-import_export = get_import_expot_blueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
+import_export = ImportExportBlueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
 
 
 ###################################################

@@ -19,7 +19,7 @@ from dash_iconify import DashIconify
 from dash_extensions.enrich import DashBlueprint, html
 
 from blueprints.form.form_blueprint import FormBlueprint
-from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
+from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
 from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
 from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
 
@@ -64,7 +64,7 @@ inference_form = FormBlueprint(
 
 ### WARNING: the csv_flushing_delay below should not be lower than 
 # 2000 milliseconds to avoid rendering bugs of the server fields
-import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
+import_export = ImportExportBlueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
 
 methodo_content = get_methodology_blueprint(
     id_prefix=AI_PAGE_ID_PREFIX,

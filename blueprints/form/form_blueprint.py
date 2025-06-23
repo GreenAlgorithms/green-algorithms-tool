@@ -52,7 +52,7 @@ class FormBlueprint(DashBlueprint):
         self.additional_bottom_fields: html.Div = html.Div()
         if to_add_bottom_training_fields:
             self.additional_bottom_fields = self._get_additional_training_fields_layout()
-        self.layout = self._get_green_algo_form_layout(
+        self.layout = self._get_layout(
             title = title,
             subtitle= subtitle,
             continuous_inf_scheme_properties=continuous_inf_scheme_properties,
@@ -228,7 +228,7 @@ class FormBlueprint(DashBlueprint):
             ]
         )
 
-    def _get_green_algo_form_layout(
+    def _get_layout(
             self,
             title: str,
             subtitle: dict[str, html.P],
