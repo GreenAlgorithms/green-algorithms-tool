@@ -20,10 +20,9 @@ from dash_extensions.enrich import DashBlueprint, html
 
 from blueprints.form.form_blueprint import FormBlueprint
 from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
-from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
+from blueprints.metrics.metrics_blueprint import MetricsBlueprint
 from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
 
-import blueprints.metrics.metrics_layout as metrics_layout
 import blueprints.metrics.utils as metrics_utils
 
 from utils.graphics import MY_COLORS
@@ -79,16 +78,11 @@ methodo_content = MethodologyBlueprint(
     )
 )
 
-metrics = get_metrics_blueprint(
+metrics = MetricsBlueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
-    energy_needed_details=metrics_layout.get_metric_per_form_layout(
-        training_id=f'{TRAINING_ID_PREFIX}-energy_needed',
-        inference_id=f'{INFERENCE_ID_PREFIX}-energy_needed',
-    ),
-    carbon_footprint_details=metrics_layout.get_metric_per_form_layout(
-        training_id=f'{TRAINING_ID_PREFIX}-carbon_emissions',
-        inference_id=f'{INFERENCE_ID_PREFIX}-carbon_emissions',
-    )
+    to_add_metrics_details=True,
+    training_id_prefix=TRAINING_ID_PREFIX,
+    inference_id_prefix=INFERENCE_ID_PREFIX
 )
 
 
