@@ -18,7 +18,7 @@ from utils.utils import check_CIcountries_df, unlist, put_value_first
 ## GLOABAL VARIABLES
 
 CURRENT_VERSION = 'v3.0'
-DATA_DIR = os.path.join(os.path.abspath(''), 'data')
+DATA_DIR = os.path.join(os.path.abspath(''), 'GA-data/csv')
 
 # TODO Add the dev option for testing, make it permanent, with a warning pop up if selected by mistake
 APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0] == 'v') & (x != CURRENT_VERSION))]
