@@ -63,15 +63,6 @@ import_export = ImportExportBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
 
 ###################################################
-# SOME GLOBAL VARIABLES
-
-image_dir = os.path.join('assets/images')
-data_dir = os.path.join(os.path.abspath(''),'data')
-
-appVersions_options = get_available_versions()
-
-
-###################################################
 # DEFINE PAGE LAYOUT
 
 def get_home_page_layout():

@@ -87,15 +87,6 @@ metrics = MetricsBlueprint(
 
 
 ###################################################
-# SOME GLOBAL VARIABLES
-
-image_dir = os.path.join('assets/images')
-data_dir = os.path.join(os.path.abspath(''),'data')
-
-appVersions_options = get_available_versions()
-
-
-###################################################
 # DEFINE APP LAYOUT
 
 def get_training_help_content(title: str):
