@@ -1,0 +1,3 @@
+[submodule "GA-data"]
+	path = GA-data
+	url = https://github.com/evenmatencio/GA-data.git
