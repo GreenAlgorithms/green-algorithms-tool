@@ -1,31 +1,15 @@
 '''
 The Green Algorithms calculator is a modularized two-pages application
-fully implemented in [Dash](https://dash.plotly.com/). The modularization relies 
-on the [DashBlueprint](https://www.dash-extensions.com/sections/enrich#a-dashblueprint)
-class from the `dash_extensions.enrich module`.
+fully implemented in [Dash](https://dash.plotly.com/). The code base is organized as follows: 
 
-Each module <module> is implemented in a function defined in blueprints/<module>/<module>_blueprint.py.
-These modules are inserted in the app at the page level (see pages/home.py and pages/ai.py).
-They communicate with each other through intermediate variables stored in dcc.Store instances.
-The callbacks between these intermediate variables are implemented at the page level too.
-
-To ensure the uniqueness of each component's id, DashBlueprints rely on id prefix.
-These prefix are automatically added to the blueprint components' id and 
-to the Inputs, Outputs and States of its callbacks. Though, for outer callbacks,
-the prefix needs to be manually added to the Inputs, Outputs and State ids.
-
-The only app level variable is the backend data "versioned_data" used to run the calculator.
-The "versioned_data" is loaded when the app is launched and then triggers all the callbacks 
-that require backend data (cores, server, location, carbon intensity and "equivalent" callbacks).
-As the name suggests, this data is versioned to ensure the results replicability accross the
-different versions of the app data.
-
-Because of our usage of DashBlueprint, we also implemented the pages as blueprints.
-The pages are registered in the app and wrapped within a layout made of the
-HTML/Dash components that are common to both pages.
-
-This script generates and runs the app.
+* the `app.py` script generates and runs the app,
+* the `page\home.py` and `page\\ai.py` scripts define the page-level features of the app,
+* the `blueprints\` scripts implement the calculator modules,
+* the `data\` folder contains the different versions of the backend data,
+* the `assets\` folder contains media and CSS files,
+* the `utils\` consists of Python and Dash utils.
 '''
+### WARNING: Above text is part of the online documentation. Be careful when modifying it.
 
 import os
 import dash

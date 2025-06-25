@@ -1,0 +1,13 @@
+:root > * {
+    /* Code snippets styling theme */
+    /* See https://squidfunk.github.io/mkdocs-material/reference/code-blocks/#custom-syntax-theme */
+    --md-code-hl-string-color: rgb(169, 88, 210);
+    --md-code-hl-number-color: #fa4104;
+    --md-code-hl-keyword-color: #3F6EC6;
+    --md-code-hl-comment-color: #0d9506;
+    --md-code-bg-color:  rgba(245, 185, 142, 0.153); 
+    --md-code-fg-color: black;
+    --md-code-hl-operator-color: black;
+    --md-code-hl-punctuation-color: black;
+    --md-code-hl-name-color: black;
+}

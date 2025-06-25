@@ -14,12 +14,14 @@ nav:
     - Home page: developer_guide/pages/home_page.md
     - AI page: developer_guide/pages/ai_page.md
   - Blueprints:
+    - Our implementation: developer_guide/blueprints/our_implementation.md
     - Form: developer_guide/blueprints/form.md
     - Import & Export: developer_guide/blueprints/import_export.md
     - Metrics: developer_guide/blueprints/metrics.md
     - Translation: developer_guide/blueprints/translation.md
 - User guide:
   - Overview: user_guide/overview.md
+  - Methodology: user_guide/methodology.md
 - About:
   - Contributing: contribute.md
   - The team: team.md
@@ -38,12 +40,22 @@ theme:
   features:
     - navigation.tabs # the header navigation bar
 
+extra_css:
+  - stylesheets/extra.css
+
 markdown_extensions:
+  # To include tables in our documentation
+  - tables
+  # To allow clean code blocks in the documentation
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      use_pygments: true
   # To allow the different kinds of admonition 
   # (detected by mkdocstrings and rendered by Material for MkDocs)
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
   # To use emojis and logos throughout the documentation
   - attr_list
   - pymdownx.emoji:
