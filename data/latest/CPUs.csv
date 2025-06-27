@@ -1,0 +1,155 @@
+index,,in Watt,,,in nm (not used for now),in cm2,,
+model,Manufacturer,TDP,n_cores,Release_year,feature_size,die_area,source,comment
+Average,,200.7171053,26.90789474,,10.12,11.64626579,Mean of all the lines,
+Core i7-4790,Intel,84,4,,,1.77,https://www.intel.co.uk/content/www/uk/en/products/sku/80806/intel-core-i74790-processor-8m-cache-up-to-4-00-ghz/specifications.html,
+Core i9-12900K,Intel,125,16,,,2.15,https://www.techpowerup.com/cpu-specs/core-i9-12900k.c2505,
+AMD EPYC Embedded 9254,AMD,200,24,2023.0,5,6.85,https://www.techpowerup.com/cpu-specs/epyc-embedded-9254.c3193,die size = 4*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9354,AMD,280,32,2023.0,5,9.73,https://www.techpowerup.com/cpu-specs/epyc-embedded-9354.c3192,die size = 8*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9354P,AMD,280,32,2023.0,5,9.73,https://www.techpowerup.com/cpu-specs/epyc-embedded-9354p.c3195,die size = 8*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9454,AMD,290,48,2023.0,5,9.73,https://www.techpowerup.com/cpu-specs/epyc-embedded-9454.c3191,die size = 8*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9454P,AMD,290,48,2023.0,5,9.73,https://www.techpowerup.com/cpu-specs/epyc-embedded-9454p.c3196,die size = 8*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9554,AMD,360,64,2023.0,5,9.73,https://www.techpowerup.com/cpu-specs/epyc-embedded-9554.c3190,die size = 8*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9554P,AMD,360,64,2023.0,5,9.73,https://www.techpowerup.com/cpu-specs/epyc-embedded-9554p.c3197,die size = 8*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9654,AMD,360,96,2023.0,5,12.61,https://www.techpowerup.com/cpu-specs/epyc-embedded-9654.c3189,die size = 12*72 mm² (5nm) + 397 (6nm)
+AMD EPYC Embedded 9654P,AMD,360,96,2023.0,5,12.61,https://www.techpowerup.com/cpu-specs/epyc-embedded-9654p.c3198,die size = 12*72 mm² (5nm) + 397 (6nm)
+AMD EPYC 7773X,AMD,280,64,2022.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7773x.c2759,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7763,AMD,280,64,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7763.c2373,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7713P,AMD,225,64,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7713p.c2375,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7713,AMD,225,64,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7713.c2374,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7663,AMD,240,56,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7663.c2376,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7643,AMD,225,48,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7643.c2377,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7573X,AMD,280,32,2022.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7573x.c2760,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 75F3,AMD,280,32,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-75f3.c2378,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7543P,AMD,225,32,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7543p.c2380,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7543,AMD,225,32,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7543.c2379,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7513,AMD,200,32,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7513.c2381,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7473X,AMD,240,24,2022.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7473x.c2761,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7453,AMD,225,28,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-7453.c2382,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 74F3,AMD,240,24,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-74F3.c2383,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7443P,AMD,200,24,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-7443P.c2385,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7443,AMD,200,24,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-7443.c2384,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7413,AMD,180,24,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-7413.c2386,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7373X,AMD,240,16,2022.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7373x.c2762,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 73F3,AMD,240,16,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-73F3.c2387,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7343,AMD,190,16,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-73F3.c2388,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7313P,AMD,155,16,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-7313P.c2390,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7313,AMD,155,16,2021.0,7,7.4,https://www.techpowerup.com/cpu-specs/epyc-7313P.c2389,die size = 4*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 72F3,AMD,180,8,2021.0,7,10.64,https://www.techpowerup.com/cpu-specs/epyc-7313P.c2389,die size = 8*81 mm² (7nm) + 416 (12nm)
+AMD EPYC 7251,AMD,120,8,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7251.c1928,
+AMD EPYC 7261,AMD,170,8,2018.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7261.c2299,
+AMD EPYC 7281,AMD,170,8,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7281.c1927,
+AMD EPYC 7301,AMD,170,16,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7301.c1926,
+AMD EPYC 7351,AMD,170,16,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7351.c1925,
+AMD EPYC 7351P,AMD,170,16,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7351p.c1931,
+AMD EPYC 7371,AMD,170,16,2018.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7371.c2121,
+AMD EPYC 7401,AMD,170,24,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7401.c1924,
+AMD EPYC 7401P,AMD,170,24,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7401p.c1930,
+AMD EPYC 7451,AMD,180,24,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7451.c1923,
+AMD EPYC 7501,AMD,170,32,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7501.c1922,
+AMD EPYC 7551,AMD,180,32,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7551.c1921,
+AMD EPYC 7551P,AMD,180,32,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7551p.c1929,
+AMD EPYC 7601,AMD,180,32,2017.0,14,2.13,https://www.techpowerup.com/cpu-specs/epyc-7601.c1920,
+A8-7600,AMD,65,4,2014.0,28,2.45,https://www.techpowerup.com/cpu-specs/a8-7600.c2615,
+A8-7680,AMD,45,4,2018.0,28,2.5,https://www.techpowerup.com/cpu-specs/a8-7680.c2120,
+EPYC 7452,AMD,155,32,2019.0,7,0.74,https://www.techpowerup.com/cpu-specs/epyc-7452.c2251,
+Ryzen 5 7600,AMD,65,6,2023.0,5,1.93,https://www.techpowerup.com/cpu-specs/ryzen-5-7600.c2959,
+Ryzen 7 7700,AMD,65,8,2023.0,5,1.82,https://www.techpowerup.com/cpu-specs/ryzen-7-7700.c2960,
+Ryzen 9 7900,AMD,65,12,2023.0,5,2.66,https://www.techpowerup.com/cpu-specs/ryzen-9-7900.c2961,
+Core i3-9100,Intel,65,4,2018.0,14,1.26,https://www.techpowerup.com/cpu-specs/core-i3-9100.c2096,
+Core i3-13100E,Intel,60,4,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i3-13100e.c3076,
+Core i3-13100TE,Intel,35,4,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i3-13100te.c3075,
+Core i5-13400,Intel,65,10,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13400.c2994,
+Core i5-13400E,Intel,65,10,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13400e.c3079,
+Core i5-13400F,Intel,65,10,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13400f.c2995,
+Core i5-13490F,Intel,65,10,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13490f.c3097,
+Core i5-13500,Intel,65,14,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13500.c2851,
+Core i5-13500E,Intel,65,14,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13500e.c3078,
+Core i5-13500TE,Intel,35,14,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i5-13500te.c3077,
+Core i7-13700,Intel,65,16,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i7-13700.c2957,
+Core i7-13700E,Intel,65,16,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i7-13700e.c3081,
+Core i7-13700F,Intel,65,16,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i7-13700f.c2996,
+Core i7-13700TE,Intel,35,16,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i7-13700te.c3080,
+Core i7-13790F,Intel,65,16,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i7-13790f.c3096,
+Core i9-13900,Intel,65,24,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i9-13900.c2854,
+Core i9-13900E,Intel,65,24,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i9-13900e.c3082,
+Core i9-13900F,Intel,65,24,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i9-13900f.c2997,
+Core i9-13900KS,Intel,150,24,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i9-13900ks.c2956,
+Core i9-13900TE,Intel,35,24,2023.0,10,2.57,https://www.techpowerup.com/cpu-specs/core-i9-13900te.c3083,
+Xeon Bronze 3408U,Intel,125,8,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-bronze-3408u.c3170,
+Xeon Gold 5411N,Intel,165,28,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5411n.c3152,
+Xeon Gold 5412U,Intel,185,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5412u.c3153,
+Xeon Gold 5415+,Intel,150,8,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5415.c3164,
+Xeon Gold 5416S,Intel,150,16,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5416s.c3161,
+Xeon Gold 5418N,Intel,165,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5418n.c3154,
+Xeon Gold 5418Y,Intel,185,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5418y.c3155,
+Xeon Gold 5420+,Intel,205,28,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5420.c3151,
+Xeon Gold 5423N,Intel,145,20,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5423n.c3158,
+Xeon Gold 5433N,Intel,160,20,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-5433n.c3159,
+Xeon Gold 6414U,Intel,250,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6414u.c3140,
+Xeon Gold 6416H,Intel,165,18,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6416h.c3160,
+Xeon Gold 6418H,Intel,185,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6418h.c3156,
+Xeon Gold 6421N,Intel,185,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6421n.c3141,
+Xeon Gold 6426Y,Intel,185,16,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6426y.c3162,
+Xeon Gold 6428N,Intel,185,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6428n.c3142,
+Xeon Gold 6430,Intel,270,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6430.c3143,
+Xeon Gold 6434,Intel,195,8,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6434.c3165,
+Xeon Gold 6434H,Intel,195,8,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6434h.c3166,
+Xeon Gold 6438M,Intel,205,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6438m.c3144,
+Xeon Gold 6438N,Intel,205,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6438n.c3145,
+Xeon Gold 6438Y+,Intel,205,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6438y.c3146,
+Xeon Gold 6442Y,Intel,225,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6442y.c3157,
+Xeon Gold 6444Y,Intel,270,16,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6444y.c3163,
+Xeon Gold 6448H,Intel,250,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6448h.c3147,
+Xeon Gold 6448Y,Intel,225,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6448y.c3148,
+Xeon Gold 6454S,Intel,270,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6454s.c3149,
+Xeon Gold 6458Q,Intel,350,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-gold-6458q.c3150,
+Xeon Max 9460,Intel,350,40,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-max-9460.c3087,
+Xeon Max 9462,Intel,350,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-max-9462.c3088,
+Xeon Max 9468,Intel,350,48,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-max-9468.c3086,
+Xeon Max 9470,Intel,350,52,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-max-9470.c3085,
+Xeon Max 9480,Intel,350,56,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-max-9480.c3084,
+Xeon Platinum 8174,Intel,240,24,2017.0,14,6.94,https://ark.intel.com/content/www/us/en/ark/products/136874/intel-xeon-platinum-8174-processor-33m-cache-3-10-ghz.html https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server) XCC configuration,
+Xeon Platinum 8444H,Intel,270,16,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8444h.c3139,
+Xeon Platinum 8450H,Intel,250,28,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8450h.c3138,
+Xeon Platinum 8452Y,Intel,300,36,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8452y.c3135,
+Xeon Platinum 8454H,Intel,270,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8454h.c3136,
+Xeon Platinum 8458P,Intel,350,44,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8458p.c3133,
+Xeon Platinum 8460H,Intel,330,40,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8460h.c3134,
+Xeon Platinum 8460Y+,Intel,300,40,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8460y.c3095,
+Xeon Platinum 8461V,Intel,300,48,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8461v.c3093,
+Xeon Platinum 8462Y+,Intel,300,32,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8462y.c3137,
+Xeon Platinum 8468,Intel,350,48,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8468.c3094,
+Xeon Platinum 8468H,Intel,330,48,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8468h.c3131,
+Xeon Platinum 8468V,Intel,330,48,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8468v.c3132,
+Xeon Platinum 8470,Intel,350,52,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8470.c3089,
+Xeon Platinum 8470N,Intel,300,52,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8470n.c3090,
+Xeon Platinum 8470Q,Intel,350,52,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8470q.c3091,
+Xeon Platinum 8471N,Intel,300,52,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8471n.c3092,
+Xeon Platinum 8480+,Intel,350,56,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8480.c2958,
+Xeon Platinum 8490H,Intel,350,60,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-platinum-8490h.c2942,
+Xeon Silver 4410T,Intel,150,10,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-silver-4410t.c3169,
+Xeon Silver 4410Y,Intel,150,12,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-silver-4410y.c3168,
+Xeon Silver 4416+,Intel,165,20,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-silver-4416.c3167,
+Xeon W-2155,Intel,140,10,2017.0,14,4.84,https://www.techpowerup.com/cpu-specs/xeon-w-2155.c2945,
+Xeon w3-2423,Intel,120,6,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w3-2423.c3120,
+Xeon w3-2425,Intel,130,6,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w3-2425.c3119,
+Xeon w3-2435,Intel,165,8,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w3-2435.c3118,
+Xeon w5-2445,Intel,175,10,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w5-2445.c3117,
+Xeon w5-2455X,Intel,200,12,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w5-2455x.c3116,
+Xeon w5-2465X,Intel,200,16,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w5-2465x.c3115,
+Xeon w5-3425,Intel,270,12,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w5-3425.c3112,
+Xeon w5-3435X,Intel,270,16,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w5-3435x.c3111,
+Xeon w7-2475X,Intel,225,20,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w7-2475x.c3114,
+Xeon w7-2495X,Intel,225,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w7-2495x.c3113,
+Xeon w7-3445,Intel,270,20,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w7-3445.c3110,
+Xeon w7-3455,Intel,270,24,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w7-3455.c3109,
+Xeon w7-3465X,Intel,300,28,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w7-3465x.c3108,
+Xeon w9-3475X,Intel,300,36,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w9-3475x.c3107,
+Xeon w9-3495X,Intel,350,56,2023.0,10,19.08,https://www.techpowerup.com/cpu-specs/xeon-w9-3495x.c3106,
+Xeon Gold 6148,Intel,150,20,2017.0,14,6.94,https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server) https://www.intel.fr/content/www/fr/fr/products/sku/120489/intel-xeon-gold-6148-processor-27-5m-cache-2-40-ghz/specifications.html,die size for XCC configuration
+Xeon E5-2620 v2,Intel,95,6,2012.0,32,4.35,https://www.techpowerup.com/cpu-specs/xeon-e5-2620.c969,
+Xeon E5-2620 v4,Intel,85,8,2016.0,14,2.4624,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)#Die_Stats https://ark.intel.com/content/www/fr/fr/ark/products/92986/intel-xeon-processor-e52620-v4-20m-cache-2-10-ghz.html,die size for LCC configuration
+Xeon Gold 6248,Intel,150,20,2019.0,14,6.94,https://www.intel.fr/content/www/fr/fr/products/sku/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz/specifications.html,We can see on [[https://www.intel.fr/content/www/fr/fr/products/sku/192446/intel-xeon-gold-6248-processor-27-5m-cache-2-50-ghz/specifications.html][Intel's webpage]] that it is a processor of the Cascade Lake architecture. On [[https://en.wikichip.org/wiki/intel/microarchitectures/cascade_lake#LCC_SoC][Wikichip]]
+Xeon E5-2698 v4,Intel,135,20,2016.0,14,4.56,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC configuration
+Xeon E5-2697 v4,Intel,145,18,2016.0,14,4.56,https://en.wikichip.org/wiki/intel/microarchitectures/broadwell_(client)),XCC configuration
+Xeon Gold 6152,Intel,140,22,2017.0,14,6.94,https://en.wikichip.org/wiki/intel/microarchitectures/skylake_(server),XCC configuration

@@ -18,6 +18,7 @@ from blueprints.translation.translatable_markdown_text_blueprint import translat
 
 appVersions_options = get_available_versions()
 
+custom_core_box_style = {'padding': '6px 24px', 'border': 'rgb(220, 220, 220)', 'border-radius': '10px', 'border-style': 'dashed', 'border-width': '2px'}
 
 class FormBlueprint(DashBlueprint):
     '''
@@ -40,29 +41,32 @@ class FormBlueprint(DashBlueprint):
         mult_factor_properties: dict = {},
         to_add_bottom_training_fields: bool = False,
     ):
-            '''
-            Args:
-                id_prefix (str): id prefix automatically applied to all HTML components and callbacks.
-                title (str): form title (at the top of the layout)
-                subtitle (html.P): form subtitle (below the title)
-                continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main
-                form and the training form. Defaults to {'display': 'none'}.
-                mult_factor_properties (dict, optional): used to hide the MF fields. Defaults to {}.
-                to_add_bottom_training_fields (bool, optional): whether to add the additional training fields (retrainings and R&D). Defaults to False.
-            '''
-            super().__init__(transforms = [PrefixIdTransform(prefix = id_prefix, escape = custom_prefix_escape)])
-            self.additional_bottom_fields: html.Div = html.Div()
-            if to_add_bottom_training_fields:
-                self.additional_bottom_fields = self._get_additional_training_fields_layout()
-            self.layout = self._get_green_algo_form_layout(
-                title = title,
-                subtitle= subtitle,
-                continuous_inf_scheme_properties=continuous_inf_scheme_properties,
-                mult_factor_properties=mult_factor_properties
-            )
-            self._define_callbakcs()
+        '''
+        Args:
+            id_prefix (str): id prefix automatically applied to all HTML components and callbacks.
+            title (str): form title (at the top of the layout)
+            subtitle (html.P): form subtitle (below the title)
+            continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main
+            form and the training form. Defaults to {'display': 'none'}.
+            mult_factor_properties (dict, optional): used to hide the MF fields. Defaults to {}.
+            to_add_bottom_training_fields (bool, optional): whether to add the additional training fields (retrainings and R&D). Defaults to False.
+        '''
+        super().__init__(transforms = [PrefixIdTransform(prefix = id_prefix, escape = custom_prefix_escape)])
+        self.additional_bottom_fields: html.Div = html.Div()
+        if to_add_bottom_training_fields:
+            self.additional_bottom_fields = self._get_additional_training_fields_layout()
+        self.layout = self._get_layout(
+            title = title,
+            subtitle= subtitle,
+            continuous_inf_scheme_properties=continuous_inf_scheme_properties,
+            mult_factor_properties=mult_factor_properties
+        )
+        self._define_callbakcs()
 
     def _get_additional_training_fields_layout(self):
+        '''
+        Defines the layout of the additional training form.
+        '''
         return html.Div(
             [
                 html.Div(
@@ -226,9 +230,8 @@ class FormBlueprint(DashBlueprint):
                 ),
             ]
         )
-        
 
-    def _get_green_algo_form_layout(
+    def _get_layout(
             self,
             title: str,
             subtitle: dict[str, html.P],
@@ -293,86 +296,48 @@ class FormBlueprint(DashBlueprint):
 
                             html.Div(
                                 [
-                                    html.Label("Input data time span"),
+                            html.Label("Input data time span"),
 
-                                    dcc.Input(
-                                        type='number',
-                                        id='input_data_time_scope_input',
-                                        min=0.5,
-                                        value=1,
-                                        step=0.5,
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(
-                                                id='input_data_time_scope_dropdown',
-                                                options=[
-                                                        {'label': 'Day(s)', 'value': 'day'},
-                                                        {'label': 'Week(s)', 'value': 'week'},
-                                                        {'label': 'Month(s)', 'value': 'month'},
-                                                        {'label': 'Year(s)', 'value': 'year'},
-                                                    ],
-                                                value='year',
-                                                className='dropdown',
-                                                clearable=False,
-                                            ),
-                                        ],
-                                        className='box-fields'
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "The `input data time span` is the length of time over which you are able "
-                                                "to estimate your resource usage for continuous inference.",
-                                                className='tooltip-text'
-                                            ),
-                                        ],
-                                        className='tooltip',
-                                    ),
-                                ],
-                                className="input_data_time-section form-row short-input",
-                                id='input_data_time_scope_section'
+                            dcc.Input(
+                                type='number',
+                                id='input_data_time_scope_input',
+                                min=0.5,
+                                value=1,
+                                step=0.5,
                             ),
 
                             html.Div(
                                 [
-                                    html.Hr(),
+                                    dcc.Dropdown(
+                                        id='input_data_time_scope_dropdown',
+                                        options=[
+                                                {'label': 'Day(s)', 'value': 'day'},
+                                                {'label': 'Week(s)', 'value': 'week'},
+                                                {'label': 'Month(s)', 'value': 'month'},
+                                                {'label': 'Year(s)', 'value': 'year'},
+                                            ],
+                                        value='year',
+                                        className='dropdown',
+                                        clearable=False,
+                                    ),
                                 ],
-                                className='Hr_div'
+                                className='box-fields'
                             ),
-                        
-                        ],
-                        style=continuous_inf_scheme_properties,
-                    ),
-
-                    #### RUN TIME ####
-
-                    html.Div(
-                        [
-                            html.Label("Runtime (HH:MM)"),
 
                             html.Div(
                                 [
-                                    dcc.Input(
-                                        type='number',
-                                        id='runTime_hour_input',
-                                        min=0,
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "The `input data time span` is the length of time over which you are able "
+                                        "to estimate your resource usage for continuous inference.",
+                                        className='tooltip-text'
                                     ),
-
-                                    dcc.Input(
-                                        type='number',
-                                        id='runTime_min_input',
-                                        min=0,
-                                        max=59,
-                                    )
                                 ],
-                                className="box-runtime box-fields"
+                                className='tooltip',
                             ),
                         ],
-                        className='form-row short-input'
+                        className="input_data_time-section form-row short-input",
+                        id='input_data_time_scope_section'
                     ),
 
                     html.Div(
@@ -381,28 +346,98 @@ class FormBlueprint(DashBlueprint):
                         ],
                         className='Hr_div'
                     ),
+                ],
+                style=continuous_inf_scheme_properties,
+            ),
 
-                    #### TYPE OF CORES ####
+            #### RUN TIME ####
+
+            html.Div(
+                [
+                    html.Label("Runtime (HH:MM)"),
 
                     html.Div(
                         [
-                            html.Label("Type of cores"),
+                            dcc.Input(
+                                type='number',
+                                id='runTime_hour_input',
+                                min=0,
+                            ),
 
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='coreType_dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className="box-fields"
+                            dcc.Input(
+                                type='number',
+                                id='runTime_min_input',
+                                min=0,
+                                max=59,
+                            )
+                        ],
+                        className="box-runtime box-fields"
+                    ),
+                ],
+                className='form-row short-input'
+            ),
+
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div'
+            ),
+
+            #### TYPE OF CORES ####
+
+            html.Div(
+                [
+                    html.Label("Type of cores"),
+
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                id='coreType_dropdown',
+                                clearable=False,
+                            ),
+                        ],
+                        className="box-fields"
+                    ),
+
+                    html.Div(
+                        [
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "Select the type of hardware used.",
+                                className='tooltip-text'
+                            ),
+                        ],
+                        className='tooltip',
+                    ),
+                ],
+                className='form-row short-input'
+            ),
+
+            #### CPUs ####
+
+            html.Div(
+                [
+                    html.H3(
+                        "CPUs",
+                        id='title_CPU',
+                    ),
+
+                    html.Div(
+                        [
+                            html.Label("Number of cores used"),
+
+                            dcc.Input(
+                                type='number',
+                                id='numberCPUs_input',
+                                min=0,
                             ),
 
                             html.Div(
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Select the type of hardware used.",
+                                        "Refers to the number of cores used (a single CPU contains several cores).",
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -412,39 +447,8 @@ class FormBlueprint(DashBlueprint):
                         className='form-row short-input'
                     ),
 
-                    #### CPUs ####
-
                     html.Div(
                         [
-                            html.H3(
-                                "CPUs",
-                                id='title_CPU',
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Label("Number of cores"),
-
-                                    dcc.Input(
-                                        type='number',
-                                        id='numberCPUs_input',
-                                        min=0,
-                                    ),
-
-                                    html.Div(
-                                        [
-                                            html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "Refers to the number of cores used (a single CPU contains several cores).",
-                                                className='tooltip-text'
-                                            ),
-                                        ],
-                                        className='tooltip',
-                                    ),
-                                ],
-                                className='form-row short-input'
-                            ),
-
                             html.Div(
                                 [
                                     html.Label("Model"),
@@ -464,7 +468,8 @@ class FormBlueprint(DashBlueprint):
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Select 'other' to fill-in a custom core power usage (TDP).",
+                                                "Select 'Average' to run the calculator with the average CPU specs. If you want to enter custom "
+                                                "CPU characteristics, please select 'I can't find my CPU' at the top of the list.",
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -475,62 +480,138 @@ class FormBlueprint(DashBlueprint):
                                 className='form-row short-input'
                             ),
 
-                            #### CPU TDP
+                            #### CUSTOM CPU INPUTS
 
                             html.Div(
                                 [
-                                    html.Label(
-                                        'What is the Thermal Design Power (TDP) value per core of your CPU? '
-                                        'This can easily be found online (usually 10-15W per core)'),
-
-                                    dcc.Input(
-                                        type='number',
-                                        id='tdpCPU_input',
-                                        min=0,
-                                    )
-                                ],
-                                className='form-row TDP',
-                                id='tdpCPU_div',
-                                style=dict(display='none')
-                            ),
-                        ],
-                        className="group-of-rows",
-                        id='CPU_div',
-                    ),
-
-                    #### GPUs ####
-
-                    html.Div(
-                        [
-                            html.H3(
-                                "GPUs",
-                                id='title_GPU',
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Label("Number of GPUs"),
-
-                                    dcc.Input(
-                                        type='number',
-                                        id='numberGPUs_input',
-                                        min=0,
+                                    html.P(
+                                        'If your CPU is not in the list, you can manually input the few key specs used by the calculator.\n' \
+                                        ' Pre-filled values are average ones.',
+                                        style={'font-size': '0.9em'}
                                     ),
 
                                     html.Div(
                                         [
-                                            html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "Refers to the number of GPUs used (no cores here).",
-                                                className='tooltip-text'
+                                            html.Label('Number of cores'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='CPU_model_n_cores_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "Refers to the number of cores of the CPU model. It is not the number of cores used.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
                                             ),
                                         ],
-                                        className='tooltip',
+                                        className='form-row short-input subform-input',
+                                        id='CPU_model_n_cores_div',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('TDP (in Watt)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='tdpCPU_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The TDP is the Thermal Design Power (TDP) of your CPU, in Watt. It is not a 'per core' value.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='tdpCPU_div',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Die area (in cm2)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='CPU_die_area_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The die area of your CPU is expected in cm2. Should include the I/O die size.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='CPU_die_area_div',
                                     ),
                                 ],
-                                className='form-row short-input'
+                                style=dict(display='none'),
+                                id='custom_CPU_inputs_div',
+                                className="subform-div",
+                            )
+                        ],
+                        id='CPU-model-and-custom-inputs'
+                    ),
+                ],
+                className="group-of-rows",
+                id='CPU_div',
+            ),
+
+            #### GPUs ####
+
+            html.Div(
+                [
+                    html.H3(
+                        "GPUs",
+                        id='title_GPU',
+                    ),
+
+                    html.Div(
+                        [
+                            html.Label("Number of GPUs used"),
+
+                            dcc.Input(
+                                type='number',
+                                id='numberGPUs_input',
+                                min=0,
                             ),
 
+                            html.Div(
+                                [
+                                    html.Div('i', className='tooltip-icon'),
+                                    html.P(
+                                        "Refers to the number of GPUs used (no cores here).",
+                                        className='tooltip-text'
+                                    ),
+                                ],
+                                className='tooltip',
+                            ),
+                        ],
+                        className='form-row short-input'
+                    ),
+
+                    html.Div(
+                        [
                             html.Div(
                                 [
                                     html.Label("Model"),
@@ -550,7 +631,8 @@ class FormBlueprint(DashBlueprint):
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "Select 'other' to fill-in a custom TDP.",
+                                                "Select 'Average' to run the calculator with the average GPU specs. If you want to enter custom "
+                                                "GPU characteristics, please select 'I can't find my GPU' at the top of the list.",
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -560,388 +642,508 @@ class FormBlueprint(DashBlueprint):
                                 className='form-row short-input'
                             ),
 
-                            #### GPU TDP
+                            #### CUSTOM GPU INPUTS
 
                             html.Div(
                                 [
-                                    html.Label(
-                                        'What is the Thermal Design Power (TDP) value per core of your GPU? '
-                                        'This can easily be found online (usually around 200W)'),
-
-                                    dcc.Input(
-                                        type='number',
-                                        id='tdpGPU_input',
-                                        min=0,
-                                    )
-                                ],
-                                className='form-row TDP',
-                                id='tdpGPU_div',
-                                style=dict(display='none')
-                            ),
-                        ],
-                        className="group-of-rows",
-                        id='GPU_div',
-                    ),
-
-                    html.Div(
-                        [
-                            html.Hr(),
-                        ],
-                        className='Hr_div'
-                    ),
-
-                    #### MEMORY ####
-
-                    html.Div(
-                        [
-                            html.Label("Memory available (in GB)"),
-
-                            dcc.Input(
-                                type='number',
-                                id='memory_input',
-                                min=0,
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Refers to the total memory allocated to the task, "
-                                        "not the memory actually used.",
-                                        className='tooltip-text'
+                                        'If your GPU is not in the list, you can manually input the few key specs used by the calculator.\n' \
+                                        ' Pre-filled values are average ones.',
+                                        style={'font-size': '0.9em'}
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('TDP (in Watt)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='tdpGPU_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The TDP is the Thermal Design Power (TDP) of your GPU, in Watt.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='tdpGPU_div',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Die area (in cm2)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='GPU_die_area_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The die size of your GPU is expected in cm2.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='GPU_die_area_div',
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Memory (in GB)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='GPU_memory_input',
+                                                min=0,
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "The GPU memory size.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input',
+                                        id='GPU_memory_div',
                                     ),
                                 ],
-                                className='tooltip',
-                            ),
-                        ],
-                        className='form-row short-input',
-                        id='div_memory',
-                    ),
-
-                    html.Div(
-                        [
-                            html.Hr(),
-                        ],
-                        className='Hr_div'
-                    ),
-
-                    #### SELECT COMPUTING PLATFORM ####
-
-                    html.Div(
-                        [
-                            html.Label("Select the platform used for the computations"),
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='platformType_dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className='box-fields',
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "This field is used to retrieve specific data centre efficiency metrics "
-                                        "and location energy mixes.",
-                                        className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
-                            ),    
-
-                            #### SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='provider_dropdown',
-                                        clearable=False,
-                                        className='bottom-dropdown',
-                                    ),
-                                ],
-                                className="box-fields",
-                                id='provider_dropdown_div',
-                            ),
-                        ],
-                        className='form-row long-input'
-                    ),
-
-
-                    #### SERVER (for cloud computing) ####
-
-                    html.Div(
-                        [
-                            html.Label("Select server"),
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='server_continent_dropdown',
-                                        clearable=False,
-                                    ),
-
-                                    dcc.Dropdown(
-                                        id='server_dropdown',
-                                        clearable=False,
-                                        className='bottom-dropdown',
-                                    ),
-                                ],
-                                className="box-fields"
+                                style=dict(display='none'),
+                                id='custom_GPU_inputs_div',
+                                className="subform-div",
                             )
                         ],
-                        id='server_div',
-                        className='form-row long-input',
-                        style={'display': 'none'}
+                        id='GPU-model-and-custom-inputs'
                     ),
+                ],
+                className="group-of-rows",
+                id='GPU_div',
+            ),
 
-                    #### LOCATION ####
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div'
+            ),
 
-                    # TODO add a display of the carbon intensity value used
-                    # TODO Give the option to input a custom carbon intensity value
+            #### MEMORY ####
+
+            html.Div(
+                [
+                    html.Label("Memory available (in GB)"),
+
+                    dcc.Input(
+                        type='number',
+                        id='memory_input',
+                        min=0,
+                    ),
 
                     html.Div(
                         [
-                            html.Label("Select location"),
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='location_continent_dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className="box-fields",
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "This is used to retrieve the energy mix in a location.",
-                                        className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
-                            ),   
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='location_country_dropdown',
-                                        className='bottom-dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className="box-fields",
-                                id='location_country_dropdown_div',
-                            ),
-
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='location_region_dropdown',
-                                        className='bottom-dropdown',
-                                        clearable=False,
-                                    ),
-                                ],
-                                className="box-fields",
-                                id='location_region_dropdown_div',
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "Refers to the total memory allocated to the task, "
+                                "not the memory actually used.",
+                                className='tooltip-text'
                             ),
                         ],
-                        id='location_div',
-                        className='form-row long-input',
-                        style={'display': 'flex'}
+                        className='tooltip',
                     ),
+                ],
+                className='form-row short-input',
+                id='div_memory',
+            ),
 
-                    #### CORE USAGE (CPU and GPU) ####
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div'
+            ),
+
+            #### SELECT COMPUTING PLATFORM ####
+
+            html.Div(
+                [
+                    html.Label("Select the platform used for the computations"),
 
                     html.Div(
                         [
-                            html.Label("Do you know the real usage factor of your CPU?"),
-                            
+                            dcc.Dropdown(
+                                id='platformType_dropdown',
+                                clearable=False,
+                            ),
+                        ],
+                        className='box-fields',
+                    ),
+
+                    html.Div(
+                        [
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "This field is used to retrieve specific data centre efficiency metrics "
+                                "and location energy mixes.",
+                                className='tooltip-text'
+                            ),
+                        ],
+                        className='tooltip',
+                    ),    
+
+                    #### SELECT PROVIDER, FOR CLOUD COMPUTING ONLY
+
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                id='provider_dropdown',
+                                clearable=False,
+                                className='bottom-dropdown',
+                            ),
+                        ],
+                        className="box-fields",
+                        id='provider_dropdown_div',
+                    ),
+                ],
+                className='form-row long-input'
+            ),
+
+
+            #### SERVER (for cloud computing) ####
+
+            html.Div(
+                [
+                    html.Label("Select server"),
+
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                id='server_continent_dropdown',
+                                clearable=False,
+                            ),
+
+                            dcc.Dropdown(
+                                id='server_dropdown',
+                                clearable=False,
+                                className='bottom-dropdown',
+                            ),
+                        ],
+                        className="box-fields"
+                    )
+                ],
+                id='server_div',
+                className='form-row long-input',
+                style={'display': 'none'}
+            ),
+
+            #### LOCATION ####
+
+            # TODO add a display of the carbon intensity value used
+
+            html.Div(
+                [
+                    html.Div(
+                        [
                             html.Div(
                                 [
-                                    dcc.RadioItems(
-                                        id='usageCPU_radio',
-                                        options=YES_NO_OPTIONS,
-                                        className="radio-input",
+                                    html.Label("Select location"),
+
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id='location_continent_dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className="box-fields",
                                     ),
-                                    dcc.Input(
-                                        min=0,
-                                        max=1,
-                                        type='number',
-                                        id='usageCPU_input',
-                                        style=dict(display='none'),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(
+                                                "The location section is used to retrieve the electricity mix and the associated carbon intensity." \
+                                                "If you want to enter a custom value, please enter 'Use a custom carbon intensity' in the continent dropdown.",
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ],
+                                className='location-head-row'
+                            ),
+
+                            html.Div(
+                                [
+                                    html.P(
+                                        'Enter your custom carbon intensity below in gCO2e/kWh. ' \
+                                        ' The pre-filled value corresponds to the world average electricity mix.',
+                                        style={'font-size': '0.9em', 'margin-top': '20px'}
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Label('Carbon intensity (in gCO2e/kWh)'),
+
+                                            dcc.Input(
+                                                type='number',
+                                                id='custom_carbon_intensity_input',
+                                                min=0
+                                            ),
+
+                                            html.Div(
+                                                [
+                                                    html.Div('i', className='tooltip-icon'),
+                                                    html.P(
+                                                        "Must be in gCO2e/kWh.",
+                                                        className='tooltip-text'
+                                                    ),
+                                                ],
+                                                className='tooltip',
+                                            ),
+                                        ],
+                                        className='form-row short-input subform-input'
                                     )
                                 ],
-                                className='radio-and-field'
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "Between 0 and 1 (default: 1). This is the usage % of the cores, "
-                                        "e.g. % of the time the cores were active. "
-                                        "This can be obtained from log files for instance.",
-                                        className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
+                                style=dict(display='none'),
+                                id='custom_carbon_intensity_div',
+                                className="subform-div",
                             ),
                         ],
-                        className='form-row radio-row',
-                        id='usageCPU_div',
+                        id='location-and-custom-carbon-intensity',
+                        className='location-and-custom-carbon-intensity'
                     ),
 
                     html.Div(
                         [
-                            html.Label("Do you know the real usage factor of your GPU?"),
-                            html.Div(
-                                [
-                                    dcc.RadioItems(
-                                        id='usageGPU_radio',
-                                        options=YES_NO_OPTIONS,
-                                        className="radio-input",
-                                    ),
-
-                                    dcc.Input(
-                                        min=0,
-                                        max=1,
-                                        type='number',
-                                        id='usageGPU_input',
-                                        style=dict(display='none'),
-                                    ),
-                                ],
-                                className='radio-and-field'
+                            dcc.Dropdown(
+                                id='location_country_dropdown',
+                                className='bottom-dropdown',
+                                clearable=False,
                             ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "Between 0 and 1 (default: 1). This is the usage % of the GPUs, "
-                                        "e.g. % of the time the GPUs were active. "
-                                        "This can be obtained from log files for instance.",
-                                        className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
-                            ),                            
                         ],
-                        className='form-row radio-row',
-                        id='usageGPU_div',
+                        className="box-fields",
+                        id='location_country_dropdown_div',
                     ),
-
-                    #### PUE ####
 
                     html.Div(
                         [
-                            html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
-                            html.Div(
-                                [
-                                    dcc.RadioItems(
-                                        id='pue_radio',
-                                        options=YES_NO_OPTIONS,
-                                        className='radio-input',
-                                    ),
-
-                                    dcc.Input(
-                                        min=1,
-                                        type='number',
-                                        id='PUE_input',
-                                        style=dict(display='none'),
-                                    ),
-                                ],
-                                className='radio-and-field'
+                            dcc.Dropdown(
+                                id='location_region_dropdown',
+                                className='bottom-dropdown',
+                                clearable=False,
                             ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "PUE is a standardised efficiency metrics measuring the"
-                                        "energy consumption of data centre overheads (e.g. cooling).",
-                                        className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
-                            ),
-
                         ],
-                        className='form-row radio-row',
-                        id='PUEquestion_div',
-                        style=dict(display='none'),
+                        className="box-fields",
+                        id='location_region_dropdown_div',
                     ),
+                ],
+                id='location_div',
+                className='form-row long-input',
+                style={'display': 'flex'}
+            ),
 
-                    #### MULTIPLICATIVE FACTOR ####
+            #### CORE USAGE (CPU and GPU) ####
+
+            html.Div(
+                [
+                    html.Label("Do you know the real usage factor of your CPU?"),
+                    
+                    html.Div(
+                        [
+                            dcc.RadioItems(
+                                id='usageCPU_radio',
+                                options=YES_NO_OPTIONS,
+                                className="radio-input",
+                            ),
+                            dcc.Input(
+                                min=0,
+                                max=1,
+                                type='number',
+                                id='usageCPU_input',
+                                style=dict(display='none'),
+                            )
+                        ],
+                        className='radio-and-field'
+                    ),
 
                     html.Div(
                         [
-                            html.Label("Do you want to use a multiplicative factor?"),
-                            html.Div(
-                                [
-                                    dcc.RadioItems(
-                                        id='mult_factor_radio',
-                                        options=YES_NO_OPTIONS,
-                                        className="radio-input",
-                                    ),
-
-                                    dcc.Input(
-                                        min=1,
-                                        type='number',
-                                        id='mult_factor_input',
-                                        style=dict(display='none'),
-                                    ),
-                                ],
-                                className='radio-and-field',
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "Between 0 and 1 (default: 1). This is the usage % of the cores, "
+                                "e.g. % of the time the cores were active. "
+                                "This can be obtained from log files for instance.",
+                                className='tooltip-text'
                             ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "Used to multiply the final results, for example when a same task is repeated "
-                                        "multiple times.",
-                                        className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
-                            ),
-
                         ],
-                        className='form-row radio-row',
-                        style=mult_factor_properties,
-                        id='mult_factor_div'
+                        className='tooltip',
+                    ),
+                ],
+                className='form-row radio-row',
+                id='usageCPU_div',
+            ),
+
+            html.Div(
+                [
+                    html.Label("Do you know the real usage factor of your GPU?"),
+                    html.Div(
+                        [
+                            dcc.RadioItems(
+                                id='usageGPU_radio',
+                                options=YES_NO_OPTIONS,
+                                className="radio-input",
+                            ),
+
+                            dcc.Input(
+                                min=0,
+                                max=1,
+                                type='number',
+                                id='usageGPU_input',
+                                style=dict(display='none'),
+                            ),
+                        ],
+                        className='radio-and-field'
                     ),
 
-                    dcc.ConfirmDialog(
-                        id='confirm_reset',
-                        message='This will reset all the values you have entered so far!\n' \
-                        'Are you sure you want to continue?',
+                    html.Div(
+                        [
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "Between 0 and 1 (default: 1). This is the usage % of the GPUs, "
+                                "e.g. % of the time the GPUs were active. "
+                                "This can be obtained from log files for instance.",
+                                className='tooltip-text'
+                            ),
+                        ],
+                        className='tooltip',
+                    ),                            
+                ],
+                className='form-row radio-row',
+                id='usageGPU_div',
+            ),
+
+            #### PUE ####
+
+            html.Div(
+                [
+                    html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
+                    html.Div(
+                        [
+                            dcc.RadioItems(
+                                id='pue_radio',
+                                options=YES_NO_OPTIONS,
+                                className='radio-input',
+                            ),
+
+                            dcc.Input(
+                                min=1,
+                                type='number',
+                                id='PUE_input',
+                                style=dict(display='none'),
+                            ),
+                        ],
+                        className='radio-and-field'
                     ),
 
-                    self.additional_bottom_fields,
-
-                    html.P(
-                        id="placeholder",
-                        style={"display": "none"}
+                    html.Div(
+                        [
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "PUE is a standardised efficiency metrics measuring the"
+                                "energy consumption of data centre overheads (e.g. cooling).",
+                                className='tooltip-text'
+                            ),
+                        ],
+                        className='tooltip',
                     ),
 
                 ],
-                className='container input-form'
-            )
+                className='form-row radio-row',
+                id='PUEquestion_div',
+                style=dict(display='none'),
+            ),
 
+            #### MULTIPLICATIVE FACTOR ####
+
+            html.Div(
+                [
+                    html.Label("Do you want to use a multiplicative factor?"),
+                    html.Div(
+                        [
+                            dcc.RadioItems(
+                                id='mult_factor_radio',
+                                options=YES_NO_OPTIONS,
+                                className="radio-input",
+                            ),
+
+                            dcc.Input(
+                                min=1,
+                                type='number',
+                                id='mult_factor_input',
+                                style=dict(display='none'),
+                            ),
+                        ],
+                        className='radio-and-field',
+                    ),
+
+                    html.Div(
+                        [
+                            html.Div('i', className='tooltip-icon'),
+                            html.P(
+                                "Used to multiply the final results, for example when a same task is repeated "
+                                "multiple times.",
+                                className='tooltip-text'
+                            ),
+                        ],
+                        className='tooltip',
+                    ),
+
+                ],
+                className='form-row radio-row',
+                style=mult_factor_properties,
+                id='mult_factor_div'
+            ),
+
+            dcc.ConfirmDialog(
+                id='confirm_reset',
+                message='This will reset all the values you have entered so far!\n' \
+                'Are you sure you want to continue?',
+            ),
+
+            self.additional_bottom_fields,
+
+            html.P(
+                id="placeholder",
+                style={"display": "none"}
+            ),
+
+        ],
+        className='container input-form'
+    )
 
     def _define_callbakcs(self):
         '''
         Embeds all the internal callbacks to the blueprint
         '''
-
         ##################### INITIALIZATION ###
 
         @self.callback(
@@ -956,13 +1158,16 @@ class FormBlueprint(DashBlueprint):
                 Output('runTime_min_input', 'value'),
                 Output('coreType_dropdown', 'value'),
                 Output('numberCPUs_input', 'value'),
-                Output('CPUmodel_dropdown', 'value'),
+                Output('CPU_model_n_cores_input', 'value'),
                 Output('tdpCPU_input', 'value'),
+                Output('CPU_die_area_input', 'value'),
                 Output('numberGPUs_input', 'value'),
-                Output('GPUmodel_dropdown', 'value'),
                 Output('tdpGPU_input', 'value'),
+                Output('GPU_die_area_input', "value"),
+                Output('GPU_memory_input', "value"),
                 Output('memory_input', 'value'),
                 Output('platformType_dropdown', 'value'),
+                Output('custom_carbon_intensity_input', 'value'),
                 Output('usageCPU_radio', 'value'),
                 Output('usageCPU_input', 'value'),
                 Output('usageGPU_radio', 'value'),
@@ -977,7 +1182,7 @@ class FormBlueprint(DashBlueprint):
                 Input('form_data_imported_from_csv', 'data'),
             ],
         )
-        def filling_form(_, upload_content): 
+        def filling_form(_, upload_content: dict): 
             if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
                 to_return = {k: upload_content[k] for k in DEFAULT_VALUES_FOR_PAGE_LOAD.keys()}
                 return tuple(to_return.values())
@@ -1013,6 +1218,7 @@ class FormBlueprint(DashBlueprint):
         #       ~ if the server div is not rendered, never apply callback related to server
         #       (could be done by passing 'form_data_imported_from_csv' as a State, not as an Input)  
         ###########################################
+            
 
         @self.callback(
             Output('platformType_dropdown', 'options'),
@@ -1025,9 +1231,9 @@ class FormBlueprint(DashBlueprint):
             if data is not None:
                 data_dict = SimpleNamespace(**data)
                 platformType_options = [
-                    {'label': k,
-                    'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                            [('personalComputer', 'Personal computer')] +
+                    {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                            [('personal_laptop', 'Personal laptop')] +
+                                            [('personal_workstation', 'Personal workstation')] +
                                             [('localServer', 'Local server')]
                 ]
                 return platformType_options
@@ -1209,23 +1415,6 @@ class FormBlueprint(DashBlueprint):
             listOptions = [{'label': k['Name'], 'value': k['name_unique']} for k in availableOptions + [{'Name':"other", 'name_unique':'other'}]]
             return listOptions  
         
-        ## Location (only for local server, personal device or "other" cloud server)
-
-        @self.callback(
-            Output('location_continent_dropdown', 'options'),
-            [Input('versioned_data','data')]
-        )
-        def set_continentOptions(data):
-            if data is not None:
-                data_dict = SimpleNamespace(**data)
-
-                continentsList = list(data_dict.CI_dict_byName.keys())
-                continentsDict = [{'label': k, 'value': k} for k in sorted(continentsList)]
-
-                return continentsDict
-            else:
-                return []
-        
         @self.callback(
             Output('server_continent_dropdown','value'),
             [
@@ -1296,6 +1485,21 @@ class FormBlueprint(DashBlueprint):
                 defaultValue = None
             return defaultValue
 
+        ## Location (only for local server, personal device or "other" cloud server)
+
+        @self.callback(
+            Output('location_continent_dropdown', 'options'),
+            Input('versioned_data','data')
+        )
+        def set_continentOptions(versioned_data):
+            if versioned_data is not None:
+                data_dict = SimpleNamespace(**versioned_data)
+                continentsList = list(data_dict.CI_dict_byName.keys())
+                continentsDict = [{'label': 'Use a custom carbon intensity', 'value': 'custom'}] + [{'label': k, 'value': k} for k in sorted(continentsList)]
+                return continentsDict
+            else:
+                return []
+            
         @self.callback(
             Output('location_continent_dropdown', 'value'),
             [
@@ -1325,6 +1529,22 @@ class FormBlueprint(DashBlueprint):
                 return selected_serverContinent
             
             return 'Europe'
+
+        @self.callback(
+            [
+                Output('custom_carbon_intensity_div', 'style'),
+                Output('location-and-custom-carbon-intensity', 'style'),
+            ],
+            Input(f'location_continent_dropdown', 'value'),
+        )
+        def display_custom_carbon_intensity(selected_continent):
+            '''
+            Shows the custom carbon intensity box and adapts border attributes.
+            '''
+            if selected_continent == 'custom':
+                return {'display': 'flex'}, custom_core_box_style
+            else:
+                return {'display': 'none'}, {'border': 'none'}
         
         @self.callback(
             [
@@ -1344,7 +1564,7 @@ class FormBlueprint(DashBlueprint):
         def set_countries_options(selected_continent, versioned_data, upload_content, prev_selectedCountry):
             """
             List of options and value for countries.
-            Hides country dropdown if continent=World is selected.
+            Hides country dropdown if continent=World or if a custom carbon intensity is selected.
             Must fetch the value from a csv as well.
             """
             availableOptions = availableOptions_country(selected_continent, versioned_data=versioned_data)
@@ -1366,7 +1586,7 @@ class FormBlueprint(DashBlueprint):
                     except:
                         defaultValue = None
 
-            if selected_continent == 'World':
+            if (selected_continent == 'World') or (selected_continent == 'custom'):
                 country_style = {'display': 'none'}
             else:
                 country_style = {'display': 'block'}
@@ -1393,7 +1613,8 @@ class FormBlueprint(DashBlueprint):
         def set_regions_options(selected_continent, selected_country, versioned_data, upload_content, prev_selectedRegion):
             """
             List of options and value for regions.
-            Hides region dropdown if only one possible region (or continent=World)
+            Hides region dropdown if only one possible region or
+            if continent=World or custom carbon intensity are selected
             """
             locs = availableOptions_region(selected_continent, selected_country, data=versioned_data)
             if versioned_data is not None:
@@ -1417,7 +1638,7 @@ class FormBlueprint(DashBlueprint):
                     except:
                         defaultValue = None
 
-            if (selected_continent == 'World')|(len(listOptions) == 1):
+            if (selected_continent == 'World') or (len(listOptions) == 1) or (selected_continent == 'custom'):
                 region_style = {'display': 'none'}
             else:
                 region_style = {'display': 'block'}
@@ -1444,7 +1665,7 @@ class FormBlueprint(DashBlueprint):
                 data_dict = SimpleNamespace(**data)
 
                 availableOptions = data_dict.cores_dict.keys()
-                listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions))+['Both']]
+                listOptions = [{'label': k, 'value': k} for k in list(sorted(availableOptions)) + ['CPU + GPU']]
 
                 return listOptions
             else:
@@ -1467,16 +1688,59 @@ class FormBlueprint(DashBlueprint):
                 coreModels_options = dict()
                 for coreType in ['CPU', 'GPU']:
                     availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-                    availableOptions = put_value_first(availableOptions, 'Any')
+                    availableOptions = put_value_first(availableOptions, 'Average')
                     coreModels_options[coreType] = [
-                        {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                        [("Other", "other")]
+                        {'label': k, 'value': v} for k, v in [(f"I can't find my {coreType}", "other")] + 
+                        list(zip(availableOptions, availableOptions))
                     ]
 
                 return coreModels_options['CPU'], coreModels_options['GPU']
 
             else:
                 return [],[]
+            
+        @self.callback(
+            [
+                Output('CPUmodel_dropdown', 'value'),
+            ],
+            [
+                Input('form_data_imported_from_csv', 'data'),
+                Input('CPUmodel_dropdown', 'options'),
+            ],
+        )
+        def set_CPU_model_value(upload_content: dict, cpu_options: list[dict]):
+            """
+            When a csv is loaded with a proper cpu model, it is filled in the form.
+            Otherwise we select the first available model in the current data version.
+            """
+            if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
+                if 'CPUmodel' in upload_content.keys():
+                    return upload_content['CPUmodel']
+            # The fist two items of the cpu options are the Average and Custom (I can't find my cpu)
+            # so we select the next one
+            return cpu_options[2]['label']
+        
+        @self.callback(
+            [
+                Output('GPUmodel_dropdown', 'value'),
+            ],
+            [
+                Input('form_data_imported_from_csv', 'data'),
+                Input('GPUmodel_dropdown', 'options'),
+            ],
+        )
+        def set_GPU_model_value(upload_content: dict, gpu_options: list[dict]):
+            """
+            When a csv is loaded with a proper gpu model, it is filled in the form.
+            Otherwise we select the first available model in the current data version.
+            """
+            if ctx.triggered_id is not None and 'form_data_imported_from_csv' in ctx.triggered_id:
+                if 'GPUmodel' in upload_content.keys():
+                    return upload_content['GPUmodel']
+            # The fist two items of the gpu options are the Average and Custom (I can't find my gpu)
+            # so we select the next one
+            return gpu_options[2]['label']
+            
             
         @self.callback(
             [
@@ -1506,34 +1770,40 @@ class FormBlueprint(DashBlueprint):
                 return show, show, showFlex, show, show, showFlex
             
         @self.callback(
-            Output('tdpCPU_div', 'style'),
+            [       
+                Output('custom_CPU_inputs_div', 'style'),
+                Output('CPU-model-and-custom-inputs', 'style'),
+            ],
             [
                 Input('CPUmodel_dropdown', 'value'),
             ]
         )
-        def display_TDP4CPU(selected_coreModel):
+        def display_custom_cpu_inputs(selected_coreModel):
             '''
-            Shows or hides the CPU TDP input box.
+            Shows or hides the boxes for custom CPU specs and adapts border attributes.
             '''
             if selected_coreModel == "other":
-                return {'display': 'flex'}
+                return {'display': 'flex'}, custom_core_box_style
             else:
-                return {'display': 'none'}
+                return {'display': 'none'}, {'border': 'none'}
             
         @self.callback(
-            Output('tdpGPU_div', 'style'),
+            [
+                Output('custom_GPU_inputs_div', 'style'),
+                Output('GPU-model-and-custom-inputs', 'style'),
+            ],
             [
                 Input('GPUmodel_dropdown', 'value'),
             ]
         )
-        def display_TDP4GPU(selected_coreModel):
+        def display_custom_GPU_inputs(selected_coreModel):
             """
-            Shows or hides the GPU TDP input box.
+            Shows or hides the boxes for custom GPU specs and adapts the border attributes.
             """
             if selected_coreModel == "other":
-                return {'display': 'flex'}
+                return {'display': 'flex'}, custom_core_box_style
             else:
-                return {'display': 'none'}
+                return {'display': 'none'}, {'border': 'none'}
             
         ##################### USAGE FACTORS ###
 
@@ -1687,18 +1957,24 @@ class FormBlueprint(DashBlueprint):
                 Input('coreType_dropdown', "value"),
                 Input('numberCPUs_input', "value"),
                 Input('CPUmodel_dropdown', "value"),
-                Input('tdpCPU_div', "style"),
+                Input('custom_CPU_inputs_div', "style"),
+                Input('CPU_model_n_cores_input', "value"),
                 Input('tdpCPU_input', "value"),
+                Input('CPU_die_area_input', "value"),
                 Input('numberGPUs_input', "value"),
                 Input('GPUmodel_dropdown', "value"),
-                Input('tdpGPU_div', "style"),
+                Input('custom_GPU_inputs_div', "style"),
                 Input('tdpGPU_input', "value"),
+                Input('GPU_die_area_input', "value"),
+                Input('GPU_memory_input', "value"),
                 Input('memory_input', "value"),
                 Input('runTime_hour_input', "value"),
                 Input('runTime_min_input', "value"),
                 Input('location_continent_dropdown', "value"),
                 Input('location_country_dropdown', "value"),
                 Input('location_region_dropdown', "value"),
+                Input('custom_carbon_intensity_div', 'style'),
+                Input('custom_carbon_intensity_input', 'value'),
                 Input('server_continent_dropdown', "value"),
                 Input('server_dropdown', "value"),
                 Input('location_div', 'style'),
@@ -1717,8 +1993,9 @@ class FormBlueprint(DashBlueprint):
                 Input('provider_dropdown_div', 'style'),
             ],
         )
-        def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, tdpCPUstyle, tdpCPU, n_GPUs, GPUmodel, tdpGPUstyle, tdpGPU,
-                                memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion,
+        def aggregate_input_values(data, coreType, n_CPUcores, CPUmodel, custom_CPu_inputs_style, CPU_model_n_cores_input, tdpCPU,
+                                CPU_die_area_input, n_GPUs, GPUmodel, custom_GPu_inputs_style, tdpGPU, GPU_die_area_input, GPU_memory_input,
+                                memory, runTime_hours, runTime_min, locationContinent, locationCountry, locationRegion, custom_carbon_intensity_style, custom_carbon_intensity_input,
                                 serverContinent, server, locationStyle, serverStyle, usageCPUradio, usageCPU, usageGPUradio, usageGPU,
                                 PUEdivStyle, PUEradio, PUE, mult_factor_radio, mult_factor, selected_platform, selected_provider, providerStyle):
             """
@@ -1750,9 +2027,9 @@ class FormBlueprint(DashBlueprint):
             ### Core type
             if coreType is None:
                 notReady = True
-            elif (coreType in ['CPU','Both'])&((n_CPUcores is None)|(CPUmodel is None)):
+            elif (coreType in ['CPU','CPU + GPU'])&((n_CPUcores is None)|(CPUmodel is None)):
                 notReady = True
-            elif (coreType in ['GPU','Both'])&((n_GPUs is None)|(GPUmodel is None)):
+            elif (coreType in ['GPU','CPU + GPU'])&((n_GPUs is None)|(GPUmodel is None)):
                 notReady = True
 
             ### Versioned data
@@ -1764,9 +2041,12 @@ class FormBlueprint(DashBlueprint):
                 notReady = True
 
             ### Location
+            # The locationVar is the most fine-grained data on location available through the form.
             if is_shown(locationStyle):
                 # this means the "location" input is shown, so we use location instead of server
                 locationVar = locationRegion
+                if is_shown(custom_carbon_intensity_style):
+                    locationVar ='custom'
             elif (server is None) | (server == 'other') | (data is None):
                 locationVar = None
             else:
@@ -1790,10 +2070,14 @@ class FormBlueprint(DashBlueprint):
                 output['numberCPUs'] = None
                 output['usageCPU'] = None
                 output['usageCPUradio'] = None
+                output['CPU_model_n_cores'] = None
                 output['tdpCPU'] = None
+                output['CPU_die_area'] = None
                 output['GPUmodel'] = None
                 output['numberGPUs'] = None
                 output['tdpGPU'] = None
+                output['GPU_die_area'] = None
+                output['GPU_memory'] = None
                 output['usageGPU'] = None
                 output['usageGPUradio'] = None
                 output['GPUpower'] = None
@@ -1810,12 +2094,22 @@ class FormBlueprint(DashBlueprint):
                 output['appVersion'] = version
                 metrics['energy_needed'] = 0
                 metrics['carbonEmissions'] = 0
+                metrics['manufacturing_carbonEmissions'] = 0
+                metrics['manufacturing_abiotic_resources'] = 0
                 metrics['runTime'] = None
                 metrics['power_needed'] = 0
                 metrics['CE_CPU'] = 0
                 metrics['CE_GPU'] = 0
                 metrics['CE_core'] = 0
                 metrics['CE_memory'] = 0
+                metrics['manufacturing_CE_CPU'] = 0
+                metrics['manufacturing_CE_GPU'] = 0
+                metrics['manufacturing_CE_memory'] = 0
+                metrics['manufacturing_CE_other'] = 0
+                metrics['manufacturing_ADP_CPU'] = 0
+                metrics['manufacturing_ADP_GPU'] = 0
+                metrics['manufacturing_ADP_memory'] = 0
+                metrics['manufacturing_ADP_other'] = 0
 
             #############################################
             ### PRE-COMPUTATIONS: update variables used in the calcul based on inputs
@@ -1823,68 +2117,167 @@ class FormBlueprint(DashBlueprint):
             else:
                 ### PUE
                 defaultPUE = data_dict.pueDefault_dict['Unknown']
+
+                ### PUE and HARDWARE LIFESPAN
+                if selected_platform in ['personal_workstation', 'personal_laptop']:
+                    PUE_used = 1
+                    if selected_platform == 'personal_workstation':
+                        hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_workstation']
+                    else:
+                        hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_laptop']
+                elif selected_platform == 'localServer':
+                    PUE_used = defaultPUE
+                    hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_local_server']
+                else:
+                    # Cloud
+                    hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_cloud_server']
+                    if selected_provider == 'other':
+                        PUE_used = defaultPUE
+                    else:
+                        # if we don't know the PUE of this specific data centre, or if we 
+                        # don't know the data centre, we use the provider's default
+                        server_data = data_dict.datacenters_dict_byName.get(server)
+                        if server_data is not None:
+                            if pd.isnull(server_data['PUE']):
+                                PUE_used = data_dict.pueDefault_dict[selected_provider]
+                            else:
+                                PUE_used = server_data['PUE']
+                        else:
+                            PUE_used = data_dict.pueDefault_dict[selected_provider]
+                            
                 # the input PUE is used only if the PUE box is shown AND the radio button is "Yes"
                 if (is_shown(PUEdivStyle)) & (PUEradio == 'Yes'):
                     PUE_used = PUE
                 
-                ### PLATFORM ALONG WITH PUE
-                else:
-                    if selected_platform == 'personalComputer':
-                        PUE_used = 1
-                    elif selected_platform == 'localServer':
-                        PUE_used = defaultPUE
-                    else:
-                        # Cloud
-                        if selected_provider == 'other':
-                            PUE_used = defaultPUE
-                        else:
-                            # if we don't know the PUE of this specific data centre, or if we 
-                            # don't know the data centre, we use the provider's default
-                            server_data = data_dict.datacenters_dict_byName.get(server)
-                            if server_data is not None:
-                                if pd.isnull(server_data['PUE']):
-                                    PUE_used = data_dict.pueDefault_dict[selected_provider]
-                                else:
-                                    PUE_used = server_data['PUE']
-                            else:
-                                PUE_used = data_dict.pueDefault_dict[selected_provider]
-
-                ### CPUs
-                if coreType in ['CPU', 'Both']:
-                    if is_shown(tdpCPUstyle):
-                        # we asked the question about TDP
+                ### CPUs: DYNAMIC AND MANUFACTURING IMPACTS
+                if coreType in ['CPU', 'CPU + GPU']:
+                    # Retrieving the CPU data
+                    if is_shown(custom_CPu_inputs_style):
+                        # We asked the question about TDP, so the dafault CPU is selected
+                        CPU_model_n_cores = CPU_model_n_cores_input
                         CPUpower = tdpCPU
+                        CPU_die_area = CPU_die_area_input
                     else:
-                        # CPUmodel cannot be "other"
-                        CPUpower = data_dict.cores_dict['CPU'][CPUmodel]
+                        # CPUmodel cannot be "other", so we retrieve the data of the selected CPU
+                        CPU_model_n_cores = data_dict.cores_dict['CPU'][CPUmodel]['n_cores']
+                        CPUpower = data_dict.cores_dict['CPU'][CPUmodel]['TDP']
+                        CPU_die_area = data_dict.cores_dict['CPU'][CPUmodel]['die_area']
+                    # Per core computations
+                    CPUpower_per_core = CPUpower / CPU_model_n_cores
+                    CPU_die_area_per_core = CPU_die_area / CPU_model_n_cores
+                    fixed_CPU_manufacturing_GWP_per_core = data_dict.hardware_impacts_dict['cpu_base_impact_gwp'] / CPU_model_n_cores
+                    fixed_CPU_manufacturing_ADP_per_core = data_dict.hardware_impacts_dict['cpu_base_impact_adp'] / CPU_model_n_cores
+                    # Usage ration data
                     if usageCPUradio == 'Yes':
                         usageCPU_used = usageCPU
                     else:
                         usageCPU_used = 1.
-                    powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower * usageCPU_used
+                    # CPU impact values
+                    dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower_per_core * usageCPU_used
+                    manufacturing_GWP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.hardware_impacts_dict['cpu_die_impact_gwp'] + fixed_CPU_manufacturing_GWP_per_core)
+                    manufacturing_per_hour_GWP_CPU = manufacturing_GWP_CPU_raw / hardware_lifespan ## in gCO2e/hour
+                    manufacturing_ADP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.hardware_impacts_dict['cpu_die_impact_adp'] + fixed_CPU_manufacturing_ADP_per_core)
+                    manufacturing_per_hour_ADP_CPU = manufacturing_ADP_CPU_raw / hardware_lifespan ## in kgSbe/hour
                 else:
-                    powerNeeded_CPU = 0
-                    CPUpower = 0
+                    dynamic_powerNeeded_CPU = 0
                     usageCPU_used = 0
+                    CPU_model_n_cores = 0
+                    CPUpower = 0
+                    CPU_die_area = 0
+                    manufacturing_per_hour_GWP_CPU = 0
+                    manufacturing_per_hour_ADP_CPU = 0
 
-                if coreType in ['GPU', 'Both']:
-                    if is_shown(tdpGPUstyle):
+                ### GPUs: DYNAMIC AND MANUFACTURING IMPACTS
+                if coreType in ['GPU', 'CPU + GPU']:
+                    # Dealing with TDP and die area
+                    if is_shown(custom_GPu_inputs_style):
+                        # We asked the question about TDP, so the dafault GPU is selected
                         GPUpower = tdpGPU
+                        GPU_die_area =GPU_die_area_input
+                        GPU_memory = GPU_memory_input
                     else:
                         # GPUmodel cannot be "other"
-                        GPUpower = data_dict.cores_dict['GPU'][GPUmodel]
+                        GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP']
+                        GPU_die_area = data_dict.cores_dict['GPU'][GPUmodel]['die_area']
+                        GPU_memory = data_dict.cores_dict['GPU'][GPUmodel]['memory']
+                        ## TODO: Remove the following, we should never use default values except if they are the custom ones
+                    # Dealing with usage ratio
                     if usageGPUradio == 'Yes':
                         usageGPU_used = usageGPU
                     else:
                         usageGPU_used = 1.
-                    powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
+                    # Computation
+                    dynamic_powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
+                    # GWP
+                    manufacturing_GWP_GPU_no_mem = GPU_die_area * data_dict.hardware_impacts_dict['gpu_die_impact_gwp'] + data_dict.hardware_impacts_dict['gpu_base_impact_gwp']
+                    manufacturing_GWP_GPU_mem = data_dict.hardware_impacts_dict['ram_die_impact_gwp']* GPU_memory / data_dict.hardware_impacts_dict['ram_density']
+                    manufacturing_per_hour_GWP_GPU = n_GPUs * (manufacturing_GWP_GPU_no_mem + manufacturing_GWP_GPU_mem) / hardware_lifespan ## in gCO2e/hour
+                    # ADP
+                    manufacturing_ADP_GPU_no_mem = GPU_die_area * data_dict.hardware_impacts_dict['gpu_die_impact_adp'] + data_dict.hardware_impacts_dict['gpu_base_impact_adp']
+                    manufacturing_ADP_GPU_mem = data_dict.hardware_impacts_dict['ram_die_impact_adp']* GPU_memory / data_dict.hardware_impacts_dict['ram_density']
+                    manufacturing_per_hour_ADP_GPU = n_GPUs * (manufacturing_ADP_GPU_no_mem + manufacturing_ADP_GPU_mem) / hardware_lifespan ## in kgSbe/hour
                 else:
-                    powerNeeded_GPU = 0
                     GPUpower = 0
+                    GPU_die_area = 0
+                    GPU_memory = 0
                     usageGPU_used = 0
+                    dynamic_powerNeeded_GPU = 0
+                    manufacturing_per_hour_GWP_GPU = 0
+                    manufacturing_per_hour_ADP_GPU = 0
+
+                ### MEMORY: MANUFACTURING IMPACTS
+                memory_strip_area = data_dict.hardware_impacts_dict['ram_default_strip_size'] / data_dict.hardware_impacts_dict['ram_density']
+                # GWP
+                manufacturing_GWP_memory_per_strip = memory_strip_area * data_dict.hardware_impacts_dict['ram_die_impact_gwp'] + data_dict.hardware_impacts_dict['ram_base_impact_gwp']
+                manufacturing_GWP_memory_raw = manufacturing_GWP_memory_per_strip * memory / data_dict.hardware_impacts_dict['ram_default_strip_size']
+                manufacturing_per_hour_GWP_memory = manufacturing_GWP_memory_raw / hardware_lifespan ## in gCO2e/hour
+                # ADP
+                manufacturing_ADP_memory_per_strip = memory_strip_area * data_dict.hardware_impacts_dict['ram_die_impact_adp'] + data_dict.hardware_impacts_dict['ram_base_impact_adp']
+                manufacturing_ADP_memory_raw = manufacturing_ADP_memory_per_strip * memory / data_dict.hardware_impacts_dict['ram_default_strip_size']
+                manufacturing_per_hour_ADP_memory = manufacturing_ADP_memory_raw / hardware_lifespan ## in kgSbe/hour
+
+                ### OTHER DEVICES (casing, motherboard...) MANUFACTURING IMPACTS
+                # If a personal computer is used, we consider that its other resources are fully dedicated to the 
+                # computation during it. Otherwise, we apply a multiplier based on the ratio of the number of cores
+                # used over the number of cores contained in a server.
+                # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation' which is quite unlikely.
+                if selected_platform == 'personal_workstation':
+                    # GWP
+                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_gwp']
+                    # ADP
+                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_adp']
+                elif selected_platform == 'personal_laptop':
+                    # GWP
+                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['laptop_base_impact_gwp']
+                    # ADP
+                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['laptop_base_impact_adp']
+                else:
+                    # We need the number of cores used to deduce the number of servers used
+                    # so we distinguish between cases where only GPUs are used and cases where both core types
+                    # are used. We also adapt to the kind of servers used.
+                    if coreType == 'GPU':
+                        if selected_platform == 'cloudComputing':
+                            n_gpus_per_server = data_dict.hardware_impacts_dict['nb_GPU_cloud_per_server']
+                        else:
+                            n_gpus_per_server = data_dict.hardware_impacts_dict['nb_GPU_local_per_server']
+                        n_servers = n_GPUs / n_gpus_per_server
+                    else:
+                        n_servers = n_CPUcores / (CPU_model_n_cores * data_dict.hardware_impacts_dict['nb_CPU_per_server'])
+                    # GWP
+                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['motherboard_impact_gwp'] + data_dict.hardware_impacts_dict['assembly_impact_gwp'] + data_dict.hardware_impacts_dict['rack_casing_impact_gwp'] + data_dict.hardware_impacts_dict['PSU_impact_gwp']
+                    manufacturing_GWP_other_raw = manufacturing_GWP_other_raw * n_servers
+                    # ADP
+                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['motherboard_impact_adp'] + data_dict.hardware_impacts_dict['assembly_impact_adp'] + data_dict.hardware_impacts_dict['rack_casing_impact_adp'] + data_dict.hardware_impacts_dict['PSU_impact_adp']
+                    manufacturing_ADP_other_raw = manufacturing_ADP_other_raw * n_servers
+                # Compute per-hour values
+                manufacturing_per_hour_GWP_other = manufacturing_GWP_other_raw / hardware_lifespan ## in gCO2e/hour
+                manufacturing_per_hour_ADP_other = manufacturing_ADP_other_raw / hardware_lifespan ## in kgSbe/hour
 
                 ### SERVER/LOCATION
-                carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
+                if is_shown(custom_carbon_intensity_style):
+                    carbonIntensity = custom_carbon_intensity_input
+                else:
+                    carbonIntensity = data_dict.CI_dict_byLoc[locationVar]['carbonIntensity']
 
                 ### MULTIPLICATIVE FACTOR
                 if mult_factor_radio == 'Yes':
@@ -1895,14 +2288,28 @@ class FormBlueprint(DashBlueprint):
                 #############################################
                 ### COMPUTATIONS: final outputs are computed
 
+                # Manufacturing carbon emissions, in gCO2e
+                manufacturing_GWP_CPU = runTime * manufacturing_per_hour_GWP_CPU * mult_factor_used
+                manufacturing_GWP_GPU = runTime * manufacturing_per_hour_GWP_GPU * mult_factor_used
+                manufacturing_GWP_memory = runTime * manufacturing_per_hour_GWP_memory * mult_factor_used
+                manufacturing_GWP_other = runTime * manufacturing_per_hour_GWP_other * mult_factor_used
+                manufacturing_GWP = manufacturing_GWP_CPU + manufacturing_GWP_GPU + manufacturing_GWP_memory + manufacturing_GWP_other
+
+                # Manufacturing abiotic resources depletion, in kgSb e
+                manufacturing_ADP_CPU = runTime * manufacturing_per_hour_ADP_CPU * mult_factor_used
+                manufacturing_ADP_GPU = runTime * manufacturing_per_hour_ADP_GPU * mult_factor_used
+                manufacturing_ADP_memory = runTime * manufacturing_per_hour_ADP_memory * mult_factor_used
+                manufacturing_ADP_other = runTime * manufacturing_per_hour_ADP_other * mult_factor_used
+                manufacturing_ADP = manufacturing_ADP_CPU + manufacturing_ADP_GPU + manufacturing_ADP_memory + manufacturing_ADP_other
+                
                 # Power needed, in Watt
-                powerNeeded_core = powerNeeded_CPU + powerNeeded_GPU
-                powerNeeded_memory = PUE_used * (memory * data_dict.refValues_dict['memoryPower'])
+                powerNeeded_core = dynamic_powerNeeded_CPU + dynamic_powerNeeded_GPU
+                powerNeeded_memory = PUE_used * (memory * data_dict.hardware_impacts_dict['memoryPower'])
                 powerNeeded = powerNeeded_core + powerNeeded_memory
 
                 # Energy needed, in kWh (so dividing by 1000 to convert to kW)
-                energyNeeded_CPU = runTime * powerNeeded_CPU * mult_factor_used / 1000
-                energyNeeded_GPU = runTime * powerNeeded_GPU * mult_factor_used / 1000
+                energyNeeded_CPU = runTime * dynamic_powerNeeded_CPU * mult_factor_used / 1000
+                energyNeeded_GPU = runTime * dynamic_powerNeeded_GPU * mult_factor_used / 1000
                 energyNeeded_core = runTime * powerNeeded_core * mult_factor_used / 1000
                 eneregyNeeded_memory = runTime * powerNeeded_memory * mult_factor_used / 1000
                 energyNeeded = runTime * powerNeeded * mult_factor_used / 1000
@@ -1918,12 +2325,16 @@ class FormBlueprint(DashBlueprint):
                 output['coreType'] = coreType
                 output['CPUmodel'] = CPUmodel
                 output['numberCPUs'] = n_CPUcores
+                output['CPU_model_n_cores'] = CPU_model_n_cores
                 output['tdpCPU'] = CPUpower
+                output['CPU_die_area'] = CPU_die_area
                 output['usageCPUradio'] = usageCPUradio
                 output['usageCPU'] = usageCPU_used
                 output['GPUmodel'] = GPUmodel
                 output['numberGPUs'] = n_GPUs
                 output['tdpGPU'] = GPUpower
+                output['GPU_die_area'] = GPU_die_area
+                output['GPU_memory'] = GPU_memory
                 output['usageGPUradio'] = usageGPUradio
                 output['usageGPU'] = usageGPU_used
                 output['memory'] = memory
@@ -1945,11 +2356,21 @@ class FormBlueprint(DashBlueprint):
                 output['appVersion'] = version
                 metrics['energy_needed'] = energyNeeded
                 metrics['carbonEmissions'] = carbonEmissions
+                metrics['manufacturing_carbonEmissions'] = manufacturing_GWP
+                metrics['manufacturing_abiotic_resources'] = manufacturing_ADP
                 metrics['runTime'] = runTime
                 metrics['power_needed'] = powerNeeded
                 metrics['CE_CPU'] = CE_CPU
                 metrics['CE_GPU'] = CE_GPU
                 metrics['CE_core'] = CE_core
                 metrics['CE_memory'] = CE_memory
+                metrics['manufacturing_CE_CPU'] = manufacturing_GWP_CPU
+                metrics['manufacturing_CE_GPU'] = manufacturing_GWP_GPU
+                metrics['manufacturing_CE_memory'] = manufacturing_GWP_memory
+                metrics['manufacturing_CE_other'] = manufacturing_GWP_other
+                metrics['manufacturing_ADP_CPU'] = manufacturing_ADP_CPU
+                metrics['manufacturing_ADP_GPU'] = manufacturing_ADP_GPU
+                metrics['manufacturing_ADP_memory'] = manufacturing_ADP_memory
+                metrics['manufacturing_ADP_other'] = manufacturing_ADP_other
 
             return output, metrics

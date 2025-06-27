@@ -268,6 +268,16 @@ hr {
     margin-bottom: 20px;
 }
 
+.subform-div {
+    flex-direction: column;
+    font-size: 0.9em;
+}
+
+.subform-input {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
 .form-row > label {
     margin-bottom: 7px;
     width: 100%;
@@ -297,6 +307,30 @@ hr {
 
 .bottom-dropdown {
     margin-top: 5px;
+}
+
+.location-and-custom-carbon-intensity {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-head-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.location-head-row .box-fields {
+    width: 92%;
+}
+
+.location-head-row > label {
+    margin-bottom: 7px;
+    width: 100%;
 }
 
 
@@ -479,6 +513,24 @@ hr {
 .import-error-message {
     margin-top: 6px;
     margin-bottom: 12px;
+}
+
+.error-message-title {
+    margin-bottom: 14px;
+}
+
+.log-error-subtitle {
+    margin-bottom: 8px;
+}
+
+.log-error-content {
+    width:100%;
+    text-align: center;
+    padding: 5px;
+    border: rgb(220, 220, 220);
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 2px;
 }
 
 .import-result{

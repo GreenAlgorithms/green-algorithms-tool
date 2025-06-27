@@ -19,17 +19,16 @@ from dash_iconify import DashIconify
 from dash_extensions.enrich import DashBlueprint, html
 
 from blueprints.form.form_blueprint import FormBlueprint
-from blueprints.import_export.import_export_blueprint import get_import_expot_blueprint
-from blueprints.metrics.metrics_blueprint import get_metrics_blueprint
-from blueprints.methodology.methodology_blueprint import get_methodology_blueprint
+from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
+from blueprints.metrics.metrics_blueprint import MetricsBlueprint
+from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
 
-import blueprints.metrics.metrics_layout as metrics_layout
 import blueprints.metrics.utils as metrics_utils
-import blueprints.methodology.methodology_layout as methodo_layout
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
 
 from utils.graphics import MY_COLORS
 from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
-from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from utils.utils import write_error_message
 
 
 ###################################################
@@ -62,9 +61,9 @@ inference_form = FormBlueprint(
 
 ### WARNING: the csv_flushing_delay below should not be lower than 
 # 2000 milliseconds to avoid rendering bugs of the server fields
-import_export = get_import_expot_blueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
+import_export = ImportExportBlueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_delay=2500) 
 
-methodo_content = get_methodology_blueprint(
+methodo_content = MethodologyBlueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
     additional_formula_content=dcc.Markdown(
         '''
@@ -78,30 +77,182 @@ methodo_content = get_methodology_blueprint(
     )
 )
 
-metrics = get_metrics_blueprint(
+metrics = MetricsBlueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
-    energy_needed_details=metrics_layout.get_metric_per_form_layout(
-        training_id=f'{TRAINING_ID_PREFIX}-energy_needed',
-        inference_id=f'{INFERENCE_ID_PREFIX}-energy_needed',
-    ),
-    carbon_footprint_details=metrics_layout.get_metric_per_form_layout(
-        training_id=f'{TRAINING_ID_PREFIX}-carbon_emissions',
-        inference_id=f'{INFERENCE_ID_PREFIX}-carbon_emissions',
-    )
+    to_add_metrics_details=True,
+    training_id_prefix=TRAINING_ID_PREFIX,
+    inference_id_prefix=INFERENCE_ID_PREFIX
 )
 
 
 ###################################################
-# SOME GLOBAL VARIABLES
-
-image_dir = os.path.join('assets/images')
-data_dir = os.path.join(os.path.abspath(''),'data')
-
-appVersions_options = get_available_versions()
-
-
-###################################################
 # DEFINE APP LAYOUT
+
+def get_training_help_content(title: str):
+    '''
+    This layout is designed to be methodological content located in the
+    'Help' tab of the training form in the AI page. Its purpose is to help the
+    user with the training form requirements.
+    '''
+    return html.Div(
+        [
+            html.H3(title),
+            
+            html.Div(
+                [
+
+                    html.H4('Overall description'),
+
+                    dcc.Markdown(
+                        '''
+                        The training phase of your AI system includes different stages:
+                        R&D experiments, the final training of your model, and potential retraining runs 
+                        (more details are given below).
+                        
+                        We invite you to include all these stages in this form. 
+                        __Start by filling-in the form based on the main training run.
+                        Then use the input fields available at the bottom of the form to 
+                        estimate the impact of R&D training and/or retraining__.
+                        Some R&D use cases are illustrated in more details below. 
+
+                        This approach may not work for all cases (e.g. if retraining is done with different
+                        hardware) but it offers a reasonable estimate. 
+                        Besides, there is always the option of rerunning the calculator separately.
+                        ''',
+                        className='form-help-markdown'
+                    ),
+                ],
+                className='form-help-subsection',
+            ),
+
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div'
+            ),
+
+            html.Div(
+                [
+                    html.H4('Definitions and practical tips'),
+
+                    dcc.Markdown(
+
+                        ''' 
+                        __Main/final training stage__: the computations performed to achieve the final model 
+                        of your AI solution. 
+                        It can either correspond to training from scratch a custom model 
+                        or fine-tuning an existing model.
+
+                        __R&D training__: the compute involved in the research and development phase before the 
+                        final run (e.g. hyper-parameters search).
+                        This is included by added R&D as a fraction of the training time, 
+                        e.g. enter 2 if you assume that in total R&D represents 
+                        double the compute resources of the final run. 
+                        There is no typical value for that, from a small fraction in case of 
+                        well defined straightforward models to hundreds in more complex models requiring 
+                        extensive searches. For example, when studying a 176 billon parameters LLM,
+                        Luccioni et al. \[1\] estimated that intermediate models training and evaluation accounted 
+                        for approximately 150% of their main training consumption.
+                        
+                        __Retraining__: any additional training runs performed after the deployment of your AI system.
+                        For consistent reporting, you are invited to take into account all retraining happening 
+                        over your reporting period.
+                        '''
+                    ),
+
+                    dcc.Markdown(
+                        '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, '
+                        '“Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal '
+                        'of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+                        className='footnote citation-report',
+                        style={'margin-top': '8px'}
+                    ),
+                ],
+                className='form-help-subsection',
+            ),
+        ],
+        className='form-help-container pretty-container container'
+    )
+
+
+def get_inference_help_content(title: str):
+    '''
+    This layout is designed to be methodological content located in the
+    'Help' tab of the inference form in the AI page. Its purpose is to help the
+    user with the inference form requirements.
+    '''
+    return html.Div(
+        [
+            html.H3(title),
+
+            html.Div(
+                [
+                    html.H4('Overall description'),
+
+                    dcc.Markdown(
+                        '''
+                        This is to quantify the environmental impacts of the inference phase of your AI system.
+                        __We distinguish between two types of inference: block, or one-shot, inference 
+                        (you make predictions once and for all)  and continuous inference 
+                        (the model makes predictions continuously over time, e.g. a chatbot)__.
+
+                        By default, the form is in 'block inference' mode but you can activate 
+                        the continuous mode using the switch at the top.
+                        '''
+                    )
+                ],
+                className='form-help-subsection',
+            ),
+
+            html.Div(
+                [
+                    html.Hr(),
+                ],
+                className='Hr_div',
+            ),
+
+            html.Div(
+                [
+                    html.H4('Definitions and practical tips'),
+
+                    dcc.Markdown(
+                        '''
+                        __Block (one-shot) inference__: for a system where prediction is made on a one-off basis 
+                        (or repeated occasionally).
+                        It may be used to process a data set as a whole or to build one-day or one-week strategy. 
+                        If multiple block inferences happen over your reporting period, 
+                        we invite you to quantify the resource needs for one inference block 
+                        and then to use the multiplicative factor.
+                        ''',
+                        style={'margin-bottom': '6px'}
+                    ),
+
+                    dcc.Markdown(
+                        '''
+                        __Continuous inference__: corresponds to an AI service that is requested on demand 
+                        by users or other software systems (e.g. chatbot). 
+                        This inference workload does not follow a strict scheduling, making it harder to quantify. 
+                        In this mode, we invite you to estimate the resource usage 
+                        over a period of time of your choice, the so-called "input data time span”. 
+                        The results are then scaled up over the total reporting period. 
+                        For instance, if choosing a reporting scope of 1 year and filling 
+                        the form in continuous inference mode with an `input data time span` of 1 month,
+                        then your environmental impacts correspond to the monthly results multiplied by 12.
+                        
+                        It is worth keeping in mind that __the reporting period only impacts the results
+                        in the 'continuous inference' situation__.
+                        ''',
+                        # style={'margin-bottom': '12px'}
+                    ),
+
+                ],
+                className='form-help-subsection',
+            )
+        ],
+        className='form-help-container container'
+    )
+
 
 def get_ai_page_layout():
     page_layout = html.Div(
@@ -187,18 +338,6 @@ def get_ai_page_layout():
                                         ],
                                         className='box-fields'
                                     ),
-
-                                    # I don't think a tooltip is needed there
-                                    # html.Div(
-                                    #     [
-                                    #         html.Div('i', className='tooltip-icon'),
-                                    #         html.P(
-                                    #             "Fill in your reporting period.",
-                                    #             className='tooltip-text'
-                                    #         ),
-                                    #     ],
-                                    #     className='tooltip',
-                                    # ),
                                 ],
                                 className="reporting-row short-input"
                             ),
@@ -210,7 +349,7 @@ def get_ai_page_layout():
 
                     # Variable containing the "final" training related results.
                     # It is computed from the training form's 'form_output_metrics'
-                    #  and the retrainings/R&D training fields
+                    # and the retrainings/R&D training fields
                     dcc.Store(id='training_processed_output_metrics'),
 
                     dmc.Tabs(
@@ -234,7 +373,7 @@ def get_ai_page_layout():
                                 ]
                             ),
                             dmc.TabsPanel(children=training_form.embed(AI_PAGE), value='form'),
-                            dmc.TabsPanel(children=methodo_layout.get_training_help_content(''), value='help'),
+                            dmc.TabsPanel(children=get_training_help_content(''), value='help'),
                         ],
                         value="form",
                         className='tab-container',
@@ -268,7 +407,7 @@ def get_ai_page_layout():
                                 ]
                             ),
                             dmc.TabsPanel(children=inference_form.embed(AI_PAGE), value='form'),
-                            dmc.TabsPanel(children=methodo_layout.get_inference_help_content(''), value='help'),
+                            dmc.TabsPanel(children=get_inference_help_content(''), value='help'),
                         ],
                         value="form",
                         className='tab-container',
@@ -333,7 +472,15 @@ def forward_imported_content_to_form(
     """
     Read input from uploaded CSV, split data between training and inference forms.
     Process specific inputs such as retraining, R&D training and continuous inference related fields.
-    Then process and check content, filtering wrong inputs and displaying error message if required.
+    Then process and check content, filtering wrong inputs and displaying error message if required
+    for both the training and inference data.
+
+    The error message is designed so the user better knows what to do
+    in order to fix its csv. Details are given regarding the nature of the error
+    and the fields of the csv containing the error. However, there is a very
+    wide range of error kinds and we do not pretend to cover all of them.
+    We focus on the use cases that are more likely.
+    TODO: create an 'unknow_inputs' category.
     """
     show_err_mess = False
     input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
@@ -353,44 +500,65 @@ def forward_imported_content_to_form(
     
     # If input data could be read, we check its validity and consistency
     else:
-        mess_subtitle = ''
+        # Default error subtitle information
+        mess_subtitle = '''
+                            **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
+                            See below for more details** 
+
+                            If you are trying to import a csv file from previous versions, the easiest way to fix this is to manually
+                            input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
+                            csv file from the home page into the AI page, which does not work.
+                        '''
         # Processing inputs specific to the AI page
-        # TODO: improve the error message based on the different error categories
         ai_page_specific_inputs_keys = [
             'reporting_time_scope_unit', 'reporting_time_scope_value', 'R&D_radio', 'R&D_MF_value',
             'retrainings_radio', 'retrainings_number_input', 'retrainings_MF_value', 'continuous_inference_switcher',
             'input_data_time_scope_unit', 'input_data_time_scope_val'
         ]
-        clean_AI_inputs, invalid_AI_inputs = validate_ai_page_specific_inputs(input_dict=input_data, keys_of_interest=ai_page_specific_inputs_keys)
+        missing_ai_inputs = list(set(ai_page_specific_inputs_keys).difference(set(input_data.keys())))
+        keys_of_interest = list(set(ai_page_specific_inputs_keys).difference(set(missing_ai_inputs)))
+        clean_AI_inputs, invalid_AI_inputs = validate_ai_page_specific_inputs(input_data, keys_of_interest)
         for key in ai_page_specific_inputs_keys:
             if key not in clean_AI_inputs:
                 clean_AI_inputs[key] = AI_PAGE_DEFAULT_VALUES[key]
+        # Building the corresponding error message
+        show_err_mess, mess_content = write_error_message(missing_ai_inputs, list(invalid_AI_inputs.keys()))
+        if show_err_mess:
+            mess_content = '**Overall: **' + mess_content
         # Processing training data
         training_input_data = {key.replace(f'{TRAINING_ID_PREFIX}-', ''): value for key, value in input_data.items() if TRAINING_ID_PREFIX in key}
         if 'appVersion' in input_data:
             training_input_data['appVersion'] = input_data['appVersion']
-        clean_training_input_data, invalid_training_inputs, app_version = read_base_form_inputs_from_csv(training_input_data)
+        clean_training_input_data, invalid_training_inputs, missing_training_inputs, app_version = read_base_form_inputs_from_csv(training_input_data)
+        # We want to detect whether an imported csv has been produced before we implemented the manufacturing impacts
+        # because at that time the fields 'TDPcpu' and 'TDPgpu' were actually per core values, which is not anymore
+        # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
+        if ('CPU_model_n_cores' in missing_training_inputs) and ('CPU_die_area' in missing_training_inputs):
+            mess_subtitle = '''
+                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
+                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
+                            in the calculator and reexport a fresh csv.** 
+                        '''
         invalid_training_inputs = filter_wrong_inputs(clean_training_input_data, invalid_training_inputs)
+        # Building the corresponding error message
+        training_show_err_mess, training_mess_content = write_error_message(missing_training_inputs, invalid_training_inputs)
+        if training_show_err_mess:
+            show_err_mess = True
+            mess_content = mess_content +  ' **Training: **' + training_mess_content
         # Processing inference data
         inference_input_data = {key.replace(f'{INFERENCE_ID_PREFIX}-', ''): value for key, value in input_data.items() if INFERENCE_ID_PREFIX in key}
         if 'appVersion' in input_data:
             inference_input_data['appVersion'] = input_data['appVersion']
-        clean_inference_input_data, invalid_inference_inputs, _ = read_base_form_inputs_from_csv(inference_input_data)
+        clean_inference_input_data, invalid_inference_inputs, missing_inference_inputs, _ = read_base_form_inputs_from_csv(inference_input_data)
         invalid_inference_inputs = filter_wrong_inputs(clean_inference_input_data, invalid_inference_inputs)
-        # Building error message
-        if len(invalid_training_inputs) or len(invalid_inference_inputs) or len(invalid_AI_inputs):
+        # Building the corresponding error message
+        # We could do the same test as above to check fi the
+        #  imported csv comes from a previous version
+        inference_show_err_mess, inference_mess_content = write_error_message(missing_inference_inputs, invalid_inference_inputs)
+        if inference_show_err_mess:
             show_err_mess = True
-            mess_subtitle += f'\n\nThere seems to be some typos in the csv columns name or ' \
-                             f'inconsistencies in its values. We use default values for the following fields. \n'
-            if len(invalid_AI_inputs):
-                mess_content += 'Regarding the AI page specific inputs: '
-                mess_content += f"{', '.join(list(invalid_AI_inputs.keys()))}. \n"
-            if len(invalid_training_inputs):
-                mess_content += 'For the training form: '
-                mess_content += f"{', '.join(list(invalid_training_inputs.keys()))}. \n"
-            if len(invalid_inference_inputs):
-                mess_content += 'For the inference form: '
-                mess_content += f"{', '.join(list(invalid_inference_inputs.keys()))}."
+            mess_content = mess_content +  ' **Inference:** ' + inference_mess_content
         return (
             clean_training_input_data, 
             clean_inference_input_data, 
@@ -647,6 +815,8 @@ def forward_form_input_to_export_module(
     # Add aggregated results
     forms_aggregate_data['tot_energy_needed'] = ai_aggregated_results['energy_needed']
     forms_aggregate_data['tot_carbonEmissions'] = ai_aggregated_results['carbonEmissions']
+    forms_aggregate_data['tot_manufacturing_carbonEmissions'] = ai_aggregated_results['manufacturing_carbonEmissions']
+    forms_aggregate_data['tot_manufacturing_abiotic_resources'] = ai_aggregated_results['manufacturing_abiotic_resources']
     return forms_aggregate_data
 
 
@@ -705,10 +875,14 @@ def process_inference_form_outputs_based_on_reporting_scope(
         mult_coef = input_scope_mutiplicative_factor * reporting_multiplicative_factor
     else:
         mult_coef = 1
-    processed_inference_metrics['energy_needed_before_scaling'] =  inference_form_metrics['energy_needed']
     processed_inference_metrics['energy_needed'] = mult_coef * inference_form_metrics['energy_needed']
-    processed_inference_metrics['carbonEmissions_before_scaling'] =  inference_form_metrics['carbonEmissions']
     processed_inference_metrics['carbonEmissions'] = mult_coef * inference_form_metrics['carbonEmissions']
+    processed_inference_metrics['manufacturing_carbonEmissions'] = mult_coef * inference_form_metrics['manufacturing_carbonEmissions']
+    processed_inference_metrics['manufacturing_abiotic_resources'] = mult_coef * inference_form_metrics['manufacturing_abiotic_resources']
+    processed_inference_metrics['energy_needed_before_scaling'] =  inference_form_metrics['energy_needed']
+    processed_inference_metrics['carbonEmissions_before_scaling'] =  inference_form_metrics['carbonEmissions']
+    processed_inference_metrics['manufacturing_carbonEmissions_before_scaling'] = inference_form_metrics['manufacturing_carbonEmissions']
+    processed_inference_metrics['manufacturing_abiotic_resources_before_scaling'] = inference_form_metrics['manufacturing_abiotic_resources']
     return processed_inference_metrics
     
 
@@ -752,14 +926,18 @@ def add_retrainings_and_RandD_to_training_outputs(
         RandD_MF_val = 0
     # Add values to main training metrics
     detailed_training_metrics = {}
-    detailed_training_metrics['main_energy_needed'] = training_form_metrics['energy_needed']
-    detailed_training_metrics['R&D_energy_needed'] = training_form_metrics['energy_needed'] * RandD_MF_val 
-    detailed_training_metrics['retrainings_energy_needed'] = training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val
     detailed_training_metrics['energy_needed'] = training_form_metrics['energy_needed'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
-    detailed_training_metrics['main_carbonEmissions'] = training_form_metrics['carbonEmissions']
-    detailed_training_metrics['R&D_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  RandD_MF_val 
-    detailed_training_metrics['retrainings_carbonEmissions'] = training_form_metrics['carbonEmissions'] *  retraining_MF_val * retraining_number_val
     detailed_training_metrics['carbonEmissions'] = training_form_metrics['carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
+    detailed_training_metrics['manufacturing_carbonEmissions'] = training_form_metrics['manufacturing_carbonEmissions'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
+    detailed_training_metrics['manufacturing_abiotic_resources'] = training_form_metrics['manufacturing_abiotic_resources'] * (1 + RandD_MF_val + retraining_MF_val * retraining_number_val)
+    if detailed_training_metrics['energy_needed'] > 0:
+        detailed_training_metrics['main_training_share'] = training_form_metrics['energy_needed'] / detailed_training_metrics['energy_needed'] 
+        detailed_training_metrics['R&D_share'] = (training_form_metrics['energy_needed'] * RandD_MF_val ) / detailed_training_metrics['energy_needed']
+        detailed_training_metrics['retrainings_share'] = (training_form_metrics['energy_needed'] * retraining_MF_val * retraining_number_val) / detailed_training_metrics['energy_needed']
+    else: 
+        detailed_training_metrics['main_training_share'] = 0
+        detailed_training_metrics['R&D_share'] = 0
+        detailed_training_metrics['retrainings_share'] = 0
     return detailed_training_metrics
 
 
@@ -773,9 +951,13 @@ def add_retrainings_and_RandD_to_training_outputs(
 def forward_aggregate_results_from_forms_to_metrics(training_form_metrics, inference_form_metrics,):
     tot_energy_needed = training_form_metrics['energy_needed'] + inference_form_metrics['energy_needed']
     tot_carbon_emissions = training_form_metrics['carbonEmissions'] + inference_form_metrics['carbonEmissions']
+    tot_manufacturing_carbonEmissions = training_form_metrics['manufacturing_carbonEmissions'] + inference_form_metrics['manufacturing_carbonEmissions']
+    tot_manufacturing_abiotic_resources = training_form_metrics['manufacturing_abiotic_resources'] + inference_form_metrics['manufacturing_abiotic_resources']
     return {
         'energy_needed': tot_energy_needed,
         'carbonEmissions': tot_carbon_emissions,
+        'manufacturing_carbonEmissions': tot_manufacturing_carbonEmissions,
+        'manufacturing_abiotic_resources': tot_manufacturing_abiotic_resources,
     }
 
 ### DETAILED METRICS PER FORM
