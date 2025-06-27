@@ -1406,7 +1406,7 @@ class FormBlueprint(DashBlueprint):
                 Input('versioned_data','data')
             ]
         )
-        def set_server_options(selected_provider,selected_continent, data):
+        def set_server_options(selected_provider, selected_continent, data):
             """
             List of options for servers, based on provider and continent
             """
