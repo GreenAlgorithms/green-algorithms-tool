@@ -1232,7 +1232,7 @@ class FormBlueprint(DashBlueprint):
                 platformType_options = [
                     {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
                                             [('personal_laptop', 'Personal laptop')] +
-                                            [('personal_workstation', 'Personal workstation')] +
+                                            [('desktop_computer', 'Desktop computer')] +
                                             [('localServer', 'Local server')]
                 ]
                 return platformType_options
@@ -2120,10 +2120,10 @@ class FormBlueprint(DashBlueprint):
                 defaultPUE = data_dict.pueDefault_dict['Unknown']
 
                 ### PUE and HARDWARE LIFESPAN
-                if selected_platform in ['personal_workstation', 'personal_laptop']:
+                if selected_platform in ['desktop_computer', 'personal_laptop']:
                     PUE_used = 1
-                    if selected_platform == 'personal_workstation':
-                        hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_workstation']
+                    if selected_platform == 'desktop_computer':
+                        hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_desktop_computer']
                     else:
                         hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_laptop']
                 elif selected_platform == 'localServer':
@@ -2241,12 +2241,12 @@ class FormBlueprint(DashBlueprint):
                 # If a personal computer is used, we consider that its other resources are fully dedicated to the 
                 # computation during it. Otherwise, we apply a multiplier based on the ratio of the number of cores
                 # used over the number of cores contained in a server.
-                # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation' which is quite unlikely.
-                if selected_platform == 'personal_workstation':
+                # TODO: maybe prompt the user when several GPUs are used along with a 'desktop_computer' which is quite unlikely.
+                if selected_platform == 'desktop_computer':
                     # GWP
-                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_gwp']
+                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['desktop_computer_base_impact_gwp']
                     # ADP
-                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_adp']
+                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['desktop_computer_base_impact_adp']
                 elif selected_platform == 'personal_laptop':
                     # GWP
                     manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['laptop_base_impact_gwp']

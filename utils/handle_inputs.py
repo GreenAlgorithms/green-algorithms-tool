@@ -313,12 +313,12 @@ def load_data(data_dir: str, version: str):
             'assembly_impact_adp': 0,
             'laptop_base_impact_gwp': 0,
             'laptop_base_impact_adp': 0,
-            'workstation_base_impact_gwp': 0,
-            'workstation_base_impact_adp': 0,
+            'desktop_computer_base_impact_gwp': 0,
+            'desktop_computer_base_impact_adp': 0,
             'active_lifespan_local_server': 1,
             'active_lifespan_cloud_server': 1,
             'active_lifespan_laptop': 1,
-            'active_lifespan_workstation': 1,
+            'active_lifespan_desktop_computer': 1,
             'nb_CPU_per_server': 2,
             'nb_GPU_local_per_server': 2,
             'nb_GPU_cloud_per_server': 4,
@@ -472,7 +472,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         platformType_options = [
             {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
                                     [('personal_laptop', 'Personal laptop')] +
-                                    [('personal_workstation', 'Personal workstation')] +
+                                    [('desktop_computer', 'Desktop computer')] +
                                     [('localServer', 'Local server')]
         ]
     else:
