@@ -271,7 +271,7 @@ class FormBlueprint(DashBlueprint):
                                     dmc.Switch(
                                         size="lg",
                                         radius="xl",
-                                        label="Apply continuous inference scheme",
+                                        label=translatable_div_text("Apply_continuous_inference_scheme").embed(self),
                                         checked=False,
                                         id='continuous_inference_scheme_switcher',
                                         className = 'continuous-switcher'
@@ -280,13 +280,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "See the Help tab for more information about continuous inference. "
-                                                "If chosen, then only report the computations falling "
-                                                "within your ‘input data time span’. "
-                                                "Scaling to the reporting period is done automatically.",
-                                                className='tooltip-text'
-                                            ),
+                                            html.P(translatable_markdown_text("continuous_inference_tooltip").embed(self), className='tooltip-text'),
                                         ],
                                         className='tooltip',
                                     ),
@@ -296,7 +290,7 @@ class FormBlueprint(DashBlueprint):
 
                             html.Div(
                                 [
-                            html.Label("Input data time span"),
+                            html.Label(translatable_div_text("Input_data_time_span").embed(self)),
 
                             dcc.Input(
                                 type='number',
@@ -327,10 +321,7 @@ class FormBlueprint(DashBlueprint):
                             html.Div(
                                 [
                                     html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "The `input data time span` is the length of time over which you are able "
-                                        "to estimate your resource usage for continuous inference.",
-                                        className='tooltip-text'
+                                    html.P(translatable_markdown_text("input_data_time_span_tooltip").embed(self), className='tooltip-text'
                                     ),
                                 ],
                                 className='tooltip',
@@ -354,7 +345,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Runtime (HH:MM)"),
+                    html.Label(translatable_div_text("Runtime_label").embed(self)),
 
                     html.Div(
                         [
@@ -388,7 +379,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Type of cores"),
+                    html.Label(translatable_div_text("Type_of_cores_label").embed(self)),
 
                     html.Div(
                         [
@@ -404,7 +395,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Select the type of hardware used.",
+                                translatable_div_text("Type_of_cores_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -418,14 +409,11 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.H3(
-                        "CPUs",
-                        id='title_CPU',
-                    ),
+                    html.H3("CPUs", id='title_CPU'),
 
                     html.Div(
                         [
-                            html.Label("Number of cores used"),
+                            html.Label(translatable_div_text("Number_of_cores_used").embed(self)),
 
                             dcc.Input(
                                 type='number',
@@ -437,7 +425,7 @@ class FormBlueprint(DashBlueprint):
                                 [
                                     html.Div('i', className='tooltip-icon'),
                                     html.P(
-                                        "Refers to the number of cores used (a single CPU contains several cores).",
+                                        translatable_div_text("CPU_number_used_tooltip").embed(self),
                                         className='tooltip-text'
                                     ),
                                 ],
@@ -451,7 +439,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div(
                                 [
-                                    html.Label("Model"),
+                                    html.Label(translatable_div_text("Model").embed(self)),
 
                                     html.Div(
                                         [
@@ -467,11 +455,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "Select 'Average' to run the calculator with the average CPU specs. If you want to enter custom "
-                                                "CPU characteristics, please select 'I can't find my CPU' at the top of the list.",
-                                                className='tooltip-text'
-                                            ),
+                                            html.P(translatable_markdown_text('cpu_model_tooltip').embed(self), className='tooltip-text'),
                                         ],
                                         className='tooltip',
                                     ),
@@ -484,15 +468,13 @@ class FormBlueprint(DashBlueprint):
 
                             html.Div(
                                 [
-                                    html.P(
-                                        'If your CPU is not in the list, you can manually input the few key specs used by the calculator.\n' \
-                                        ' Pre-filled values are average ones.',
+                                    html.P(translatable_markdown_text('custom_cpu_title').embed(self),
                                         style={'font-size': '0.9em'}
                                     ),
 
                                     html.Div(
                                         [
-                                            html.Label('Number of cores'),
+                                            html.Label(translatable_div_text('Number_of_cores').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -503,8 +485,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(
-                                                        "Refers to the number of cores of the CPU model. It is not the number of cores used.",
+                                                    html.P(translatable_div_text("Number_of_cores_tooltip").embed(self),
                                                         className='tooltip-text'
                                                     ),
                                                 ],
@@ -517,7 +498,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label('TDP (in Watt)'),
+                                            html.Label(translatable_div_text('TDP_(in_Watt)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -528,10 +509,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(
-                                                        "The TDP is the Thermal Design Power (TDP) of your CPU, in Watt. It is not a 'per core' value.",
-                                                        className='tooltip-text'
-                                                    ),
+                                                    html.P(translatable_div_text("TDP_tooltip").embed(self),  className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -542,7 +520,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label('Die area (in cm2)'),
+                                            html.Label(translatable_div_text('Die_area_(in_cm2)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -553,10 +531,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(
-                                                        "The die area of your CPU is expected in cm2. Should include the I/O die size.",
-                                                        className='tooltip-text'
-                                                    ),
+                                                    html.P(translatable_div_text('die_area_tooltip').embed(self), className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -581,14 +556,11 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.H3(
-                        "GPUs",
-                        id='title_GPU',
-                    ),
+                    html.H3("GPUs", id='title_GPU'),
 
                     html.Div(
                         [
-                            html.Label("Number of GPUs used"),
+                            html.Label(translatable_div_text("Number_of_GPUs_used").embed(self)),
 
                             dcc.Input(
                                 type='number',
@@ -599,10 +571,7 @@ class FormBlueprint(DashBlueprint):
                             html.Div(
                                 [
                                     html.Div('i', className='tooltip-icon'),
-                                    html.P(
-                                        "Refers to the number of GPUs used (no cores here).",
-                                        className='tooltip-text'
-                                    ),
+                                    html.P(translatable_div_text("Number_of_GPUs_used_tooltip").embed(self), className='tooltip-text'),
                                 ],
                                 className='tooltip',
                             ),
@@ -614,7 +583,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div(
                                 [
-                                    html.Label("Model"),
+                                    html.Label(translatable_div_text("Model").embed(self)),
 
                                     html.Div(
                                         [
@@ -630,10 +599,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(
-                                                "Select 'Average' to run the calculator with the average GPU specs. If you want to enter custom "
-                                                "GPU characteristics, please select 'I can't find my GPU' at the top of the list.",
-                                                className='tooltip-text'
+                                            html.P(translatable_markdown_text('gpu_model_tooltip').embed(self), className='tooltip-text'
                                             ),
                                         ],
                                         className='tooltip',
@@ -646,15 +612,11 @@ class FormBlueprint(DashBlueprint):
 
                             html.Div(
                                 [
-                                    html.P(
-                                        'If your GPU is not in the list, you can manually input the few key specs used by the calculator.\n' \
-                                        ' Pre-filled values are average ones.',
-                                        style={'font-size': '0.9em'}
-                                    ),
+                                    html.P(translatable_markdown_text('custom_gpu_title').embed(self), style={'font-size': '0.9em'}),
 
                                     html.Div(
                                         [
-                                            html.Label('TDP (in Watt)'),
+                                            html.Label(translatable_div_text('TDP_(in_Watt)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -665,10 +627,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(
-                                                        "The TDP is the Thermal Design Power (TDP) of your GPU, in Watt.",
-                                                        className='tooltip-text'
-                                                    ),
+                                                    html.P(translatable_div_text("gpu_TDP_tooltip").embed(self) , className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -679,7 +638,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label('Die area (in cm2)'),
+                                            html.Label(translatable_div_text('Die_area_(in_cm2)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -690,10 +649,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(
-                                                        "The die size of your GPU is expected in cm2.",
-                                                        className='tooltip-text'
-                                                    ),
+                                                    html.P(translatable_div_text("gpu_die_area_tooltip").embed(self), className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -704,7 +660,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label('Memory (in GB)'),
+                                            html.Label(translatable_div_text('GPU_memory_(in_GB)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -715,10 +671,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(
-                                                        "The GPU memory size.",
-                                                        className='tooltip-text'
-                                                    ),
+                                                    html.P(translatable_div_text("Memory_gpu_tooltip").embed(self), className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -750,7 +703,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Memory available (in GB)"),
+                    html.Label(translatable_div_text("Memory_available").embed(self)),
 
                     dcc.Input(
                         type='number',
@@ -761,11 +714,7 @@ class FormBlueprint(DashBlueprint):
                     html.Div(
                         [
                             html.Div('i', className='tooltip-icon'),
-                            html.P(
-                                "Refers to the total memory allocated to the task, "
-                                "not the memory actually used.",
-                                className='tooltip-text'
-                            ),
+                            html.P(translatable_div_text("Memory_tooltip").embed(self), className='tooltip-text'),
                         ],
                         className='tooltip',
                     ),
@@ -785,7 +734,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Select the platform used for the computations"),
+                    html.Label(translatable_div_text("Select_the_platform_used").embed(self)),
 
                     html.Div(
                         [
@@ -800,11 +749,7 @@ class FormBlueprint(DashBlueprint):
                     html.Div(
                         [
                             html.Div('i', className='tooltip-icon'),
-                            html.P(
-                                "This field is used to retrieve specific data centre efficiency metrics "
-                                "and location energy mixes.",
-                                className='tooltip-text'
-                            ),
+                            html.P(translatable_div_text("Select_the_platform_tooltip").embed(self), className='tooltip-text'),
                         ],
                         className='tooltip',
                     ),    

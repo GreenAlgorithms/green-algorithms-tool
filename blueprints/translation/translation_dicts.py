@@ -92,6 +92,153 @@ TRANSLATIONS_DICT = {
             ''',
     },
 
+    ### Runtime
+
+    "Runtime_label": {
+        "en": "Runtime (HH:MM)",
+        "fr": "Runtime (HH:MM)",
+    },
+
+    ### Cores
+
+    "Type_of_cores_label": {
+        "en": "Type of cores",
+        "fr": "Type of cores",
+    },
+    "Type_of_cores_tooltip": {
+        "en": "Select the type of hardware used.",
+        "fr": "Select the type of hardware used.",
+    },
+
+    # CPUs
+
+    "Number_of_cores_used": {
+        "en": "Number of cores used",
+        "fr": "Number of cores used",
+    },
+    "CPU_number_used_tooltip": {
+        "en": "Refers to the number of cores used (a single CPU contains several cores).",
+        "fr": "Refers to the number of cores used (a single CPU contains several cores).",
+    },
+    "Model": {
+        "en": "Model",
+        "fr": "Modèle",
+    },
+    "cpu_model_tooltip": {
+        "en": '''
+                Select 'Average' to run the calculator with the average CPU specs. If you want to enter custom  
+                CPU characteristics, please select 'I can't find my CPU' at the top of the list.
+            ''',
+        "fr": '''
+                Select 'Average' to run the calculator with the average CPU specs. If you want to enter custom  
+                CPU characteristics, please select 'I can't find my CPU' at the top of the list.
+            ''',
+    },
+    "custom_cpu_title": {
+        "en": '''
+                If your CPU is not in the list, you can manually input the few key specs used by the calculator. 
+                Pre-filled values are average ones.
+            ''',
+        "fr": '''
+                If your CPU is not in the list, you can manually input the few key specs used by the calculator. 
+                Pre-filled values are average ones.
+            ''',
+    },
+    "Number_of_cores": {
+        "en": "Number of cores",
+        "fr": "Number of cores",
+    },
+    "Number_of_cores_tooltip": {
+        "en": "Refers to the number of cores of the CPU model. It is not the number of cores used.",
+        "fr": "Refers to the number of cores of the CPU model. It is not the number of cores used.",
+    },
+    "TDP_(in_Watt)": {
+        "en": "TDP (in Watt)",
+        "fr": "TDP (in Watt)",
+    },
+    "TDP_tooltip": {
+        "en": "The TDP is the Thermal Design Power (TDP) of your CPU, in Watt. It is not a 'per core' value.",
+        "fr": "The TDP is the Thermal Design Power (TDP) of your CPU, in Watt. It is not a 'per core' value.",
+    },
+    "Die_area_(in_cm2)": {
+        "en": "Die area (in cm2)",
+        "fr": "Die area (in cm2)",
+    },
+    "die_area_tooltip": {
+        "en": "The die area of your CPU is expected in cm2. Should include the I/O die size.",
+        "fr": "The die area of your CPU is expected in cm2. Should include the I/O die size.",
+    },
+
+    # GPUs
+
+    "Number_of_GPUs_used": {
+        "en": "Number of GPUs used",
+        "fr": "Number of GPUs used",
+    },
+    "Number_of_GPUs_used_tooltip": {
+        "en": "Refers to the number of GPUs used (no cores here).",
+        "fr": "Refers to the number of GPUs used (no cores here).",
+    },
+    "gpu_model_tooltip": {
+        "en": '''
+                Select 'Average' to run the calculator with the average GPU specs. If you want to enter custom  
+                GPU characteristics, please select 'I can't find my GPU' at the top of the list.
+            ''',
+        "fr": '''
+                Select 'Average' to run the calculator with the average GPU specs. If you want to enter custom  
+                GPU characteristics, please select 'I can't find my GPU' at the top of the list.
+            ''',
+    },
+    "custom_gpu_title": {
+        "en": '''
+                If your GPU is not in the list, you can manually input the few key specs used by the calculator.
+                Pre-filled values are average ones.
+            ''',
+        "fr": '''
+                If your GPU is not in the list, you can manually input the few key specs used by the calculator.
+                Pre-filled values are average ones.
+            ''',
+    },
+    "gpu_TDP_tooltip": {
+        "en": "The TDP is the Thermal Design Power (TDP) of your GPU, in Watt.",
+        "fr": "The TDP is the Thermal Design Power (TDP) of your GPU, in Watt.",
+    },
+    "gpu_die_area_tooltip": {
+        "en": "The die size of your GPU is expected in cm2.",
+        "fr": "The die size of your GPU is expected in cm2.",
+    },
+    "GPU_memory_(in_GB)": {
+        "en": "Memory (in GB)",
+        "fr": "Memory (in GB)",
+    },
+    "Memory_gpu_tooltip": {
+        "en": "The GPU memory size.",
+        "fr": "The GPU memory size.",
+    },
+
+    ### Memory
+
+    "Memory_available": {
+        "en": "Memory available (in GB)",
+        "fr": "Memory available (in GB)",
+    },
+    "Memory_tooltip": {
+        "en": "Refers to the total memory allocated to the task, not the memory actually used.",
+        "fr": "Refers to the total memory allocated to the task, not the memory actually used.",
+    },
+
+    ### Computing platform
+
+    "Select_the_platform_used": {
+        "en": "Select the platform used for the computations",
+        "fr": "Select the platform used for the computations",
+    },
+    "Select_the_platform_tooltip": {
+        "en": "This field is used to retrieve specific data centre efficiency metricsand location energy mixes.",
+        "fr": "This field is used to retrieve specific data centre efficiency metricsand location energy mixes.",
+    },
+
+
     ### AI PAGE ###
 
     ### TRAINING FORM
@@ -123,6 +270,40 @@ TRANSLATIONS_DICT = {
                 or overall tips regarding your reporting, please refer to the Help tab..
             ''',
     },
+
+    ### Continuous inference section
+
+    "Apply_continuous_inference_scheme": {
+        "en": "Apply continuous inference scheme",
+        "fr": "Apply continuous inference scheme",
+    },
+    "continuous_inference_tooltip": {
+        "en": '''
+                See the Help tab for more information about continuous inference. 
+                If chosen, then only report the computations falling within your ‘input data time span’. 
+                Scaling to the reporting period is done automatically.
+            ''',
+        "fr": '''
+                See the Help tab for more information about continuous inference. 
+                If chosen, then only report the computations falling within your ‘input data time span’. 
+                Scaling to the reporting period is done automatically.
+            ''',
+    },
+    "Input_data_time_span": {
+        "en": "Input data time span",
+        "fr": "Input data time span",
+    },
+    "input_data_time_span_tooltip": {
+        "en": '''
+                The `input data time span` is the length of time over which you are able 
+                to estimate your resource usage for continuous inference.
+            ''',
+        "fr": '''
+                The `input data time span` is the length of time over which you are able 
+                to estimate your resource usage for continuous inference.
+            ''',
+    },
+
 
     #### APP FOOTER ####
 
