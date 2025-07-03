@@ -136,9 +136,8 @@ class ImportExportBlueprint(DashBlueprint):
             file_suffixe = ''
             if ctx.triggered_id is not None and 'ai-' in ctx.triggered_id:
                 file_suffixe = 'AI'
-            to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
             now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
+            to_export = pd.DataFrame.from_dict(aggregate_data, orient='columns')
             return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{file_suffixe}_{now}.csv", index=False, sep=';')
 
         ################## IMPORT DATA
