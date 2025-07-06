@@ -4,6 +4,7 @@
 *.pyc
 .DS_Store
 .env
+.vscode
 *.psd
 minimal_examples
 

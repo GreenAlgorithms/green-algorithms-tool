@@ -3,11 +3,13 @@ The Green Algorithms calculator is a modularized two-pages application
 fully implemented in [Dash](https://dash.plotly.com/). The code base is organized as follows: 
 
 * the `app.py` script generates and runs the app,
-* the `page\home.py` and `page\\ai.py` scripts define the page-level features of the app,
+* the `pages\home.py` and `pages\\ai.py` scripts define the page-level features of the app,
 * the `blueprints\` scripts implement the calculator modules,
 * the `data\` folder contains the different versions of the backend data,
 * the `assets\` folder contains media and CSS files,
 * the `utils\` consists of Python and Dash utils.
+
+The calculator is a `dash.app` object, that wraps both the app HTML components (its layout) and their logic (the attached callbacks).
 '''
 ### WARNING: Above text is part of the online documentation. Be careful when modifying it.
 
@@ -456,9 +458,23 @@ def display_oldVersion(clicks: int, version: str, oldStyle: dict):
         Input('app_versions_dropdown','value'),
     ],
 )
-def load_data_from_version(_, new_version:str):
+def load_data_from_version(_, new_version:str) -> dict:
     """
-    Loads all the backend data required to propose consistent options to the user.
+    Loads all the backend data required to propose consistent options to 
+    the user and ensures calculator computations can be performed. 
+    This data comes from the csv files stored in the `/data` folder. 
+    
+    It is loaded when the app is launched and then triggers all the callbacks 
+    that require backend data (cores, server, location, carbon intensity and metrics-related callbacks).
+    As the name suggests, this data is versioned to ensure the results replicability across the
+    different versions of the data.
+
+    Args:
+        _ (url_content): non-used argument, but required to trigger the callback when the app is loaded.
+        new_version (str): the data version to load.
+
+    Returns:
+        the only app level variable, containing all the backend data.
     """
     # Collect input version and check validity
     if new_version is None:
@@ -471,7 +487,8 @@ def load_data_from_version(_, new_version:str):
     else:
         new_data = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
 
-    return vars(new_data)
+    versioned_data = vars(new_data)
+    return versioned_data
 
 
 # Loader IO
