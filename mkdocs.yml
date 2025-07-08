@@ -29,7 +29,20 @@ nav:
   - License: license.md
 
 plugins:
-  - mkdocstrings # for automatically filling our markdown files
+  # for automatically filling our markdown files
+  - mkdocstrings: 
+      # global options of the python handler
+      handlers:
+        python:
+          options:
+            # Display the full function path
+            show_root_full_path: true
+            # By default show the source code
+            show_source: true
+            # Show the heading
+            show_root_heading: true
+            # The heading to be like "###"
+            heading_level: 4
   - search # to use the built-in search bar
 
 theme:

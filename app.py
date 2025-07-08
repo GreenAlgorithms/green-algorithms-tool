@@ -69,13 +69,17 @@ AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view
 ###################################################
 ## CREATE NAVBAR
 
-icons_per_page = {'Home': 'fluent-color:home-16', 'Ai': 'streamline:artificial-intelligence-spark'}
-name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
-pages = list(dash.page_registry.values())
-
 appVersions_options = get_available_versions()
 
-pages_navbar = html.Div(
+def get_pages_navbar_layout():
+    '''
+    Defines the navigation bar layout. It relies on the `NavLink` item from the
+    dash_mantine_components library and the built-in navigation feature of dash pages.
+    '''
+    name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
+    pages = list(dash.page_registry.values())
+
+    return html.Div(
     [
         dmc.NavLink(
             label=html.Div(
@@ -88,8 +92,6 @@ pages_navbar = html.Div(
             id=f'{pages[0]["name"]}-navlink',
             className='page-navlink',
         ),
-
-        # dmc.Divider(orientation="vertical", style={'height': '20', '--divider-color': 'rgb(60, 60, 60)'}),
 
         dmc.NavLink(
             label=html.Div(
@@ -146,7 +148,7 @@ versions_choice = html.Div(
     id='versions_div',
 )
 
-
+pages_navbar = get_pages_navbar_layout()
 
 ###################################################
 ## CREATE LAYOUT
@@ -396,6 +398,9 @@ def style_navlink(url_pathname: str):
     """ 
     Once the page is changed (built-in page navigation), this
     callback adapts the css of the navigation labels.
+
+    Args:
+        url_pathname (str): used to retrieve the page that is being displayed.
     """
     # Define the different styles possibilities
     to_be_clicked_style = {'cursor': 'pointer'}

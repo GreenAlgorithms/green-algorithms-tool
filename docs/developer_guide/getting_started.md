@@ -34,13 +34,11 @@ From the developer side, this involves **ensuring the retro-compatibility of new
     # Corresponds to the load_data_from_version callback in app.py
     handler: python
     options:
-        # The heading to be like "###"
-        heading_level: 4
         # Display the full function path
         show_root_full_path: true
-        # Do not display the docstring snippet heading
+        # Show the heading
         show_root_heading: true
-        # We do not want to show the source code
+        # Do not show the source code
         show_source: false
 
 ## Dash
