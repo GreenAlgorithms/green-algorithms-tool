@@ -8,6 +8,8 @@ from utils.utils import custom_prefix_escape
 from utils.graphics import loading_wrapper
 import blueprints.metrics.utils as utils
 
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+
 image_dir = os.path.join('assets/images')
 
 class MetricsBlueprint(DashBlueprint):
@@ -45,7 +47,7 @@ class MetricsBlueprint(DashBlueprint):
 
     def _get_metric_per_form_layout(self, training_id:str, inference_id:str):
         '''
-        The detailled metrics for training and inference phases.
+        The detailed metrics for training and inference phases.
         They are shown as raw textual information below the total impact in the layout.
         It can be used for any impact category.
 
@@ -93,9 +95,7 @@ class MetricsBlueprint(DashBlueprint):
                                         id="carbonEmissions_text",
                                     )),
 
-                                    html.P(
-                                        "Carbon footprint",
-                                    )
+                                    html.P(translatable_div_text("Carbon_footprint").embed(self))
                                 ],
                                 className='caption-icons'
                             ),
@@ -131,9 +131,7 @@ class MetricsBlueprint(DashBlueprint):
                                         id="energy_text",
                                     )),
 
-                                    html.P(
-                                        "Energy needed",
-                                    )
+                                    html.P((translatable_div_text("Energy_needed").embed(self)))
                                 ],
                                 className='caption-icons'
                             ),
@@ -165,9 +163,7 @@ class MetricsBlueprint(DashBlueprint):
                                 id="treeMonths_text",
                             )),
 
-                            html.P(
-                                "Carbon sequestration"
-                            )
+                            html.P(translatable_div_text("Carbon_sequestration").embed(self))
                         ],
                         className='caption-icons'
                     )
@@ -195,9 +191,7 @@ class MetricsBlueprint(DashBlueprint):
                                 id="driving_text",
                             )),
 
-                            html.P(
-                                "in a passenger car",
-                            )
+                            html.P(translatable_div_text("in_a_passenger_car").embed(self))
                         ],
                         className='caption-icons'
                     )
@@ -220,13 +214,9 @@ class MetricsBlueprint(DashBlueprint):
 
                     html.Div(
                         [
-                            loading_wrapper(html.Div(
-                                id="flying_text",
-                            )),
+                            loading_wrapper(html.Div(id="flying_text")),
 
-                            html.P(
-                                id="flying_label",
-                            ),
+                            html.P(id="flying_label"),
                         ],
                         className='caption-icons'
                     )

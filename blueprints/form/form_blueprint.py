@@ -15,6 +15,7 @@ from utils.graphics import MY_COLORS
 
 from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
 from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
+from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 
 appVersions_options = get_available_versions()
 
@@ -79,13 +80,13 @@ class FormBlueprint(DashBlueprint):
                 #### R&D TRAININGS ####
 
                 html.H3(
-                    "R&D TRAINING",
+                    translatable_div_text("R&D_TRAINING_header").embed(self),
                     id='title_RandD_trainings',
                 ),
                 
                 html.Div(
                     [
-                        html.Label("Do you want to add R&D compute time?"),
+                        html.Label(translatable_div_text("R&D_training_label").embed(self)),
                         html.Div(
                             [
                                 dcc.RadioItems(
@@ -108,11 +109,7 @@ class FormBlueprint(DashBlueprint):
                             [
                                 html.Div('i', className='tooltip-icon'),
                                 html.P(
-                                    "Used to add R&D compute to the final training impact. "
-                                    "If in total you estimate your R&D training computes to represent "
-                                    "twice the compute of your final training run, input '2'. "
-                                    "If total R&D is about half of the final run, input '0.5'. "
-                                    "The resulting value will be added to your main training footprint.",
+                                    translatable_markdown_text("R&D_training_tooltip").embed(self),
                                     className='tooltip-text'
                                 ),
                             ],
@@ -133,7 +130,7 @@ class FormBlueprint(DashBlueprint):
                 ),
 
                 html.H3(
-                    "RETRAINING",
+                    translatable_div_text("RETRAINING_header").embed(self),
                     id='title_RandD_trainings',
                 ),
 
@@ -141,7 +138,7 @@ class FormBlueprint(DashBlueprint):
                     [
                         html.Div(
                             [
-                                html.Label("Do you want to add retraining compute time?"),
+                                html.Label(translatable_div_text("retraining_label").embed(self)),
 
                                 html.Div(
                                     [
@@ -158,7 +155,7 @@ class FormBlueprint(DashBlueprint):
                                     [
                                         html.Div('i', className='tooltip-icon'),
                                         html.P(
-                                            "Used if you want to account for model retraining. ",
+                                            translatable_div_text("retraining_tooltip").embed(self),
                                             className='tooltip-text'
                                         ),
                                     ],
@@ -172,7 +169,7 @@ class FormBlueprint(DashBlueprint):
                             [
                                 html.Div(
                                     [
-                                        html.Label("Number of runs"),
+                                        html.Label(translatable_div_text("Number_of_runs_label").embed(self)),
 
                                         dcc.Input(
                                             min=0,
@@ -186,8 +183,7 @@ class FormBlueprint(DashBlueprint):
                                             [
                                                 html.Div('i', className='tooltip-icon'),
                                                 html.P(
-                                                    "Number of times you plan to retrain the model "
-                                                    "over the reporting period.",
+                                                    translatable_div_text("Number_of_runs_tooltip").embed(self),
                                                     className='tooltip-text'
                                                 ),
                                             ],
@@ -199,8 +195,7 @@ class FormBlueprint(DashBlueprint):
 
                                 html.Div(
                                     [
-                                        html.Label("What is the relative runtime of an average retraining run "
-                                                "compared to the main training?"),
+                                        html.Label(translatable_div_text("Running_time_label").embed(self)),
 
                                         dcc.Input(
                                             min=0,
@@ -290,43 +285,42 @@ class FormBlueprint(DashBlueprint):
 
                             html.Div(
                                 [
-                            html.Label(translatable_div_text("Input_data_time_span").embed(self)),
+                                    html.Label(translatable_div_text("Input_data_time_span").embed(self)),
 
-                            dcc.Input(
-                                type='number',
-                                id='input_data_time_scope_input',
-                                min=0.5,
-                                value=1,
-                                step=0.5,
-                            ),
+                                    dcc.Input(
+                                        type='number',
+                                        id='input_data_time_scope_input',
+                                        min=0.5,
+                                        value=1,
+                                        step=0.5,
+                                    ),
 
-                            html.Div(
-                                [
-                                    dcc.Dropdown(
-                                        id='input_data_time_scope_dropdown',
-                                        options=[
-                                                {'label': 'Day(s)', 'value': 'day'},
-                                                {'label': 'Week(s)', 'value': 'week'},
-                                                {'label': 'Month(s)', 'value': 'month'},
-                                                {'label': 'Year(s)', 'value': 'year'},
-                                            ],
-                                        value='year',
-                                        className='dropdown',
-                                        clearable=False,
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(
+                                                id='input_data_time_scope_dropdown',
+                                                options=[
+                                                        {'label': 'Day(s)', 'value': 'day'},
+                                                        {'label': 'Week(s)', 'value': 'week'},
+                                                        {'label': 'Month(s)', 'value': 'month'},
+                                                        {'label': 'Year(s)', 'value': 'year'},
+                                                    ],
+                                                value='year',
+                                                className='dropdown',
+                                                clearable=False,
+                                            ),
+                                        ],
+                                        className='box-fields'
+                                    ),
+
+                                    html.Div(
+                                        [
+                                            html.Div('i', className='tooltip-icon'),
+                                            html.P(translatable_markdown_text("input_data_time_span_tooltip").embed(self), className='tooltip-text'),
+                                        ],
+                                        className='tooltip',
                                     ),
                                 ],
-                                className='box-fields'
-                            ),
-
-                            html.Div(
-                                [
-                                    html.Div('i', className='tooltip-icon'),
-                                    html.P(translatable_markdown_text("input_data_time_span_tooltip").embed(self), className='tooltip-text'
-                                    ),
-                                ],
-                                className='tooltip',
-                            ),
-                        ],
                         className="input_data_time-section form-row short-input",
                         id='input_data_time_scope_section'
                     ),
@@ -413,7 +407,7 @@ class FormBlueprint(DashBlueprint):
 
                     html.Div(
                         [
-                            html.Label(translatable_div_text("Number_of_cores_used").embed(self)),
+                            html.Label(translatable_div_text("Number_of_cores_used_CPU").embed(self)),
 
                             dcc.Input(
                                 type='number',
@@ -439,7 +433,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div(
                                 [
-                                    html.Label(translatable_div_text("Model").embed(self)),
+                                    html.Label(translatable_div_text("CPU_Model").embed(self)),
 
                                     html.Div(
                                         [
@@ -498,7 +492,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label(translatable_div_text('TDP_(in_Watt)').embed(self)),
+                                            html.Label(translatable_div_text('CPU_TDP_(in_Watt)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -509,7 +503,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(translatable_div_text("TDP_tooltip").embed(self),  className='tooltip-text'),
+                                                    html.P(translatable_div_text("CPU_TDP_tooltip").embed(self),  className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -520,7 +514,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label(translatable_div_text('Die_area_(in_cm2)').embed(self)),
+                                            html.Label(translatable_div_text('CPU_Die_area_(in_cm2)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -531,7 +525,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(translatable_div_text('die_area_tooltip').embed(self), className='tooltip-text'),
+                                                    html.P(translatable_div_text('CPU_die_area_tooltip').embed(self), className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -583,7 +577,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div(
                                 [
-                                    html.Label(translatable_div_text("Model").embed(self)),
+                                    html.Label(translatable_div_text("GPU_Model").embed(self)),
 
                                     html.Div(
                                         [
@@ -616,7 +610,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label(translatable_div_text('TDP_(in_Watt)').embed(self)),
+                                            html.Label(translatable_div_text('GPU_TDP_(in_Watt)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -627,7 +621,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(translatable_div_text("gpu_TDP_tooltip").embed(self) , className='tooltip-text'),
+                                                    html.P(translatable_div_text("GPU_TDP_tooltip").embed(self) , className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -638,7 +632,7 @@ class FormBlueprint(DashBlueprint):
 
                                     html.Div(
                                         [
-                                            html.Label(translatable_div_text('Die_area_(in_cm2)').embed(self)),
+                                            html.Label(translatable_div_text('GPU_Die_area_(in_cm2)').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -649,7 +643,7 @@ class FormBlueprint(DashBlueprint):
                                             html.Div(
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
-                                                    html.P(translatable_div_text("gpu_die_area_tooltip").embed(self), className='tooltip-text'),
+                                                    html.P(translatable_div_text("GPU_die_area_tooltip").embed(self), className='tooltip-text'),
                                                 ],
                                                 className='tooltip',
                                             ),
@@ -776,7 +770,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Select server"),
+                    html.Label(translatable_div_text("Select_server").embed(self)),
 
                     html.Div(
                         [
@@ -809,7 +803,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div(
                                 [
-                                    html.Label("Select location"),
+                                    html.Label(translatable_div_text("Select_location").embed(self)),
 
                                     html.Div(
                                         [
@@ -825,8 +819,7 @@ class FormBlueprint(DashBlueprint):
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                "The location section is used to retrieve the electricity mix and the associated carbon intensity." \
-                                                "If you want to enter a custom value, please enter 'Use a custom carbon intensity' in the continent dropdown.",
+                                                translatable_markdown_text("Select_location_tooltip").embed(self),
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -839,14 +832,13 @@ class FormBlueprint(DashBlueprint):
                             html.Div(
                                 [
                                     html.P(
-                                        'Enter your custom carbon intensity below in gCO2e/kWh. ' \
-                                        ' The pre-filled value corresponds to the world average electricity mix.',
+                                        translatable_markdown_text("Custom_carbon_intensity_header").embed(self),
                                         style={'font-size': '0.9em', 'margin-top': '20px'}
                                     ),
 
                                     html.Div(
                                         [
-                                            html.Label('Carbon intensity (in gCO2e/kWh)'),
+                                            html.Label(translatable_div_text('Carbon_intensity_title').embed(self)),
 
                                             dcc.Input(
                                                 type='number',
@@ -858,7 +850,7 @@ class FormBlueprint(DashBlueprint):
                                                 [
                                                     html.Div('i', className='tooltip-icon'),
                                                     html.P(
-                                                        "Must be in gCO2e/kWh.",
+                                                        translatable_div_text("Carbon_intensity_tooltip").embed(self),
                                                         className='tooltip-text'
                                                     ),
                                                 ],
@@ -910,7 +902,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Do you know the real usage factor of your CPU?"),
+                    html.Label(translatable_div_text("CPU_usage_factor_label").embed(self)),
                     
                     html.Div(
                         [
@@ -934,9 +926,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Between 0 and 1 (default: 1). This is the usage % of the cores, "
-                                "e.g. % of the time the cores were active. "
-                                "This can be obtained from log files for instance.",
+                                translatable_markdown_text("CPU_usage_factor_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -949,7 +939,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Do you know the real usage factor of your GPU?"),
+                    html.Label(translatable_div_text("GPU_usage_factor_label").embed(self)),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -973,9 +963,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Between 0 and 1 (default: 1). This is the usage % of the GPUs, "
-                                "e.g. % of the time the GPUs were active. "
-                                "This can be obtained from log files for instance.",
+                                translatable_markdown_text("GPU_usage_factor_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -990,7 +978,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Do you know the Power Usage Efficiency (PUE) of your local data centre?"),
+                    html.Label(translatable_div_text("PUE_label").embed(self)),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -1013,8 +1001,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "PUE is a standardised efficiency metrics measuring the"
-                                "energy consumption of data centre overheads (e.g. cooling).",
+                                translatable_markdown_text("PUE_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -1031,7 +1018,7 @@ class FormBlueprint(DashBlueprint):
 
             html.Div(
                 [
-                    html.Label("Do you want to use a multiplicative factor?"),
+                    html.Label(translatable_div_text("MF_label").embed(self)),
                     html.Div(
                         [
                             dcc.RadioItems(
@@ -1054,8 +1041,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                "Used to multiply the final results, for example when a same task is repeated "
-                                "multiple times.",
+                                translatable_markdown_text("MF_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -1168,18 +1154,19 @@ class FormBlueprint(DashBlueprint):
         @self.callback(
             Output('platformType_dropdown', 'options'),
             Input('versioned_data', 'data'),
+            State('language_dropdown', 'value'),
         )
-        def set_platform(data):
+        def set_platform(data, language):
             """
             Loads platform options based on backend data.
             """
             if data is not None:
                 data_dict = SimpleNamespace(**data)
                 platformType_options = [
-                    {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                            [('personal_laptop', 'Personal laptop')] +
-                                            [('personal_workstation', 'Personal workstation')] +
-                                            [('localServer', 'Local server')]
+                    {'label': TRANSLATIONS_DICT[k][language], 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                            [('personal_laptop', TRANSLATIONS_DICT['Personal laptop'][language])] +
+                                            [('personal_workstation', TRANSLATIONS_DICT['Personal workstation'][language])] +
+                                            [('localServer', TRANSLATIONS_DICT['Local server'][language])]
                 ]
                 return platformType_options
             else:
