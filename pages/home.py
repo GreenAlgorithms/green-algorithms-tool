@@ -1,5 +1,5 @@
 '''
-The page itself is defined as a DashBlueprint that encompasses both layout and callbacks.
+The page itself is defined as a `DashBlueprint` that encompasses both layout and callbacks.
 
 The layout is a combination Dash components directly implemented in this script and 
 modules' layout inserted as blueprints (the form, import-export section or results section).
@@ -230,7 +230,7 @@ HOME_PAGE.layout = get_home_page_layout()
 )
 def forward_imported_content_to_form(import_data, filename, current_form_data, current_app_version):
     """
-    Processes the raw input dictionnary and checks content before
+    Processes the raw input dictionary and checks content before
     forwarding it to fill the main page form in.
     Produces error messages depending on the csv content. 
 
