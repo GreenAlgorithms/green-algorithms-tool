@@ -10,6 +10,7 @@ fully implemented in [Dash](https://dash.plotly.com/). The code base is organize
 * the `utils\` consists of Python and Dash utils.
 
 The calculator is a `dash.app` object, that wraps both the app HTML components (its layout) and their logic (the attached callbacks).
+website-translation
 '''
 ### WARNING: Above text is part of the online documentation. Be careful when modifying it.
 
@@ -19,12 +20,17 @@ from flask import send_file # Integrating Loader IO
 
 from dash import html, dcc, ctx, _dash_renderer
 from dash.dependencies import Input, Output, State
+
+from dash_extensions.enrich import DashProxy
 import dash_mantine_components as dmc
 _dash_renderer._set_react_version("18.2.0")
 
 from utils.handle_inputs import load_data, CURRENT_VERSION, DATA_DIR, get_available_versions, APP_VERSION_OPTIONS_LIST
 from pages.home import HOME_PAGE, HOME_PAGE_ID_PREFIX
 from pages.ai import AI_PAGE, AI_PAGE_ID_PREFIX
+
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
 
 
 ###################################################
@@ -37,7 +43,7 @@ external_stylesheets = [
     ),
 ]
 
-app = dash.Dash(
+app = DashProxy(
     __name__,
     use_pages=True,
     external_stylesheets=external_stylesheets,
@@ -69,6 +75,9 @@ AI_PAGE.register(app, module='ai', path='/ai', title='Green Algorithms - AI view
 ###################################################
 ## CREATE NAVBAR
 
+name_per_page = {'Home': translatable_div_text('Classic-view').embed(app), 'Ai': translatable_div_text('AI-view').embed(app)}
+pages = list(dash.page_registry.values())
+
 appVersions_options = get_available_versions()
 
 def get_pages_navbar_layout():
@@ -76,8 +85,6 @@ def get_pages_navbar_layout():
     Defines the navigation bar layout. It relies on the `NavLink` item from the
     dash_mantine_components library and the built-in navigation feature of dash pages.
     '''
-    name_per_page = {'Home': 'Classic view', 'Ai': 'AI view'}
-    pages = list(dash.page_registry.values())
 
     return html.Div(
     [
@@ -108,18 +115,15 @@ def get_pages_navbar_layout():
     className = 'pages-menu',
 )
 
+pages_navbar = get_pages_navbar_layout()
+
 versions_choice = html.Div(
     [
-        
         html.Div(
             [
                 html.Div('i', className='tooltip-icon'),
 
-                html.P(
-                    "The calculator data (carbon intensities, hardware...) is regularly updated. "
-                    "If you want to replicate results obtained in the past, select the corresponding data version.",
-                    className='tooltip-text'
-                ),
+                html.P(translatable_div_text('Version tooltip').embed(app), className='tooltip-text'),
             ],
             className='tooltip',
             id='data_version_tooltip'
@@ -127,7 +131,7 @@ versions_choice = html.Div(
         
         html.Div(
             [
-                html.P("Change data version", id='old_version_link'),
+                html.P(translatable_div_text("Change data version").embed(app), id='old_version_link'),
             ],
             className='change_version_text'
         ),
@@ -148,7 +152,36 @@ versions_choice = html.Div(
     id='versions_div',
 )
 
-pages_navbar = get_pages_navbar_layout()
+language_choice = html.Div(
+    [
+        html.Div(
+            [
+                html.P(translatable_div_text("Change language").embed(app), id='language_choice_link'),
+            ],
+            className='change_version_text'
+        ),
+
+        html.Div(
+            [
+                dcc.Dropdown(
+                    id="language_dropdown",
+                    options=[
+                    {"label": "English", "value": "en"},
+                    {"label": "Français", "value": "fr"},
+                ],
+                    value='en',
+                    persistence=True,
+                    clearable=False,
+                ),
+            ],
+            id='language_dropdown_div',
+            className="language-box-field",
+            style={'display': 'none'},
+        ),
+    ],
+    className='form-row short-input',
+    id='language_div'
+)
 
 ###################################################
 ## CREATE LAYOUT
@@ -156,7 +189,6 @@ pages_navbar = get_pages_navbar_layout()
 app.layout = dmc.MantineProvider(
     html.Div(
         [
-            
             #### BACKEND PURPOSE ####
 
             # Used to forward the version coming from a CSV uploaded to the Home page 
@@ -169,10 +201,12 @@ app.layout = dmc.MantineProvider(
             dcc.Location(id='url_content', refresh='callback-nav'), 
 
             #### HEADER ####
+
             html.Div(
                 [
-                    html.H1("Green Algorithms calculator"),
-                    html.P("What's the carbon footprint of your computations?"),
+                    html.H1(translatable_div_text("Green Algorithms calculator").embed(app)),
+
+                    html.P(translatable_div_text("Subtitle").embed(app)),
 
                     html.Div(
                         [
@@ -185,59 +219,33 @@ app.layout = dmc.MantineProvider(
 
                     html.Div(
                         [
+                            language_choice,
                             versions_choice,
                         ],
                         className='version_and_language_div'
-                    )
+                    ),
 
                 ],
                 className='container header'
             ),
             
             # TODO include outstanding issues and PRs
-
             html.Div(
                 [
-                    html.H2("Some news..."), # TODO align this left?
+                    html.H2(translatable_div_text("Some_news").embed(app)), # TODO align this left?
 
-                    html.P([
-                        "⏳ ",
-                        html.B('We are in the process of updating the carbon intensity values '
-                               'for electricity consumption to the latest data.'),
-                        " Due to a change of T&C with carbonfootprint, "
-                        "this is taking a bit longer than planned.",
-                    ]),
+                    html.P(translatable_div_text('Carbon_intensity_update').embed(app)),
                     
-                    html.P([
-                        "🌱 ",
-                        html.B('Interested in green computing?'),
-                        " We're recruiting for research roles at the University of Cambridge! ",
-                        html.A("More info here", href="https://www.lannelongue-group.org/join/", target="_blank")
-                    ]),
+                    html.P(translatable_markdown_text('Hiring_message').embed(app)),
 
-                    html.P([
-                        "🌱 ",
-                        html.B('The new major update of the calculator is here!'),
-                        " Possibility to share your results as csv, more guidelines on how to use the tool, "
-                        "and the addition of a brand-new AI-specific calculator! ",
-                        html.A("Check out the release notes", href="https://github.com/GreenAlgorithms/green-algorithms-tool/releases", target="_blank"),
-                        " for the full list of new features."
-                    ]),
+                    html.P(translatable_markdown_text('Release_message').embed(app)),
 
-                    html.P([
-                        "🐞 It's always possible that some bugs have slipped through the net of this new release... "
-                        "If you spot one, just let us know ",
-                        html.A("here", href="https://github.com/GreenAlgorithms/green-algorithms-tool/issues", target="_blank"),
-                        "."
-                    ]),
+                    html.P(translatable_markdown_text('Bugs_message').embed(app)),
 
                     html.Div(
                         [
                             html.A(
-                                html.Button(
-                                    'More on the project website',
-                                    id='website-link-button'
-                                ),
+                                html.Button(translatable_div_text('More on the project website').embed(app), id='website-link-button'),
                                 href='https://www.green-algorithms.org',
                                 target="_blank",
                                 className='button-container'
@@ -261,37 +269,24 @@ app.layout = dmc.MantineProvider(
         
             html.Div(
                 [
+                    ### DATA AND CODE ###
+
                     html.Div(
                         [
-                            html.H2("Data and code"),
+                            html.H2(translatable_div_text("Data and code").embed(app)),
 
-                            html.Center(
-                                html.P(["All the data and code used to run this calculator can be found on ",
-                                        html.A("GitHub",
-                                                href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                                target='_blank')
-                                        ]),
-                            ),
+                            html.Div(translatable_markdown_text("Data_and_code_text").embed(app)),
                         ],
                         className='container footer'
                     ),
 
+                    ### QUESTIONS AND SUGGESTIONS ###
+
                     html.Div(
                         [
-                            html.H2('Questions / Suggestions?'),
+                            html.H2(translatable_div_text('Questions_suggestions').embed(app)),
 
-                            html.Center(
-                                html.P(["If you have questions or suggestions about the tool, you can ",
-                                        html.A("open an issue",
-                                                href='https://github.com/GreenAlgorithms/green-algorithms-tool/issues',
-                                                target='_blank'),
-                                        " on the GitHub or ",
-                                        # TODO set up a better green algorithms email redirecting to someone
-                                        html.A("email us",
-                                                href='mailto:green.algorithms@gmail.com', ),
-                                        "."
-                                        ]),
-                            ),
+                            html.Div(translatable_markdown_text("Questions_suggestions_text").embed(app)),
                         ],
                         className='container footer'
                     )
@@ -303,17 +298,9 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("How to cite this work"),
+                    html.H2(translatable_div_text("How to cite this work").embed(app)),
 
-                    html.Center(
-                        html.P([
-                            "Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. "
-                            "Adv. Sci. 2021, 2100707. ",
-                            html.A("https://doi.org/10.1002/advs.202100707",
-                                    href='https://doi.org/10.1002/advs.202100707',
-                                    target='_blank')
-                        ]),
-                    ),
+                    html.Div(translatable_markdown_text("How_to_cite_text").embed(app))
                 ],
                 className='container citation footer'
             ),
@@ -322,21 +309,11 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("About us"),
+                    html.H2(translatable_div_text("About us").embed(app)),
 
-                    dcc.Markdown('''
-                    The Green Algorithms project is led by
-                    [Loïc Lannelongue](www.lannelongue-group.org) and 
-                    [Michael Inouye](https://www.inouyelab.org/home/people) at the University of Cambridge,
-                    but made possible by the contribution and support of many: 
-                    [full list](https://www.green-algorithms.org/about/).
-                    
-                    _In particular, we are thankful for the development work of Even Matencio
-                    and the support of the Wellcome Trust, NIHR Cambridge Biomedical Research Centre, 
-                    and French Department for the Ecological Transition._
-                    ''',
-                    className='authors'
-                    ),
+                    html.Div(translatable_markdown_text('About_us_text').embed(app), className='authors'),
+
+                    html.Div(translatable_markdown_text('About_us_text_2').embed(app), className='authors'),
                 ],
                 className='container about-us footer'
             ),
@@ -349,23 +326,14 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H2("#ShowYourStripes"),
+                    html.H2(translatable_div_text("ShowYourStripes").embed(app)),
 
-                    html.Center(
-                        html.P([html.P(
-                            "These coloured stripes in the background represent the change in world temperatures "
-                            "from 1850 to 2018. "
-                            "This striking design was made by Ed Hawkins from the University of Reading. "),
-                            html.P(["More on ",
-                                    html.A("ShowYourStripes.info",
-                                            href='https://showyourstripes.info',
-                                            target='_blank')]),
-                            html.P(["Additional credits for the app can be found on the ",
-                                    html.A("GitHub",
-                                            href='https://github.com/GreenAlgorithms/green-algorithms-tool',
-                                            target='_blank'), ])
-                        ]),
-                    ),
+                    html.Div(translatable_markdown_text("ShowYourStripes_text").embed(app)),
+
+                    html.Div(translatable_markdown_text("More_on").embed(app)),
+                    
+                    html.Div(translatable_markdown_text("Additional_credits").embed(app)),
+
                 ],
                 className='container show-stripes footer'
             ),
@@ -388,9 +356,9 @@ app.layout = dmc.MantineProvider(
 @app.callback(
         [
             Output('Home-navlink', 'style'),
-            Output('Home-navlink-label', 'style'),
+            Output('Classic-view-text_value', 'style'),
             Output('Ai-navlink', 'style'),
-            Output('Ai-navlink-label', 'style'),
+            Output('AI-view-text_value', 'style'),
         ],
         Input('url_content', 'pathname')
 )
@@ -413,6 +381,22 @@ def style_navlink(url_pathname: str):
     else:
         return current_page_navlink_style, current_page_label_style, to_be_clicked_style, to_be_clicked_label_style
 
+
+################## LANGUAGE CHOICE
+    
+@app.callback(
+    Output('language_dropdown_div', 'style'),
+    Input('language_choice_link','n_clicks'),
+    State('language_dropdown_div', 'style'),
+)
+def display_oldVersion(clicks: int, previous_style:dict):
+    """
+    Show the different available languages.
+    """
+    if (clicks is not None):
+        return {'display':'flex', 'flex-direction': 'row', 'width': 'fit-content'}
+    else:
+        return previous_style
 
 ################## APP VERSIONING
 
@@ -500,9 +484,9 @@ def load_data_from_version(_, new_version:str) -> dict:
 @app.server.route('/loaderio-1360e50f4009cc7a15a00c7087429524/')
 def download_loader():
     return send_file('assets/loaderio-1360e50f4009cc7a15a00c7087429524.txt',
-                     mimetype='text/plain',
-                     attachment_filename='loaderio-1360e50f4009cc7a15a00c7087429524.txt',
-                     as_attachment=True)
+                        mimetype='text/plain',
+                        attachment_filename='loaderio-1360e50f4009cc7a15a00c7087429524.txt',
+                        as_attachment=True)
 
 if __name__ == '__main__':
     app.run_server(debug=True)

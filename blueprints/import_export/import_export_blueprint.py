@@ -10,6 +10,10 @@ import dash_bootstrap_components as dbc
 from dash_extensions.enrich import DashBlueprint, PrefixIdTransform, Output, Input, State
 from dash.exceptions import PreventUpdate
 
+from utils.utils import custom_prefix_escape
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
+
 class ImportExportBlueprint(DashBlueprint):
     '''
     When a csv is uploaded, the dcc.Upload component (id=upload-data) is 
@@ -19,17 +23,17 @@ class ImportExportBlueprint(DashBlueprint):
     '''
 
     def __init__(
-        self,    
-        id_prefix: str,
-        csv_flushing_delay: int = 1500
+            self,    
+            id_prefix: str,
+            csv_flushing_delay: int = 1500
         ):
         """
         Args:
             id_prefix (str): id prefix automatically applied to all components.
             csv_flushing_delay (int, optional): time delay between csv upload and csv flushing.
-            Given in miliseconds. Defaults to 1500.
+            Given in milliseconds. Defaults to 1500.
         """
-        super().__init__(transforms = [PrefixIdTransform(prefix = id_prefix)])
+        super().__init__(transforms = [PrefixIdTransform(prefix = id_prefix, escape=custom_prefix_escape)])
         self.layout = self._get_layout(csv_flushing_delay)
         self._define_callbacks()
 
@@ -39,12 +43,11 @@ class ImportExportBlueprint(DashBlueprint):
                 #### BACKEND DATA ####
                     
                 # Intermediate variable used to read the uploaded data only once
-                # Its is then forwared to the target form(s) depending on the page
+                # Its is then forwarded to the target form(s) depending on the page
                 dcc.Store(id='import-content'),
                 # Intermediate variable that is updated only when the user want to export data as csv.
                 # It is useful as it allows to run the callback only once per export, not after each form modification.
                 dcc.Store(id='export-content'),
-
         
                 html.Div(
                     [
@@ -54,8 +57,7 @@ class ImportExportBlueprint(DashBlueprint):
                             [
                                 html.Div(
                                     [
-                                        html.B("Share your results "),
-                                        html.A(html.B('as a csv file!'), id='btn-download_csv', className='btn-download_csv'),
+                                        html.Div(translatable_div_text("Share_your_results").embed(self),  id='btn-download_csv', className='btn-download_csv'),
                                         dcc.Download(id="aggregate-data-csv"),
                                     ],
                                 )
@@ -70,12 +72,14 @@ class ImportExportBlueprint(DashBlueprint):
                             dcc.Upload(
                                 html.Div(
                                     [
-                                        html.B("Import resuts"),
+                                        html.P(translatable_markdown_text("Import_results").embed(self)),
                                         html.Div(
                                             [
-                                                html.A("Drag and drop or click to select your .csv file.")
+                                                html.A(
+                                                    translatable_div_text("drag_and_drop").embed(self),
+                                                    style={'font-size': '12px', 'margin-top': '3px', 'text-decoration': 'underline'}
+                                                )
                                             ],
-                                            style={'font-size': '12px', 'margin-top': '3px', 'text-decoration': 'underline'}
                                         )
                                     ]
                                 ),
@@ -93,7 +97,7 @@ class ImportExportBlueprint(DashBlueprint):
 
                 dbc.Alert(
                     [
-                        html.H3('⚠️ Error when filling values from csv ⚠️', id='error-message-title', className='error-message-title'),
+                        html.H3(translatable_div_text('error_message_header').embed(self), id='error-message-title', className='error-message-title'),
                         dcc.Markdown(id='log-error-subtitle', className='log-error-subtitle'),
                         dcc.Markdown(id='log-error-content', className='log-error-content'),
                     ],
@@ -136,9 +140,8 @@ class ImportExportBlueprint(DashBlueprint):
             file_suffixe = ''
             if ctx.triggered_id is not None and 'ai-' in ctx.triggered_id:
                 file_suffixe = 'AI'
-            to_export_dict = {key: [str(val)] for key, val in aggregate_data.items()}
             now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            to_export = pd.DataFrame.from_dict(to_export_dict, orient='columns')
+            to_export = pd.DataFrame.from_dict(aggregate_data, orient='columns')
             return dcc.send_data_frame(to_export.to_csv, f"GreenAlgorithms_results_{file_suffixe}_{now}.csv", index=False, sep=';')
 
         ################## IMPORT DATA

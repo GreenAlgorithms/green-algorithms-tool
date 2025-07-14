@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 from dash import html, dcc, Input, Output, State
 from types import SimpleNamespace
 
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export, open_input_csv_and_comment, read_base_form_inputs_from_csv
+from utils.handle_inputs import filter_wrong_inputs, clean_non_used_inputs_for_export, open_input_csv_and_comment, read_base_form_inputs_from_csv, AGGREGATE_DATA_UNITS
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
 from utils.utils import write_error_message
@@ -25,6 +25,10 @@ from blueprints.form.form_blueprint import FormBlueprint
 from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
 from blueprints.metrics.metrics_blueprint import MetricsBlueprint
 from blueprints.import_export.import_export_blueprint import ImportExportBlueprint
+
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
+from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 
 
 ###################################################
@@ -42,17 +46,7 @@ HOME_PAGE_ID_PREFIX = 'main'
 form = FormBlueprint(
     id_prefix=HOME_PAGE_ID_PREFIX,
     title="Details about your algorithm",
-    subtitle= html.P(
-        [
-            "To understand how each parameter impacts your environmental footprint, "
-            "check out the formula below and the ",
-            html.A(
-                "methods article",
-                href='https://onlinelibrary.wiley.com/doi/10.1002/advs.202100707',
-                target='_blank'
-            )
-        ]
-    )
+    subtitle= 'Home_form_subtitle'
 )
 
 methodology_content = MethodologyBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
@@ -60,15 +54,6 @@ methodology_content = MethodologyBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 metrics = MetricsBlueprint(id_prefix=HOME_PAGE_ID_PREFIX)
 
 import_export = ImportExportBlueprint(id_prefix=HOME_PAGE_ID_PREFIX) 
-
-
-###################################################
-# SOME GLOBAL VARIABLES
-
-image_dir = os.path.join('assets/images')
-data_dir = os.path.join(os.path.abspath(''),'data')
-
-appVersions_options = get_available_versions()
 
 
 ###################################################
@@ -96,7 +81,7 @@ def get_home_page_layout():
                         [
                             html.Div(
                                 [
-                                    html.H2("Computing cores VS Memory"),
+                                    html.H2(translatable_div_text("Computing_cores_VS_Memory").embed(HOME_PAGE)),
 
                                     loading_wrapper(
                                         dcc.Graph(
@@ -112,9 +97,7 @@ def get_home_page_layout():
 
                             html.Div(
                                 [
-                                    html.H2(
-                                        "How the location impacts your footprint"
-                                    ),
+                                    html.H2(translatable_div_text("Location_impact_graphs_title").embed(HOME_PAGE)),
 
                                     loading_wrapper(
                                         dcc.Graph(
@@ -146,30 +129,15 @@ def get_home_page_layout():
 
             html.Div(
                 [
-                    html.H2("How to report it?"),
+                    html.H2(translatable_div_text("How_to_report_it?").embed(HOME_PAGE)),
 
-                    dcc.Markdown(
-                        '''
-                        It's important to track the impact 
-                        of computational research on climate change in order to stimulate greener algorithms.
-                        For that, __we believe that the carbon footprint of a project should be reported on publications
-                        alongside other performance metrics__. 
-
-                        Here is a text you can include in your paper:
-                        '''
-                    ),
+                    html.Div(translatable_markdown_text('Report_text_header').embed(HOME_PAGE)),
 
                     dcc.Markdown(id='report_markdown'),
 
-                    dcc.Markdown(
-                        '\[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.',
-                        className='footnote citation-report'
-                    ),
+                    html.Div(translatable_markdown_text('Report_text_reference').embed(HOME_PAGE), className='footnote citation-report'),
 
-                    dcc.Markdown(
-                        '_Including the version of the tool is useful to keep track of the version of the data used._',
-                        className='footnote-authorship'
-                    )
+                    html.Div(translatable_markdown_text('Report_text_footer').embed(HOME_PAGE), className='footnote-authorship')
 
                 ],
                 className='container report'
@@ -179,7 +147,7 @@ def get_home_page_layout():
 
             html.Div(
                 [
-                    html.H2("Power draw of different processors"),
+                    html.H2(translatable_div_text("Power_draw_of_different_processors").embed(HOME_PAGE)),
 
                     html.Div(
                         [
@@ -226,9 +194,17 @@ HOME_PAGE.layout = get_home_page_layout()
         State(f'{HOME_PAGE_ID_PREFIX}-upload-data', 'filename'),
         State(f'{HOME_PAGE_ID_PREFIX}-form_aggregate_data', 'data'),
         State('app_versions_dropdown','value'),
+        State('language_dropdown', 'value'),
+        # the language should not be an input because must be triggered by imported csv only
     ]
 )
-def forward_imported_content_to_form(import_data, filename, current_form_data, current_app_version):
+def forward_imported_content_to_form(
+        import_data: str,
+        filename: str,
+        current_form_data: dict,
+        current_app_version: str,
+        language_id: str,
+    ):
     """
     Processes the raw input dictionary and checks content before
     forwarding it to fill the main page form in.
@@ -239,10 +215,10 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
     and the fields of the csv containing the error. However, there is a very
     wide range of error kinds and we do not pretend to cover all of them.
     We focus on the use cases that are more likely.
-    TODO: create an 'unknow_inputs' category.
+    TODO: create an 'unknown_inputs' category.
     """
     show_err_mess = False
-    input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
+    input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename, language_id)
 
     # The input file could not be opened correctly
     if not input_data:
@@ -258,23 +234,11 @@ def forward_imported_content_to_form(import_data, filename, current_form_data, c
         # because at that time the fields 'TDPcpu' and 'TDPgpu' were actually per core values, which is not anymore
         # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
         if ('CPU_model_n_cores' in missing_inputs) and ('CPU_die_area' in missing_inputs):
-            mess_subtitle = '''
-                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
-                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
-                            in the calculator and reexport a fresh csv.** 
-                        '''
+            mess_subtitle = TRANSLATIONS_DICT["old_version_error_subtitle"][language_id]
         else:
-            mess_subtitle = '''
-                            **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
-                            See below for more details** 
-
-                            If you are trying to import a csv file from previous versions of the calculator, the easiest way to fix this is to manually
-                            input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
-                            csv file from the AI page into the home page, which does not work.
-                        '''
+            mess_subtitle = mess_subtitle = TRANSLATIONS_DICT["default_error_subtitle"][language_id]
         invalid_inputs = filter_wrong_inputs(clean_inputs, invalid_inputs)
-        show_err_mess, mess_content = write_error_message(missing_inputs, list(invalid_inputs.keys()), show_err_mess)
+        show_err_mess, mess_content = write_error_message(missing_inputs, list(invalid_inputs.keys()), language_id, show_err_mess)
         return clean_inputs, show_err_mess, mess_subtitle, mess_content, app_version
     
 
@@ -298,6 +262,8 @@ def forward_form_input_to_export_module(_, form_aggregate_data, form_output_metr
     to_export.update(form_aggregate_data)
     # Outputs of the form
     to_export.update(form_output_metrics)
+    # Adding units
+    to_export = {key: [str(AGGREGATE_DATA_UNITS[key]), str(val)] for key, val in to_export.items()}
     return to_export
 
 
@@ -355,8 +321,8 @@ def create_bar_chart_cores(form_agg_data, versioned_data):
         return create_cores_bar_chart_graphic(form_agg_data, versioned_data)
     return None
 
-## OUTPUT SUMMARY
 
+## OUTPUT SUMMARY
 
 @HOME_PAGE.callback(
     Output('report_markdown', 'children'),
@@ -380,7 +346,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
     else:
         versioned_data = SimpleNamespace(**versioned_data)
 
-        # Text runtime
+        # Runtime text
         minutes = form_agg_data['runTime_min']
         hours = form_agg_data['runTime_hour']
         if (minutes > 0)&(hours>0):
@@ -390,7 +356,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         else:
             textRuntime = "{}min".format(minutes)
 
-        # text cores
+        # Cores text
         textCores = ""
         if form_agg_data['coreType'] in ['GPU','CPU + GPU']:
             if form_agg_data['numberGPUs'] > 1:
@@ -407,6 +373,10 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
                 suffixProcessor = ''
             textCores += f"{form_agg_data['numberCPUs']} CPU{suffixProcessor} {form_agg_data['CPUmodel']}"
 
+        # Memory text
+        memory_in_GB = form_agg_data['memory']
+
+        # Location and carbon intensity
         if form_agg_data['location'] == 'custom':
             location_text = f'Based on a custom carbon intensity of {form_agg_data["carbonIntensity"]} gCO2e/kWh'
 
@@ -429,9 +399,10 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         else:
             text_mult_factor = ''
 
+        # Final summary text
         myText = f'''
-        > This algorithm runs in {textRuntime} on {textCores},
-        > and draws {text_energy}. 
+        > This algorithm runs in {textRuntime} on {textCores}, with {memory_in_GB} GB of allocated memory.
+        > It draws {text_energy}. 
         > {location_text},{text_mult_factor} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
         (calculated using green-algorithms.org {form_agg_data['appVersion']} \[1\]).
         '''
