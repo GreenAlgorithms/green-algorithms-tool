@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 from dash import html, dcc, Input, Output, State
 from types import SimpleNamespace
 
-from utils.handle_inputs import filter_wrong_inputs, clean_non_used_inputs_for_export, open_input_csv_and_comment, read_base_form_inputs_from_csv
+from utils.handle_inputs import filter_wrong_inputs, clean_non_used_inputs_for_export, open_input_csv_and_comment, read_base_form_inputs_from_csv, AGGREGATE_DATA_UNITS
 from utils.graphics import BLANK_FIGURE, loading_wrapper
 from utils.graphics import create_cores_bar_chart_graphic, create_ci_bar_chart_graphic, create_cores_memory_pie_graphic
 from utils.utils import write_error_message
@@ -262,6 +262,8 @@ def forward_form_input_to_export_module(_, form_aggregate_data, form_output_metr
     to_export.update(form_aggregate_data)
     # Outputs of the form
     to_export.update(form_output_metrics)
+    # Adding units
+    to_export = {key: [str(AGGREGATE_DATA_UNITS[key]), str(val)] for key, val in to_export.items()}
     return to_export
 
 
@@ -319,8 +321,8 @@ def create_bar_chart_cores(form_agg_data, versioned_data):
         return create_cores_bar_chart_graphic(form_agg_data, versioned_data)
     return None
 
-## OUTPUT SUMMARY
 
+## OUTPUT SUMMARY
 
 @HOME_PAGE.callback(
     Output('report_markdown', 'children'),
@@ -344,7 +346,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
     else:
         versioned_data = SimpleNamespace(**versioned_data)
 
-        # Text runtime
+        # Runtime text
         minutes = form_agg_data['runTime_min']
         hours = form_agg_data['runTime_hour']
         if (minutes > 0)&(hours>0):
@@ -354,7 +356,7 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         else:
             textRuntime = "{}min".format(minutes)
 
-        # text cores
+        # Cores text
         textCores = ""
         if form_agg_data['coreType'] in ['GPU','CPU + GPU']:
             if form_agg_data['numberGPUs'] > 1:
@@ -371,6 +373,10 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
                 suffixProcessor = ''
             textCores += f"{form_agg_data['numberCPUs']} CPU{suffixProcessor} {form_agg_data['CPUmodel']}"
 
+        # Memory text
+        memory_in_GB = form_agg_data['memory']
+
+        # Location and carbon intensity
         if form_agg_data['location'] == 'custom':
             location_text = f'Based on a custom carbon intensity of {form_agg_data["carbonIntensity"]} gCO2e/kWh'
 
@@ -393,9 +399,10 @@ def fillin_report_text(form_agg_data, versioned_data, text_CE, text_energy, text
         else:
             text_mult_factor = ''
 
+        # Final summary text
         myText = f'''
-        > This algorithm runs in {textRuntime} on {textCores},
-        > and draws {text_energy}. 
+        > This algorithm runs in {textRuntime} on {textCores}, with {memory_in_GB} GB of allocated memory.
+        > It draws {text_energy}. 
         > {location_text},{text_mult_factor} this has a carbon footprint of {text_CE}, which is equivalent to {text_ty}
         (calculated using green-algorithms.org {form_agg_data['appVersion']} \[1\]).
         '''
