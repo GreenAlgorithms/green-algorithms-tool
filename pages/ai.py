@@ -9,9 +9,6 @@ These additional fields must be taken into account:
     - when computing the results: we compute and show both the training and inference results, as well as their sum
 """
 
-
-import os
-
 from dash import html, Input, Output, State, dcc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -24,10 +21,12 @@ from blueprints.metrics.metrics_blueprint import MetricsBlueprint
 from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
 
 import blueprints.metrics.utils as metrics_utils
+from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+from blueprints.translation.translatable_markdown_text_blueprint import translatable_markdown_text
 
 from utils.graphics import MY_COLORS
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
+from utils.handle_inputs import filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
 from utils.utils import write_error_message
 
 
@@ -65,16 +64,7 @@ import_export = ImportExportBlueprint(id_prefix=AI_PAGE_ID_PREFIX, csv_flushing_
 
 methodo_content = MethodologyBlueprint(
     id_prefix=AI_PAGE_ID_PREFIX,
-    additional_formula_content=dcc.Markdown(
-        '''
-        The training and inference forms rely on the same base formula as the one used in the main
-        page calculator. 
-        When appropriate, retraining and R&D impacts are then added, and continuous inference impacts 
-        are scaled to the reporting period.
-        More information is provided by the tooltips and the help tabs.
-        ''',
-        style={'margin-bottom': '10px'}
-    )
+    to_add_ai_methodology_text = True
 )
 
 metrics = MetricsBlueprint(
@@ -101,26 +91,10 @@ def get_training_help_content(title: str):
             html.Div(
                 [
 
-                    html.H4('Overall description'),
+                    html.H4(translatable_div_text('Training_overall_description_title').embed(AI_PAGE)),
 
-                    dcc.Markdown(
-                        '''
-                        The training phase of your AI system includes different stages:
-                        R&D experiments, the final training of your model, and potential retraining runs 
-                        (more details are given below).
-                        
-                        We invite you to include all these stages in this form. 
-                        __Start by filling-in the form based on the main training run.
-                        Then use the input fields available at the bottom of the form to 
-                        estimate the impact of R&D training and/or retraining__.
-                        Some R&D use cases are illustrated in more details below. 
+                    html.Div(translatable_markdown_text('Training_overall_description_content').embed(AI_PAGE), className='form-help-markdown'),
 
-                        This approach may not work for all cases (e.g. if retraining is done with different
-                        hardware) but it offers a reasonable estimate. 
-                        Besides, there is always the option of rerunning the calculator separately.
-                        ''',
-                        className='form-help-markdown'
-                    ),
                 ],
                 className='form-help-subsection',
             ),
@@ -134,37 +108,12 @@ def get_training_help_content(title: str):
 
             html.Div(
                 [
-                    html.H4('Definitions and practical tips'),
+                    html.H4(translatable_div_text('Training_Definitions_and_practical_tips').embed(AI_PAGE)),
 
-                    dcc.Markdown(
+                    html.Div(translatable_markdown_text('Training_Definitions_and_practical_tips_content').embed(AI_PAGE)),
 
-                        ''' 
-                        __Main/final training stage__: the computations performed to achieve the final model 
-                        of your AI solution. 
-                        It can either correspond to training from scratch a custom model 
-                        or fine-tuning an existing model.
-
-                        __R&D training__: the compute involved in the research and development phase before the 
-                        final run (e.g. hyper-parameters search).
-                        This is included by added R&D as a fraction of the training time, 
-                        e.g. enter 2 if you assume that in total R&D represents 
-                        double the compute resources of the final run. 
-                        There is no typical value for that, from a small fraction in case of 
-                        well defined straightforward models to hundreds in more complex models requiring 
-                        extensive searches. For example, when studying a 176 billon parameters LLM,
-                        Luccioni et al. \[1\] estimated that intermediate models training and evaluation accounted 
-                        for approximately 150% of their main training consumption.
-                        
-                        __Retraining__: any additional training runs performed after the deployment of your AI system.
-                        For consistent reporting, you are invited to take into account all retraining happening 
-                        over your reporting period.
-                        '''
-                    ),
-
-                    dcc.Markdown(
-                        '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, '
-                        '“Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal '
-                        'of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+                    html.Div(
+                        translatable_markdown_text('Training_help_references').embed(AI_PAGE),
                         className='footnote citation-report',
                         style={'margin-top': '8px'}
                     ),
@@ -188,19 +137,9 @@ def get_inference_help_content(title: str):
 
             html.Div(
                 [
-                    html.H4('Overall description'),
+                    html.H4(translatable_div_text('Inference_overall_description_title').embed(AI_PAGE)),
 
-                    dcc.Markdown(
-                        '''
-                        This is to quantify the environmental impacts of the inference phase of your AI system.
-                        __We distinguish between two types of inference: block, or one-shot, inference 
-                        (you make predictions once and for all)  and continuous inference 
-                        (the model makes predictions continuously over time, e.g. a chatbot)__.
-
-                        By default, the form is in 'block inference' mode but you can activate 
-                        the continuous mode using the switch at the top.
-                        '''
-                    )
+                    html.Div(translatable_markdown_text('Inference_overall_description_content').embed(AI_PAGE))
                 ],
                 className='form-help-subsection',
             ),
@@ -214,37 +153,13 @@ def get_inference_help_content(title: str):
 
             html.Div(
                 [
-                    html.H4('Definitions and practical tips'),
+                    html.H4(translatable_div_text('Inference_Definitions_and_practical_tips').embed(AI_PAGE)),
 
-                    dcc.Markdown(
-                        '''
-                        __Block (one-shot) inference__: for a system where prediction is made on a one-off basis 
-                        (or repeated occasionally).
-                        It may be used to process a data set as a whole or to build one-day or one-week strategy. 
-                        If multiple block inferences happen over your reporting period, 
-                        we invite you to quantify the resource needs for one inference block 
-                        and then to use the multiplicative factor.
-                        ''',
+                    html.Div(
+                        translatable_markdown_text('Inference_Definitions_and_practical_tips_content').embed(AI_PAGE),
                         style={'margin-bottom': '6px'}
                     ),
-
-                    dcc.Markdown(
-                        '''
-                        __Continuous inference__: corresponds to an AI service that is requested on demand 
-                        by users or other software systems (e.g. chatbot). 
-                        This inference workload does not follow a strict scheduling, making it harder to quantify. 
-                        In this mode, we invite you to estimate the resource usage 
-                        over a period of time of your choice, the so-called "input data time span”. 
-                        The results are then scaled up over the total reporting period. 
-                        For instance, if choosing a reporting scope of 1 year and filling 
-                        the form in continuous inference mode with an `input data time span` of 1 month,
-                        then your environmental impacts correspond to the monthly results multiplied by 12.
-                        
-                        It is worth keeping in mind that __the reporting period only impacts the results
-                        in the 'continuous inference' situation__.
-                        ''',
-                        # style={'margin-bottom': '12px'}
-                    ),
+                    html.Div(translatable_markdown_text('Inference_Definitions_and_practical_tips_content_2').embed(AI_PAGE),),
 
                 ],
                 className='form-help-subsection',
@@ -261,16 +176,9 @@ def get_ai_page_layout():
 
             html.Div(
                 [
-                    html.H2('The Green Algorithms calculator, adapted for artificial intelligence'),
-                    html.P(
-                        [
-                            "This new page is especially dedicated to AI-related computations, ",
-                            "where compute is usually divided between training and inference phases. ",
-                            "The method is the same as in the original tool, ",
-                            "it simply facilitates the reporting of AI systems' environmental impacts ",
-                            "over a fixed period of time, e.g. one year."
-                        ]
-                    )
+                    html.H2(translatable_div_text('AI_page_title').embed(AI_PAGE)),
+
+                    html.P(translatable_div_text('Training_form_subtitle').embed(AI_PAGE))
                 ],
                 className='container'
             ),
@@ -292,28 +200,10 @@ def get_ai_page_layout():
 
                     html.Div(
                         [
-                            html.H3("Reporting period"),
+                            html.H3(translatable_div_text("Reporting_period").embed(AI_PAGE)),
 
-                            html.P(
-                                [
-                                    'The reporting period is the period of time over which you want to estimate '
-                                    'the environmental impacts of your AI system (training and inference). '
-                                    'This is particularly relevant in the case of ongoing deployment of the system. '
-                                    'Typical values might be one year or the whole estimated lifespan of your system. ',
-                                ],
-                                className='reporting-scope-text'
-                            ),
+                            html.P(translatable_markdown_text('Reporting_period_explanation').embed(AI_PAGE), className='reporting-scope-text'),
 
-                            html.P(
-                                [
-                                    'The value is only used by the calculator when you select "continuous inference" '
-                                    'to report the total energy and carbon footprint over the reporting period. '
-                                    'It is nonetheless good practice to enter it to clarify the scope of your '
-                                    'estimations.',
-                                ],
-                                className='reporting-scope-text text-italic'
-                            ),
-                            
                             html.Div(
                                 [
                                     dcc.Input(
@@ -354,7 +244,7 @@ def get_ai_page_layout():
 
                     dmc.Tabs(
                         [
-                            html.H3('TRAINING'),
+                            html.H3(translatable_div_text('TRAINING').embed(AI_PAGE)),
 
                             dmc.TabsList(
                                 [
@@ -388,7 +278,7 @@ def get_ai_page_layout():
 
                     dmc.Tabs(
                         [
-                            html.H3('INFERENCE'),
+                            html.H3(translatable_div_text('INFERENCE').embed(AI_PAGE)),
 
                             dmc.TabsList(
                                 [
@@ -459,6 +349,8 @@ AI_PAGE.layout = get_ai_page_layout()
         State(f'{INFERENCE_ID_PREFIX}-form_aggregate_data', 'data'),
         State('specific_ai_page_inputs', 'data'),
         State('app_versions_dropdown','value'),
+        State('language_dropdown', 'value'), 
+        # the language should not be an input because must be triggered by imported csv only
     ]
 )
 def forward_imported_content_to_form(
@@ -467,7 +359,8 @@ def forward_imported_content_to_form(
     current_training_form_data: dict,
     current_inference_form_data: dict,
     current_specific_ai_inputs: dict,
-    current_app_version: str
+    current_app_version: str,
+    language_id: str,
 ):
     """
     Read input from uploaded CSV, split data between training and inference forms.
@@ -483,7 +376,7 @@ def forward_imported_content_to_form(
     TODO: create an 'unknow_inputs' category.
     """
     show_err_mess = False
-    input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename)
+    input_data, mess_subtitle, mess_content = open_input_csv_and_comment(import_data, filename, language_id)
 
     # The input file could not be opened correctly
     if not input_data:
@@ -501,14 +394,7 @@ def forward_imported_content_to_form(
     # If input data could be read, we check its validity and consistency
     else:
         # Default error subtitle information
-        mess_subtitle = '''
-                            **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
-                            See below for more details** 
-
-                            If you are trying to import a csv file from previous versions, the easiest way to fix this is to manually
-                            input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
-                            csv file from the home page into the AI page, which does not work.
-                        '''
+        mess_subtitle = TRANSLATIONS_DICT["default_error_subtitle"][language_id]
         # Processing inputs specific to the AI page
         ai_page_specific_inputs_keys = [
             'reporting_time_scope_unit', 'reporting_time_scope_value', 'R&D_radio', 'R&D_MF_value',
@@ -522,9 +408,9 @@ def forward_imported_content_to_form(
             if key not in clean_AI_inputs:
                 clean_AI_inputs[key] = AI_PAGE_DEFAULT_VALUES[key]
         # Building the corresponding error message
-        show_err_mess, mess_content = write_error_message(missing_ai_inputs, list(invalid_AI_inputs.keys()))
+        show_err_mess, mess_content = write_error_message(missing_ai_inputs, list(invalid_AI_inputs.keys()), language_id)
         if show_err_mess:
-            mess_content = '**Overall: **' + mess_content
+            mess_content = TRANSLATIONS_DICT['overall'][language_id] + mess_content
         # Processing training data
         training_input_data = {key.replace(f'{TRAINING_ID_PREFIX}-', ''): value for key, value in input_data.items() if TRAINING_ID_PREFIX in key}
         if 'appVersion' in input_data:
@@ -534,18 +420,13 @@ def forward_imported_content_to_form(
         # because at that time the fields 'TDPcpu' and 'TDPgpu' were actually per core values, which is not anymore
         # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
         if ('CPU_model_n_cores' in missing_training_inputs) and ('CPU_die_area' in missing_training_inputs):
-            mess_subtitle = '''
-                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
-                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
-                            in the calculator and reexport a fresh csv.** 
-                        '''
+            mess_subtitle = TRANSLATIONS_DICT["old_version_error_subtitle"][language_id]
         invalid_training_inputs = filter_wrong_inputs(clean_training_input_data, invalid_training_inputs)
         # Building the corresponding error message
-        training_show_err_mess, training_mess_content = write_error_message(missing_training_inputs, invalid_training_inputs)
+        training_show_err_mess, training_mess_content = write_error_message(missing_training_inputs, invalid_training_inputs, language_id)
         if training_show_err_mess:
             show_err_mess = True
-            mess_content = mess_content +  ' **Training: **' + training_mess_content
+            mess_content = mess_content +  TRANSLATIONS_DICT['training'][language_id] + training_mess_content
         # Processing inference data
         inference_input_data = {key.replace(f'{INFERENCE_ID_PREFIX}-', ''): value for key, value in input_data.items() if INFERENCE_ID_PREFIX in key}
         if 'appVersion' in input_data:
@@ -555,10 +436,10 @@ def forward_imported_content_to_form(
         # Building the corresponding error message
         # We could do the same test as above to check fi the
         #  imported csv comes from a previous version
-        inference_show_err_mess, inference_mess_content = write_error_message(missing_inference_inputs, invalid_inference_inputs)
+        inference_show_err_mess, inference_mess_content = write_error_message(missing_inference_inputs, invalid_inference_inputs, language_id)
         if inference_show_err_mess:
             show_err_mess = True
-            mess_content = mess_content +  ' **Inference:** ' + inference_mess_content
+            mess_content = mess_content +  TRANSLATIONS_DICT['inference'][language_id] + inference_mess_content
         return (
             clean_training_input_data, 
             clean_inference_input_data, 
@@ -584,7 +465,7 @@ def forward_imported_content_to_form(
 def forward_reporting_scope_inputs(_, specific_ai_inputs: dict):
     """
     Args:
-        specific_ai_inputs (dict): the dictionnary of inputs that cannot
+        specific_ai_inputs (dict): the dictionary of inputs that cannot
         be handled at the form level because they are specific to the AI page.
     """
     if specific_ai_inputs:

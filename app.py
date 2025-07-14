@@ -243,48 +243,20 @@ app.layout = dmc.MantineProvider(
             # TODO include outstanding issues and PRs
             html.Div(
                 [
-                    html.H2("Some news..."), # TODO align this left?
+                    html.H2(translatable_div_text("Some_news").embed(app)), # TODO align this left?
 
-                    html.P([
-                        "⏳ ",
-                        html.B('We are in the process of updating the carbon intensity values '
-                        'for electricity consumption to the latest data.'),
-                        " Due to a change of T&C with carbonfootprint, "
-                        "this is taking a bit longer than planned.",
-                    ]),
+                    html.P(translatable_div_text('Carbon_intensity_update').embed(app)),
                     
-                    html.P([
-                        "🌱 ",
-                        html.B('Interested in green computing?'),
-                        " We're recruiting for research roles at the University of Cambridge! ",
-                        html.A("More info here", href="https://www.lannelongue-group.org/join/", target="_blank")
-                    ]),
+                    html.P(translatable_markdown_text('Hiring_message').embed(app)),
 
-                    html.P([
-                        "🌱 ",
-                        html.B('The new major update of the calculator is here!'),
-                        " Possibility to share your results as csv, more guidelines on how to use the tool, "
-                        "and the addition of a brand-new AI-specific calculator! ",
-                        html.A("Check out the release notes", href="https://github.com/GreenAlgorithms/green-algorithms-tool/releases", target="_blank"),
-                        " for the full list of new features."
-                    ]),
+                    html.P(translatable_markdown_text('Release_message').embed(app)),
 
-                    html.P([
-                        "🐞 ",
-                        " It's always possible that some bugs have slipped through the net of this new release... ",
-                        "If you spot one, just let us know ",
-                        html.A("here", href="https://github.com/GreenAlgorithms/green-algorithms-tool/issues", target="_blank"),
-                        "."
-                    ]),
-
+                    html.P(translatable_markdown_text('Bugs_message').embed(app)),
 
                     html.Div(
                         [
                             html.A(
-                                html.Button(
-                                    translatable_div_text('More on the project website').embed(app),
-                                    id='website-link-button'
-                                ),
+                                html.Button(translatable_div_text('More on the project website').embed(app), id='website-link-button'),
                                 href='https://www.green-algorithms.org',
                                 target="_blank",
                                 className='button-container'

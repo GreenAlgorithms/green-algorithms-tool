@@ -42,33 +42,75 @@ TRANSLATIONS_DICT = {
 
     ## NEWS SECTION
 
-    "Some news": {
+    "Some_news": {
         "en": "Some news...",
         "fr": "Quelques actualités...",
+    },
+    "Carbon_intensity_update": {
+        "en": '''
+                ⏳
+                We are in the process of updating the carbon intensity values
+                for electricity consumption to the latest data
+                Due to a change of T&C with carbonfootprint,
+                this is taking a bit longer than planned.
+            ''',
+        "fr": '''
+                ⏳
+                We are in the process of updating the carbon intensity values
+                for electricity consumption to the latest data
+                Due to a change of T&C with carbonfootprint,
+                this is taking a bit longer than planned.
+            ''',
+    },
+    "Hiring_message": {
+        "en": '''
+                🌱 
+                **Interested in green computing?**
+                We're recruiting for research roles at the University of Cambridge! 
+                [More info here.](https://www.lannelongue-group.org/join/)
+            ''',
+        "fr": '''
+                🌱 
+                **Interested in green computing?**
+                We're recruiting for research roles at the University of Cambridge! 
+                [More info here.](https://www.lannelongue-group.org/join/)
+            ''',
+    },
+    "Release_message": {
+        "en": '''
+                🌱 
+                **The new major update of the calculator is here!**
+                Possibility to share your results as csv, more guidelines on how to use the tool,
+                and the addition of a brand-new AI-specific calculator! 
+                [Check out the release notes](https://github.com/GreenAlgorithms/green-algorithms-tool/releases) 
+                for the full list of new features.
+            ''',
+        "fr": '''
+                🌱 
+                **The new major update of the calculator is here!**
+                Possibility to share your results as csv, more guidelines on how to use the tool,
+                and the addition of a brand-new AI-specific calculator! 
+                [Check out the release notes](https://github.com/GreenAlgorithms/green-algorithms-tool/releases) 
+                for the full list of new features.
+            ''',
+    },
+    "Bugs_message": {
+        "en": '''
+                🐞 
+                It's always possible that some bugs have slipped through the net of this new release... 
+                If you spot one, just let us know 
+                [here](https://github.com/GreenAlgorithms/green-algorithms-tool/issues).
+            ''',
+        "fr": '''
+                🐞 
+                It's always possible that some bugs have slipped through the net of this new release... 
+                If you spot one, just let us know 
+                [here](https://github.com/GreenAlgorithms/green-algorithms-tool/issues).
+            ''',
     },
     "More on the project website": {
         "en": "More on the project website!",
         "fr": "En savoir plus sur le projet du site !",
-    },
-    "The GREENER principles": {
-        "en": "The GREENER principles",
-        "fr": "Les principes écologiques",
-    },
-    "for environmentally sustainable computational science": {
-        "en": " for environmentally sustainable computational science.",
-        "fr": " pour une science informatique durable.",
-    },
-    "A short primer": {
-        "en": "A short primer",
-        "fr": "Une courte revue",
-    },
-    "carbon footprint estimations": {
-        "en": " discussing different options for carbon footprint estimation.",
-        "fr": " des outils pour l'estimation de l'empreinte carbone.",
-    },
-    "Artificial intelligence dedicated page": {
-        "en": "Artificial intelligence dedicated page",
-        "fr": "Page dédiée à l'intelligence artificielle",
     },
 
     #### HOME PAGE ####
@@ -271,9 +313,9 @@ TRANSLATIONS_DICT = {
         "en": "Personal laptop",
         "fr": "Personal laptop",
     },
-    "Personal workstation": {
-        "en": "Personal workstation",
-        "fr": "Personal workstation",
+    "Desktop computer": {
+        "en": "Desktop computer",
+        "fr": "Desktop computer",
     },
     "Local server": {
         "en": "Local server",
@@ -374,127 +416,19 @@ TRANSLATIONS_DICT = {
             ''',
     },
 
-    ### AI PAGE ###
+    #### GRAPHS ####
 
-    ### TRAINING FORM
-
-    ### Header
-
-    "Training_form_subtitle": {
-        "en": '''
-                Report your training-related computations. For more information about R&D experiments, 
-                retraining or overall tips regarding your reporting, please refer to the Help tab.
-            ''',
-        "fr": '''
-                Report your training-related computations. For more information about R&D experiments, 
-                retraining or overall tips regarding your reporting, please refer to the Help tab.
-            ''',
+    "Computing_cores_VS_Memory": {
+        "en": 'Computing cores VS Memory',
+        "fr": 'Computing cores VS Memory',
     },
-
-    ### R&D trainings
-
-    "R&D_TRAINING_header": {
-        "en": 'R&D TRAINING',
-        "fr": 'R&D TRAINING',
+    "Location_impact_graphs_title": {
+        "en": 'How the location impacts your footprint',
+        "fr": 'How the location impacts your footprint',
     },
-    "R&D_training_label": {
-        "en": 'Do you want to add R&D compute time?',
-        "fr": 'Do you want to add R&D compute time?',
-    },
-    "R&D_training_tooltip": {
-        "en": '''
-                Used to add R&D compute to the final training impact. 
-                If in total you estimate your R&D training computes to represent 
-                twice the compute of your final training run, input '2'. 
-                If total R&D is about half of the final run, input '0.5'. 
-                The resulting value will be added to your main training footprint.
-            ''',
-        "fr": '''
-                Used to add R&D compute to the final training impact. 
-                If in total you estimate your R&D training computes to represent 
-                twice the compute of your final training run, input '2'. 
-                If total R&D is about half of the final run, input '0.5'. 
-                The resulting value will be added to your main training footprint.
-            ''',
-    },
-
-    ### Retrainings
-
-    "RETRAINING_header": {
-        "en": 'RETRAINING',
-        "fr": 'RETRAINING',
-    },
-    "retraining_label": {
-        "en": 'Do you want to add retraining compute time?',
-        "fr": 'Do you want to add retraining compute time?',
-    },
-    "retraining_tooltip": {
-        "en": 'Used if you want to account for model retraining. ',
-        "fr": 'Used if you want to account for model retraining. ',
-    },
-    "Number_of_runs_label": {
-        "en": 'Number of runs',
-        "fr": 'Number of runs',
-    },
-    "Number_of_runs_tooltip": {
-        "en": 'Number of times you plan to retrain the model over the reporting period.',
-        "fr": 'Number of times you plan to retrain the model over the reporting period.',
-    },
-    "Running_time_label": {
-        "en": 'What is the relative runtime of an average retraining run compared to the main training?',
-        "fr": 'What is the relative runtime of an average retraining run compared to the main training?',
-    },
-    "Running_time_tooltip": {
-        "en": 'If retraining takes on average 10% of the runtime of the main training, input "0.1".',
-        "fr": 'If retraining takes on average 10% of the runtime of the main training, input "0.1".',
-    },
-
-    ### INFERENCE FORM
-    
-    ### Header
-
-    "Inference_form_subtitle": {
-        "en": '''
-                Report your inference-related computations. For more information about continuous inference, 
-                or overall tips regarding your reporting, please refer to the Help tab..
-            ''',
-        "fr": '''
-                Report your inference-related computations. For more information about continuous inference, 
-                or overall tips regarding your reporting, please refer to the Help tab..
-            ''',
-    },
-
-    ### Continuous inference section
-
-    "Apply_continuous_inference_scheme": {
-        "en": "Apply continuous inference scheme",
-        "fr": "Apply continuous inference scheme",
-    },
-    "continuous_inference_tooltip": {
-        "en": '''
-                See the Help tab for more information about continuous inference. 
-                If chosen, then only report the computations falling within your ‘input data time span’. 
-                Scaling to the reporting period is done automatically.
-            ''',
-        "fr": '''
-                See the Help tab for more information about continuous inference. 
-                If chosen, then only report the computations falling within your ‘input data time span’. 
-                Scaling to the reporting period is done automatically.
-            ''',
-    },
-    "Input_data_time_span": {
-        "en": "Input data time span",
-        "fr": "Input data time span",
-    },
-    "input_data_time_span_tooltip": {
-        "en": '''
-                The `input data time span` is the length of time over which you are able 
-                to estimate your resource usage for continuous inference.
-            ''',
-        "fr": '''
-                The `input data time span` is the length of time over which you are able 
-                to estimate your resource usage for continuous inference.
-            ''',
+    "Power_draw_of_different_processors": {
+        "en": 'Power draw of different processors',
+        "fr": 'Power draw of different processors',
     },
 
     #### IMPORT & EXPORT ####
@@ -515,6 +449,66 @@ TRANSLATIONS_DICT = {
         "en": '⚠️ Error when filling values from csv ⚠️',
         "fr": '⚠️ Error when filling values from csv ⚠️',
     },
+    "file_extension_not_csv": {
+        "en": 'The file extension is not "csv".',
+        "fr": 'The file extension is not "csv".',
+    },
+    "csv_cant_be_read": {
+        "en": 'The CSV file can’t be read, so doing nothing…',
+        "fr": 'The CSV file can’t be read, so doing nothing…',
+    },
+    "fields_should_be_in_csv": {
+        "en": 'The following fields should be in the csv: ',
+        "fr": 'The following fields should be in the csv: ',
+    },
+    "wrong_fields": {
+        "en": ' There seems to be typos in the csv columns name or inconsistencies in the values of the following fields: ',
+        "fr": ' There seems to be typos in the csv columns name or inconsistencies in the values of the following fields: ',
+    },
+    "overall": {
+        "en": '**Overall: **',
+        "fr": '**Overall: **',
+    },
+    "inference": {
+        "en": ' **Inference: **',
+        "fr": ' **Inference: **',
+    },
+    "training": {
+        "en": ' **Training: **',
+        "fr": ' **Training: **',
+    },
+    "default_error_subtitle": {
+        "en": '''
+                **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
+                See below for more details** 
+
+                If you are trying to import a csv file from previous versions, the easiest way to fix this is to manually
+                input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
+                csv file from the home page into the AI page, which does not work.
+            ''',
+        "fr": '''
+                **The valid inputs contained in the csv file are filled in the form and the wrong ones are replaced by default values. 
+                See below for more details** 
+
+                If you are trying to import a csv file from previous versions, the easiest way to fix this is to manually
+                input the different values in the calculator and reexport a fresh csv. You may also be trying to import a
+                csv file from the home page into the AI page, which does not work.
+            ''',
+    },
+    "old_version_error_subtitle": {
+        "en": '''
+                **It is very likely that you are trying to import a csv from a previous version of the calculator. 
+                This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
+                in the calculator and reexport a fresh csv.**
+            ''',
+        "fr": '''
+                **It is very likely that you are trying to import a csv from a previous version of the calculator. 
+                This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
+                in the calculator and reexport a fresh csv.**
+            ''',
+    },
 
     #### METRICS ####
 
@@ -533,6 +527,14 @@ TRANSLATIONS_DICT = {
     "in_a_passenger_car": {
         "en": "in a passenger car",
         "fr": "in a passenger car",
+    },
+    "flights": {
+        "en": "flights",
+        "fr": "vols",
+    },
+    "of_a_flight": {
+        "en": "of a flight",
+        "fr": "d'un vol",
     },
 
     #### METHODOLOGY ####
@@ -726,7 +728,6 @@ TRANSLATIONS_DICT = {
             ''',
     },
 
-
     ### ABOUT US
 
     "About us": {
@@ -787,11 +788,441 @@ TRANSLATIONS_DICT = {
             ''',
     },
 
+    #### HOME PAGE ####
+
+    "How_to_report_it?": {
+        "en": 'How to report it?',
+        "fr": 'How to report it?',
+    },
+    "Report_text_header": {
+        "en": '''
+                It's important to track the impact 
+                of computational research on climate change in order to stimulate greener algorithms.
+                For that, __we believe that the carbon footprint of a project should be reported on publications
+                alongside other performance metrics__. 
+
+                Here is a text you can include in your paper:
+            ''',
+        "fr": '''
+                It's important to track the impact 
+                of computational research on climate change in order to stimulate greener algorithms.
+                For that, __we believe that the carbon footprint of a project should be reported on publications
+                alongside other performance metrics__. 
+
+                Here is a text you can include in your paper:
+            ''',
+    },
+    "Report_text_reference": {
+        "en": ''' \[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.''',
+        "fr": ''' \[1\] Lannelongue, L., Grealey, J., Inouye, M., Green Algorithms: Quantifying the Carbon Footprint of Computation. Adv. Sci. 2021, 2100707.''',
+    },
+    "Report_text_footer": {
+        "en": ''' _Including the version of the tool is useful to keep track of the version of the data used._''',
+        "fr": ''' _Including the version of the tool is useful to keep track of the version of the data used._''',
+    },
+
+    #### AI PAGE ####
+
+    "AI_page_title": {
+        "en": 'The Green Algorithms calculator, adapted for artificial intelligence',
+        "fr": 'The Green Algorithms calculator, adapted for artificial intelligence',
+    },
+    "Training_form_subtitle": {
+        "en": '''
+                This new page is especially dedicated to AI-related computations, 
+                where compute is usually divided between training and inference phases. 
+                The method is the same as in the original tool, 
+                it simply facilitates the reporting of AI systems' environmental impacts 
+                over a fixed period of time, e.g. one year.
+            ''',
+        "fr": '''
+                "This new page is especially dedicated to AI-related computations, 
+                where compute is usually divided between training and inference phases.
+                The method is the same as in the original tool,
+                it simply facilitates the reporting of AI systems' environmental impacts
+                over a fixed period of time, e.g. one year.
+            ''',
+    },
+
+    ### REPORTING PERIOD
+
+    "Reporting_period": {
+        "en": 'Reporting period',
+        "fr": 'Reporting period',
+    },
+    "Reporting_period_explanation": {
+        "en": '''
+                The reporting period is the period of time over which you want to estimate
+                the environmental impacts of your AI system (training and inference).
+                This is particularly relevant in the case of ongoing deployment of the system.
+                Typical values might be one year or the whole estimated lifespan of your system. 
+
+                The value is only used by the calculator when you select "continuous inference"
+                to report the total energy and carbon footprint over the reporting period.
+                It is nonetheless good practice to enter it to clarify the scope of your
+                estimations.
+            ''',
+        "fr": '''
+                The reporting period is the period of time over which you want to estimate
+                the environmental impacts of your AI system (training and inference).
+                This is particularly relevant in the case of ongoing deployment of the system.
+                Typical values might be one year or the whole estimated lifespan of your system. 
+
+                The value is only used by the calculator when you select "continuous inference"
+                to report the total energy and carbon footprint over the reporting period.
+                It is nonetheless good practice to enter it to clarify the scope of your
+                estimations.
+            ''',
+    },
+
+    ### TRAINING FORM
+
+    ### Header
+
+    "TRAINING": {
+        "en": 'TRAINING',
+        "fr": 'TRAINING',
+    },
+    "Training_form_subtitle": {
+        "en": '''
+                Report your training-related computations. For more information about R&D experiments, 
+                retraining or overall tips regarding your reporting, please refer to the Help tab.
+            ''',
+        "fr": '''
+                Report your training-related computations. For more information about R&D experiments, 
+                retraining or overall tips regarding your reporting, please refer to the Help tab.
+            ''',
+    },
+
+    ### R&D trainings
+
+    "R&D_TRAINING_header": {
+        "en": 'R&D TRAINING',
+        "fr": 'R&D TRAINING',
+    },
+    "R&D_training_label": {
+        "en": 'Do you want to add R&D compute time?',
+        "fr": 'Do you want to add R&D compute time?',
+    },
+    "R&D_training_tooltip": {
+        "en": '''
+                Used to add R&D compute to the final training impact. 
+                If in total you estimate your R&D training computes to represent 
+                twice the compute of your final training run, input '2'. 
+                If total R&D is about half of the final run, input '0.5'. 
+                The resulting value will be added to your main training footprint.
+            ''',
+        "fr": '''
+                Used to add R&D compute to the final training impact. 
+                If in total you estimate your R&D training computes to represent 
+                twice the compute of your final training run, input '2'. 
+                If total R&D is about half of the final run, input '0.5'. 
+                The resulting value will be added to your main training footprint.
+            ''',
+    },
+
+    ### Retrainings
+
+    "RETRAINING_header": {
+        "en": 'RETRAINING',
+        "fr": 'RETRAINING',
+    },
+    "retraining_label": {
+        "en": 'Do you want to add retraining compute time?',
+        "fr": 'Do you want to add retraining compute time?',
+    },
+    "retraining_tooltip": {
+        "en": 'Used if you want to account for model retraining. ',
+        "fr": 'Used if you want to account for model retraining. ',
+    },
+    "Number_of_runs_label": {
+        "en": 'Number of runs',
+        "fr": 'Number of runs',
+    },
+    "Number_of_runs_tooltip": {
+        "en": 'Number of times you plan to retrain the model over the reporting period.',
+        "fr": 'Number of times you plan to retrain the model over the reporting period.',
+    },
+    "Running_time_label": {
+        "en": 'What is the relative runtime of an average retraining run compared to the main training?',
+        "fr": 'What is the relative runtime of an average retraining run compared to the main training?',
+    },
+    "Running_time_tooltip": {
+        "en": 'If retraining takes on average 10% of the runtime of the main training, input "0.1".',
+        "fr": 'If retraining takes on average 10% of the runtime of the main training, input "0.1".',
+    },
+
+    ### INFERENCE FORM
+    
+    ### Header
+
+    "INFERENCE": {
+        "en": 'INFERENCE',
+        "fr": 'INFERENCE',
+    },
+    "Inference_form_subtitle": {
+        "en": '''
+                Report your inference-related computations. For more information about continuous inference, 
+                or overall tips regarding your reporting, please refer to the Help tab..
+            ''',
+        "fr": '''
+                Report your inference-related computations. For more information about continuous inference, 
+                or overall tips regarding your reporting, please refer to the Help tab..
+            ''',
+    },
+
+    ### Continuous inference section
+
+    "Apply_continuous_inference_scheme": {
+        "en": "Apply continuous inference scheme",
+        "fr": "Apply continuous inference scheme",
+    },
+    "continuous_inference_tooltip": {
+        "en": '''
+                See the Help tab for more information about continuous inference. 
+                If chosen, then only report the computations falling within your ‘input data time span’. 
+                Scaling to the reporting period is done automatically.
+            ''',
+        "fr": '''
+                See the Help tab for more information about continuous inference. 
+                If chosen, then only report the computations falling within your ‘input data time span’. 
+                Scaling to the reporting period is done automatically.
+            ''',
+    },
+    "Input_data_time_span": {
+        "en": "Input data time span",
+        "fr": "Input data time span",
+    },
+    "input_data_time_span_tooltip": {
+        "en": '''
+                The `input data time span` is the length of time over which you are able 
+                to estimate your resource usage for continuous inference.
+            ''',
+        "fr": '''
+                The `input data time span` is the length of time over which you are able 
+                to estimate your resource usage for continuous inference.
+            ''',
+    },
+
+    ### METHODOLOGY
+    
+    "ai_methodology_content": {
+        "en": '''
+                The training and inference forms rely on the same base formula as the one used in the main
+                page calculator. 
+                When appropriate, retraining and R&D impacts are then added, and continuous inference impacts 
+                are scaled to the reporting period.
+                More information is provided by the tooltips and the help tabs.
+            ''',
+        "fr": '''
+                The training and inference forms rely on the same base formula as the one used in the main
+                page calculator. 
+                When appropriate, retraining and R&D impacts are then added, and continuous inference impacts 
+                are scaled to the reporting period.
+                More information is provided by the tooltips and the help tabs.
+            ''',
+    },
+    "Training_overall_description_title": {
+        "en": "Overall description",
+        "fr": "Overall description",
+    },
+    "Training_overall_description_content": {
+        "en": '''
+                The training phase of your AI system includes different stages: R&D experiments, the final training of your model, and potential retraining runs (more details are given below).
+                
+                We invite you to include all these stages in this form. **Start by filling-in the form based on the main training run.
+                Then use the input fields available at the bottom of the form to 
+                estimate the impact of R&D training and/or retraining**.
+                Some R&D use cases are illustrated in more details below. 
+
+                This approach may not work for all cases (e.g. if retraining is done with different
+                hardware) but it offers a reasonable estimate. Besides, there is always the option of rerunning the calculator separately.
+            ''',
+        "fr": '''
+                The training phase of your AI system includes different stages:
+                R&D experiments, the final training of your model, and potential retraining runs 
+                (more details are given below).
+                
+                We invite you to include all these stages in this form. 
+                **Start by filling-in the form based on the main training run.
+                Then use the input fields available at the bottom of the form to 
+                estimate the impact of R&D training and/or retraining**.
+                Some R&D use cases are illustrated in more details below. 
+
+                This approach may not work for all cases (e.g. if retraining is done with different
+                hardware) but it offers a reasonable estimate. 
+                Besides, there is always the option of rerunning the calculator separately.
+            ''',
+    },
+    "Training_Definitions_and_practical_tips": {
+        "en": "Definitions and practical tips",
+        "fr": "Definitions and practical tips",
+    },
+    "Training_Definitions_and_practical_tips_content": {
+        "en": '''
+                __Main/final training stage__: the computations performed to achieve the final model 
+                of your AI solution. 
+                It can either correspond to training from scratch a custom model 
+                or fine-tuning an existing model.
+
+                __R&D training__: the compute involved in the research and development phase before the 
+                final run (e.g. hyper-parameters search).
+                This is included by added R&D as a fraction of the training time, 
+                e.g. enter 2 if you assume that in total R&D represents 
+                double the compute resources of the final run. 
+                There is no typical value for that, from a small fraction in case of 
+                well defined straightforward models to hundreds in more complex models requiring 
+                extensive searches. For example, when studying a 176 billon parameters LLM,
+                Luccioni et al. \[1\] estimated that intermediate models training and evaluation accounted 
+                for approximately 150% of their main training consumption.
+                
+                __Retraining__: any additional training runs performed after the deployment of your AI system.
+                For consistent reporting, you are invited to take into account all retraining happening 
+                over your reporting period.
+            ''',
+        "fr": '''
+                __Main/final training stage__: the computations performed to achieve the final model 
+                of your AI solution. 
+                It can either correspond to training from scratch a custom model 
+                or fine-tuning an existing model.
+
+                __R&D training__: the compute involved in the research and development phase before the 
+                final run (e.g. hyper-parameters search).
+                This is included by added R&D as a fraction of the training time, 
+                e.g. enter 2 if you assume that in total R&D represents 
+                double the compute resources of the final run. 
+                There is no typical value for that, from a small fraction in case of 
+                well defined straightforward models to hundreds in more complex models requiring 
+                extensive searches. For example, when studying a 176 billon parameters LLM,
+                Luccioni et al. \[1\] estimated that intermediate models training and evaluation accounted 
+                for approximately 150% of their main training consumption.
+                
+                __Retraining__: any additional training runs performed after the deployment of your AI system.
+                For consistent reporting, you are invited to take into account all retraining happening 
+                over your reporting period.
+            ''',
+    },
+    "Training_help_references": {
+        "en": '''
+                '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, '
+                '“Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal '
+                'of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+            ''',
+        "fr": '''
+                '\[1\] A. S. Luccioni, S. Viguier, and A.-L. Ligozat, '
+                '“Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model,” Journal '
+                'of Machine Learning Research, vol. 24, no. 253, pp. 1–15, 2023',
+            ''',
+    },
+    "Inference_overall_description_title": {
+        "en": "Overall description",
+        "fr": "Overall description",
+    },
+    "Inference_overall_description_content": {
+        "en": '''
+                This is to quantify the environmental impacts of the inference phase of your AI system.
+                __We distinguish between two types of inference: block, or one-shot, inference 
+                (you make predictions once and for all)  and continuous inference 
+                (the model makes predictions continuously over time, e.g. a chatbot)__.
+
+                By default, the form is in 'block inference' mode but you can activate 
+                the continuous mode using the switch at the top.
+            ''',
+        "fr": '''
+                This is to quantify the environmental impacts of the inference phase of your AI system.
+                __We distinguish between two types of inference: block, or one-shot, inference 
+                (you make predictions once and for all)  and continuous inference 
+                (the model makes predictions continuously over time, e.g. a chatbot)__.
+
+                By default, the form is in 'block inference' mode but you can activate 
+                the continuous mode using the switch at the top.
+            ''',
+    },
+    "Inference_Definitions_and_practical_tips": {
+        "en": "Definitions and practical tips",
+        "fr": "Definitions and practical tips",
+    },
+    "Inference_overall_description_content": {
+        "en": '''
+                This is to quantify the environmental impacts of the inference phase of your AI system.
+                __We distinguish between two types of inference: block, or one-shot, inference 
+                (you make predictions once and for all)  and continuous inference 
+                (the model makes predictions continuously over time, e.g. a chatbot)__.
+
+                By default, the form is in 'block inference' mode but you can activate 
+                the continuous mode using the switch at the top.
+            ''',
+        "fr": '''
+                This is to quantify the environmental impacts of the inference phase of your AI system.
+                __We distinguish between two types of inference: block, or one-shot, inference 
+                (you make predictions once and for all)  and continuous inference 
+                (the model makes predictions continuously over time, e.g. a chatbot)__.
+
+                By default, the form is in 'block inference' mode but you can activate 
+                the continuous mode using the switch at the top.
+            ''',
+    },
+    "Inference_Definitions_and_practical_tips_content": {
+        "en": '''
+                __Block (one-shot) inference__: for a system where prediction is made on a one-off basis 
+                (or repeated occasionally).
+                It may be used to process a data set as a whole or to build one-day or one-week strategy. 
+                If multiple block inferences happen over your reporting period, 
+                we invite you to quantify the resource needs for one inference block 
+                and then to use the multiplicative factor.
+            ''',
+        "fr": '''
+                __Block (one-shot) inference__: for a system where prediction is made on a one-off basis 
+                (or repeated occasionally).
+                It may be used to process a data set as a whole or to build one-day or one-week strategy. 
+                If multiple block inferences happen over your reporting period, 
+                we invite you to quantify the resource needs for one inference block 
+                and then to use the multiplicative factor.
+            ''',
+    },
+    "Inference_Definitions_and_practical_tips_content_2": {
+        "en": '''
+                __Continuous inference__: corresponds to an AI service that is requested on demand 
+                by users or other software systems (e.g. chatbot). 
+                This inference workload does not follow a strict scheduling, making it harder to quantify. 
+                In this mode, we invite you to estimate the resource usage 
+                over a period of time of your choice, the so-called "input data time span”. 
+                The results are then scaled up over the total reporting period. 
+                For instance, if choosing a reporting scope of 1 year and filling 
+                the form in continuous inference mode with an `input data time span` of 1 month,
+                then your environmental impacts correspond to the monthly results multiplied by 12.
+                
+                It is worth keeping in mind that __the reporting period only impacts the results
+                in the 'continuous inference' situation__.
+            ''',
+        "fr": '''
+                __Continuous inference__: corresponds to an AI service that is requested on demand 
+                by users or other software systems (e.g. chatbot). 
+                This inference workload does not follow a strict scheduling, making it harder to quantify. 
+                In this mode, we invite you to estimate the resource usage 
+                over a period of time of your choice, the so-called "input data time span”. 
+                The results are then scaled up over the total reporting period. 
+                For instance, if choosing a reporting scope of 1 year and filling 
+                the form in continuous inference mode with an `input data time span` of 1 month,
+                then your environmental impacts correspond to the monthly results multiplied by 12.
+                
+                It is worth keeping in mind that __the reporting period only impacts the results
+                in the 'continuous inference' situation__.
+            ''',
+    },
+
     ### MISCELLANEOUS
 
+    'No': { 
+        "en": 'No',
+        "fr": 'Non'
+    },
+    'Yes': { 
+        "en": 'Yes',
+        "fr": 'Oui'
+    },
     '': { # For empty texts
         "en": '',
         "fr": ''
-    }
-
+    },
 }

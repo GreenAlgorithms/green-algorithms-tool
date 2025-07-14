@@ -9,7 +9,7 @@ from dash import html, dcc
 from dash_extensions.enrich import DashBlueprint, Output, Input, State, PrefixIdTransform, ctx, html
 from types import SimpleNamespace
 
-from utils.utils import YES_NO_OPTIONS, put_value_first, is_shown, custom_prefix_escape
+from utils.utils import get_yes_or_no_options, put_value_first, is_shown, custom_prefix_escape
 from utils.handle_inputs import get_available_versions,  availableLocations_continent, availableOptions_servers, availableOptions_country, availableOptions_region, DEFAULT_VALUES_FOR_PAGE_LOAD
 from utils.graphics import MY_COLORS
 
@@ -23,7 +23,7 @@ custom_core_box_style = {'padding': '6px 24px', 'border': 'rgb(220, 220, 220)', 
 
 class FormBlueprint(DashBlueprint):
     '''
-    The claculator form blueprint.
+    The calculator form blueprint.
     The class constructor builds the blueprint layout and the associated callbacks. So,
     when calling an instance of this class, one gest a fully functional form blueprint.
     
@@ -91,7 +91,7 @@ class FormBlueprint(DashBlueprint):
                             [
                                 dcc.RadioItems(
                                     id='RandD_radio',
-                                    options=YES_NO_OPTIONS,
+                                    options=get_yes_or_no_options(),
                                     className="radio-input",
                                 ),
 
@@ -109,7 +109,7 @@ class FormBlueprint(DashBlueprint):
                             [
                                 html.Div('i', className='tooltip-icon'),
                                 html.P(
-                                    translatable_markdown_text("R&D_training_tooltip").embed(self),
+                                    translatable_div_text("R&D_training_tooltip").embed(self),
                                     className='tooltip-text'
                                 ),
                             ],
@@ -144,7 +144,7 @@ class FormBlueprint(DashBlueprint):
                                     [
                                         dcc.RadioItems(
                                             id='retrainings_radio',
-                                            options=YES_NO_OPTIONS,
+                                            options=get_yes_or_no_options(),
                                             className="radio-input",
                                         ),
                                     ],
@@ -275,7 +275,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(translatable_markdown_text("continuous_inference_tooltip").embed(self), className='tooltip-text'),
+                                            html.P(translatable_div_text("continuous_inference_tooltip").embed(self), className='tooltip-text'),
                                         ],
                                         className='tooltip',
                                     ),
@@ -316,7 +316,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(translatable_markdown_text("input_data_time_span_tooltip").embed(self), className='tooltip-text'),
+                                            html.P(translatable_div_text("input_data_time_span_tooltip").embed(self), className='tooltip-text'),
                                         ],
                                         className='tooltip',
                                     ),
@@ -449,7 +449,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(translatable_markdown_text('cpu_model_tooltip').embed(self), className='tooltip-text'),
+                                            html.P(translatable_div_text('cpu_model_tooltip').embed(self), className='tooltip-text'),
                                         ],
                                         className='tooltip',
                                     ),
@@ -593,7 +593,7 @@ class FormBlueprint(DashBlueprint):
                                     html.Div(
                                         [
                                             html.Div('i', className='tooltip-icon'),
-                                            html.P(translatable_markdown_text('gpu_model_tooltip').embed(self), className='tooltip-text'
+                                            html.P(translatable_div_text('gpu_model_tooltip').embed(self), className='tooltip-text'
                                             ),
                                         ],
                                         className='tooltip',
@@ -819,7 +819,7 @@ class FormBlueprint(DashBlueprint):
                                         [
                                             html.Div('i', className='tooltip-icon'),
                                             html.P(
-                                                translatable_markdown_text("Select_location_tooltip").embed(self),
+                                                translatable_div_text("Select_location_tooltip").embed(self),
                                                 className='tooltip-text'
                                             ),
                                         ],
@@ -908,7 +908,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             dcc.RadioItems(
                                 id='usageCPU_radio',
-                                options=YES_NO_OPTIONS,
+                                options=get_yes_or_no_options(),
                                 className="radio-input",
                             ),
                             dcc.Input(
@@ -926,7 +926,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                translatable_markdown_text("CPU_usage_factor_tooltip").embed(self),
+                                translatable_div_text("CPU_usage_factor_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -944,7 +944,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             dcc.RadioItems(
                                 id='usageGPU_radio',
-                                options=YES_NO_OPTIONS,
+                                options=get_yes_or_no_options(),
                                 className="radio-input",
                             ),
 
@@ -963,7 +963,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                translatable_markdown_text("GPU_usage_factor_tooltip").embed(self),
+                                translatable_div_text("GPU_usage_factor_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -983,7 +983,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             dcc.RadioItems(
                                 id='pue_radio',
-                                options=YES_NO_OPTIONS,
+                                options=get_yes_or_no_options(),
                                 className='radio-input',
                             ),
 
@@ -1001,7 +1001,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                translatable_markdown_text("PUE_tooltip").embed(self),
+                                translatable_div_text("PUE_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -1023,7 +1023,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             dcc.RadioItems(
                                 id='mult_factor_radio',
-                                options=YES_NO_OPTIONS,
+                                options=get_yes_or_no_options(),
                                 className="radio-input",
                             ),
 
@@ -1041,7 +1041,7 @@ class FormBlueprint(DashBlueprint):
                         [
                             html.Div('i', className='tooltip-icon'),
                             html.P(
-                                translatable_markdown_text("MF_tooltip").embed(self),
+                                translatable_div_text("MF_tooltip").embed(self),
                                 className='tooltip-text'
                             ),
                         ],
@@ -1154,18 +1154,27 @@ class FormBlueprint(DashBlueprint):
         @self.callback(
             Output('platformType_dropdown', 'options'),
             Input('versioned_data', 'data'),
-            State('language_dropdown', 'value'),
+            Input('language_dropdown', 'value'),
         )
         def set_platform(data, language):
             """
             Loads platform options based on backend data.
+
+            WARNING: the translation of the options label fails. Translating the label raises a KeyError when calling 
+            `'label': TRANSLATIONS_DICT[k][language], 'value': v} for v, k in list(data_dict.providersTypes.items())`.
+            The key that is not recognized is the translation of 'Personal laptop', 'Desktop computer' or 'Local server'.
+            Printing the above does not raise the error, which is strange.
+
+            Current workaround: the translation dict contains the english words for all languages.
             """
             if data is not None:
                 data_dict = SimpleNamespace(**data)
+                ################## WARNING:
+                # See the docstring for translation bug.
                 platformType_options = [
                     {'label': TRANSLATIONS_DICT[k][language], 'value': v} for v, k in list(data_dict.providersTypes.items()) +
                                             [('personal_laptop', TRANSLATIONS_DICT['Personal laptop'][language])] +
-                                            [('personal_workstation', TRANSLATIONS_DICT['Personal workstation'][language])] +
+                                            [('desktop_computer', TRANSLATIONS_DICT['Desktop computer'][language])] +
                                             [('localServer', TRANSLATIONS_DICT['Local server'][language])]
                 ]
                 return platformType_options
@@ -2172,7 +2181,7 @@ class FormBlueprint(DashBlueprint):
                 # If a personal computer is used, we consider that its other resources are fully dedicated to the 
                 # computation during it. Otherwise, we apply a multiplier based on the ratio of the number of cores
                 # used over the number of cores contained in a server.
-                # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation' which is quite unlikely.
+                # TODO: maybe prompt the user when several GPUs are used along with a 'desktop computer' which is quite unlikely.
                 if selected_platform == 'personal_workstation':
                     # GWP
                     manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_gwp']

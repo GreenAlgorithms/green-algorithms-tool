@@ -13,6 +13,8 @@ import pandas as pd
 from types import SimpleNamespace
 from utils.utils import check_CIcountries_df, unlist, put_value_first
 
+from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
+
 
 ###################################################
 ## GLOABAL VARIABLES
@@ -403,7 +405,7 @@ def availableOptions_country(selected_continent: str, versioned_data: dict):
 
 def availableOptions_region(selected_continent: str,selected_country: str, data: dict):
     """
-    Provides the available region for the selected continent and contry.
+    Provides the available region for the selected continent and country.
     """
     if data is not None:
         data_dict = SimpleNamespace(**data)
@@ -472,7 +474,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         platformType_options = [
             {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
                                     [('personal_laptop', 'Personal laptop')] +
-                                    [('personal_workstation', 'Personal workstation')] +
+                                    [('desktop_computer', 'Desktop computer')] +
                                     [('localServer', 'Local server')]
         ]
     else:
@@ -573,7 +575,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
 def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
     """
     Validates the inputs related to the ai page: ensures the consistency between 
-    the keys and correspondind values. 
+    the keys and corresponding values. 
 
     Args:
         input_dict[dict]: inputs to process
@@ -636,11 +638,12 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
     return clean_inputs, wrong_imputs
 
 
-def open_input_csv_and_comment(upload_csv_content: str, filename: str):
+def open_input_csv_and_comment(upload_csv_content: str, filename: str, language_id: str):
     """
     Args:
-        upload_csv_content [str]: a binary string corresponding to the uploaded file.
-        filename [str]: the uploaded file name.
+        upload_csv_content (str): a binary string corresponding to the uploaded file.
+        filename (str): the uploaded file name.
+        language_id (str): the language identifier for translation purpose
 
     Opens the input file content and stores it in a pandas DataFrame.
     NOTE: so far, only the first line of an input csv is read.
@@ -652,9 +655,9 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
         if '.csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
-            return {}, 'The CSV file can’t be read, so doing nothing…', 'The file extension is not "csv".'
+            return {}, TRANSLATIONS_DICT['csv_cant_be_read'][language_id], TRANSLATIONS_DICT['file_extension_not_csv'][language_id]
     except Exception as e:
-        subtitle = 'The CSV file can’t be read, so doing nothing…'
+        subtitle = TRANSLATIONS_DICT['csv_cant_be_read'][language_id]
         message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
         return {}, subtitle, message
     # TODO : raise a warning if there are several rows in the input csv

@@ -243,10 +243,19 @@ class MetricsBlueprint(DashBlueprint):
             ],
             [
                 Input(f'base_results', 'data'),
+                Input('language_dropdown', 'value'),
             ],
             State('versioned_data', 'data'),
         )
-        def update_results_and_texts(results_dict, versioned_data):
+        def update_results_and_texts(results_dict: dict, language_id: str, versioned_data: dict):
+            '''
+            Updated the metrics displayed and the corresponding label
+
+            Args:
+                results_dict (dict): the dictionary from the form results
+                versioned_data (dict): the backend data
+                language_id (dict): the language identifier for translation purpose
+            '''
             # Retrieve base results
             energy_needed = results_dict['energy_needed']  # in kWh
             text_energy = utils.format_energy_text(energy_needed)
@@ -257,7 +266,7 @@ class MetricsBlueprint(DashBlueprint):
                 versioned_data = SimpleNamespace(**versioned_data)
                 text_ty = utils.write_tree_months_equivalent(carbon_emissions, versioned_data.refValues_dict)
                 text_car = utils.write_driving_equivalent(carbon_emissions, versioned_data.refValues_dict)
-                text_trip_proportion, flying_text = utils.write_plane_trip_equivalent(carbon_emissions, versioned_data.refValues_dict)
+                text_trip_proportion, flying_text = utils.write_plane_trip_equivalent(carbon_emissions, versioned_data.refValues_dict, language_id)
             else:
                 text_ty, text_car, text_trip_proportion, flying_text = '', '', '', ''
             return text_CE, text_energy, text_ty, text_car, text_trip_proportion, flying_text

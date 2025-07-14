@@ -2,9 +2,19 @@
 
 import pandas as pd
 
-YES_NO_OPTIONS = [
-    {'label': 'Yes', 'value': 'Yes'},
-    {'label': 'No', 'value': 'No'}
+from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
+
+
+def get_yes_or_no_options(language_id: str= 'en'):
+    '''
+    Returns the options for Yes/no radio buttons.
+
+    Args:
+        language_id (str): the language identifier for translation purpose
+    '''
+    return [
+    {'label': TRANSLATIONS_DICT['Yes'][language_id], 'value': 'Yes'},
+    {'label': TRANSLATIONS_DICT['No'][language_id], 'value': 'No'}
 ]
 
 
@@ -64,14 +74,15 @@ def custom_prefix_escape(component_id: str):
     return False
 
 
-def write_error_message(missing_inputs: list, invalid_inputs: list, show_err_mess: bool=False):
+def write_error_message(missing_inputs: list, invalid_inputs: list, language_id:str, show_err_mess: bool=False):
     '''
     Format the error message to display when csv containing errors are loaded.
     Currently distinguishes between:
     
     Args
         missing_inputs (list): inputs expected in the csv but not found
-        invalid_inputs (list): unkown inputs and expected inputs with wrong value
+        invalid_inputs (list): unknown inputs and expected inputs with wrong value
+        language_id (list): the language identifier for translation purpose
         show_err_mess (bool): whether an error previously existed or not
 
     Returns
@@ -82,11 +93,11 @@ def write_error_message(missing_inputs: list, invalid_inputs: list, show_err_mes
     # The first part of the error message contains missing inputs, ie expected inputs that were not found in the csv
     if len(missing_inputs) > 0:
         show_err_mess = True
-        mess_content += 'The following fields should be in the csv: '
+        mess_content += TRANSLATIONS_DICT['fields_should_be_in_csv'][language_id]
         mess_content += f"*{', '.join(missing_inputs)}.*"
     # The second part of the error message gathers all other inputs from the csv raising an error
     if len(invalid_inputs) > 0:
         show_err_mess = True
-        mess_content += ' There seems to be typos in the csv columns name or inconsistencies in the values of the following fields: '
+        mess_content += TRANSLATIONS_DICT['wrong_fields'][language_id]
         mess_content += f"*{', '.join(invalid_inputs)}.*"
     return show_err_mess, mess_content

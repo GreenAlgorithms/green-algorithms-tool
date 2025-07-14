@@ -19,16 +19,23 @@ class MethodologyBlueprint(DashBlueprint):
     def __init__(
             self,
             id_prefix: str,
-            additional_formula_content: dcc.Markdown = dcc.Markdown()
+            to_add_ai_methodology_text: bool = False
         ):
         '''
         Args:
-            additional_formula_content (dcc.Markdown): textual content located below "The formula" header
+            additional_formula_textual_content (bool): whether to add the AI textual content in the methodology container
         '''
         super().__init__(transforms = [PrefixIdTransform(prefix = id_prefix, escape=custom_prefix_escape)])
-        self.layout = self._get_layout(additional_formula_content)
+        ai_methodology_text = dcc.Markdown()
+        if to_add_ai_methodology_text:
+            ai_methodology_text = html.Div(
+                translatable_markdown_text('ai_methodology_content').embed(self),
+                style={'margin-bottom': '10px'}
+            )
+        self.layout = self._get_layout(ai_methodology_text)
+        
 
-    def _get_layout(self, additional_formula_content: dcc.Markdown):
+    def _get_layout(self, ai_methodology_text: html.Div):
         return html.Div(
         [
             #### PUBLICATION ####
@@ -50,7 +57,7 @@ class MethodologyBlueprint(DashBlueprint):
                 [
                     html.H2(translatable_div_text("The_formula_header").embed(self)),
 
-                    additional_formula_content,
+                    ai_methodology_text,
 
                     html.Div(translatable_markdown_text("the_formula_detail").embed(self)),
 
