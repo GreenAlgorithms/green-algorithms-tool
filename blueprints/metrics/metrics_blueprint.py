@@ -8,6 +8,8 @@ from utils.utils import custom_prefix_escape
 from utils.graphics import loading_wrapper
 import blueprints.metrics.utils as utils
 
+from blueprints.translation.translatable_div_text_blueprint import translatable_div_text
+
 image_dir = os.path.join('assets/images')
 
 class MetricsBlueprint(DashBlueprint):
@@ -45,7 +47,7 @@ class MetricsBlueprint(DashBlueprint):
 
     def _get_metric_per_form_layout(self, training_id:str, inference_id:str):
         '''
-        The detailled metrics for training and inference phases.
+        The detailed metrics for training and inference phases.
         They are shown as raw textual information below the total impact in the layout.
         It can be used for any impact category.
 
@@ -93,9 +95,7 @@ class MetricsBlueprint(DashBlueprint):
                                         id="carbonEmissions_text",
                                     )),
 
-                                    html.P(
-                                        "Carbon footprint",
-                                    )
+                                    html.P(translatable_div_text("Carbon_footprint").embed(self))
                                 ],
                                 className='caption-icons'
                             ),
@@ -131,9 +131,7 @@ class MetricsBlueprint(DashBlueprint):
                                         id="energy_text",
                                     )),
 
-                                    html.P(
-                                        "Energy needed",
-                                    )
+                                    html.P((translatable_div_text("Energy_needed").embed(self)))
                                 ],
                                 className='caption-icons'
                             ),
@@ -165,9 +163,7 @@ class MetricsBlueprint(DashBlueprint):
                                 id="treeMonths_text",
                             )),
 
-                            html.P(
-                                "Carbon sequestration"
-                            )
+                            html.P(translatable_div_text("Carbon_sequestration").embed(self))
                         ],
                         className='caption-icons'
                     )
@@ -195,9 +191,7 @@ class MetricsBlueprint(DashBlueprint):
                                 id="driving_text",
                             )),
 
-                            html.P(
-                                "in a passenger car",
-                            )
+                            html.P(translatable_div_text("in_a_passenger_car").embed(self))
                         ],
                         className='caption-icons'
                     )
@@ -220,13 +214,9 @@ class MetricsBlueprint(DashBlueprint):
 
                     html.Div(
                         [
-                            loading_wrapper(html.Div(
-                                id="flying_text",
-                            )),
+                            loading_wrapper(html.Div(id="flying_text")),
 
-                            html.P(
-                                id="flying_label",
-                            ),
+                            html.P(id="flying_label"),
                         ],
                         className='caption-icons'
                     )
@@ -253,10 +243,19 @@ class MetricsBlueprint(DashBlueprint):
             ],
             [
                 Input(f'base_results', 'data'),
+                Input('language_dropdown', 'value'),
             ],
             State('versioned_data', 'data'),
         )
-        def update_results_and_texts(results_dict, versioned_data):
+        def update_results_and_texts(results_dict: dict, language_id: str, versioned_data: dict):
+            '''
+            Updated the metrics displayed and the corresponding label
+
+            Args:
+                results_dict (dict): the dictionary from the form results
+                versioned_data (dict): the backend data
+                language_id (dict): the language identifier for translation purpose
+            '''
             # Retrieve base results
             energy_needed = results_dict['energy_needed']  # in kWh
             text_energy = utils.format_energy_text(energy_needed)
@@ -267,7 +266,7 @@ class MetricsBlueprint(DashBlueprint):
                 versioned_data = SimpleNamespace(**versioned_data)
                 text_ty = utils.write_tree_months_equivalent(carbon_emissions, versioned_data.refValues_dict)
                 text_car = utils.write_driving_equivalent(carbon_emissions, versioned_data.refValues_dict)
-                text_trip_proportion, flying_text = utils.write_plane_trip_equivalent(carbon_emissions, versioned_data.refValues_dict)
+                text_trip_proportion, flying_text = utils.write_plane_trip_equivalent(carbon_emissions, versioned_data.refValues_dict, language_id)
             else:
                 text_ty, text_car, text_trip_proportion, flying_text = '', '', '', ''
             return text_CE, text_energy, text_ty, text_car, text_trip_proportion, flying_text

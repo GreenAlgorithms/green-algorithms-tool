@@ -7,8 +7,6 @@ import dash
 import pandas as pd
 import plotly.graph_objects as go
 
-from utils.handle_inputs import DATA_DIR
-
 
 ###################################################
 ## GLOBAL SETTINGS 
