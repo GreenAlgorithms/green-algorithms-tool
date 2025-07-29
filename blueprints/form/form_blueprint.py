@@ -63,6 +63,8 @@ class FormBlueprint(DashBlueprint):
             mult_factor_properties=mult_factor_properties
         )
         self._define_callbakcs()
+        if to_add_bottom_training_fields:
+            self._define_training_fields_callbacks()
 
     def _get_additional_training_fields_layout(self):
         '''
@@ -2315,3 +2317,45 @@ class FormBlueprint(DashBlueprint):
                 metrics['manufacturing_ADP_other'] = manufacturing_ADP_other
 
             return output, metrics
+        
+        @self.callback(
+            [
+                Output('usageCPU_radio', 'options'),
+                Output('usageGPU_radio', 'options'),
+                Output('pue_radio', 'options'),
+                Output('mult_factor_radio', 'options'),
+            ],
+            Input('language_dropdown', 'value'),
+        )
+        def translate_yes_no_options(language_id: str):
+            """Translates the YES/NO radio labels.
+
+            Args:
+                language_id (str):  the language identifier for translation purpose
+            """
+            translated_yes_no_options = get_yes_or_no_options(language_id)
+            return tuple(4 * [translated_yes_no_options])
+
+
+    def _define_training_fields_callbacks(self):
+        '''
+        Embeds the callbacks specific the training fields.
+        '''
+        @self.callback(
+            [
+                Output('RandD_radio', 'options'),
+                Output('retrainings_radio', 'options'),
+            ],
+            Input('language_dropdown', 'value'),
+        )
+        def translate_yes_no_options(language_id: str):
+            """Translates the YES/NO radio labels.
+            This callback cannot be merged into the corresponding one for other radio entries
+            (like CPU usage...) because the HTML components of the retraining and R&D fields
+            do not exist if the form is not a training form.
+
+            Args:
+                language_id (str):  the language identifier for translation purpose
+            """
+            translated_yes_no_options = get_yes_or_no_options(language_id)
+            return tuple(2 * [translated_yes_no_options])
