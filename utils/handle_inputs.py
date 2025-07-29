@@ -119,6 +119,7 @@ INPUT_KEYS_TO_IGNORE = [
     'R&D_share',
     'retrainings_share',
     'manufacturing_carbonEmissions_before_scaling',
+    'manufacturing_abiotic_resources_before_scaling',
     'manufacturing_carbonEmissions',
     'manufacturing_abiotic_resources',
     'manufacturing_CE_CPU',
@@ -130,6 +131,85 @@ INPUT_KEYS_TO_IGNORE = [
     'manufacturing_ADP_memory',
     'manufacturing_ADP_other',
 ]
+
+#----------------------------------------------------------------------------------------------
+# WARNING: the following keys must absolutely match de keys of the 
+# <form_aggregate_data> and <form_output_metrics>
+# dictionnaries, otherwise returns KeyError  when exporting the csv
+#----------------------------------------------------------------------------------------------
+AGGREGATE_DATA_UNITS = {
+    'coreType': 'string',
+    'CPUmodel': 'string',
+    'numberCPUs': 'unit',
+    'CPU_model_n_cores': 'unit',
+    'tdpCPU': 'Watt',
+    'CPU_die_area': 'cm2',
+    'usageCPUradio': '< 1',
+    'usageCPU': 'string',
+    'GPUmodel': 'string',
+    'numberGPUs': 'unit',
+    'tdpGPU': 'Watt',
+    'GPU_die_area': 'cm2',
+    'GPU_memory': 'GB',
+    'usageGPUradio': 'str',
+    'usageGPU': '< 1',
+    'memory': 'GB',
+    'runTime_hour': 'hour',
+    'runTime_min': 'minutes',
+    'platformType': 'string',
+    'locationContinent': 'string',
+    'locationCountry': 'string',
+    'locationRegion': 'string',
+    'provider': 'string',
+    'serverContinent': 'string',
+    'server': 'string',
+    'location': 'string',
+    'carbonIntensity': 'gCO2e/kWh',
+    'PUE': '> 1',
+    'PUEradio': 'string',
+    'mult_factor': '> 0',
+    'mult_factor_radio': 'string',
+    'appVersion': 'string',
+    'energy_needed': 'kWh',
+    'carbonEmissions': 'gCO2e',
+    'manufacturing_carbonEmissions': 'gCO2e',
+    'manufacturing_abiotic_resources': 'kgSbe',
+    'runTime': 'hour',
+    'power_needed': 'Watt',
+    'CE_CPU': 'gCO2e',
+    'CE_GPU': 'gCO2e',
+    'CE_core': 'gCO2e',
+    'CE_memory': 'gCO2e',
+    'manufacturing_CE_CPU': 'gCO2e',
+    'manufacturing_CE_GPU': 'gCO2e',
+    'manufacturing_CE_memory': 'gCO2e',
+    'manufacturing_CE_other': 'gCO2e',
+    'manufacturing_ADP_CPU': 'kgSbe',
+    'manufacturing_ADP_GPU': 'kgSbe',
+    'manufacturing_ADP_memory': 'kgSbe',
+    'manufacturing_ADP_other': 'kgSbe',
+    'reporting_time_scope_unit': 'string',
+    'reporting_time_scope_value': 'unit',
+    'retrainings_radio': 'string',
+    'retrainings_MF_value': '> 0',
+    'retrainings_number_input': '> 0',
+    'R&D_radio': 'string',
+    'R&D_MF_value': '> 0',
+    'continuous_inference_switcher': 'string',
+    'input_data_time_scope_unit': 'string',
+    'input_data_time_scope_val': '> 0',
+    'tot_energy_needed': 'kWh',
+    'tot_carbonEmissions': 'gCO2e',
+    'tot_manufacturing_carbonEmissions': 'gCO2e',
+    'tot_manufacturing_abiotic_resources': 'kgSbe',
+    'main_training_share': '>= 0',
+    'R&D_share': '>= 0',
+    'retrainings_share': '>= 0',
+    'energy_needed_before_scaling': 'kWh',
+    'carbonEmissions_before_scaling': 'gCO2e',
+    'manufacturing_carbonEmissions_before_scaling': 'gCO2e',
+    'manufacturing_abiotic_resources_before_scaling': 'kgSbe',
+}
 
 
 ###################################################
@@ -313,12 +393,12 @@ def load_data(data_dir: str, version: str):
             'assembly_impact_adp': 0,
             'laptop_base_impact_gwp': 0,
             'laptop_base_impact_adp': 0,
-            'workstation_base_impact_gwp': 0,
-            'workstation_base_impact_adp': 0,
+            'desktop_computer_base_impact_gwp': 0,
+            'desktop_computer_base_impact_adp': 0,
             'active_lifespan_local_server': 1,
             'active_lifespan_cloud_server': 1,
             'active_lifespan_laptop': 1,
-            'active_lifespan_workstation': 1,
+            'active_lifespan_desktop_computer': 1,
             'nb_CPU_per_server': 2,
             'nb_GPU_local_per_server': 2,
             'nb_GPU_cloud_per_server': 4,
@@ -472,7 +552,7 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         platformType_options = [
             {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
                                     [('personal_laptop', 'Personal laptop')] +
-                                    [('personal_workstation', 'Personal workstation')] +
+                                    [('desktop_computer', 'Desktop computer')] +
                                     [('localServer', 'Local server')]
         ]
     else:
@@ -606,7 +686,11 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
             new_val = int(new_val)
             assert new_val >= 0
         elif key == 'continuous_inference_switcher':
-            assert new_val in [True, False]
+            assert new_val in [True, False, 'True', 'False']
+            if new_val == 'True':
+                new_val=True
+            if new_val == 'False':
+                new_val=False
         elif key == 'input_data_time_scope_unit':
             assert new_val in ['day', 'week', 'month', 'year']
         elif key == 'input_data_time_scope_val':
@@ -647,6 +731,7 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     """
     _, upload_string = upload_csv_content.split(',')
     decoded = base64.b64decode(upload_string)
+    # Open the file
     try:
         # TODO: extract content from .xlsx files as well.
         if '.csv' in filename:
@@ -657,8 +742,16 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
         subtitle = 'The CSV file can’t be read, so doing nothing…'
         message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
         return {}, subtitle, message
-    # TODO : raise a warning if there are several rows in the input csv
-    return {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+    first_cell_second_row = df.iloc[0, 0]
+    # Extract the right content
+    # We do not want to keep the units row
+    if first_cell_second_row in AGGREGATE_DATA_UNITS.values():
+        # If the unit row is in the csv, just keep the row indexed by 1
+        return {key: val[1] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+    else:
+        # Otherwise, values must me retrieved from the single row
+        return {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+
 
 
 def read_base_form_inputs_from_csv(upload_csv:dict):

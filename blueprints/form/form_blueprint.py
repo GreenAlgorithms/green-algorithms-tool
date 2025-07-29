@@ -1232,7 +1232,7 @@ class FormBlueprint(DashBlueprint):
                 platformType_options = [
                     {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
                                             [('personal_laptop', 'Personal laptop')] +
-                                            [('personal_workstation', 'Personal workstation')] +
+                                            [('desktop_computer', 'Desktop computer')] +
                                             [('localServer', 'Local server')]
                 ]
                 return platformType_options
@@ -2120,10 +2120,10 @@ class FormBlueprint(DashBlueprint):
                 defaultPUE = data_dict.pueDefault_dict['Unknown']
 
                 ### PUE and HARDWARE LIFESPAN
-                if selected_platform in ['personal_workstation', 'personal_laptop']:
+                if selected_platform in ['desktop_computer', 'personal_laptop']:
                     PUE_used = 1
-                    if selected_platform == 'personal_workstation':
-                        hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_workstation']
+                    if selected_platform == 'desktop_computer':
+                        hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_desktop_computer']
                     else:
                         hardware_lifespan = data_dict.hardware_impacts_dict['active_lifespan_laptop']
                 elif selected_platform == 'localServer':
@@ -2156,8 +2156,8 @@ class FormBlueprint(DashBlueprint):
                     if is_shown(custom_CPu_inputs_style):
                         # We asked the question about TDP, so the dafault CPU is selected
                         CPU_model_n_cores = CPU_model_n_cores_input
-                        CPUpower = tdpCPU
-                        CPU_die_area = CPU_die_area_input
+                        CPUpower = tdpCPU # in Watt
+                        CPU_die_area = CPU_die_area_input # in cm2
                     else:
                         # CPUmodel cannot be "other", so we retrieve the data of the selected CPU
                         CPU_model_n_cores = data_dict.cores_dict['CPU'][CPUmodel]['n_cores']
@@ -2174,7 +2174,7 @@ class FormBlueprint(DashBlueprint):
                     else:
                         usageCPU_used = 1.
                     # CPU impact values
-                    dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower_per_core * usageCPU_used
+                    dynamic_powerNeeded_CPU = PUE_used * n_CPUcores * CPUpower_per_core * usageCPU_used # in Watt
                     manufacturing_GWP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.hardware_impacts_dict['cpu_die_impact_gwp'] + fixed_CPU_manufacturing_GWP_per_core)
                     manufacturing_per_hour_GWP_CPU = manufacturing_GWP_CPU_raw / hardware_lifespan ## in gCO2e/hour
                     manufacturing_ADP_CPU_raw = n_CPUcores * (CPU_die_area_per_core * data_dict.hardware_impacts_dict['cpu_die_impact_adp'] + fixed_CPU_manufacturing_ADP_per_core)
@@ -2193,7 +2193,7 @@ class FormBlueprint(DashBlueprint):
                     # Dealing with TDP and die area
                     if is_shown(custom_GPu_inputs_style):
                         # We asked the question about TDP, so the dafault GPU is selected
-                        GPUpower = tdpGPU
+                        GPUpower = tdpGPU # in Watt
                         GPU_die_area =GPU_die_area_input
                         GPU_memory = GPU_memory_input
                     else:
@@ -2201,14 +2201,13 @@ class FormBlueprint(DashBlueprint):
                         GPUpower = data_dict.cores_dict['GPU'][GPUmodel]['TDP']
                         GPU_die_area = data_dict.cores_dict['GPU'][GPUmodel]['die_area']
                         GPU_memory = data_dict.cores_dict['GPU'][GPUmodel]['memory']
-                        ## TODO: Remove the following, we should never use default values except if they are the custom ones
                     # Dealing with usage ratio
                     if usageGPUradio == 'Yes':
                         usageGPU_used = usageGPU
                     else:
                         usageGPU_used = 1.
                     # Computation
-                    dynamic_powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used
+                    dynamic_powerNeeded_GPU = PUE_used * n_GPUs * GPUpower * usageGPU_used # in Watt
                     # GWP
                     manufacturing_GWP_GPU_no_mem = GPU_die_area * data_dict.hardware_impacts_dict['gpu_die_impact_gwp'] + data_dict.hardware_impacts_dict['gpu_base_impact_gwp']
                     manufacturing_GWP_GPU_mem = data_dict.hardware_impacts_dict['ram_die_impact_gwp']* GPU_memory / data_dict.hardware_impacts_dict['ram_density']
@@ -2241,12 +2240,12 @@ class FormBlueprint(DashBlueprint):
                 # If a personal computer is used, we consider that its other resources are fully dedicated to the 
                 # computation during it. Otherwise, we apply a multiplier based on the ratio of the number of cores
                 # used over the number of cores contained in a server.
-                # TODO: maybe prompt the user when several GPUs are used along with a 'personal workstation' which is quite unlikely.
-                if selected_platform == 'personal_workstation':
+                # TODO: maybe prompt the user when several GPUs are used along with a 'desktop_computer' which is quite unlikely.
+                if selected_platform == 'desktop_computer':
                     # GWP
-                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_gwp']
+                    manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['desktop_computer_base_impact_gwp']
                     # ADP
-                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['workstation_base_impact_adp']
+                    manufacturing_ADP_other_raw = data_dict.hardware_impacts_dict['desktop_computer_base_impact_adp']
                 elif selected_platform == 'personal_laptop':
                     # GWP
                     manufacturing_GWP_other_raw = data_dict.hardware_impacts_dict['laptop_base_impact_gwp']
@@ -2308,14 +2307,14 @@ class FormBlueprint(DashBlueprint):
                 powerNeeded_memory = PUE_used * (memory * data_dict.hardware_impacts_dict['memoryPower'])
                 powerNeeded = powerNeeded_core + powerNeeded_memory
 
-                # Energy needed, in kWh (so dividing by 1000 to convert to kW)
+                # Energy needed, in kWh (so dividing by 1000 to convert from Wh)
                 energyNeeded_CPU = runTime * dynamic_powerNeeded_CPU * mult_factor_used / 1000
                 energyNeeded_GPU = runTime * dynamic_powerNeeded_GPU * mult_factor_used / 1000
                 energyNeeded_core = runTime * powerNeeded_core * mult_factor_used / 1000
                 eneregyNeeded_memory = runTime * powerNeeded_memory * mult_factor_used / 1000
                 energyNeeded = runTime * powerNeeded * mult_factor_used / 1000
 
-                # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2
+                # Carbon emissions: carbonIntensity is in g per kWh, so results in gCO2e
                 CE_CPU = energyNeeded_CPU * carbonIntensity
                 CE_GPU = energyNeeded_GPU * carbonIntensity
                 CE_core = energyNeeded_core * carbonIntensity

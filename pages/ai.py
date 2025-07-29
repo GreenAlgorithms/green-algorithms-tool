@@ -26,7 +26,7 @@ from blueprints.methodology.methodology_blueprint import MethodologyBlueprint
 import blueprints.metrics.utils as metrics_utils
 
 from utils.graphics import MY_COLORS
-from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs
+from utils.handle_inputs import get_available_versions, filter_wrong_inputs, clean_non_used_inputs_for_export,  open_input_csv_and_comment, read_base_form_inputs_from_csv, AI_PAGE_DEFAULT_VALUES, validate_ai_page_specific_inputs, AGGREGATE_DATA_UNITS
 from utils.utils import write_error_message
 
 
@@ -534,10 +534,13 @@ def forward_imported_content_to_form(
         # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
         if ('CPU_model_n_cores' in missing_training_inputs) and ('CPU_die_area' in missing_training_inputs):
             mess_subtitle = '''
-                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
-                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
-                            in the calculator and reexport a fresh csv.** 
+                            **It looks like you may be trying to importing an old csv from a previous version of the calculator. 
+                            Because of some improvement in the tool, these old csv cannot be imported anymore because this may generate inconsistencies with the computation. 
+                            This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                            The easiest way to fix this is to manually input the different values in the calculator (you can still select an older version of the data) and reexport a fresh csv. 
+                            Sorry for the inconvenience! (but the new features are worth it)
+                            
+                            Please note that missing inputs are replaced by their default value.** 
                         '''
         invalid_training_inputs = filter_wrong_inputs(clean_training_input_data, invalid_training_inputs)
         # Building the corresponding error message
@@ -780,41 +783,41 @@ def forward_form_input_to_export_module(
     """
     forms_aggregate_data = {}
     # Forward global inputs
-    forms_aggregate_data['appVersion'] = training_form_agg_data['appVersion']
-    forms_aggregate_data['reporting_time_scope_unit'] = reporting_time_unit
-    forms_aggregate_data['reporting_time_scope_value'] = reporting_time_val
+    forms_aggregate_data['appVersion'] = [AGGREGATE_DATA_UNITS['appVersion'], training_form_agg_data['appVersion']]
+    forms_aggregate_data['reporting_time_scope_unit'] = [AGGREGATE_DATA_UNITS['reporting_time_scope_unit'], reporting_time_unit]
+    forms_aggregate_data['reporting_time_scope_value'] = [AGGREGATE_DATA_UNITS['reporting_time_scope_value'], reporting_time_val]
     # Clean non-used inputs
     training_data = clean_non_used_inputs_for_export(training_form_agg_data)
     inference_data = clean_non_used_inputs_for_export(inference_form_agg_data)
     # Add prefix to differentiate between training and inference
-    training_data = {f'training-{key}': value for key, value in training_data.items() if key != 'appVersion'}
-    training_outputs = {f'training-{key}': value for key, value in training_form_outputs.items()}
-    inference_data = {f'inference-{key}': value for key, value in inference_data.items() if key != 'appVersion'}
-    inference_outputs = {f'inference-{key}': value for key, value in inference_form_outputs.items()}
+    training_data = {f'training-{key}': [AGGREGATE_DATA_UNITS[key], value] for key, value in training_data.items() if key != 'appVersion'}
+    training_outputs = {f'training-{key}': [AGGREGATE_DATA_UNITS[key], value] for key, value in training_form_outputs.items()}
+    inference_data = {f'inference-{key}': [AGGREGATE_DATA_UNITS[key], value] for key, value in inference_data.items() if key != 'appVersion'}
+    inference_outputs = {f'inference-{key}': [AGGREGATE_DATA_UNITS[key], value] for key, value in inference_form_outputs.items()}
     # Add training additional fields - retrainings and R&D trainings
     if retraining_radio == 'No':
         retraining_MF_val = 0
     ### WARNING: should not put the word 'training' in the key of the retraining items
-    training_data['retrainings_radio'] = retraining_radio
-    training_data['retrainings_MF_value'] = retraining_MF_val
-    training_data['retrainings_number_input'] = retraining_number_val
+    training_data['retrainings_radio'] = [AGGREGATE_DATA_UNITS['retrainings_radio'], retraining_radio]
+    training_data['retrainings_MF_value'] = [AGGREGATE_DATA_UNITS['retrainings_MF_value'], retraining_MF_val]
+    training_data['retrainings_number_input'] = [AGGREGATE_DATA_UNITS['retrainings_number_input'], retraining_number_val]
     if RandD_radio == 'No':
         RandD_MF_val = 0
-    training_data['R&D_radio'] = RandD_radio
-    training_data['R&D_MF_value'] = RandD_MF_val
+    training_data['R&D_radio'] = [AGGREGATE_DATA_UNITS['R&D_radio'], RandD_radio]
+    training_data['R&D_MF_value'] = [AGGREGATE_DATA_UNITS['R&D_MF_value'], RandD_MF_val]
     # Add inference additional fields - continuous inference scheme
-    inference_data['continuous_inference_switcher'] = inference_continuous_activated
-    inference_data['input_data_time_scope_unit'] = input_data_time_scope_unit
-    inference_data['input_data_time_scope_val'] = input_data_time_scope_val
+    inference_data['continuous_inference_switcher'] = [AGGREGATE_DATA_UNITS['continuous_inference_switcher'], inference_continuous_activated]
+    inference_data['input_data_time_scope_unit'] = [AGGREGATE_DATA_UNITS['input_data_time_scope_unit'], input_data_time_scope_unit]
+    inference_data['input_data_time_scope_val'] = [AGGREGATE_DATA_UNITS['input_data_time_scope_val'], input_data_time_scope_val]
     # Concatenate training and inference data
     forms_aggregate_data.update(training_data)
     forms_aggregate_data.update(training_outputs)
     forms_aggregate_data.update(inference_data)
     forms_aggregate_data.update(inference_outputs)
-    forms_aggregate_data['tot_energy_needed'] = ai_aggregated_results['energy_needed']
-    forms_aggregate_data['tot_carbonEmissions'] = ai_aggregated_results['carbonEmissions']
-    forms_aggregate_data['tot_manufacturing_carbonEmissions'] = ai_aggregated_results['manufacturing_carbonEmissions']
-    forms_aggregate_data['tot_manufacturing_abiotic_resources'] = ai_aggregated_results['manufacturing_abiotic_resources']
+    forms_aggregate_data['tot_energy_needed'] = [AGGREGATE_DATA_UNITS['tot_energy_needed'], ai_aggregated_results['energy_needed']]
+    forms_aggregate_data['tot_carbonEmissions'] = [AGGREGATE_DATA_UNITS['tot_carbonEmissions'], ai_aggregated_results['carbonEmissions']]
+    forms_aggregate_data['tot_manufacturing_carbonEmissions'] = [AGGREGATE_DATA_UNITS['tot_manufacturing_carbonEmissions'], ai_aggregated_results['manufacturing_carbonEmissions']]
+    forms_aggregate_data['tot_manufacturing_abiotic_resources'] = [AGGREGATE_DATA_UNITS['tot_manufacturing_abiotic_resources'], ai_aggregated_results['manufacturing_abiotic_resources']]
     return forms_aggregate_data
 
 
