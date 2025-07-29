@@ -177,7 +177,8 @@ language_choice = html.Div(
                     id="language_dropdown",
                     options=[
                     {"label": "English", "value": "en"},
-                    {"label": "Français", "value": "fr"},
+                    # Below line is commented because the French translation is not completed yet
+                    # {"label": "Français", "value": "fr"},
                 ],
                     value='en',
                     persistence=True,
