@@ -176,7 +176,6 @@ language_choice = html.Div(
                 ),
             ],
             id='language_dropdown_div',
-            className="language-box-field",
             style={'display': 'none'},
         ),
     ],

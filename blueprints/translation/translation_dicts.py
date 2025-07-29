@@ -497,16 +497,22 @@ TRANSLATIONS_DICT = {
     },
     "old_version_error_subtitle": {
         "en": '''
-                **It is very likely that you are trying to import a csv from a previous version of the calculator. 
-                This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
-                in the calculator and reexport a fresh csv.**
+                **It looks like you may be trying to importing an old csv from a previous version of the calculator. 
+                Because of some improvement in the tool, these old csv cannot be imported anymore because this may generate inconsistencies with the computation. 
+                This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                The easiest way to fix this is to manually input the different values in the calculator (you can still select an older version of the data) and reexport a fresh csv. 
+                Sorry for the inconvenience! (but the new features are worth it)
+                
+                Please note that missing inputs are replaced by their default value.**
             ''',
         "fr": '''
-                **It is very likely that you are trying to import a csv from a previous version of the calculator. 
-                This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
-                in the calculator and reexport a fresh csv.**
+                **It looks like you may be trying to importing an old csv from a previous version of the calculator. 
+                Because of some improvement in the tool, these old csv cannot be imported anymore because this may generate inconsistencies with the computation. 
+                This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                The easiest way to fix this is to manually input the different values in the calculator (you can still select an older version of the data) and reexport a fresh csv. 
+                Sorry for the inconvenience! (but the new features are worth it)
+                
+                Please note that missing inputs are replaced by their default value.**
             ''',
     },
 
