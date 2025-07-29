@@ -5,11 +5,10 @@ The page itself is defined as a `DashBlueprint` that encompasses both layout and
 
 Contrary to the Home page, the AI page requires more intermediate processing to obtain the metrics.
 These are due to the continuous inference option and the possible retraining or R&D experiments to take into account.
-
-
 These additional fields must be taken into account:
-    - when exporting or loading data
-    - when computing the results: we compute and show both the training and inference results, as well as their sum.
+
+* when exporting or loading data (more fields are included in the imported/exported csv)
+* when computing the results: we compute and show both the training and inference results, as well as their sum.
 """
 
 from dash import html, Input, Output, State, dcc
