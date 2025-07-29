@@ -30,23 +30,28 @@ def get_available_versions():
     return appVersions_options
 
 # The default values used to fill in the form when no other input is provided
-# WARNING: do not modify the order unless modifying the order of the outputs of 
-# the filling_from_inputs callback accordingly
 #-----------------------------------------------------------------------------
+# WARNING n°1: do not modify the order unless modifying the order of the outputs of 
+# the filling_from_inputs callback accordingly
+# WARNING n°2: the keys must absolutely match the columns name of the exported csv, 
+# otherwise the value attribution after csv import fails
 # TODO: make it more robust by using a dictionary or dataclass for storing ids
 #-----------------------------------------------------------------------------
 DEFAULT_VALUES_FOR_PAGE_LOAD = dict(
     runTime_hour=12,
     runTime_min=0,
-    coreType='CPU',
+    coreType='CPU + GPU',
     numberCPUs=12,
-    CPUmodel='Xeon E5-2683 v4',
-    tdpCPU=12,
+    CPU_model_n_cores=26, #average value from the CPU csv
+    tdpCPU=200, #average value from the CPU csv
+    CPU_die_area=12, #average value from the CPU csv
     numberGPUs=1,
-    GPUmodel='NVIDIA Tesla V100',
-    tdpGPU=200,
+    tdpGPU=223,
+    GPU_die_area = 6, #average value from the GPU csv
+    GPU_memory = 25,  #average value from the GPU csv
     memory=64,
     platformType= 'localServer',
+    carbonIntensity= 475, # in gCO2e/kWh, the world average value
     usageCPUradio='No',
     usageCPU=1.0,
     usageGPUradio='No',
@@ -64,7 +69,7 @@ DEFAULT_VALUES.update(
     {
         'locationContinent': 'North America',
         'locationCountry': 'Canada', 
-        'locationRegion': 'Ontario', 
+        'locationRegion': 'CA-ON', 
         'provider': 'gcp', 
         'serverContinent': 'Europe',
         'server': 'gcp--europe-west1',
@@ -92,7 +97,6 @@ AI_PAGE_DEFAULT_VALUES = {
 INPUT_KEYS_TO_IGNORE = [
     'runTime',
     'location',
-    'carbonIntensity',
     'carbonEmissions',
     'CE_CPU',
     'CE_GPU',
@@ -111,51 +115,176 @@ INPUT_KEYS_TO_IGNORE = [
     'flying_text',
     'energy_needed_before_scaling',
     'carbonEmissions_before_scaling',
-    'main_energy_needed',
-    'R&D_energy_needed',
-    'retrainings_energy_needed',
-    'main_carbonEmissions',
-    'R&D_carbonEmissions',
-    'retrainings_carbonEmissions',
+    'main_training_share',
+    'R&D_share',
+    'retrainings_share',
+    'manufacturing_carbonEmissions_before_scaling',
+    'manufacturing_abiotic_resources_before_scaling',
+    'manufacturing_carbonEmissions',
+    'manufacturing_abiotic_resources',
+    'manufacturing_CE_CPU',
+    'manufacturing_CE_GPU',
+    'manufacturing_CE_memory',
+    'manufacturing_CE_other',
+    'manufacturing_ADP_CPU',
+    'manufacturing_ADP_GPU',
+    'manufacturing_ADP_memory',
+    'manufacturing_ADP_other',
 ]
+
+#----------------------------------------------------------------------------------------------
+# WARNING: the following keys must absolutely match de keys of the 
+# <form_aggregate_data> and <form_output_metrics>
+# dictionnaries, otherwise returns KeyError  when exporting the csv
+#----------------------------------------------------------------------------------------------
+AGGREGATE_DATA_UNITS = {
+    'coreType': 'string',
+    'CPUmodel': 'string',
+    'numberCPUs': 'unit',
+    'CPU_model_n_cores': 'unit',
+    'tdpCPU': 'Watt',
+    'CPU_die_area': 'cm2',
+    'usageCPUradio': '< 1',
+    'usageCPU': 'string',
+    'GPUmodel': 'string',
+    'numberGPUs': 'unit',
+    'tdpGPU': 'Watt',
+    'GPU_die_area': 'cm2',
+    'GPU_memory': 'GB',
+    'usageGPUradio': 'str',
+    'usageGPU': '< 1',
+    'memory': 'GB',
+    'runTime_hour': 'hour',
+    'runTime_min': 'minutes',
+    'platformType': 'string',
+    'locationContinent': 'string',
+    'locationCountry': 'string',
+    'locationRegion': 'string',
+    'provider': 'string',
+    'serverContinent': 'string',
+    'server': 'string',
+    'location': 'string',
+    'carbonIntensity': 'gCO2e/kWh',
+    'PUE': '> 1',
+    'PUEradio': 'string',
+    'mult_factor': '> 0',
+    'mult_factor_radio': 'string',
+    'appVersion': 'string',
+    'energy_needed': 'kWh',
+    'carbonEmissions': 'gCO2e',
+    'manufacturing_carbonEmissions': 'gCO2e',
+    'manufacturing_abiotic_resources': 'kgSbe',
+    'runTime': 'hour',
+    'power_needed': 'Watt',
+    'CE_CPU': 'gCO2e',
+    'CE_GPU': 'gCO2e',
+    'CE_core': 'gCO2e',
+    'CE_memory': 'gCO2e',
+    'manufacturing_CE_CPU': 'gCO2e',
+    'manufacturing_CE_GPU': 'gCO2e',
+    'manufacturing_CE_memory': 'gCO2e',
+    'manufacturing_CE_other': 'gCO2e',
+    'manufacturing_ADP_CPU': 'kgSbe',
+    'manufacturing_ADP_GPU': 'kgSbe',
+    'manufacturing_ADP_memory': 'kgSbe',
+    'manufacturing_ADP_other': 'kgSbe',
+    'reporting_time_scope_unit': 'string',
+    'reporting_time_scope_value': 'unit',
+    'retrainings_radio': 'string',
+    'retrainings_MF_value': '> 0',
+    'retrainings_number_input': '> 0',
+    'R&D_radio': 'string',
+    'R&D_MF_value': '> 0',
+    'continuous_inference_switcher': 'string',
+    'input_data_time_scope_unit': 'string',
+    'input_data_time_scope_val': '> 0',
+    'tot_energy_needed': 'kWh',
+    'tot_carbonEmissions': 'gCO2e',
+    'tot_manufacturing_carbonEmissions': 'gCO2e',
+    'tot_manufacturing_abiotic_resources': 'kgSbe',
+    'main_training_share': '>= 0',
+    'R&D_share': '>= 0',
+    'retrainings_share': '>= 0',
+    'energy_needed_before_scaling': 'kWh',
+    'carbonEmissions_before_scaling': 'gCO2e',
+    'manufacturing_carbonEmissions_before_scaling': 'gCO2e',
+    'manufacturing_abiotic_resources_before_scaling': 'kgSbe',
+}
 
 
 ###################################################
 ## DATA LOADING 
 
-def load_data(data_dir: str, **kwargs):
+def load_data(data_dir: str, version: str):
     """
-    Download each CSV and store it in a pd.DataFrame.
-    We ignore the first row, as it contains metadata.
+    Download each CSV and store it in a SimpleNamespace.
+    We often ignore the first row, as it contains metadata.
     All these CSV correspond to tabs of the spreadsheet on the Google Drive.
+
+    Args:
+        data_dir (str): the local directory containing the versioned data to load
+        version (str): the version value, for later usage
+
+    Returns:
+        data_dict (SimpleNamespace): works as a NameSpace (dot commands work) but is structured
+        as a dictionnary. Its different 'attributes' are `cores_dict` (CPUs and GPUs data), 
+        `pueDefault_dict` (PUE per provider), `CI_dict_byLoc` (carbon intensities per location, where location
+        is a shortname like CA-ON for "Canada - Ontario"), `CI_dict_byName` (a nested dictionnary for carbon intensities per
+        continent / country / region), `datacenters_dict_byProvider`, `datacenters_dict_byName`, `refValues_dict` (miscellaneous 
+        reference values, most of them for metrics computation) and `hardware_impacts_dict` (all required values for manufacturing
+        impacts computation).
     """
-    data_dict0 = {}
-
-    for k, v in kwargs.items():
-        data_dict0[k] = v
-
-    data_dict = SimpleNamespace(**data_dict0)
+    
+    # We want to include the version itself in the versioned_data
+    data_dict = SimpleNamespace(**{'version': version})
 
     ### CPU ###
-    cpu_df = pd.read_csv(os.path.join(data_dir, "TDP_cpu.csv"),
-                         sep=',', skiprows=1)
+    cpu_df = pd.read_csv(os.path.join(data_dir, "CPUs.csv"), sep=',', skiprows=1)
+    cpu_df.set_index('model', inplace=True)
     cpu_df.drop(['source'], axis=1, inplace=True)
+    # In previous versions, there was no column for the die area of the cpus
+    # so we artificially add it with null values. This tweak avoids modifying the
+    # form calculator itself. Otherwise we would have to implement different
+    # form behaviours for the different versions depending on the data content
+    if 'die_area' not in cpu_df.columns:
+        cpu_df['die_area'] = 0
 
     ### GPU ###
-    gpu_df = pd.read_csv(os.path.join(data_dir, "TDP_gpu.csv"),
-                         sep=',', skiprows=1)
+    gpu_df = pd.read_csv(os.path.join(data_dir, "GPUs.csv"), sep=',', skiprows=1)
+    gpu_df.set_index('model', inplace=True)
     gpu_df.drop(['source'], axis=1, inplace=True)
+    # In previous versions, there was no column for the die area and memory of the gpus
+    # so we artificially add it with null values. This tweak avoids modifying the
+    # form calculator itself. Otherwise we would have to implement different
+    # form behaviours for the different versions depending on the data content
+    if 'die_area' not in gpu_df.columns:
+        gpu_df['die_area'] = 0
+    if 'memory' not in gpu_df.columns:
+        gpu_df['memory'] = 0
+    
 
+    ### AGGREGATED CORES ###
     # Dict of dict with all the possible models
-    # e.g. {'CPU': {'Intel(R) Xeon(R) Gold 6142': 150, 'Core i7-10700K': 125, ...
+    # e.g. {'CPU': {'Core i9-10920XE': {'TDP_per_core': 13.8, 'die_area_per_core': None, 'embodied_gwp_per_core': 761.7, 'embodied_adp_per_core': 1.7e-3 ...
     data_dict.cores_dict = {
-        'CPU': pd.Series(cpu_df.TDP_per_core.values, index=cpu_df.model).to_dict(),
-        'GPU': pd.Series(gpu_df.TDP_per_core.values, index=gpu_df.model).to_dict()
+        'CPU': cpu_df[
+            [
+                'TDP',
+                'die_area',
+                'n_cores'
+            ]
+        ].to_dict(orient='index'),
+        'GPU': gpu_df[
+            [
+                'TDP',
+                'die_area',
+                'memory',
+            ]
+        ].to_dict(orient='index')
     }
 
     ### PUE ###
-    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"),
-                         sep=',', skiprows=1)
+    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"), sep=',', skiprows=1)
     pue_df.drop(['source'], axis=1, inplace=True)
 
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
@@ -186,8 +315,7 @@ def load_data(data_dir: str, **kwargs):
                 data_dict.CI_dict_byName[continent][country][region]['carbonIntensity'] = baar.carbonIntensity.values[0]
 
     ### CLOUD DATACENTERS ###
-    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"),
-                                      sep=',', skiprows=1)
+    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"), sep=',', skiprows=1)
     data_dict.providers_withoutDC = ['aws']
 
     datacenters_df = cloudDatacenters_df
@@ -219,11 +347,68 @@ def load_data(data_dir: str, **kwargs):
         data_dict.platformName_byType[platformType] = pd.Series(providersNames_df.providerName.values, index=providersNames_df.provider).to_dict()
 
     ### REFERENCE VALUES
-    refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"),
-                               sep=',', skiprows=1)
-    refValues_df.drop(['source'], axis=1, inplace=True)
-    data_dict.refValues_dict = pd.Series(refValues_df.value.values,index=refValues_df.variable).to_dict()
+    # When implementing the manufacturing impacts backend, we added dozens of 
+    # 'reference values' that are stored in a new csv: 'hardware_impacts'. When data from a previous
+    # version is used, we artificially create this data so we do not have to adapt
+    # the form calculator itself based on the data version. We do the same for some reference values
+    # added to the new file 'context.csv'
+    if 'context.csv' not in os.listdir(data_dir):
+        refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
+        refValues_df.drop(['source'], axis=1, inplace=True)
+        memory_power = refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
+    else: 
+        refValues_df = pd.read_csv(os.path.join(data_dir, "context.csv"), sep=',')
+    data_dict.refValues_dict = pd.Series(refValues_df.value.values, index=refValues_df.variable).to_dict()
 
+    if 'PB_GWP_per_capita' not in data_dict.refValues_dict.keys():
+        data_dict.refValues_dict['PB_GWP_per_capita'] = 1
+    if 'PB_ADP_per_capita' not in data_dict.refValues_dict.keys():
+        data_dict.refValues_dict['PB_ADP_per_capita'] = 1
+
+    ### HARDWARE IMPACTS
+    # WARNING: when changing indexes og this CSV, one also has to change the keys below
+    if 'hardware_impacts.csv' not in os.listdir(data_dir):
+        data_dict.hardware_impacts_dict = {
+            'cpu_die_impact_gwp': 0,
+            'cpu_base_impact_gwp': 0,
+            'cpu_die_impact_adp': 0,
+            'cpu_base_impact_adp': 0,
+            'ram_die_impact_gwp': 0,
+            'ram_base_impact_gwp': 0,
+            'ram_die_impact_adp': 0,
+            'ram_base_impact_adp': 0,
+            'ram_density': 1.8762,
+            'ram_default_strip_size': 32,
+            'gpu_die_impact_gwp': 0,
+            'gpu_base_impact_gwp': 0,
+            'gpu_die_impact_adp': 0,
+            'gpu_base_impact_adp': 0,
+            'PSU_impact_gwp': 0,
+            'PSU_impact_adp': 0,
+            'motherboard_impact_gwp': 0,
+            'motherboard_impact_adp': 0,
+            'rack_casing_impact_gwp': 0,
+            'rack_casing_impact_adp': 0,
+            'assembly_impact_gwp': 0,
+            'assembly_impact_adp': 0,
+            'laptop_base_impact_gwp': 0,
+            'laptop_base_impact_adp': 0,
+            'desktop_computer_base_impact_gwp': 0,
+            'desktop_computer_base_impact_adp': 0,
+            'active_lifespan_local_server': 1,
+            'active_lifespan_cloud_server': 1,
+            'active_lifespan_laptop': 1,
+            'active_lifespan_desktop_computer': 1,
+            'nb_CPU_per_server': 2,
+            'nb_GPU_local_per_server': 2,
+            'nb_GPU_cloud_per_server': 4,
+        }
+        data_dict.hardware_impacts_dict['memoryPower'] = memory_power
+    else: 
+        hardware_impacts_df = pd.read_csv(os.path.join(data_dir, "hardware_impacts.csv"), sep=',')
+        hardware_impacts_df.drop(['source'], axis=1, inplace=True)
+        data_dict.hardware_impacts_dict = pd.Series(hardware_impacts_df.value.values, index=hardware_impacts_df.variable).to_dict()
+    
     return data_dict # This is a SimpleNamespace
 
 
@@ -330,11 +515,11 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
     """
     Validates the inputs: ensures the consistency between the keys and corresponding 
     value but also between some values.
-    args:
+    Args:
         - input_dict: inputs to process
         - data_dict: backend data used to check consistency between provided values.
         - keyOfInterest [list]: a list of keys to process.
-    returns: 
+    Returns: 
         - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
         - wrong_imputs [dict]: a subset of the input_dict containing inputs
@@ -354,10 +539,10 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         coreModels_options = dict()
         for coreType in ['CPU', 'GPU']:
             availableOptions = sorted(list(data_dict.cores_dict[coreType].keys()))
-            availableOptions = put_value_first(availableOptions, 'Any')
+            availableOptions = put_value_first(availableOptions, 'Average')
             coreModels_options[coreType] = [
                 {'label': k, 'value': v} for k, v in list(zip(availableOptions, availableOptions)) +
-                                                    [("Other", "other")]
+                                                    [("I can't find my CPU", "other")]
             ]
     else:
         coreModels_options = None
@@ -365,9 +550,9 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
     ### PLATFORM TYPE options
     if 'platformType' in input_dict:
         platformType_options = [
-            {'label': k,
-            'value': v} for v, k in list(data_dict.providersTypes.items()) +
-                                    [('personalComputer', 'Personal computer')] +
+            {'label': k, 'value': v} for v, k in list(data_dict.providersTypes.items()) +
+                                    [('personal_laptop', 'Personal laptop')] +
+                                    [('desktop_computer', 'Desktop computer')] +
                                     [('localServer', 'Local server')]
         ]
     else:
@@ -382,15 +567,21 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         in the DEFAULT_VALUES and aggregate_data.
         """
         new_val = copy.copy(value)
-        if key in ['runTime_hour', 'numberCPUs', 'numberGPUs']:
+        if key in ['runTime_hour', 'numberCPUs', 'numberGPUs', 'CPU_model_n_cores']:
             new_val = int(float(new_val))
+            assert new_val >= 0
         elif key in ['runTime_min']:
             new_val = float(new_val)
             assert new_val >= 0
         elif key in ['mult_factor']:
             new_val = int(new_val)
             assert new_val >= 1
-        elif key in ['tdpCPU', 'tdpGPU', 'memory']:
+        elif key in ['tdpCPU', 'CPU_die_area', 'tdpGPU', 'GPU_memory', 'GPU_die_area', 'memory', 'carbonIntensity']:
+            if key == 'carbonIntensity':
+                # The custom carbon intensity field should not be pre-filled with the regular
+                # carbonIntensity column of the exported csv, except if the field is being used (i.e if locationContinent='custom')
+                if unlist(input_dict['locationContinent']) != 'custom':
+                    new_val = DEFAULT_VALUES['carbonIntensity']
             new_val = float(new_val)
             assert new_val >= 0
         elif key in ['usageCPU', 'usageGPU']:
@@ -399,10 +590,18 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
         elif key in ['usageCPUradio', 'usageGPUradio', 'PUEradio', 'mult_factor_radio']:
             assert new_val in ['Yes', 'No']
         elif key == 'coreType':
-            assert new_val in ['CPU', 'GPU', 'Both']
+            if new_val == 'Both':
+                # Retro-compatibility with previous terminology!
+                # TODO: has no possible negative impacts but delete it when we are sure no more csv are concerned
+                new_val = 'CPU + GPU'
+            assert new_val in ['CPU', 'GPU', 'CPU + GPU']
         elif key in ['CPUmodel', 'GPUmodel']:
             assert new_val in [x['value'] for x in coreModels_options[key[:3]]]
         elif key == 'platformType':
+            # The following line is intended to correct the 'personalComputer' platform that was used in previous version
+            # TODO: maybe delete it because only motivated by csv potentially exported before
+            if new_val == 'personalComputer' and  'personalComputer' not in platformType_options:
+                new_val = 'personal_laptop'
             assert new_val in [x['value'] for x in platformType_options]
         elif key == 'provider':
             if unlist(input_dict['platformType']) == 'cloudComputing':  # TODO: I don't think this if is necessary?
@@ -415,12 +614,15 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
                                                     versioned_data=vars(data_dict))
             assert new_val in [x['name_unique'] for x in list_servers] + ["other"]
         elif key == 'locationContinent':
-            assert new_val in list(data_dict.CI_dict_byName.keys())
+            assert new_val in list(data_dict.CI_dict_byName.keys()) + ['custom']
         elif key == 'locationCountry':
             assert new_val in availableOptions_country(unlist(input_dict['locationContinent']), versioned_data=vars(data_dict))
         elif key == 'locationRegion':
-            list_loc = availableOptions_region(unlist(input_dict['locationContinent']),
-                                               unlist(input_dict['locationCountry']), data=vars(data_dict))
+            list_loc = availableOptions_region(
+                unlist(input_dict['locationContinent']),
+                unlist(input_dict['locationCountry']), 
+                data=vars(data_dict)
+            )
             assert new_val in list_loc
         elif key == 'PUE':
             new_val = float(new_val)
@@ -454,15 +656,15 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
     the keys and correspondind values. 
 
     Args:
-        - input_dict: inputs to process
-        - keyOfInterest [list]: a list of keys to process.
+        input_dict[dict]: inputs to process
+        keyOfInterest [list]: a list of keys to process.
 
     Returns: 
-        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
+        clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
-        - wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
+        wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
         (TO IMPLEMENT : with an expected key and a value raising an error).
-        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
+        TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
         an unknown key.
     """
 
@@ -484,7 +686,11 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
             new_val = int(new_val)
             assert new_val >= 0
         elif key == 'continuous_inference_switcher':
-            assert new_val in [True, False]
+            assert new_val in [True, False, 'True', 'False']
+            if new_val == 'True':
+                new_val=True
+            if new_val == 'False':
+                new_val=False
         elif key == 'input_data_time_scope_unit':
             assert new_val in ['day', 'week', 'month', 'year']
         elif key == 'input_data_time_scope_val':
@@ -525,18 +731,27 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str):
     """
     _, upload_string = upload_csv_content.split(',')
     decoded = base64.b64decode(upload_string)
+    # Open the file
     try:
         # TODO: extract content from .xlsx files as well.
-        if 'csv' in filename:
+        if '.csv' in filename:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
         else:
-            return {}, 'CSV file can’t be read, doing nothing…', 'The file extension is not "csv".'
+            return {}, 'The CSV file can’t be read, so doing nothing…', 'The file extension is not "csv".'
     except Exception as e:
-        subtitle = 'CSV file can’t be read, doing nothing…'
+        subtitle = 'The CSV file can’t be read, so doing nothing…'
         message = f'We got the following error type: {type(e)}, and message: {str(e)}.'
         return {}, subtitle, message
-    # TODO : raise a warning if there are several rows in the input csv
-    return {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+    first_cell_second_row = df.iloc[0, 0]
+    # Extract the right content
+    # We do not want to keep the units row
+    if first_cell_second_row in AGGREGATE_DATA_UNITS.values():
+        # If the unit row is in the csv, just keep the row indexed by 1
+        return {key: val[1] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+    else:
+        # Otherwise, values must me retrieved from the single row
+        return {key: val[0] for key, val in df.to_dict().items()}, 'Input can be opened correctly', ''
+
 
 
 def read_base_form_inputs_from_csv(upload_csv:dict):
@@ -544,21 +759,31 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     Reads the input dataframe to extract all the keys supposed to be verified.
     When an input raises an error, it is replaced by its corresponding default value.
 
+    Args:
+        upload_csv (dict): the input csv content
+
     Returns:
-    - values [dict]: curated inputs
-    - invalid_inputs [dict]: inputs that could not be read properly
-    - new_version [str]: app version to use, maybe coming from input data
+        clean_values (dict): curated inputs.
+        invalid_inputs (dict): inputs that could not be read properly.
+        missing_inputs (list): expected inputs that were not provided.
+        new_version (str): app version to use, maybe coming from input data.
     """
-    # Loads the right dataset to validate the inputs
     appVersions_options_list = get_available_versions()
+    # Retrieve the target data version if correctly provided
     new_version = CURRENT_VERSION
     if 'appVersion' in upload_csv:
         new_version = unlist(upload_csv['appVersion'])
-    assert new_version in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]
+        if not new_version in [option['value'] for option in appVersions_options_list] + [CURRENT_VERSION]:
+            new_version = CURRENT_VERSION
+    # Loads the right dataset to validate the inputs
     if new_version == CURRENT_VERSION:
         newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
     else:
         newData = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+
+    # Missing inputs: we need to manually add CPUmodel and GPUmodel because they do not have static default value
+    expected_inputs = list(DEFAULT_VALUES.keys()) + ['CPUmodel', 'GPUmodel']
+    missing_inputs = list(set(expected_inputs).difference(set((upload_csv.keys()))))
 
     # Validates the inputs against the data
     processed_inputs, invalid_inputs = validate_main_form_inputs(
@@ -568,18 +793,18 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
     )
     # Returns the verified inputs, where wrong keys are replaced
     # by default values, hence the importance of the order of the keys
-    values = copy.deepcopy(DEFAULT_VALUES)
-    # adding required values that were not found as expected in the input
+    clean_values = copy.deepcopy(DEFAULT_VALUES)
+    # adding required values that were not found as expected in the processed inputs
     processed_inputs.update((k, DEFAULT_VALUES[k]) for k in set(DEFAULT_VALUES.keys()).difference(set(processed_inputs.keys())))
-    # enforcing input values for entries that are correct
-    values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
+    # enforcing processed input values for entries that are correct
+    clean_values.update((k, processed_inputs[k]) for k in processed_inputs.keys())
     # Small fix for special case: when the provider is not Google Cloud we should not
     # replace the serverContinent and server values by default ones, because it has
     # an influence on how the PUE is computed in the aggregate_input_values callback.
-    if values['provider'] != 'gcp':
-        values['serverContinent'] = None
-        values['server'] = None
-    return values, invalid_inputs, new_version
+    if clean_values['provider'] != 'gcp':
+        clean_values['serverContinent'] = None
+        clean_values['server'] = None
+    return clean_values, invalid_inputs, missing_inputs, new_version
 
 
 def clean_non_used_inputs_for_export(form_aggregate_data: dict):
@@ -631,7 +856,7 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         wrong_inputs_from_csv (dict): the raw wrong inputs as returned by the checking function.
 
     Returns:
-        dict: filtered wrong inputs.
+        wrong_inputs_from_csv (dict): filtered wrong inputs.
     """
     ### Cores processing
     if clean_inputs_from_csv['coreType'] == 'CPU':
@@ -659,6 +884,10 @@ def filter_wrong_inputs(clean_inputs_from_csv: dict, wrong_inputs_from_csv: dict
         else:
             wrong_inputs_from_csv.pop('serverContinent', None)
             wrong_inputs_from_csv.pop('server', None)
+    ### Location related
+    if clean_inputs_from_csv['locationContinent'] == 'custom':
+        wrong_inputs_from_csv.pop('locationCountry', None)
+        wrong_inputs_from_csv.pop('locationRegion', None)
     ### For consistency with AI page utilities
     wrong_inputs_from_csv.pop('R&D_radio', None)
     wrong_inputs_from_csv.pop('R&D_MF_value', None)

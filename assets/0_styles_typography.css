@@ -212,13 +212,16 @@ input, select, .Select, textarea {
     font-size: 2.2rem;
 }
 
-#log-error-subtitle {
-    font-size: 12px ;
+.error-message-title {
+    font-weight: 700;
 }
 
-#log-error-content {
+.log-error-subtitle {
+    font-size: 14px ;
+}
+
+.log-error-content {
     font-size: 12px ;
-    font-style: italic;
 }
 
 
