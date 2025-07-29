@@ -534,10 +534,13 @@ def forward_imported_content_to_form(
         # Thus, if someone uses a custom TDPcpu from a previous version, the tdp value will be wrong (and largely underestimated)
         if ('CPU_model_n_cores' in missing_training_inputs) and ('CPU_die_area' in missing_training_inputs):
             mess_subtitle = '''
-                            **It is very likely that you are trying to import a csv from a previous version of the calculator. 
-                            This may generate inconsistencies with the computation. This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                            If so, the easiest way to fix this is to manually input the different values (still using the data version of your choice)
-                            in the calculator and reexport a fresh csv.** 
+                            **It looks like you may be trying to importing an old csv from a previous version of the calculator. 
+                            Because of some improvement in the tool, these old csv cannot be imported anymore because this may generate inconsistencies with the computation. 
+                            This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
+                            The easiest way to fix this is to manually input the different values in the calculator (you can still select an older version of the data) and reexport a fresh csv. 
+                            Sorry for the inconvenience! (but the new features are worth it)
+                            
+                            Please note that missing inputs are replaced by their default value.** 
                         '''
         invalid_training_inputs = filter_wrong_inputs(clean_training_input_data, invalid_training_inputs)
         # Building the corresponding error message
