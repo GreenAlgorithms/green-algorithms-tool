@@ -517,16 +517,18 @@ def validate_main_form_inputs(input_dict: dict, data_dict: dict, keys_of_interes
     """
     Validates the inputs: ensures the consistency between the keys and corresponding 
     value but also between some values.
+
     Args:
-        - input_dict: inputs to process
-        - data_dict: backend data used to check consistency between provided values.
-        - keyOfInterest [list]: a list of keys to process.
+        input_dict (dict): inputs to process
+        data_dict (dict): backend data used to check consistency between provided values.
+        keyOfInterest (list): a list of keys to process.
+
     Returns: 
-        - clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
+        clean_inputs (dict): a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
-        - wrong_imputs [dict]: a subset of the input_dict containing inputs
+        wrong_imputs (dict): a subset of the input_dict containing inputs
         either raising erorrs either not corresponding to keysOfInterest.
-        - TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing 
+        TO IMPLEMENT: unkonwn_inputs (dict): a subset of the input_dict containing 
         inputs with an unknown key.
     """
     if type(data_dict) == dict:
@@ -658,15 +660,15 @@ def validate_ai_page_specific_inputs(input_dict: dict, keys_of_interest: list):
     the keys and corresponding values. 
 
     Args:
-        input_dict[dict]: inputs to process
-        keyOfInterest [list]: a list of keys to process.
+        input_dict (dict): inputs to process
+        keyOfInterest (list): a list of keys to process.
 
     Returns: 
-        clean_inputs [dict]: a curated subset of input_dict with clean inputs. Its keys
+        clean_inputs (dict): a curated subset of input_dict with clean inputs. Its keys
         are contained in keysofInterest.
-        wrong_imputs [dict]: a subset of the input_dict containing inputs raising an error
+        wrong_imputs (dict): a subset of the input_dict containing inputs raising an error
         (TO IMPLEMENT : with an expected key and a value raising an error).
-        TO IMPLEMENT: unkonwn_inputs [dict]: a subset of the input_dict containing inputs with
+        TO IMPLEMENT: unkonwn_inputs (dict): a subset of the input_dict containing inputs with
         an unknown key.
     """
 
@@ -730,7 +732,6 @@ def open_input_csv_and_comment(upload_csv_content: str, filename: str, language_
         language_id (str): the language identifier for translation purpose
 
     Opens the input file content and stores it in a pandas DataFrame.
-    NOTE: so far, only the first line of an input csv is read.
     """
     _, upload_string = upload_csv_content.split(',')
     decoded = base64.b64decode(upload_string)

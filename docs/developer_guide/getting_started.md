@@ -23,24 +23,6 @@ The developer guide is intended to ease contributions to the calculator. It is d
 
 The app modules are [described below](#in-the-calculator). They are mostly independent blocks that can be instantiated several times and then embedded into the app. Modules communicate with each other through dedicated [`dcc.Store`](#the-dccstore-components) components, most of the time at the page level.
 
-### Data
-
-The data used to run the calculator is stored in csv files gathered in the [GA-data repository](https://github.com/GreenAlgorithms/GA-data). It is regularly updated depending on the newly available data (cores, servers, carbon intensities...) and the new features of the app (manufacturing impacts for instance). Therefore the data is versioned so anyone can access previous versions of the data through the calculator.
-
-From the developer side, this involves **ensuring the retro-compatibility of new features with respect to the previous data versions**. To do so, we do not modify the data itself (except when changing header names for instance). We rather replace missing data by empty structures that match the expected format.
-
-<!-- The following snippet is written in .yml so comments are indicated by '#'  -->
-::: app.load_data_from_version
-    # Corresponds to the load_data_from_version callback in app.py
-    handler: python
-    options:
-        # Display the full function path
-        show_root_full_path: true
-        # Show the heading
-        show_root_heading: true
-        # Do not show the source code
-        show_source: false
-
 ## Dash
 
 The python [Dash](https://dash.plotly.com/) library is a light web development and data visualization framework. If you want a detailed description of the possibilities offered by Dash, please refer to the [official documentation](https://dash.plotly.com/). We go through the basics below.
@@ -58,6 +40,9 @@ Just like for regular HTML, Dash components are nested into each other to build 
 | `className` | str                                     | The component class, for CSS styling.              |
 
 Components `id` are their **unique** identifier throughout the app. The `children` property is the only positional arguments of a Dash component, it is often a list of contents (sub-components, textual or numeric content). Many components also have additional properties, depending on their nature, as shown below.
+
+??? danger "How to embed textual content in the app?"
+    Many HTML components contain text that is displayed on the user interface. However, as we implemented a translation feature, the raw text cannot be directly embedded in the app layout. If you want to create new textual content, you must follow the process described in the [translation page](../developer_guide/blueprints/translation.md) of the documentation.
 
 ``` py title='Dash components example'
 from dash import html, dcc
@@ -129,6 +114,37 @@ def set_server_options(selected_provider, selected_continent, data, toy):
     return listOptions  
 ```
 
+## Data
+
+The data used to run the calculator is stored in csv files gathered in the [GA-data repository](https://github.com/GreenAlgorithms/GA-data). It is regularly updated depending on the newly available data (cores, servers, carbon intensities...) and the new features of the app (manufacturing impacts for instance). Therefore the data is versioned so anyone can access previous versions of the data through the calculator.
+
+From the developer side, this involves **ensuring the retro-compatibility of new features with respect to the previous data versions**. To do so, we do not modify the data itself (except when changing header names for instance). We rather replace missing data by empty structures that match the expected format.
+
+### The GA-data git submodule
+
+The backend data of the app is stored in a dedicated and centralized github repository: [GA-data](https://github.com/GreenAlgorithms/GA-data). This avoids duplicated data files between the different Green Algorithms tools.
+
+To connect with the GA-data repo, we use [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). These are a built-in feature from git and they are well documented. They are not natively designed for data storage but they match our expectations. Notably, it allows to manage data and app versioning separately. Also, it comes with very few settings stored in the `.gitmodules` file.
+
+#### How to use git submodule in our app?
+
+1. If you want to pull upstream changes from the submodule remote: run `git submodule update --remote GA-data`. At this point, if commits were pushed to the remote GA-data, these are fetched and updated, but still to be staged and committed in the current repo.
+2. Run `git add <submodule_changes>` and `git commit -m '...'` to commit them. At this point, any one pulling this repo into their cloned version receives the changes from the submodule.
+
+### Some functions
+
+<!-- The following snippet is written in .yml so comments are indicated by '#'  -->
+::: app.load_data_from_version
+    # Corresponds to the load_data_from_version callback in app.py
+    handler: python
+    options:
+        # Display the full function path
+        show_root_full_path: true
+        # Show the heading
+        show_root_heading: true
+        # Do not show the source code
+        show_source: false
+
 ## CSS files
 
 [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) is used to define the style of HTML components. It allows to set the value of many components attributes like their font, margin, size or alignment. CSS relies on **selectors** to target the HTML components. There exists a wide range of selectors but the basic ones are the component type (`Div`, `Dropdown`...), their `class` and their `id` (for fine-grained styling). As a single HTML component can only have a single `id` but multiple `class`. This allows to apply many styling rules to any component with a high level of flexibility.
@@ -152,7 +168,7 @@ When working on the app layout, we recommend checking the compatibility with dif
 
 ## Blueprints
 
-The app modularization was made compulsory by the creation of the AI page. Modularization allows to create standalone and possibly duplicated blocks without duplicating the corresponding code. In the calculator, modularization relies on the [DashBlueprint](https://www.dash-extensions.com/sections/enrich#a-dashblueprint) class from the `dash_extensions.enrich module`. The current page provides an overview of the blueprints in the calculator code, but more details regarding our implementation are given in the dedicated [documentation page](../developer_guide/blueprints/our_implementation.md).
+The app modularization was made compulsory by the creation of the AI page. Modularization allows to create standalone and possibly duplicated code blocks without duplicating the corresponding code. In the calculator, modularization relies on the [DashBlueprint](https://www.dash-extensions.com/sections/enrich#a-dashblueprint) class from the `dash_extensions.enrich module`. The current page provides an overview of the blueprints in the calculator code, but more details regarding our implementation are given in the dedicated [documentation page](../developer_guide/blueprints/our_implementation.md).
 
 ### The DashBlueprint class
 

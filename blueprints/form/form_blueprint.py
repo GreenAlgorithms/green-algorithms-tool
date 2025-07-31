@@ -61,7 +61,7 @@ class FormBlueprint(DashBlueprint):
             continuous_inf_scheme_properties=continuous_inf_scheme_properties,
             mult_factor_properties=mult_factor_properties
         )
-        self._define_callbakcs()
+        self._define_callbacks()
         if to_add_bottom_training_fields:
             self._define_training_fields_callbacks()
 
@@ -1072,7 +1072,7 @@ class FormBlueprint(DashBlueprint):
         className='container input-form'
     )
 
-    def _define_callbakcs(self):
+    def _define_callbacks(self):
         '''
         Embeds all the internal callbacks to the blueprint
         '''

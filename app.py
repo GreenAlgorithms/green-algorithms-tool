@@ -5,12 +5,12 @@ fully implemented in [Dash](https://dash.plotly.com/). The code base is organize
 * the `app.py` script generates and runs the app,
 * the `pages\home.py` and `pages\\ai.py` scripts define the page-level features of the app,
 * the `blueprints\` scripts implement the calculator modules,
-* the `data\` folder contains the different versions of the backend data,
 * the `assets\` folder contains media and CSS files,
 * the `utils\` consists of Python and Dash utils.
+* the `GA-data\` folder is a git-submodule that targets the [GA-data repository](https://github.com/GreenAlgorithms/GA-data) containing the backend data,
 
-The calculator is a `dash.app` object, that wraps both the app HTML components (its layout) and their logic (the attached callbacks).
-website-translation
+The calculator is a `DashProxy` object, that wraps both the HTML components (its layout) and the logic (the attached callbacks) of the app. Note that the [`DashProxy` object](https://www.dash-extensions.com/sections/enrich#a-dashproxy) 
+is a "drop-in replacement" for the `dash.Dash` object. We must use it because of the DashBlueprints class for modularization.
 '''
 ### WARNING: Above text is part of the online documentation. Be careful when modifying it.
 
