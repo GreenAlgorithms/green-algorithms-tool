@@ -1,36 +1,18 @@
 '''
--*- coding: utf-8 -*-
+The Green Algorithms calculator is a modularized two-pages application
+fully implemented in [Dash](https://dash.plotly.com/). The code base is organized as follows: 
 
-The current Green Algorithms is a modularized two-pages application fully implemented in Dash. 
-The modularization relies on the DashBlueprint class from the dash_extensions.enrich module. 
-(https://www.dash-extensions.com/sections/enrich)
-Each module <module> is implemented in a function defined in blueprints/<module>/<module>_blueprint.py.
-These modules are inserted in the app at the page level (see pages/home.py and pages/ai.py).
-They communicate with each other through intermediate variables stored in dcc.Store instances.
-The callbacks between these intermediate variables are implemented at the page level too.
+* the `app.py` script generates and runs the app,
+* the `pages\home.py` and `pages\\ai.py` scripts define the page-level features of the app,
+* the `blueprints\` scripts implement the calculator modules,
+* the `assets\` folder contains media and CSS files,
+* the `utils\` consists of Python and Dash utils.
+* the `GA-data\` folder is a git-submodule that targets the [GA-data repository](https://github.com/GreenAlgorithms/GA-data) containing the backend data,
 
-To ensure the uniqueness of each component's id, DashBlueprints rely on id prefix.
-These prefix are automatically added to the blueprint components' id and 
-to the Inputs, Outputs and States of its callbacks. Though, for outer callbacks,
-the prefix needs to be manually added to the Inputs, Outputs and State ids.
-
-The only app level variables are the backend data "versioned_data" used to run the calculator
-and the language choice. The "versioned_data" is loaded when the app is launched and then triggers all the callbacks 
-that require backend data (cores, server, location, carbon intensity and "equivalent" callbacks).
-As the name suggests, this data is versioned to ensure the results replicability accross the
-different versions of the app data.
-
-The translation is applied through a dedicated blueprint for all 
-textual contents. Because of this, we initialize the app as a  dash_extensions.enrich.DashProxy.
-TODO: stay aware of possible bugs due to maintenance issues of the
-DashProxy or DashBlueprint modules, that may entail refactorization work.
-
-Because of our usage of DashBlueprint, we also implemented the pages as blueprints.
-The pages are registered in the app and wrapped within a layout made of the
-HTML/Dash components that are common to both pages.
-
-This script generates and runs the app.
+The calculator is a `DashProxy` object, that wraps both the HTML components (its layout) and the logic (the attached callbacks) of the app. Note that the [`DashProxy` object](https://www.dash-extensions.com/sections/enrich#a-dashproxy) 
+is a "drop-in replacement" for the `dash.Dash` object. We must use it because of the DashBlueprints class for modularization.
 '''
+### WARNING: Above text is part of the online documentation. Be careful when modifying it.
 
 import os
 import dash
@@ -98,7 +80,13 @@ pages = list(dash.page_registry.values())
 
 appVersions_options = get_available_versions()
 
-pages_navbar = html.Div(
+def get_pages_navbar_layout():
+    '''
+    Defines the navigation bar layout. It relies on the `NavLink` item from the
+    dash_mantine_components library and the built-in navigation feature of dash pages.
+    '''
+
+    return html.Div(
     [
         dmc.NavLink(
             label=html.Div(
@@ -126,6 +114,8 @@ pages_navbar = html.Div(
     ],
     className = 'pages-menu',
 )
+
+pages_navbar = get_pages_navbar_layout()
 
 versions_choice = html.Div(
     [
@@ -192,7 +182,6 @@ language_choice = html.Div(
     className='form-row short-input',
     id='language_div'
 )
-
 
 ###################################################
 ## CREATE LAYOUT
@@ -377,6 +366,9 @@ def style_navlink(url_pathname: str):
     """ 
     Once the page is changed (built-in page navigation), this
     callback adapts the css of the navigation labels.
+
+    Args:
+        url_pathname (str): used to retrieve the page that is being displayed.
     """
     # Define the different styles possibilities
     to_be_clicked_style = {'cursor': 'pointer'}
@@ -455,9 +447,23 @@ def display_oldVersion(clicks: int, version: str, oldStyle: dict):
         Input('app_versions_dropdown','value'),
     ],
 )
-def load_data_from_version(_, new_version:str):
+def load_data_from_version(_, new_version:str) -> dict:
     """
-    Loads all the backend data required to propose consistent options to the user.
+    Loads all the backend data required to propose consistent options to 
+    the user and ensures calculator computations can be performed. 
+    This data comes from the csv files stored in the `/data` folder. 
+    
+    It is loaded when the app is launched and then triggers all the callbacks 
+    that require backend data (cores, server, location, carbon intensity and metrics-related callbacks).
+    As the name suggests, this data is versioned to ensure the results replicability across the
+    different versions of the data.
+
+    Args:
+        _ (url_content): non-used argument, but required to trigger the callback when the app is loaded.
+        new_version (str): the data version to load.
+
+    Returns:
+        the only app level variable, containing all the backend data.
     """
     # Collect input version and check validity
     if new_version is None:
@@ -470,7 +476,8 @@ def load_data_from_version(_, new_version:str):
     else:
         new_data = load_data(version=new_version)
 
-    return vars(new_data)
+    versioned_data = vars(new_data)
+    return versioned_data
 
 
 # Loader IO

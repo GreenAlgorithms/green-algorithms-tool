@@ -16,7 +16,7 @@ from blueprints.translation.translatable_markdown_text_blueprint import translat
 
 class ImportExportBlueprint(DashBlueprint):
     '''
-    When a csv is uploaded, the dcc.Upload component (id=upload-data) is 
+    When a csv is uploaded, the `dcc.Upload` component (id=upload-data) is 
     automatically flushed after few seconds to let the user upload the same file again.
     Otherwise, the callbacks with Input upload-data would not trigger because upload-data 
     actually remained the same.

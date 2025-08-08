@@ -77,15 +77,15 @@ def custom_prefix_escape(component_id: str):
 def write_error_message(missing_inputs: list, invalid_inputs: list, language_id:str, show_err_mess: bool=False):
     '''
     Format the error message to display when csv containing errors are loaded.
-    Currently distinguishes between:
+    Currently distinguishes between the following
     
-    Args
+    Args:
         missing_inputs (list): inputs expected in the csv but not found
         invalid_inputs (list): unknown inputs and expected inputs with wrong value
         language_id (list): the language identifier for translation purpose
         show_err_mess (bool): whether an error previously existed or not
 
-    Returns
+    Returns:
         show_err_mess (bool): whether an error exists or not
         mess_content (str): the error message itself
     '''

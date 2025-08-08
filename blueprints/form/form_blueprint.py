@@ -47,8 +47,7 @@ class FormBlueprint(DashBlueprint):
             id_prefix (str): id prefix automatically applied to all HTML components and callbacks.
             title (str): form title (at the top of the layout)
             subtitle (html.P): form subtitle (below the title)
-            continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main
-            form and the training form. Defaults to {'display': 'none'}.
+            continuous_inf_scheme_properties (_type_, optional): used to hide the continuous inference scheme for the main form and the training form. Defaults to {'display': 'none'}.
             mult_factor_properties (dict, optional): used to hide the MF fields. Defaults to {}.
             to_add_bottom_training_fields (bool, optional): whether to add the additional training fields (retrainings and R&D). Defaults to False.
         '''
@@ -62,7 +61,7 @@ class FormBlueprint(DashBlueprint):
             continuous_inf_scheme_properties=continuous_inf_scheme_properties,
             mult_factor_properties=mult_factor_properties
         )
-        self._define_callbakcs()
+        self._define_callbacks()
         if to_add_bottom_training_fields:
             self._define_training_fields_callbacks()
 
@@ -1073,7 +1072,7 @@ class FormBlueprint(DashBlueprint):
         className='container input-form'
     )
 
-    def _define_callbakcs(self):
+    def _define_callbacks(self):
         '''
         Embeds all the internal callbacks to the blueprint
         '''
@@ -1350,7 +1349,7 @@ class FormBlueprint(DashBlueprint):
                 Input('versioned_data','data')
             ]
         )
-        def set_server_options(selected_provider,selected_continent, data):
+        def set_server_options(selected_provider, selected_continent, data):
             """
             List of options for servers, based on provider and continent
             """

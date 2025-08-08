@@ -1,0 +1,26 @@
+/* Code snippets styling theme */
+/* See https://squidfunk.github.io/mkdocs-material/reference/code-blocks/#custom-syntax-theme */
+
+/* :root > * {
+    --md-code-hl-string-color: #4D7C0F;
+    --md-code-hl-number-color: #B45309;
+    --md-code-hl-keyword-color: vivid blue;
+    --md-code-hl-comment-color: #94A3B8;
+    --md-code-bg-color:  #F8FAFC; 
+    --md-code-fg-color: #0F172A;
+    --md-code-hl-operator-color: #D97706;
+    --md-code-hl-punctuation-color: #D97706;
+    --md-code-hl-name-color: #0F172A;
+} */
+
+:root > * {
+    --md-code-hl-string-color: #0F766E;
+    --md-code-hl-number-color: #A21CAF;
+    --md-code-hl-keyword-color: #BE123C;
+    --md-code-hl-comment-color: #64748B;
+    --md-code-bg-color:  #f6f5fc; 
+    --md-code-fg-color: #D97706;
+    --md-code-hl-operator-color: black;
+    --md-code-hl-punctuation-color: black;
+    --md-code-hl-name-color: #D97706;
+}

@@ -1,10 +1,10 @@
 '''
 Implements the translatable text blueprint for regular Div containers.
 
-This blueprint should be used to wrap all the textual contents of the app.
-It comes with a dcc.Store containing the translation key corresponding to the 
-target textual content. This key must be given when the blueprint is created
-as it also serves as id-prefix for the component id. 
+This blueprint should be used to wrap all the regular textual contents of the app.
+It comes with a `dcc.Store` containing the translation key corresponding to the 
+target textual content in the translation dictionary. 
+This key must be given when the blueprint is created as it also serves as id-prefix for the component id. 
 '''
 
 from dash import html, dcc
@@ -13,6 +13,9 @@ from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 from utils.utils import custom_prefix_escape
 
 def get_translatable_div_text_layout(text_key: str):
+    '''
+    Returns the translatable text layout.
+    '''
     return html.Div(
         [
             dcc.Store(id='text_key', data=text_key),
@@ -22,6 +25,13 @@ def get_translatable_div_text_layout(text_key: str):
     )
 
 def translatable_div_text(text_key: str):
+    '''
+    Returns the blueprint itself.
+
+    Args:
+        text_key (str): the key used to retrieve the target textual content in the translation dictionary.
+        Also used as a prefix for the resulting `dcc.Store` component.
+    '''
 
     translatable_text_blueprint = DashBlueprint(        
         transforms=[
@@ -66,10 +76,10 @@ def translatable_div_text(text_key: str):
 
         Args:
             text_key (str): the primary key of the translation dict.
-            language_id (str): the language key, secondary key of the dictionnary.
+            language_id (str): the language key, secondary key of the dictionary.
 
         Returns:
-            _type_: _description_
+            (str): the translated text.
         """
         return TRANSLATIONS_DICT[text_key][language_id]
     

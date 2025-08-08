@@ -1,5 +1,5 @@
 '''
-The page itself is defined as a DashBlueprint that encompasses both layout and callbacks.
+The page itself is defined as a `DashBlueprint` that encompasses both layout and callbacks.
 
 The layout is a combination Dash components directly implemented in this script and 
 modules' layout inserted as blueprints (the form, import-export section or results section).

@@ -1,7 +1,6 @@
 '''
 Implements the translatable text blueprint for Markdown containers.
 
-This blueprint should be used to wrap all the textual contents of the app.
 It comes with a dcc.Store containing the translation key corresponding to the 
 target textual content. This key must be given when the blueprint is created
 as it also serves as id-prefix for the component id. 
@@ -13,6 +12,13 @@ from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 from utils.utils import custom_prefix_escape
 
 def get_translatable_markdown_text_layout(text_key: str):
+    '''
+    Returns the translatable text layout.
+
+    Args:
+        text_key (str): the key used to retrieve the target textual content in the translation dictionary.
+        Also used a prefix for the resulting `dcc.Store` component.
+    '''
     return html.Div(
         [
             dcc.Store(id='text_key', data=text_key),
