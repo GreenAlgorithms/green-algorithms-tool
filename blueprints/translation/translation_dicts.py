@@ -498,21 +498,11 @@ TRANSLATIONS_DICT = {
     "old_version_error_subtitle": {
         "en": '''
                 **It looks like you may be trying to importing an old csv from a previous version of the calculator. 
-                Because of some improvement in the tool, these old csv cannot be imported anymore because this may generate inconsistencies with the computation. 
-                This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                The easiest way to fix this is to manually input the different values in the calculator (you can still select an older version of the data) and reexport a fresh csv. 
-                Sorry for the inconvenience! (but the new features are worth it)
-                
-                Please note that missing inputs are replaced by their default value.**
-            ''',
-        "fr": '''
-                **It looks like you may be trying to importing an old csv from a previous version of the calculator. 
-                Because of some improvement in the tool, these old csv cannot be imported anymore because this may generate inconsistencies with the computation. 
-                This is particularly true for CPU with a custom TDP (that now refers to the full TDP, not TDP per core). 
-                The easiest way to fix this is to manually input the different values in the calculator (you can still select an older version of the data) and reexport a fresh csv. 
-                Sorry for the inconvenience! (but the new features are worth it)
-                
-                Please note that missing inputs are replaced by their default value.**
+                Because of some improvements in the tool, these old CSVs should not be imported anymore 
+                (some fields are missing and have to be guessed). We have filled in what we could and replaced the rest 
+                by default values, but the easiest way to fix this is to manually input the different values in the 
+                calculator (you can still select an older version of the data) and reexport a fresh csv. Sorry for the 
+                inconvenience! (but the new features are worth it)**
             ''',
     },
 
