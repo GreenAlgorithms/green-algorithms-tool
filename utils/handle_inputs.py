@@ -7,6 +7,7 @@ import os
 import copy
 import base64
 import io
+import yaml
 
 import pandas as pd
 
@@ -20,10 +21,14 @@ from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 ## GLOABAL VARIABLES
 
 CURRENT_VERSION = 'v3.0'
-DATA_DIR = os.path.join(os.path.abspath(''), 'GA-data/csv')
+DATA_DIR = os.path.join(os.path.abspath(''), 'GA-data')
+
+# Download to list of paths for all data versions 
+with open(os.path.join(os.path.abspath(''), 'utils/data_sources.yml'), 'r') as file:
+    DATA_PATHS = yaml.safe_load(file)
 
 # TODO Add the dev option for testing, make it permanent, with a warning pop up if selected by mistake
-APP_VERSION_OPTIONS_LIST = [x for x in os.listdir(DATA_DIR) if ((x[0] == 'v') & (x != CURRENT_VERSION))]
+APP_VERSION_OPTIONS_LIST = [x for x in list(DATA_PATHS.keys()) if ((x[0] == 'v') & (x != CURRENT_VERSION))]
 APP_VERSION_OPTIONS_LIST.sort(reverse=True)
 
 
@@ -217,14 +222,13 @@ AGGREGATE_DATA_UNITS = {
 ###################################################
 ## DATA LOADING 
 
-def load_data(data_dir: str, version: str):
+def load_data(version: str):
     """
     Download each CSV and store it in a SimpleNamespace.
     We often ignore the first row, as it contains metadata.
     All these CSV correspond to tabs of the spreadsheet on the Google Drive.
 
     Args:
-        data_dir (str): the local directory containing the versioned data to load
         version (str): the version value, for later usage
 
     Returns:
@@ -236,12 +240,19 @@ def load_data(data_dir: str, version: str):
         reference values, most of them for metrics computation) and `hardware_impacts_dict` (all required values for manufacturing
         impacts computation).
     """
+
+    data_dir = os.path.join(DATA_DIR, version)
+
+    # Download to list of paths for all data versions 
+    with open(os.path.join(os.path.abspath(''), 'utils/data_sources.yml'), 'r') as file:
+        data_paths = yaml.safe_load(file)
+    data_paths_v = data_paths[version]
     
     # We want to include the version itself in the versioned_data
     data_dict = SimpleNamespace(**{'version': version})
 
     ### CPU ###
-    cpu_df = pd.read_csv(os.path.join(data_dir, "CPUs.csv"), sep=',', skiprows=1)
+    cpu_df = pd.read_csv(os.path.join(data_dir, data_paths_v['CPUs']), sep=',', skiprows=1)
     cpu_df.set_index('model', inplace=True)
     cpu_df.drop(['source'], axis=1, inplace=True)
     # In previous versions, there was no column for the die area of the cpus
@@ -252,7 +263,7 @@ def load_data(data_dir: str, version: str):
         cpu_df['die_area'] = 0
 
     ### GPU ###
-    gpu_df = pd.read_csv(os.path.join(data_dir, "GPUs.csv"), sep=',', skiprows=1)
+    gpu_df = pd.read_csv(os.path.join(data_dir, data_paths_v['GPUs']), sep=',', skiprows=1)
     gpu_df.set_index('model', inplace=True)
     gpu_df.drop(['source'], axis=1, inplace=True)
     # In previous versions, there was no column for the die area and memory of the gpus
@@ -286,13 +297,13 @@ def load_data(data_dir: str, version: str):
     }
 
     ### PUE ###
-    pue_df = pd.read_csv(os.path.join(data_dir, "defaults_PUE.csv"), sep=',', skiprows=1)
+    pue_df = pd.read_csv(os.path.join(data_dir, data_paths_v["PUE"]), sep=',', skiprows=1)
     pue_df.drop(['source'], axis=1, inplace=True)
 
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
 
     ### CARBON INTENSITY BY LOCATION ###
-    CI_df = pd.read_csv(os.path.join(data_dir, "CI_aggregated.csv"), sep=',', skiprows=1)
+    CI_df = pd.read_csv(os.path.join(data_dir, data_paths_v["CI"]), sep=',', skiprows=1)
     check_CIcountries_df(CI_df)
     assert len(set(CI_df.location)) == len(CI_df.location)
 
@@ -317,7 +328,7 @@ def load_data(data_dir: str, version: str):
                 data_dict.CI_dict_byName[continent][country][region]['carbonIntensity'] = baar.carbonIntensity.values[0]
 
     ### CLOUD DATACENTERS ###
-    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, "cloudProviders_datacenters.csv"), sep=',', skiprows=1)
+    cloudDatacenters_df = pd.read_csv(os.path.join(data_dir, data_paths_v["DC_cloud"]), sep=',', skiprows=1)
     data_dict.providers_withoutDC = ['aws']
 
     datacenters_df = cloudDatacenters_df
@@ -338,7 +349,7 @@ def load_data(data_dir: str, version: str):
     data_dict.datacenters_dict_byName = datacenters_df[['provider','Name','name_unique','location','PUE']].set_index('name_unique', drop=False).to_dict(orient='index')
 
     ### PROVIDERS CODES AND NAMES ###
-    providersNames_df = pd.read_csv(os.path.join(data_dir, "providersNamesCodes.csv"),
+    providersNames_df = pd.read_csv(os.path.join(data_dir, data_paths_v["cloud_providers"]),
                                     sep=',', skiprows=1)
 
     data_dict.providersTypes = pd.Series(providersNames_df.platformName.values, index=providersNames_df.platformType).to_dict()
@@ -354,12 +365,11 @@ def load_data(data_dir: str, version: str):
     # version is used, we artificially create this data so we do not have to adapt
     # the form calculator itself based on the data version. We do the same for some reference values
     # added to the new file 'context.csv'
-    if 'context.csv' not in os.listdir(data_dir):
-        refValues_df = pd.read_csv(os.path.join(data_dir, "referenceValues.csv"), sep=',', skiprows=1)
+    if 'context' not in data_paths_v:
+        refValues_df = pd.read_csv(os.path.join(data_dir, data_paths_v["referenceValues"]), sep=',', skiprows=1)
         refValues_df.drop(['source'], axis=1, inplace=True)
-        memory_power = refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
     else: 
-        refValues_df = pd.read_csv(os.path.join(data_dir, "context.csv"), sep=',')
+        refValues_df = pd.read_csv(os.path.join(data_dir, data_paths_v["context"]), sep=',')
     data_dict.refValues_dict = pd.Series(refValues_df.value.values, index=refValues_df.variable).to_dict()
 
     if 'PB_GWP_per_capita' not in data_dict.refValues_dict.keys():
@@ -369,7 +379,7 @@ def load_data(data_dir: str, version: str):
 
     ### HARDWARE IMPACTS
     # WARNING: when changing indexes og this CSV, one also has to change the keys below
-    if 'hardware_impacts.csv' not in os.listdir(data_dir):
+    if 'hardware_impacts' not in data_paths_v:
         data_dict.hardware_impacts_dict = {
             'cpu_die_impact_gwp': 0,
             'cpu_base_impact_gwp': 0,
@@ -405,9 +415,9 @@ def load_data(data_dir: str, version: str):
             'nb_GPU_local_per_server': 2,
             'nb_GPU_cloud_per_server': 4,
         }
-        data_dict.hardware_impacts_dict['memoryPower'] = memory_power
+        data_dict.hardware_impacts_dict['memoryPower'] = refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
     else: 
-        hardware_impacts_df = pd.read_csv(os.path.join(data_dir, "hardware_impacts.csv"), sep=',')
+        hardware_impacts_df = pd.read_csv(os.path.join(data_dir, data_paths_v["hardware_impacts"]), sep=',')
         hardware_impacts_df.drop(['source'], axis=1, inplace=True)
         data_dict.hardware_impacts_dict = pd.Series(hardware_impacts_df.value.values, index=hardware_impacts_df.variable).to_dict()
     
@@ -780,9 +790,9 @@ def read_base_form_inputs_from_csv(upload_csv:dict):
             new_version = CURRENT_VERSION
     # Loads the right dataset to validate the inputs
     if new_version == CURRENT_VERSION:
-        newData = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
+        newData = load_data(version=CURRENT_VERSION)
     else:
-        newData = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+        newData = load_data(version=new_version)
 
     # Missing inputs: we need to manually add CPUmodel and GPUmodel because they do not have static default value
     expected_inputs = list(DEFAULT_VALUES.keys()) + ['CPUmodel', 'GPUmodel']

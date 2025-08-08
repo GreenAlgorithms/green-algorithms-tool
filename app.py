@@ -466,9 +466,9 @@ def load_data_from_version(_, new_version:str):
 
     # Load corresponding backend data
     if new_version == CURRENT_VERSION:
-        new_data = load_data(os.path.join(DATA_DIR, 'latest'), version=CURRENT_VERSION)
+        new_data = load_data(version=CURRENT_VERSION)
     else:
-        new_data = load_data(os.path.join(DATA_DIR, new_version), version=new_version)
+        new_data = load_data(version=new_version)
 
     return vars(new_data)
 
