@@ -366,6 +366,7 @@ def load_data(version: str):
     # the form calculator itself based on the data version. We do the same for some reference values
     # added to the new file 'context.csv'
     if 'context' not in data_paths_v:
+        # TODO rename `refValues_df` into `context_df`
         refValues_df = pd.read_csv(os.path.join(data_dir, data_paths_v["referenceValues"]), sep=',', skiprows=1)
         refValues_df.drop(['source'], axis=1, inplace=True)
     else: 
@@ -378,7 +379,7 @@ def load_data(version: str):
         data_dict.refValues_dict['PB_ADP_per_capita'] = 1
 
     ### HARDWARE IMPACTS
-    # WARNING: when changing indexes og this CSV, one also has to change the keys below
+    # WARNING: when changing indexes of this CSV, one also has to change the keys below
     if 'hardware_impacts' not in data_paths_v:
         data_dict.hardware_impacts_dict = {
             'cpu_die_impact_gwp': 0,
@@ -414,8 +415,8 @@ def load_data(version: str):
             'nb_CPU_per_server': 2,
             'nb_GPU_local_per_server': 2,
             'nb_GPU_cloud_per_server': 4,
+            'memoryPower': refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
         }
-        data_dict.hardware_impacts_dict['memoryPower'] = refValues_df[refValues_df.variable == 'memoryPower']['value'].values[0]
     else: 
         hardware_impacts_df = pd.read_csv(os.path.join(data_dir, data_paths_v["hardware_impacts"]), sep=',')
         hardware_impacts_df.drop(['source'], axis=1, inplace=True)
