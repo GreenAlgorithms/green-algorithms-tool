@@ -1,0 +1,2376 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../form/">
+      
+      
+        <link rel="next" href="../metrics/">
+      
+      
+      <link rel="icon" href="../../../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Import & Export - Green Algorithms calculator</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-import-export-blueprint" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Green Algorithms calculator" class="md-header__button md-logo" aria-label="Green Algorithms calculator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M224 96c-88.4 0-160 71.6-160 160s71.6 160 160 160c77.4 0 142-55 156.8-128H256c-17.7 0-32-14.3-32-32s14.3-32 32-32h144c25.8 0 49.6 21.4 47.2 50.6C437.7 389.6 341.4 480 224 480 100.3 480 0 379.7 0 256S100.3 32 224 32c57.4 0 109.7 21.6 149.3 57 13.2 11.8 14.3 32 2.5 45.2s-32 14.3-45.2 2.5C302.3 111.4 265 96 224 96"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Green Algorithms calculator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Import & Export
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GreenAlgorithms/green-algorithms-tool" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    green-algorithm-tool
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../getting_started/" class="md-tabs__link">
+          
+  
+  
+  Developer guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../user_guide/overview/" class="md-tabs__link">
+          
+  
+  
+  User guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../contribute/" class="md-tabs__link">
+          
+  
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Green Algorithms calculator" class="md-nav__button md-logo" aria-label="Green Algorithms calculator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M224 96c-88.4 0-160 71.6-160 160s71.6 160 160 160c77.4 0 142-55 156.8-128H256c-17.7 0-32-14.3-32-32s14.3-32 32-32h144c25.8 0 49.6 21.4 47.2 50.6C437.7 389.6 341.4 480 224 480 100.3 480 0 379.7 0 256S100.3 32 224 32c57.4 0 109.7 21.6 149.3 57 13.2 11.8 14.3 32 2.5 45.2s-32 14.3-45.2 2.5C302.3 111.4 265 96 224 96"/></svg>
+
+    </a>
+    Green Algorithms calculator
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GreenAlgorithms/green-algorithms-tool" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    green-algorithm-tool
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Developer guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Developer guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Pages
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Pages
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pages/our_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Our implementation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pages/home_page/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home page
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pages/ai_page/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    AI page
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Blueprints
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Blueprints
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../our_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Our implementation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../form/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Form
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Import & Export
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Import & Export
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-importexportblueprint-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      The ImportExportBlueprint class
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The ImportExportBlueprint class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blueprints.import_export.import_export_blueprint.ImportExportBlueprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImportExportBlueprint
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ImportExportBlueprint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blueprints.import_export.import_export_blueprint.ImportExportBlueprint.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      The CSV
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The CSV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-csv-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      The CSV structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-csv-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      The CSV parsing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The CSV parsing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.handle_inputs.open_input_csv_and_comment" class="md-nav__link">
+    <span class="md-ellipsis">
+      open_input_csv_and_comment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.handle_inputs.read_base_form_inputs_from_csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      read_base_form_inputs_from_csv
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.handle_inputs.validate_main_form_inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      validate_main_form_inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.utils.write_error_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      write_error_message
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Translation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user_guide/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user_guide/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Methodology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contribute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../team/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    The team
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-importexportblueprint-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      The ImportExportBlueprint class
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The ImportExportBlueprint class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blueprints.import_export.import_export_blueprint.ImportExportBlueprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImportExportBlueprint
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ImportExportBlueprint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blueprints.import_export.import_export_blueprint.ImportExportBlueprint.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      The CSV
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The CSV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-csv-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      The CSV structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-csv-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      The CSV parsing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The CSV parsing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.handle_inputs.open_input_csv_and_comment" class="md-nav__link">
+    <span class="md-ellipsis">
+      open_input_csv_and_comment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.handle_inputs.read_base_form_inputs_from_csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      read_base_form_inputs_from_csv
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.handle_inputs.validate_main_form_inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      validate_main_form_inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.utils.write_error_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      write_error_message
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="the-import-export-blueprint">The import-export blueprint</h1>
+<h2 id="the-importexportblueprint-class">The ImportExportBlueprint class</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="blueprints.import_export.import_export_blueprint.ImportExportBlueprint" class="doc doc-heading">
+            <code>blueprints.import_export.import_export_blueprint.ImportExportBlueprint</code>
+
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="dash_extensions.enrich.DashBlueprint">DashBlueprint</span></code></p>
+
+
+        <p>When a csv is uploaded, the <code>dcc.Upload</code> component (id=upload-data) is 
+automatically flushed after few seconds to let the user upload the same file again.
+Otherwise, the callbacks with Input upload-data would not trigger because upload-data 
+actually remained the same.</p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="blueprints.import_export.import_export_blueprint.ImportExportBlueprint.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">id_prefix</span><span class="p">,</span> <span class="n">csv_flushing_delay</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>id_prefix</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>id prefix automatically applied to all components.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>csv_flushing_delay</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>time delay between csv upload and csv flushing.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1500</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="the-csv">The CSV</h2>
+<h3 id="the-csv-structure">The CSV structure</h3>
+<p>The imported and exported csv are primarily designed for results sharing. The form reads the csv content to replicate its state but <strong>results fields contained in the csv are not used by the app</strong>. These are intended for users who would like to compare different csv for instance.</p>
+<p>The csv contain three rows:</p>
+<ol>
+<li>The first row contains the fields name (column header). The current implementation could be more robust because these headers are often directly related to the component names within the code.</li>
+<li>The second row contains the fields unit. This is thought to ease csv readability for users who would open them.</li>
+<li>The third row contains the fields value.</li>
+</ol>
+<details class="warning">
+<summary>Not thought for users manipulation</summary>
+<p>The imported/exported csv are designed for results sharing mostly. Even though some users may sometimes aggregate different csv to compare their results, the csv mechanism is not designed for it, so one should not try to deal with all possible use cases.</p>
+</details>
+<p>Note that the csv headers are radically different between a csv exported from the Home page and the AI page. They are not compatible with each other.</p>
+<h3 id="the-csv-parsing">The CSV parsing</h3>
+<p>This process should extract all valid entries from the csv and raise a warning when errors are detected. The csv are read through different utils functions:</p>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="utils.handle_inputs.open_input_csv_and_comment" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">utils</span><span class="o">.</span><span class="n">handle_inputs</span><span class="o">.</span><span class="n">open_input_csv_and_comment</span><span class="p">(</span><span class="n">upload_csv_content</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">language_id</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>upload_csv_content</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a binary string corresponding to the uploaded file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>filename</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the uploaded file name.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>language_id</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the language identifier for translation purpose</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Opens the input file content and stores it in a pandas DataFrame.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>utils/handle_inputs.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">open_input_csv_and_comment</span><span class="p">(</span><span class="n">upload_csv_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">language_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        upload_csv_content (str): a binary string corresponding to the uploaded file.</span>
+<span class="sd">        filename (str): the uploaded file name.</span>
+<span class="sd">        language_id (str): the language identifier for translation purpose</span>
+
+<span class="sd">    Opens the input file content and stores it in a pandas DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">upload_string</span> <span class="o">=</span> <span class="n">upload_csv_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">upload_string</span><span class="p">)</span>
+    <span class="c1"># Open the file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># TODO: extract content from .xlsx files as well.</span>
+        <span class="k">if</span> <span class="s1">&#39;.csv&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">decoded</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{},</span> <span class="n">TRANSLATIONS_DICT</span><span class="p">[</span><span class="s1">&#39;csv_cant_be_read&#39;</span><span class="p">][</span><span class="n">language_id</span><span class="p">],</span> <span class="n">TRANSLATIONS_DICT</span><span class="p">[</span><span class="s1">&#39;file_extension_not_csv&#39;</span><span class="p">][</span><span class="n">language_id</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">subtitle</span> <span class="o">=</span> <span class="n">TRANSLATIONS_DICT</span><span class="p">[</span><span class="s1">&#39;csv_cant_be_read&#39;</span><span class="p">][</span><span class="n">language_id</span><span class="p">]</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;We got the following error type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">, and message: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">.&#39;</span>
+        <span class="k">return</span> <span class="p">{},</span> <span class="n">subtitle</span><span class="p">,</span> <span class="n">message</span>
+    <span class="n">first_cell_second_row</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Extract the right content</span>
+    <span class="c1"># We do not want to keep the units row</span>
+    <span class="k">if</span> <span class="n">first_cell_second_row</span> <span class="ow">in</span> <span class="n">AGGREGATE_DATA_UNITS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="c1"># If the unit row is in the csv, just keep the row indexed by 1</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span> <span class="s1">&#39;Input can be opened correctly&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Otherwise, values must me retrieved from the single row</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span> <span class="s1">&#39;Input can be opened correctly&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="utils.handle_inputs.read_base_form_inputs_from_csv" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">utils</span><span class="o">.</span><span class="n">handle_inputs</span><span class="o">.</span><span class="n">read_base_form_inputs_from_csv</span><span class="p">(</span><span class="n">upload_csv</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Reads the input dataframe to extract all the keys supposed to be verified.
+When an input raises an error, it is replaced by its corresponding default value.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>upload_csv</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the input csv content</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>clean_values</code></td>            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>curated inputs.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>invalid_inputs</code></td>            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>inputs that could not be read properly.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>missing_inputs</code></td>            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>expected inputs that were not provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>new_version</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>app version to use, maybe coming from input data.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>utils/handle_inputs.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_base_form_inputs_from_csv</span><span class="p">(</span><span class="n">upload_csv</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads the input dataframe to extract all the keys supposed to be verified.</span>
+<span class="sd">    When an input raises an error, it is replaced by its corresponding default value.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        upload_csv (dict): the input csv content</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        clean_values (dict): curated inputs.</span>
+<span class="sd">        invalid_inputs (dict): inputs that could not be read properly.</span>
+<span class="sd">        missing_inputs (list): expected inputs that were not provided.</span>
+<span class="sd">        new_version (str): app version to use, maybe coming from input data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">appVersions_options_list</span> <span class="o">=</span> <span class="n">get_available_versions</span><span class="p">()</span>
+    <span class="c1"># Retrieve the target data version if correctly provided</span>
+    <span class="n">new_version</span> <span class="o">=</span> <span class="n">CURRENT_VERSION</span>
+    <span class="k">if</span> <span class="s1">&#39;appVersion&#39;</span> <span class="ow">in</span> <span class="n">upload_csv</span><span class="p">:</span>
+        <span class="n">new_version</span> <span class="o">=</span> <span class="n">unlist</span><span class="p">(</span><span class="n">upload_csv</span><span class="p">[</span><span class="s1">&#39;appVersion&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_version</span> <span class="ow">in</span> <span class="p">[</span><span class="n">option</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">appVersions_options_list</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">CURRENT_VERSION</span><span class="p">]:</span>
+            <span class="n">new_version</span> <span class="o">=</span> <span class="n">CURRENT_VERSION</span>
+    <span class="c1"># Loads the right dataset to validate the inputs</span>
+    <span class="k">if</span> <span class="n">new_version</span> <span class="o">==</span> <span class="n">CURRENT_VERSION</span><span class="p">:</span>
+        <span class="n">newData</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">CURRENT_VERSION</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">newData</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">new_version</span><span class="p">)</span>
+
+    <span class="c1"># Missing inputs: we need to manually add CPUmodel and GPUmodel because they do not have static default value</span>
+    <span class="n">expected_inputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">DEFAULT_VALUES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;CPUmodel&#39;</span><span class="p">,</span> <span class="s1">&#39;GPUmodel&#39;</span><span class="p">]</span>
+    <span class="n">missing_inputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">expected_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">((</span><span class="n">upload_csv</span><span class="o">.</span><span class="n">keys</span><span class="p">()))))</span>
+
+    <span class="c1"># Validates the inputs against the data</span>
+    <span class="n">processed_inputs</span><span class="p">,</span> <span class="n">invalid_inputs</span> <span class="o">=</span> <span class="n">validate_main_form_inputs</span><span class="p">(</span>
+        <span class="n">input_dict</span><span class="o">=</span><span class="n">upload_csv</span><span class="p">,</span>
+        <span class="n">data_dict</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span>
+        <span class="n">keys_of_interest</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">upload_csv</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="p">)</span>
+    <span class="c1"># Returns the verified inputs, where wrong keys are replaced</span>
+    <span class="c1"># by default values, hence the importance of the order of the keys</span>
+    <span class="n">clean_values</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">DEFAULT_VALUES</span><span class="p">)</span>
+    <span class="c1"># adding required values that were not found as expected in the processed inputs</span>
+    <span class="n">processed_inputs</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">DEFAULT_VALUES</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">DEFAULT_VALUES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">processed_inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+    <span class="c1"># enforcing processed input values for entries that are correct</span>
+    <span class="n">clean_values</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">processed_inputs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">processed_inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="c1"># Small fix for special case: when the provider is not Google Cloud we should not</span>
+    <span class="c1"># replace the serverContinent and server values by default ones, because it has</span>
+    <span class="c1"># an influence on how the PUE is computed in the aggregate_input_values callback.</span>
+    <span class="k">if</span> <span class="n">clean_values</span><span class="p">[</span><span class="s1">&#39;provider&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;gcp&#39;</span><span class="p">:</span>
+        <span class="n">clean_values</span><span class="p">[</span><span class="s1">&#39;serverContinent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">clean_values</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">clean_values</span><span class="p">,</span> <span class="n">invalid_inputs</span><span class="p">,</span> <span class="n">missing_inputs</span><span class="p">,</span> <span class="n">new_version</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="utils.handle_inputs.validate_main_form_inputs" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">utils</span><span class="o">.</span><span class="n">handle_inputs</span><span class="o">.</span><span class="n">validate_main_form_inputs</span><span class="p">(</span><span class="n">input_dict</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">,</span> <span class="n">keys_of_interest</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Validates the inputs: ensures the consistency between the keys and corresponding 
+value but also between some values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>input_dict</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>inputs to process</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data_dict</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>backend data used to check consistency between provided values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>keyOfInterest</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a list of keys to process.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>clean_inputs</code></td>            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a curated subset of input_dict with clean inputs. Its keys</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>are contained in keysofInterest.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>wrong_imputs</code></td>            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a subset of the input_dict containing inputs</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>either raising erorrs either not corresponding to keysOfInterest.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>TO IMPLEMENT: unkonwn_inputs (dict): a subset of the input_dict containing </p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>inputs with an unknown key.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>utils/handle_inputs.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_main_form_inputs</span><span class="p">(</span><span class="n">input_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">keys_of_interest</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates the inputs: ensures the consistency between the keys and corresponding </span>
+<span class="sd">    value but also between some values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_dict (dict): inputs to process</span>
+<span class="sd">        data_dict (dict): backend data used to check consistency between provided values.</span>
+<span class="sd">        keyOfInterest (list): a list of keys to process.</span>
+
+<span class="sd">    Returns: </span>
+<span class="sd">        clean_inputs (dict): a curated subset of input_dict with clean inputs. Its keys</span>
+<span class="sd">        are contained in keysofInterest.</span>
+<span class="sd">        wrong_imputs (dict): a subset of the input_dict containing inputs</span>
+<span class="sd">        either raising erorrs either not corresponding to keysOfInterest.</span>
+<span class="sd">        TO IMPLEMENT: unkonwn_inputs (dict): a subset of the input_dict containing </span>
+<span class="sd">        inputs with an unknown key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="o">**</span><span class="n">data_dict</span><span class="p">)</span>
+    <span class="n">appVersions_options_list</span> <span class="o">=</span> <span class="n">get_available_versions</span><span class="p">()</span>
+
+    <span class="c1">############################</span>
+    <span class="c1"># We first build some data frameworks to be used later on during our checkings</span>
+
+    <span class="c1">### CPU AND GPU options</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;CPUmodel&#39;</span><span class="p">,</span><span class="s1">&#39;GPUmodel&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">input_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">coreModels_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">coreType</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CPU&#39;</span><span class="p">,</span> <span class="s1">&#39;GPU&#39;</span><span class="p">]:</span>
+            <span class="n">availableOptions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data_dict</span><span class="o">.</span><span class="n">cores_dict</span><span class="p">[</span><span class="n">coreType</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">availableOptions</span> <span class="o">=</span> <span class="n">put_value_first</span><span class="p">(</span><span class="n">availableOptions</span><span class="p">,</span> <span class="s1">&#39;Average&#39;</span><span class="p">)</span>
+            <span class="n">coreModels_options</span><span class="p">[</span><span class="n">coreType</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">availableOptions</span><span class="p">,</span> <span class="n">availableOptions</span><span class="p">))</span> <span class="o">+</span>
+                                                    <span class="p">[(</span><span class="s2">&quot;I can&#39;t find my CPU&quot;</span><span class="p">,</span> <span class="s2">&quot;other&quot;</span><span class="p">)]</span>
+            <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">coreModels_options</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">### PLATFORM TYPE options</span>
+    <span class="k">if</span> <span class="s1">&#39;platformType&#39;</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">:</span>
+        <span class="n">platformType_options</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_dict</span><span class="o">.</span><span class="n">providersTypes</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                                    <span class="p">[(</span><span class="s1">&#39;personal_laptop&#39;</span><span class="p">,</span> <span class="s1">&#39;Personal laptop&#39;</span><span class="p">)]</span> <span class="o">+</span>
+                                    <span class="p">[(</span><span class="s1">&#39;desktop_computer&#39;</span><span class="p">,</span> <span class="s1">&#39;Desktop computer&#39;</span><span class="p">)]</span> <span class="o">+</span>
+                                    <span class="p">[(</span><span class="s1">&#39;localServer&#39;</span><span class="p">,</span> <span class="s1">&#39;Local server&#39;</span><span class="p">)]</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">platformType_options</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validateKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures the consistency between the key and the provided value and</span>
+<span class="sd">        checks the dependencies between different values.</span>
+
+<span class="sd">        WARNING: the keys used to check should be the same as those used</span>
+<span class="sd">        in the DEFAULT_VALUES and aggregate_data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_val</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;runTime_hour&#39;</span><span class="p">,</span> <span class="s1">&#39;numberCPUs&#39;</span><span class="p">,</span> <span class="s1">&#39;numberGPUs&#39;</span><span class="p">,</span> <span class="s1">&#39;CPU_model_n_cores&#39;</span><span class="p">]:</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">new_val</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;runTime_min&#39;</span><span class="p">]:</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mult_factor&#39;</span><span class="p">]:</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;tdpCPU&#39;</span><span class="p">,</span> <span class="s1">&#39;CPU_die_area&#39;</span><span class="p">,</span> <span class="s1">&#39;tdpGPU&#39;</span><span class="p">,</span> <span class="s1">&#39;GPU_memory&#39;</span><span class="p">,</span> <span class="s1">&#39;GPU_die_area&#39;</span><span class="p">,</span> <span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="s1">&#39;carbonIntensity&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;carbonIntensity&#39;</span><span class="p">:</span>
+                <span class="c1"># The custom carbon intensity field should not be pre-filled with the regular</span>
+                <span class="c1"># carbonIntensity column of the exported csv, except if the field is being used (i.e if locationContinent=&#39;custom&#39;)</span>
+                <span class="k">if</span> <span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;locationContinent&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="s1">&#39;custom&#39;</span><span class="p">:</span>
+                    <span class="n">new_val</span> <span class="o">=</span> <span class="n">DEFAULT_VALUES</span><span class="p">[</span><span class="s1">&#39;carbonIntensity&#39;</span><span class="p">]</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;usageCPU&#39;</span><span class="p">,</span> <span class="s1">&#39;usageGPU&#39;</span><span class="p">]:</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">new_val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">new_val</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;usageCPUradio&#39;</span><span class="p">,</span> <span class="s1">&#39;usageGPUradio&#39;</span><span class="p">,</span> <span class="s1">&#39;PUEradio&#39;</span><span class="p">,</span> <span class="s1">&#39;mult_factor_radio&#39;</span><span class="p">]:</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Yes&#39;</span><span class="p">,</span> <span class="s1">&#39;No&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;coreType&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_val</span> <span class="o">==</span> <span class="s1">&#39;Both&#39;</span><span class="p">:</span>
+                <span class="c1"># Retro-compatibility with previous terminology!</span>
+                <span class="c1"># TODO: has no possible negative impacts but delete it when we are sure no more csv are concerned</span>
+                <span class="n">new_val</span> <span class="o">=</span> <span class="s1">&#39;CPU + GPU&#39;</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CPU&#39;</span><span class="p">,</span> <span class="s1">&#39;GPU&#39;</span><span class="p">,</span> <span class="s1">&#39;CPU + GPU&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CPUmodel&#39;</span><span class="p">,</span> <span class="s1">&#39;GPUmodel&#39;</span><span class="p">]:</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">coreModels_options</span><span class="p">[</span><span class="n">key</span><span class="p">[:</span><span class="mi">3</span><span class="p">]]]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;platformType&#39;</span><span class="p">:</span>
+            <span class="c1"># The following line is intended to correct the &#39;personalComputer&#39; platform that was used in previous version</span>
+            <span class="c1"># TODO: maybe delete it because only motivated by csv potentially exported before</span>
+            <span class="k">if</span> <span class="n">new_val</span> <span class="o">==</span> <span class="s1">&#39;personalComputer&#39;</span> <span class="ow">and</span>  <span class="s1">&#39;personalComputer&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">platformType_options</span><span class="p">:</span>
+                <span class="n">new_val</span> <span class="o">=</span> <span class="s1">&#39;personal_laptop&#39;</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">platformType_options</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;provider&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;platformType&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;cloudComputing&#39;</span><span class="p">:</span>  <span class="c1"># TODO: I don&#39;t think this if is necessary?</span>
+                <span class="k">assert</span> <span class="p">(</span><span class="n">new_val</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">platformName_byType</span><span class="p">[</span><span class="s1">&#39;cloudComputing&#39;</span><span class="p">])</span> <span class="o">|</span> <span class="p">(</span><span class="n">new_val</span> <span class="o">==</span> <span class="s1">&#39;other&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;serverContinent&#39;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="n">availableLocations_continent</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;provider&#39;</span><span class="p">]),</span> <span class="n">versioned_data</span><span class="o">=</span><span class="nb">vars</span><span class="p">(</span><span class="n">data_dict</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;other&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;server&#39;</span><span class="p">:</span>
+            <span class="n">list_servers</span> <span class="o">=</span> <span class="n">availableOptions_servers</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;provider&#39;</span><span class="p">]),</span>
+                                                    <span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;serverContinent&#39;</span><span class="p">]),</span>
+                                                    <span class="n">versioned_data</span><span class="o">=</span><span class="nb">vars</span><span class="p">(</span><span class="n">data_dict</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;name_unique&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list_servers</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;other&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;locationContinent&#39;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_dict</span><span class="o">.</span><span class="n">CI_dict_byName</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;custom&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;locationCountry&#39;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="n">availableOptions_country</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;locationContinent&#39;</span><span class="p">]),</span> <span class="n">versioned_data</span><span class="o">=</span><span class="nb">vars</span><span class="p">(</span><span class="n">data_dict</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;locationRegion&#39;</span><span class="p">:</span>
+            <span class="n">list_loc</span> <span class="o">=</span> <span class="n">availableOptions_region</span><span class="p">(</span>
+                <span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;locationContinent&#39;</span><span class="p">]),</span>
+                <span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;locationCountry&#39;</span><span class="p">]),</span> 
+                <span class="n">data</span><span class="o">=</span><span class="nb">vars</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="n">list_loc</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;PUE&#39;</span><span class="p">:</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;appVersion&#39;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">new_val</span> <span class="ow">in</span> <span class="p">[</span><span class="n">option</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">appVersions_options_list</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">CURRENT_VERSION</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Unknown key&#39;</span>
+        <span class="k">return</span> <span class="n">new_val</span>
+
+    <span class="c1">############################</span>
+    <span class="c1"># Now we validate each of the target key from the input dict</span>
+
+    <span class="n">clean_inputs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">wrong_imputs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_of_interest</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">INPUT_KEYS_TO_IGNORE</span><span class="p">:</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="n">unlist</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">clean_inputs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">validateKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1">### TODO: distinguish between wrong_inputs and unknown_inputs</span>
+                <span class="n">wrong_imputs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+    <span class="k">return</span> <span class="n">clean_inputs</span><span class="p">,</span> <span class="n">wrong_imputs</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="utils.utils.write_error_message" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">utils</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">write_error_message</span><span class="p">(</span><span class="n">missing_inputs</span><span class="p">,</span> <span class="n">invalid_inputs</span><span class="p">,</span> <span class="n">language_id</span><span class="p">,</span> <span class="n">show_err_mess</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Format the error message to display when csv containing errors are loaded.
+Currently distinguishes between the following</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>missing_inputs</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>inputs expected in the csv but not found</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>invalid_inputs</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>unknown inputs and expected inputs with wrong value</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>language_id</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the language identifier for translation purpose</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>show_err_mess</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether an error previously existed or not</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>show_err_mess</code></td>            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>whether an error exists or not</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>mess_content</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the error message itself</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>utils/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_error_message</span><span class="p">(</span><span class="n">missing_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">invalid_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">language_id</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show_err_mess</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Format the error message to display when csv containing errors are loaded.</span>
+<span class="sd">    Currently distinguishes between the following</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        missing_inputs (list): inputs expected in the csv but not found</span>
+<span class="sd">        invalid_inputs (list): unknown inputs and expected inputs with wrong value</span>
+<span class="sd">        language_id (list): the language identifier for translation purpose</span>
+<span class="sd">        show_err_mess (bool): whether an error previously existed or not</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        show_err_mess (bool): whether an error exists or not</span>
+<span class="sd">        mess_content (str): the error message itself</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mess_content</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="c1"># The first part of the error message contains missing inputs, ie expected inputs that were not found in the csv</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">show_err_mess</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mess_content</span> <span class="o">+=</span> <span class="n">TRANSLATIONS_DICT</span><span class="p">[</span><span class="s1">&#39;fields_should_be_in_csv&#39;</span><span class="p">][</span><span class="n">language_id</span><span class="p">]</span>
+        <span class="n">mess_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_inputs</span><span class="p">)</span><span class="si">}</span><span class="s2">.*&quot;</span>
+    <span class="c1"># The second part of the error message gathers all other inputs from the csv raising an error</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">invalid_inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">show_err_mess</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mess_content</span> <span class="o">+=</span> <span class="n">TRANSLATIONS_DICT</span><span class="p">[</span><span class="s1">&#39;wrong_fields&#39;</span><span class="p">][</span><span class="n">language_id</span><span class="p">]</span>
+        <span class="n">mess_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">invalid_inputs</span><span class="p">)</span><span class="si">}</span><span class="s2">.*&quot;</span>
+    <span class="k">return</span> <span class="n">show_err_mess</span><span class="p">,</span> <span class="n">mess_content</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>
