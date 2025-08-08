@@ -7,8 +7,6 @@ import dash
 import pandas as pd
 import plotly.graph_objects as go
 
-from utils.handle_inputs import DATA_DIR
-
 
 ###################################################
 ## GLOBAL SETTINGS 
@@ -100,18 +98,18 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     
     layout_bar = get_cores_bar_layout()
 
-    if aggregated_data['coreType'] in ['GPU','Both']:
+    if aggregated_data['coreType'] in ['GPU','CPU + GPU']:
         layout_bar['yaxis']['title'] = dict(text='Power draw (W)')
 
         list_cores0 = [
             'NVIDIA Jetson AGX Xavier',
             'NVIDIA Tesla T4',
-            'NVIDIA GTX 1080',
-            'TPU v3',
-            'NVIDIA RTX 2080 Ti',
+            'NVIDIA GeForce GTX 1080',
+            # 'TPU v3',
+            'NVIDIA GeForce RTX 2080 Ti 11GB',
             'NVIDIA GTX TITAN X',
             'NVIDIA Tesla P100 PCIe',
-            'NVIDIA Tesla V100'
+            'NVIDIA Tesla V100 PCIe 32 GB'
         ]
         list_cores = [x for x in list_cores0 if x in versioned_data.cores_dict['GPU']]
 
@@ -121,17 +119,16 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
         layout_bar['yaxis']['title'] = dict(text='Power draw per core (W)')
 
         list_cores0 = [
-            'Ryzen 5 3500U',
-            'Xeon Platinum 9282',
-            'Xeon E5-2683 v4',
-            'Core i7-10700',
-            'Xeon Gold 6142',
-            'Core i5-10600',
-            'Ryzen 5 3600',
-            'Core i9-10920XE',
-            'Core i5-10600K',
-            'Ryzen 5 3400G',
-            'Core i3-10320',
+            'Ryzen 5 7600',
+            'Xeon Platinum 8174',
+            'Xeon E5-2620 v4',
+            'AMD EPYC 7551',
+            'AMD EPYC Embedded 9454',
+            'Core i7-13700F',
+            'Xeon Gold 6148',
+            'Core i5-13500',
+            'Core i9-13900E',
+            'Core i3-13100E',
             'Xeon X3430'
         ]
         list_cores = [x for x in list_cores0 if x in versioned_data.cores_dict['CPU']]
@@ -144,18 +141,18 @@ def create_cores_bar_chart_graphic(aggregated_data, versioned_data):
     power_list = []
 
     # calculate carbon emissions for each core
-    if aggregated_data['coreType'] in ['GPU','Both']:
+    if aggregated_data['coreType'] in ['GPU','CPU + GPU']:
         for gpu in list_cores:
             if gpu == 'other':
                 power_list.append(aggregated_data['tdpGPU'])
             else:
-                power_list.append(versioned_data.cores_dict['GPU'][gpu])
+                power_list.append(versioned_data.cores_dict['GPU'][gpu]['TDP'])
     else:
         for cpu in list_cores:
             if cpu == 'other':
                 power_list.append(aggregated_data['tdpCPU'])
             else:
-                power_list.append(versioned_data.cores_dict['CPU'][cpu])
+                power_list.append(versioned_data.cores_dict['CPU'][cpu]['TDP'] / versioned_data.cores_dict['CPU'][cpu]['n_cores'])
 
     power_df = pd.DataFrame(dict(coreModel=list_cores, corePower=power_list))
     power_df.sort_values(by=['corePower'], inplace=True)
@@ -277,7 +274,7 @@ def create_ci_bar_chart_graphic(form_metrics, versioned_data):
 def get_cores_memory_pie_chart_layout(aggregated_data):
     layout_pie = copy.deepcopy(PLOTS_LAYOUT)
     layout_pie['margin'] = dict(l=0, r=0, b=0, t=60)
-    if aggregated_data['coreType'] == 'Both':
+    if aggregated_data['coreType'] == 'CPU + GPU':
         layout_pie['height'] = 400
     else:
         layout_pie['height'] = 350
@@ -289,11 +286,11 @@ def create_cores_memory_pie_graphic(form_agg_data, form_metrics):
     labels = ['Memory']
     values = [form_metrics['CE_memory']]
 
-    if form_agg_data['coreType'] in ['CPU', 'Both']:
+    if form_agg_data['coreType'] in ['CPU', 'CPU + GPU']:
         labels.append('CPU')
         values.append(form_metrics['CE_CPU'])
 
-    if form_agg_data['coreType'] in ['GPU', 'Both']:
+    if form_agg_data['coreType'] in ['GPU', 'CPU + GPU']:
         labels.append('GPU')
         values.append(form_metrics['CE_GPU'])
     annotations = []

@@ -141,13 +141,18 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
+/* VERSIONNING */
+
 #versions_div {
-    /* margin-left: auto; */
-    width: fit-content;
+    width: 100%;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 #app_versions_dropdown{
@@ -167,7 +172,7 @@ body {
 #data_version_tooltip .tooltip-icon{
     position: relative;
     left: -1.7em;
-    top: -0.05em;
+    top: 0.05em;
 }
 
 #data_version_tooltip .tooltip-text{
@@ -178,7 +183,6 @@ body {
 }
 
 /* To set the width of the dropdown */
-
 #app_versions_dropdown .Select-value {
     display: flex;
 }
@@ -188,6 +192,29 @@ body {
     height: 2.2em;
 }
 
+/* LANGUAGE */
+
+#language_div{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0px;
+    align-items: center;
+    justify-content: center;
+}
+
+#language_dropdown_div {
+    margin-left: 4px;
+}
+
+#language_dropdown .Select-value {
+    display: flex;
+}
+
+#language_dropdown .Select-multi-value-wrapper {
+    width: 5.5em;
+    height: 2.2em;
+}
 
 /*
 ---------------------------------- INPUT FORM ----------------------------------------
@@ -241,6 +268,16 @@ hr {
     margin-bottom: 20px;
 }
 
+.subform-div {
+    flex-direction: column;
+    font-size: 0.9em;
+}
+
+.subform-input {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
 .form-row > label {
     margin-bottom: 7px;
     width: 100%;
@@ -270,6 +307,30 @@ hr {
 
 .bottom-dropdown {
     margin-top: 5px;
+}
+
+.location-and-custom-carbon-intensity {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-head-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.location-head-row .box-fields {
+    width: 92%;
+}
+
+.location-head-row > label {
+    margin-bottom: 7px;
+    width: 100%;
 }
 
 
@@ -454,6 +515,24 @@ hr {
     margin-bottom: 12px;
 }
 
+.error-message-title {
+    margin-bottom: 14px;
+}
+
+.log-error-subtitle {
+    margin-bottom: 8px;
+}
+
+.log-error-content {
+    width:100%;
+    text-align: center;
+    padding: 5px;
+    border: rgb(220, 220, 220);
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 2px;
+}
+
 .import-result{
     margin-bottom: 6px;
     border-width: 2px;
@@ -577,4 +656,13 @@ blockquote {
 
 .footnote {
     align-self: flex-start;
+}
+
+
+/*
+---------------------------------- FOOTER ----------------------------------------
+*/
+
+#Data_and_code_explanation-text_value {
+    display: inline-block;
 }
