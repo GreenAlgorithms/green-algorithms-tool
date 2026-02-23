@@ -48,50 +48,22 @@ TRANSLATIONS_DICT = {
     },
     "Carbon_intensity_update": {
         "en": '''
-                ⏳
-                We are in the process of updating the carbon intensity values
-                for electricity consumption to the latest data
-                Due to a change of T&C with carbonfootprint,
-                this is taking a bit longer than planned.
+                ⚡️
+                We are now using ElectricityMap's data for carbon intensity of electricity usage!
             ''',
         "fr": '''
-                ⏳
-                We are in the process of updating the carbon intensity values
-                for electricity consumption to the latest data
-                Due to a change of T&C with carbonfootprint,
-                this is taking a bit longer than planned.
-            ''',
-    },
-    "Hiring_message": {
-        "en": '''
-                🌱 
-                **Interested in green computing?**
-                We're recruiting for research roles at the University of Cambridge! 
-                [More info here.](https://www.lannelongue-group.org/join/)
-            ''',
-        "fr": '''
-                🌱 
-                **Interested in green computing?**
-                We're recruiting for research roles at the University of Cambridge! 
-                [More info here.](https://www.lannelongue-group.org/join/)
+                ⚡️
+                We are now using ElectricityMap's data for carbon intensity of electricity usage!
             ''',
     },
     "Release_message": {
         "en": '''
                 🌱 
-                **The new major update of the calculator is here!**
-                Possibility to share your results as csv, more guidelines on how to use the tool,
-                and the addition of a brand-new AI-specific calculator! 
-                [Check out the release notes](https://github.com/GreenAlgorithms/green-algorithms-tool/releases) 
-                for the full list of new features.
+                TODO once release note drafted
             ''',
         "fr": '''
                 🌱 
-                **The new major update of the calculator is here!**
-                Possibility to share your results as csv, more guidelines on how to use the tool,
-                and the addition of a brand-new AI-specific calculator! 
-                [Check out the release notes](https://github.com/GreenAlgorithms/green-algorithms-tool/releases) 
-                for the full list of new features.
+                TODO once release note drafted
             ''',
     },
     "Bugs_message": {

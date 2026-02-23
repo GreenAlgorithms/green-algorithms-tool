@@ -235,8 +235,6 @@ app.layout = dmc.MantineProvider(
                     html.H2(translatable_div_text("Some_news").embed(app)), # TODO align this left?
 
                     html.P(translatable_div_text('Carbon_intensity_update').embed(app)),
-                    
-                    html.P(translatable_markdown_text('Hiring_message').embed(app)),
 
                     html.P(translatable_markdown_text('Release_message').embed(app)),
 

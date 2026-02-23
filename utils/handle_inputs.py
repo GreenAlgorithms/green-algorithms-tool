@@ -20,7 +20,7 @@ from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 ###################################################
 ## GLOABAL VARIABLES
 
-CURRENT_VERSION = 'v3.0'
+CURRENT_VERSION = 'v3.1'
 DATA_DIR = os.path.join(os.path.abspath(''), 'Green-Algorithms-data')
 
 # Download to list of paths for all data versions 

@@ -1,6 +1,6 @@
 # List of data sources used for each data version. 
 
-v4.0_dev:
+v3.1:
   CPUs: "chips/manual/CPUs-manual.csv"
   GPUs: "chips/manual/GPUs-manual.csv"
   PUE: "data-centres/default-PUE_2024.csv"
