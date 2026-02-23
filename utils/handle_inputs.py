@@ -21,7 +21,7 @@ from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 ## GLOABAL VARIABLES
 
 CURRENT_VERSION = 'v3.0'
-DATA_DIR = os.path.join(os.path.abspath(''), 'GA-data')
+DATA_DIR = os.path.join(os.path.abspath(''), 'Green-Algorithms-data')
 
 # Download to list of paths for all data versions 
 with open(os.path.join(os.path.abspath(''), 'utils/data_sources.yml'), 'r') as file:

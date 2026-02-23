@@ -7,7 +7,7 @@ fully implemented in [Dash](https://dash.plotly.com/). The code base is organize
 * the `blueprints\` scripts implement the calculator modules,
 * the `assets\` folder contains media and CSS files,
 * the `utils\` consists of Python and Dash utils.
-* the `GA-data\` folder is a git-submodule that targets the [GA-data repository](https://github.com/GreenAlgorithms/GA-data) containing the backend data,
+* the `Green-Algorithms-data\` folder is a git-submodule that targets the [Green-Algorithms-data repository](https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data) containing the backend data,
 
 The calculator is a `DashProxy` object, that wraps both the HTML components (its layout) and the logic (the attached callbacks) of the app. Note that the [`DashProxy` object](https://www.dash-extensions.com/sections/enrich#a-dashproxy) 
 is a "drop-in replacement" for the `dash.Dash` object. We must use it because of the DashBlueprints class for modularization.

@@ -1,0 +1,3 @@
+[submodule "Green-Algorithms-data"]
+	path = Green-Algorithms-data
+	url = https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data
