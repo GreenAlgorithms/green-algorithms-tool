@@ -8,7 +8,7 @@ v3.1:
   cloud_providers: "cloud-providers.csv"
   context: "context.csv"
   hardware_impacts: "hardware-impacts.csv"
-  CI: "carbon-intensity/carbonfootprint/CI-carbonfootprint-yearly_2023.csv"
+  CI: "utils/CI-electricitymap-yearly_2024.yaml"
 
 v3.0:
   CPUs: "CPUs.csv"

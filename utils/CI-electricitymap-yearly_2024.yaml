@@ -1,0 +1,9 @@
+skiprows: 0
+source: "electricitymaps_2024"
+file_path: "carbon-intensity/electricitymap/CI-electricitymap-yearly_2024-with-continents.csv"
+column_mapping:
+  continentName: "Continent"
+  countryName: "Country"
+  regionName: "Zone name"
+  carbonIntensity: "Carbon intensity gCO₂eq/kWh (Life cycle)"
+  location: "Zone id"

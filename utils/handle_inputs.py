@@ -303,8 +303,16 @@ def load_data(version: str):
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
 
     ### CARBON INTENSITY BY LOCATION ###
-    CI_df = pd.read_csv(os.path.join(data_dir, data_paths_v["CI"]), sep=',', skiprows=1)
-    check_CIcountries_df(CI_df)
+    with open(data_paths_v["CI"], 'r') as f:
+        ci_yml = yaml.load(f, Loader=yaml.SafeLoader)
+    CI_df = pd.read_csv(os.path.join(data_dir, ci_yml['file_path']), sep=',', skiprows=ci_yml['skiprows'], keep_default_na=False, na_values=[])
+
+    # Invert the mapping: file column names -> expected column names
+    col_mapping = {v: k for k, v in ci_yml['column_mapping'].items()}
+    CI_df = CI_df.rename(columns=col_mapping)
+    CI_df = CI_df[list(ci_yml['column_mapping'].keys())] # Keeping only the relevant columns
+    
+    #check_CIcountries_df(CI_df)
     assert len(set(CI_df.location)) == len(CI_df.location)
 
     data_dict.CI_dict_byLoc = {}
@@ -511,9 +519,11 @@ def availableOptions_region(selected_continent: str,selected_country: str, data:
     if availableOptions_data is not None:
         availableOptions_names = list(availableOptions_data.keys())
         availableOptions_names.sort()
-        # Move Any to the first row:
-        availableOptions_names.remove('Any')
-        availableOptions_names = ['Any'] + availableOptions_names
+        
+        # Move Any/entire country as region to the first row if available:
+        priority = [x for x in ['Any', selected_country] if x in availableOptions_names]
+        availableOptions_names = priority + [x for x in availableOptions_names if x not in priority]
+
         availableOptions_loc = [availableOptions_data[x]['location'] for x in availableOptions_names]
     else:
         availableOptions_loc = []
