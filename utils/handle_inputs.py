@@ -527,6 +527,7 @@ def availableOptions_region(selected_continent: str,selected_country: str, data:
         availableOptions_names = list(availableOptions_data.keys())
         availableOptions_names.sort()
         if 'Any' in availableOptions_names:
+            # Move Any to the first row:
             availableOptions_names.remove('Any')
             availableOptions_names = ['Any'] + availableOptions_names
         availableOptions_loc = [availableOptions_data[x]['location'] for x in availableOptions_names]
