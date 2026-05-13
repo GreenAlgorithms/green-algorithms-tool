@@ -8,7 +8,7 @@ v3.1:
   cloud_providers: "cloud-providers.csv"
   context: "context.csv"
   hardware_impacts: "hardware-impacts.csv"
-  CI: "utils/CI-electricitymap-yearly_2024.yaml"
+  CI: "electricitymap_2024" # Matching the key in CI_data_config.yml
 
 v3.0:
   CPUs: "CPUs.csv"
@@ -17,7 +17,7 @@ v3.0:
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
   referenceValues: "referenceValues.csv"
-  CI: "CI_aggregated.csv"
+  CI: "CI_aggregated"
 
 v2.2:
   CPUs: "CPUs.csv"
@@ -26,7 +26,7 @@ v2.2:
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
   referenceValues: "referenceValues.csv"
-  CI: "CI_aggregated.csv"
+  CI: "CI_aggregated"
 
 v2.1:
   CPUs: "CPUs.csv"
@@ -35,7 +35,7 @@ v2.1:
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
   referenceValues: "referenceValues.csv"
-  CI: "CI_aggregated.csv"
+  CI: "CI_aggregated"
 
 v2.0:
   CPUs: "CPUs.csv"
@@ -44,7 +44,7 @@ v2.0:
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
   referenceValues: "referenceValues.csv"
-  CI: "CI_aggregated.csv"
+  CI: "CI_aggregated"
 
 v1.1:
   CPUs: "CPUs.csv"
@@ -62,4 +62,4 @@ v1.0:
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
   context: "referenceValues.csv"
-  CI: "CI_aggregated.csv"
+  CI: "CI_aggregated"
