@@ -497,8 +497,8 @@ TRANSLATIONS_DICT = {
         "fr": "in a passenger car",
     },
     "in_a_passenger_car_tooltip": {
-        "en": "Equivalent distance driven by a petrol/diesel car emitting the same amount of CO₂",
-        "fr": "Equivalent distance driven by a petrol/diesel car emitting the same amount of CO₂",
+"en": "Equivalent distance driven by a petrol/diesel car emitting the same amount of GHGs",
+"fr": "",
     },
     "flights": {
         "en": "flights",
