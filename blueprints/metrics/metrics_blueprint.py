@@ -184,17 +184,27 @@ class MetricsBlueprint(DashBlueprint):
                             'padding': '13px'
                         },
                     ),
-
                     html.Div(
                         [
-                            loading_wrapper(html.Div(
-                                id="driving_text",
-                            )),
-
-                            html.P(translatable_div_text("in_a_passenger_car").embed(self))
+                            loading_wrapper(html.Div(id="driving_text")),
+                            html.P(
+                                [
+                                    translatable_div_text("in_a_passenger_car").embed(self),
+                                    html.Span(
+                                        [
+                                            html.Span('i', className='tooltip-icon'),
+                                            html.Span(
+                                                translatable_div_text("in_a_passenger_car_tooltip").embed(self),
+                                                className='tooltip-text'
+                                            ),
+                                        ],
+                                        className='tooltip',
+                                    ),
+                                ]
+                            ),
                         ],
                         className='caption-icons'
-                    )
+                    ),
                 ],
                 className="container mini-box"
             ),
