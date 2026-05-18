@@ -309,9 +309,10 @@ def load_data(version: str):
 
     CI_df = pd.read_csv(os.path.join(data_dir, ci_yml['file_path']), sep=',', skiprows=ci_yml['skiprows'], keep_default_na=False, na_values=[])
 
+    # Rename the column of the incoming data to what the code expects.
     if ci_yml.get('column_mapping', False):
-        # Invert the mapping: file column names -> expected column names
-        col_mapping = {v: k for k, v in ci_yml['column_mapping'].items()}
+        # pd.Dataframe.rename() requires a mapping from the current column names to the new column names, hence the inversion.
+        col_mapping = {v: k for k, v in ci_yml['column_mapping'].items()} 
         CI_df = CI_df.rename(columns=col_mapping)
         CI_df = CI_df[list(ci_yml['column_mapping'].keys())] # Keeping only the relevant columns
 
