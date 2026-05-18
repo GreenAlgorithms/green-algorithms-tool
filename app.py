@@ -237,7 +237,7 @@ app.layout = dmc.MantineProvider(
                     ]),
 
                     html.P([
-                        "🐞 It's always possible that some bugs have slipped through the net of this new release... "
+                        "🐞 It is always possible that some bugs have slipped through the net of this new release... "
                         "If you spot one, just let us know ",
                         html.A("here", href="https://github.com/GreenAlgorithms/green-algorithms-tool/issues", target="_blank"),
                         "."
