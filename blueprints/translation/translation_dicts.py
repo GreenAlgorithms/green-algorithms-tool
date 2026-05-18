@@ -319,7 +319,7 @@ TRANSLATIONS_DICT = {
         "fr": 'Must be in gCO2e/kWh.',
     },
     "Carbon_intensity_used_label": {
-        "en": 'Carbon intensity is set to',
+        "en": 'Carbon intensity : ',
         "fr": '',
     },
 

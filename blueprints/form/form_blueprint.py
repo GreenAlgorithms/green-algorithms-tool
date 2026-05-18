@@ -796,8 +796,6 @@ class FormBlueprint(DashBlueprint):
 
             #### LOCATION ####
 
-            # TODO add a display of the carbon intensity value used
-
             html.Div(
                 [
                     html.Div(
