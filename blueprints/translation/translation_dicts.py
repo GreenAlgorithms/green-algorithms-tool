@@ -318,6 +318,10 @@ TRANSLATIONS_DICT = {
         "en": 'Must be in gCO2e/kWh.',
         "fr": 'Must be in gCO2e/kWh.',
     },
+    "Carbon_intensity_used_label": {
+        "en": 'Carbon intensity is set to',
+        "fr": '',
+    },
 
     #### CORE USAGE (CPU and GPU)
 
