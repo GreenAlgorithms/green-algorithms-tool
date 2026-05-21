@@ -52,7 +52,7 @@ v1.1:
   PUE: "default_PUE.csv"
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
-  context: "referenceValues.csv"
+  referenceValues: "referenceValues.csv"
   CI: "CI_aggregated"
 
 v1.0:
@@ -61,5 +61,5 @@ v1.0:
   PUE: "default_PUE.csv"
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
-  context: "referenceValues.csv"
+  referenceValues: "referenceValues.csv"
   CI: "CI_aggregated"
