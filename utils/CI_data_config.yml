@@ -4,6 +4,7 @@ electricitymap_2024:
   skiprows: 0
   source: "electricity maps 2024"
   file_path: "carbon-intensity/electricitymap/CI-electricitymap-yearly_2024-with-continents.csv"
+  source_repo: "https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data/blob/main/"
   normalise_region: True # Where zone name (region) == country name, replace with 'Any' i.e. 'Any' for all zones in that country
   column_mapping:
     continentName: "Continent" # Mapping column 'Continent' in electricitymap_2024 to 'continentName' (as used in the code)
@@ -15,9 +16,11 @@ electricitymap_2024:
 carbonfootprint_2023:
   skiprows: 1
   source: "carbonfootprint 2023"
+  source_repo: "https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data/blob/main/"
   file_path: "carbon-intensity/carbonfootprint/CI-carbonfootprint-yearly_2023.csv"
 
 CI_aggregated:
     skiprows: 1
     source: "multiple"
+    source_repo: "https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data/blob/main/"
     file_path: "CI_aggregated.csv"

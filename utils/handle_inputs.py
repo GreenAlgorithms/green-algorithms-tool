@@ -306,6 +306,7 @@ def load_data(version: str):
     with open(os.path.join(os.path.abspath(''), 'utils/CI_data_config.yml'), 'r') as f:
         ci_yml = yaml.load(f, Loader=yaml.SafeLoader)
         ci_yml = ci_yml[data_paths_v["CI"]] # Picking the CI data source and config according to the data version
+        data_dict.data_source_path = os.path.join(ci_yml['source_repo'], version, ci_yml['file_path']) # Path to source repository 
 
     CI_df = pd.read_csv(os.path.join(data_dir, ci_yml['file_path']), sep=',', skiprows=ci_yml['skiprows'], keep_default_na=False, na_values=[])
 

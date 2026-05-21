@@ -322,6 +322,10 @@ TRANSLATIONS_DICT = {
         "en": 'Carbon intensity : ',
         "fr": '',
     },
+    "Carbon_intensity_source": {
+        "en": 'source',
+        "fr": '',
+    },
 
     #### CORE USAGE (CPU and GPU)
 

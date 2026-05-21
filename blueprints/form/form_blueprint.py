@@ -905,9 +905,11 @@ class FormBlueprint(DashBlueprint):
                                 " gCO₂eq/kWh",
                                 style={'font-size': '0.85em', 'color': '#555', 'margin-left': '4px'},
                             ),
+                            html.Span(" — ", style={'font-size': '0.85em', 'color': '#555', 'margin-left': '4px'}),
+                            html.A(id='carbon_intensity_display_source', target='_blank', style={'font-size': '0.8em', 'color': '#888'}),
                         ],
                         id='carbon_intensity_display',
-                        style={'margin-top': '8px', 'display': 'none'},  # shown/hidden via callback
+                        style={'display': 'none', 'align-items': 'center', 'margin-top': '8px', 'flex-wrap': 'wrap'},
                     ),
                 ],
                 id='location_div',
@@ -2355,28 +2357,31 @@ class FormBlueprint(DashBlueprint):
             [
                 Output('carbon_intensity_display_value', 'children'),
                 Output('carbon_intensity_display', 'style'),
+                Output('carbon_intensity_display_source', 'children'),
+                Output('carbon_intensity_display_source', 'href'),
             ],
             Input('form_aggregate_data', 'data'),
-            Input(f'location_continent_dropdown', 'value')
+            Input('location_continent_dropdown', 'value'),
+            Input('versioned_data', 'data'),
+            State('language_dropdown', 'value'), 
         )
-        def display_carbon_intensity(form_data, selected_continent):
-            """
-            Shows the  carbon intensity value beneath the location dropdowns.
-            If custom carbon intensity is selected, the div is hidden.
-            """
+        def display_carbon_intensity(form_data, selected_continent, versioned_data, language):
             hide = {'display': 'none', 'margin-top': '8px'}
-            show = {'display': 'flex', 'align-items': 'center', 'margin-top': '8px'}
+            show = {'display': 'inline', 'flex-direction': 'column', 'margin-top': '8px'}
 
             if form_data is None or selected_continent == 'custom':
-                return None, hide
+                return None, hide, None, None
 
             carbon_intensity = form_data.get('carbonIntensity')
 
-            if carbon_intensity is None:
-                return None, hide
+            if carbon_intensity is None or versioned_data is None:
+                return None, hide, None, None   
 
-            return round(carbon_intensity, 2), show
+            data_source_path = versioned_data['data_source_path']
+            source_label = TRANSLATIONS_DICT.get('Carbon_intensity_source', {}).get(language, 'source')
 
+            return round(carbon_intensity, 2), show, source_label, data_source_path
+        
     def _define_training_fields_callbacks(self):
         '''
         Embeds the callbacks specific the training fields.

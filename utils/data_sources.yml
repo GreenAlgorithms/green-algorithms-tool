@@ -53,7 +53,7 @@ v1.1:
   DC_cloud: "cloudProviders_datacenters.csv"
   cloud_providers: "providersNamesCodes.csv"
   context: "referenceValues.csv"
-  CI: "CI_aggregated.csv"
+  CI: "CI_aggregated"
 
 v1.0:
   CPUs: "CPUs.csv"
