@@ -4,6 +4,7 @@ electricitymap_2024:
   skiprows: 0
   source: "electricity maps 2024"
   file_path: "carbon-intensity/electricitymap/CI-electricitymap-yearly_2024-with-continents.csv"
+  # Note: This is temporarily pointing to main/master branch, it should eventually point to the production branch.
   source_repo: "https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data/blob/main/"
   normalise_region: True # Where zone name (region) == country name, replace with 'Any' i.e. 'Any' for all zones in that country
   column_mapping:
