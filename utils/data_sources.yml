@@ -1,4 +1,5 @@
 # List of data sources used for each data version. 
+source_repo: "https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data/blob/main/"
 
 v3.1:
   CPUs: "chips/manual/CPUs-manual.csv"

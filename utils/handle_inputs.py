@@ -247,6 +247,7 @@ def load_data(version: str):
     with open(os.path.join(os.path.abspath(''), 'utils/data_sources.yml'), 'r') as file:
         data_paths = yaml.safe_load(file)
     data_paths_v = data_paths[version]
+    source_repo = data_paths['source_repo'] # Path to source repo (GA Data)
     
     # We want to include the version itself in the versioned_data
     data_dict = SimpleNamespace(**{'version': version})
@@ -306,7 +307,7 @@ def load_data(version: str):
     with open(os.path.join(os.path.abspath(''), 'utils/CI_data_config.yml'), 'r') as f:
         ci_yml = yaml.load(f, Loader=yaml.SafeLoader)
         ci_yml = ci_yml[data_paths_v["CI"]] # Picking the CI data source and config according to the data version
-        data_dict.data_source_path = os.path.join(ci_yml['source_repo'], version, ci_yml['file_path']) # Path to source repository 
+        data_dict.data_source_path = os.path.join(source_repo, version, ci_yml['file_path']) # Path to source repository 
 
     CI_df = pd.read_csv(os.path.join(data_dir, ci_yml['file_path']), sep=',', skiprows=ci_yml['skiprows'], keep_default_na=False, na_values=[])
 
