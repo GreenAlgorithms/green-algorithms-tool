@@ -333,6 +333,14 @@ hr {
     width: 100%;
 }
 
+.VirtualizedSelectOption {
+    line-height: 1;
+    text-align: left;
+}
+.Select-arrow-zone {
+    background-color: #FFFFFF;
+}
+
 
 /* REPORTING SCOPE */
 

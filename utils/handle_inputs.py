@@ -247,6 +247,7 @@ def load_data(version: str):
     with open(os.path.join(os.path.abspath(''), 'utils/data_sources.yml'), 'r') as file:
         data_paths = yaml.safe_load(file)
     data_paths_v = data_paths[version]
+    source_repo = data_paths['source_repo'] # Path to source repo (GA Data)
     
     # We want to include the version itself in the versioned_data
     data_dict = SimpleNamespace(**{'version': version})
@@ -303,8 +304,25 @@ def load_data(version: str):
     data_dict.pueDefault_dict = pd.Series(pue_df.PUE.values, index=pue_df.provider).to_dict()
 
     ### CARBON INTENSITY BY LOCATION ###
-    CI_df = pd.read_csv(os.path.join(data_dir, data_paths_v["CI"]), sep=',', skiprows=1)
-    check_CIcountries_df(CI_df)
+    with open(os.path.join(os.path.abspath(''), 'utils/CI_data_config.yml'), 'r') as f:
+        ci_yml = yaml.load(f, Loader=yaml.SafeLoader)
+        ci_yml = ci_yml[data_paths_v["CI"]] # Picking the CI data source and config according to the data version
+        data_dict.data_source_path = os.path.join(source_repo, version, ci_yml['file_path']) # Path to source repository 
+
+    CI_df = pd.read_csv(os.path.join(data_dir, ci_yml['file_path']), sep=',', skiprows=ci_yml['skiprows'], keep_default_na=False, na_values=[])
+
+    # Rename the column of the incoming data to what the code expects.
+    if ci_yml.get('column_mapping', False):
+        # pd.Dataframe.rename() requires a mapping from the current column names to the new column names, hence the inversion.
+        col_mapping = {v: k for k, v in ci_yml['column_mapping'].items()} 
+        CI_df = CI_df.rename(columns=col_mapping)
+        CI_df = CI_df[list(ci_yml['column_mapping'].keys())] # Keeping only the relevant columns
+
+    if ci_yml.get('normalise_region', False):
+        # Where zone name (region) == country name, replace with 'Any' 
+        CI_df.loc[CI_df['regionName'] == CI_df['countryName'], 'regionName'] = 'Any'
+    
+    #check_CIcountries_df(CI_df)
     assert len(set(CI_df.location)) == len(CI_df.location)
 
     data_dict.CI_dict_byLoc = {}
@@ -511,9 +529,10 @@ def availableOptions_region(selected_continent: str,selected_country: str, data:
     if availableOptions_data is not None:
         availableOptions_names = list(availableOptions_data.keys())
         availableOptions_names.sort()
-        # Move Any to the first row:
-        availableOptions_names.remove('Any')
-        availableOptions_names = ['Any'] + availableOptions_names
+        if 'Any' in availableOptions_names:
+            # Move Any to the first row:
+            availableOptions_names.remove('Any')
+            availableOptions_names = ['Any'] + availableOptions_names
         availableOptions_loc = [availableOptions_data[x]['location'] for x in availableOptions_names]
     else:
         availableOptions_loc = []
