@@ -1,0 +1,23 @@
+# List of CI data sources and their configurations (e.g. column mapping, normalisation etc.) 
+
+electricitymap_2024:
+  skiprows: 0
+  source: "electricity maps 2024"
+  file_path: "carbon-intensity/electricitymap/CI-electricitymap-yearly_2024-with-continents.csv"
+  normalise_region: True # Where zone name (region) == country name, replace with 'Any' i.e. 'Any' for all zones in that country
+  column_mapping:
+    continentName: "Continent" # Mapping column 'Continent' in electricitymap_2024 to 'continentName' (as used in the code)
+    countryName: "Country"
+    regionName: "Zone name"
+    carbonIntensity: "Carbon intensity gCO₂eq/kWh (Life cycle)"
+    location: "Zone id"
+
+carbonfootprint_2023:
+  skiprows: 1
+  source: "carbonfootprint 2023"
+  file_path: "carbon-intensity/carbonfootprint/CI-carbonfootprint-yearly_2023.csv"
+
+CI_aggregated:
+    skiprows: 1
+    source: "multiple"
+    file_path: "CI_aggregated.csv"

@@ -1,0 +1,80 @@
+site_name: Green Algorithms calculator
+#site_url: https://sitename.example
+
+# The top right box for Github
+repo_url: https://github.com/GreenAlgorithms/green-algorithms-tool
+repo_name: green-algorithm-tool
+
+# The navigation tree
+nav:
+- Home: index.md
+- Developer guide:
+  - Getting started: developer_guide/getting_started.md
+  - Pages:
+    - Our implementation: developer_guide/pages/our_implementation.md
+    - Home page: developer_guide/pages/home_page.md
+    - AI page: developer_guide/pages/ai_page.md
+  - Blueprints:
+    - Our implementation: developer_guide/blueprints/our_implementation.md
+    - Form: developer_guide/blueprints/form.md
+    - Import & Export: developer_guide/blueprints/import_export.md
+    - Metrics: developer_guide/blueprints/metrics.md
+    - Translation: developer_guide/blueprints/translation.md
+- User guide:
+  - Overview: user_guide/overview.md
+  - Methodology: user_guide/methodology.md
+- About:
+  - Contributing: contribute.md
+  - The team: team.md
+  - License: license.md
+
+plugins:
+  # for automatically filling our markdown files
+  - mkdocstrings: 
+      # global options of the python handler
+      handlers:
+        python:
+          options:
+            # Display the full function path
+            show_root_full_path: true
+            # By default show the source code
+            show_source: true
+            # Show the heading
+            show_root_heading: true
+            # The heading to be like "###"
+            heading_level: 4
+  - search # to use the built-in search bar
+
+theme:
+  name: material
+  icon:
+    # The top left logo of the header bar
+    logo: fontawesome/solid/g
+  favicon: assets/favicon.ico
+  features:
+    - navigation.tabs # the header navigation bar
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  # Multi-content extension
+  - pymdownx.superfences
+  - pymdownx.snippets
+  # To include tables in our documentation
+  - tables
+  # To allow clean code blocks in the documentation
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      use_pygments: true
+  # To allow content tabs from Material for MkDocs
+  - pymdownx.tabbed:
+      alternate_style: true
+  # To allow the different kinds of admonition (detected by mkdocstrings and rendered by Material for MkDocs)
+  - admonition
+  - pymdownx.details
+  # To use emojis and logos throughout the documentation
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg

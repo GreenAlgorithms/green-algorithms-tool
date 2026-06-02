@@ -11,6 +11,29 @@
 <img src="assets/images/View_v3_classic.png" width="500">
 
 
+## How to deal with the GA-data git submodule?
+
+After cloning the repository or one of its forks, run the following to properly activate the git submodule GA-data:
+
+```
+git submodule init
+git submodule update
+```
+
+We recommand running the following to add submodule information in the output of the regular `git status` command:
+
+```
+git config status.submodulesummary 1
+```
+
+When running `git pull`, git automatically fetches from the submodules but does not **update** them, meaning that you can see new commits from the submodule, they are checked-out but not included in the current repo tracked changes. To do so run:
+
+```
+git submodule update --remote
+```
+
+**Do not** apply changes to the git submodule from the current repository. Data is directly updated from the GA-data repository. For a more detailed description of the contributions recommendations, please have a look at the **online documentation**.
+
 ## Methods and data
 
 The methodology behind the Green Algorithms project is described in our publication:

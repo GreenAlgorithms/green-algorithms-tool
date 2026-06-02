@@ -3,6 +3,7 @@ Python utils intended to correctly format the texts associated with the
 results shown to the user. The text adapts to the result range and its unit.
 """
 
+from blueprints.translation.translation_dicts import TRANSLATIONS_DICT
 
 def format_energy_text(energy_needed: float):
     """
@@ -81,7 +82,7 @@ def write_driving_equivalent(carbon_emissions: float, ref_values: dict):
     return text_car
 
 
-def write_plane_trip_equivalent(carbon_emissions: float, ref_values: dict):
+def write_plane_trip_equivalent(carbon_emissions: float, ref_values: dict, language_id: str):
     """
     Pick the most appropriate plane trip and compute the proportion
     of it giving equivalent emissions to the input one.
@@ -111,10 +112,31 @@ def write_plane_trip_equivalent(carbon_emissions: float, ref_values: dict):
     else:
         text_trip_proportion = f"{trip_proportion*100:,.0e} %"
     if (trip_proportion >= 1) | (trip_proportion == 0):
-        flying_text = f"flights {flying_label}"
+        flying_text = f"{TRANSLATIONS_DICT['flights'][language_id]} {flying_label}"
     else:
-        flying_text = f"of a flight {flying_label}"
+        flying_text = f"{TRANSLATIONS_DICT['of_a_flight'][language_id]} {flying_label}"
     return text_trip_proportion, flying_text
 
-    
-    
+def compute_carbon_emission_planetary_boundaries(carbon_emissions: float, ref_values: dict):
+    """
+    Relates the computed carbon emissions to the planetary boundary for Global
+    Warming Potentail, given in tCO2e/year/person.
+
+    TODO: prototype only
+    Args:
+        carbon_emissions (float): in g CO2e
+        ref_values (dict): a versioned dictionary containing ref values for equivalents
+    """
+    return f'{carbon_emissions//ref_values["PB_GWP_per_capita"]} people emissions'
+
+def compute_abiotic_resources_planetary_boundaries(abiotic_resources: float, ref_values: dict):
+    """
+    Relates the computed abiotic resources depletion to the planetary boundary for Abiotic
+    Depletion Potential, given in kgSbe/year/person.
+
+    TODO: prototype only
+    Args:
+        abiotic_depletion (float): in  kgSb e
+        ref_values (dict): a versioned dictionary containing ref values for equivalents
+    """
+    return f'{abiotic_resources//ref_values["PB_ADP_per_capita"]} people resources'

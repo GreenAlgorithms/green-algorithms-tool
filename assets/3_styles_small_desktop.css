@@ -1,8 +1,8 @@
 /* Small desktop Styles */
-@media only screen and (min-width: 1001px) {
+@media only screen and (min-width: 1132px) {
 
     html {
-      font-size: 62.5%;
+        font-size: 62.5%;
     }
 
     .fullPage {
@@ -42,9 +42,19 @@
     .navlink-label {
         font-size: 2.9em;
     }
+    
+    .version_and_language_div {
+        flex-direction: row;
+    }
 
     #versions_div {
         margin-left: auto;
+        width: fit-content;
+    }
+
+    #language_div {
+        margin-right: auto;
+        width: fit-content;
     }
 
     #version-button {
@@ -54,7 +64,6 @@
     #data_version_tooltip .tooltip-text{
         font-size: 0.9em;
     }
-
 
     /*
     ---------------------------------- INPUT FORM ----------------------------------------

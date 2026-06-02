@@ -1,0 +1,66 @@
+# List of data sources used for each data version. 
+source_repo: "https://github.com/Cambridge-Sustainable-Computing-Lab/Green-Algorithms-data/blob/main/"
+
+v3.1:
+  CPUs: "chips/manual/CPUs-manual.csv"
+  GPUs: "chips/manual/GPUs-manual.csv"
+  PUE: "data-centres/default-PUE_2024.csv"
+  DC_cloud: "data-centres/DC-cloud_2023.csv"
+  cloud_providers: "cloud-providers.csv"
+  context: "context.csv"
+  hardware_impacts: "hardware-impacts.csv"
+  CI: "electricitymap_2024" # Matching the key in CI_data_config.yml
+
+v3.0:
+  CPUs: "CPUs.csv"
+  GPUs: "GPUs.csv"
+  PUE: "default_PUE.csv"
+  DC_cloud: "cloudProviders_datacenters.csv"
+  cloud_providers: "providersNamesCodes.csv"
+  referenceValues: "referenceValues.csv"
+  CI: "CI_aggregated"
+
+v2.2:
+  CPUs: "CPUs.csv"
+  GPUs: "GPUs.csv"
+  PUE: "default_PUE.csv"
+  DC_cloud: "cloudProviders_datacenters.csv"
+  cloud_providers: "providersNamesCodes.csv"
+  referenceValues: "referenceValues.csv"
+  CI: "CI_aggregated"
+
+v2.1:
+  CPUs: "CPUs.csv"
+  GPUs: "GPUs.csv"
+  PUE: "default_PUE.csv"
+  DC_cloud: "cloudProviders_datacenters.csv"
+  cloud_providers: "providersNamesCodes.csv"
+  referenceValues: "referenceValues.csv"
+  CI: "CI_aggregated"
+
+v2.0:
+  CPUs: "CPUs.csv"
+  GPUs: "GPUs.csv"
+  PUE: "default_PUE.csv"
+  DC_cloud: "cloudProviders_datacenters.csv"
+  cloud_providers: "providersNamesCodes.csv"
+  referenceValues: "referenceValues.csv"
+  CI: "CI_aggregated"
+
+v1.1:
+  CPUs: "CPUs.csv"
+  GPUs: "GPUs.csv"
+  PUE: "default_PUE.csv"
+  DC_cloud: "cloudProviders_datacenters.csv"
+  cloud_providers: "providersNamesCodes.csv"
+  referenceValues: "referenceValues.csv"
+  CI: "CI_aggregated"
+
+v1.0:
+  CPUs: "CPUs.csv"
+  GPUs: "GPUs.csv"
+  PUE: "default_PUE.csv"
+  DC_cloud: "cloudProviders_datacenters.csv"
+  cloud_providers: "providersNamesCodes.csv"
+  referenceValues: "referenceValues.csv"
+  CI: "CI_aggregated"
