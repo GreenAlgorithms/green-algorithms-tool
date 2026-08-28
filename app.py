@@ -204,16 +204,20 @@ app.layout = dmc.MantineProvider(
 
             html.Div(
                 [
-                    html.H1(translatable_div_text("Green Algorithms calculator").embed(app)),
-
-                    html.P(translatable_div_text("Subtitle").embed(app)),
-
                     html.Div(
                         [
-                            html.Hr(style={'background-color': 'rgb(60, 60, 60)'}),
+                        html.H1(translatable_div_text("Green Algorithms calculator").embed(app)),
+                        html.P(translatable_div_text("Subtitle").embed(app))
                         ],
-                        className='Hr_div_header',
+                        className='header_title'
                     ),
+                
+                    # html.Div(
+                    #     [
+                    #         html.Hr(style={'background-color': 'rgb(60, 60, 60)'}),
+                    #     ],
+                    #     className='Hr_div_header',
+                    # ),
 
                     pages_navbar,
 
@@ -228,38 +232,38 @@ app.layout = dmc.MantineProvider(
                 ],
                 className='container header'
             ),
-            
-            # TODO include outstanding issues and PRs
-            html.Div(
-                [
-                    html.H2(translatable_div_text("Some_news").embed(app)), # TODO align this left?
-
-                    html.P(translatable_div_text('Carbon_intensity_update').embed(app)),
-
-                    html.P(translatable_markdown_text('Release_message').embed(app)),
-
-                    html.P(translatable_markdown_text('Bugs_message').embed(app)),
-
-                    html.Div(
-                        [
-                            html.A(
-                                html.Button(translatable_div_text('More on the project website').embed(app), id='website-link-button'),
-                                href='https://www.green-algorithms.org',
-                                target="_blank",
-                                className='button-container'
-                            ),
-                        ],
-                        className='buttons-row'
-                    ),
-                ],
-                className='container footer'
-            ),
 
             #### PAGE CONTENT #####
             
             # Pages are registered manually above and their layout is inserted in the app
             # as suggested in the official documentation (https://dash.plotly.com/urls)
             dash.page_container,
+
+            # TODO include outstanding issues and PRs
+                        html.Div(
+                            [
+                                html.H2(translatable_div_text("Some_news").embed(app)), # TODO align this left?
+            
+                                html.P(translatable_div_text('Carbon_intensity_update').embed(app)),
+            
+                                html.P(translatable_markdown_text('Release_message').embed(app)),
+            
+                                html.P(translatable_markdown_text('Bugs_message').embed(app)),
+            
+                                html.Div(
+                                    [
+                                        html.A(
+                                            html.Button(translatable_div_text('More on the project website').embed(app), id='website-link-button'),
+                                            href='https://www.green-algorithms.org',
+                                            target="_blank",
+                                            className='button-container'
+                                        ),
+                                    ],
+                                    className='buttons-row'
+                                ),
+                            ],
+                            className='container footer'
+                        ),
 
             #### FOOTERS #####
 
