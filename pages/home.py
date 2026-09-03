@@ -82,52 +82,73 @@ def get_home_page_layout():
                     html.Div(
                         [
                             core_metrics.embed(HOME_PAGE),
-                            import_export.embed(HOME_PAGE),
-                            #### DYNAMIC GRAPHS ####
                             html.Div(
                                 [
+                                    import_export.embed(HOME_PAGE),
+                                    #### DYNAMIC GRAPHS ####
                                     html.Div(
                                         [
-                                            html.H2(
-                                                translatable_div_text(
-                                                    "Computing_cores_VS_Memory"
-                                                ).embed(HOME_PAGE)
-                                            ),
-                                            loading_wrapper(
-                                                dcc.Graph(
-                                                    id="pie_graph",
-                                                    className="graph-container pie-graph",
-                                                    config={"displaylogo": False},
-                                                    figure=BLANK_FIGURE,
-                                                )
-                                            ),
-                                        ],
-                                        className="one-of-two-graphs",
-                                    ),
-                                    html.Div(
-                                        [
-                                            html.H2(
-                                                translatable_div_text(
-                                                    "Location_impact_graphs_title"
-                                                ).embed(HOME_PAGE)
-                                            ),
-                                            loading_wrapper(
-                                                dcc.Graph(
-                                                    id="barPlotComparison",
-                                                    className="graph-container",
-                                                    config={"displaylogo": False},
-                                                    figure=BLANK_FIGURE,
-                                                    style={"margin-top": "20px"},
+                                            html.Div(
+                                                html.P(
+                                                    "place holder for whats included in calculation and what the calculator cant tell you"
                                                 ),
                                             ),
                                         ],
-                                        className="one-of-two-graphs",
+                                        className="container mini-box",
+                                    ),
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H2(
+                                                        translatable_div_text(
+                                                            "Computing_cores_VS_Memory"
+                                                        ).embed(HOME_PAGE)
+                                                    ),
+                                                    loading_wrapper(
+                                                        dcc.Graph(
+                                                            id="pie_graph",
+                                                            className="graph-container pie-graph",
+                                                            config={
+                                                                "displaylogo": False
+                                                            },
+                                                            figure=BLANK_FIGURE,
+                                                        )
+                                                    ),
+                                                ],
+                                                className="one-of-two-graphs",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H2(
+                                                        translatable_div_text(
+                                                            "Location_impact_graphs_title"
+                                                        ).embed(HOME_PAGE)
+                                                    ),
+                                                    loading_wrapper(
+                                                        dcc.Graph(
+                                                            id="barPlotComparison",
+                                                            className="graph-container",
+                                                            config={
+                                                                "displaylogo": False
+                                                            },
+                                                            figure=BLANK_FIGURE,
+                                                            style={
+                                                                "margin-top": "20px"
+                                                            },
+                                                        ),
+                                                    ),
+                                                ],
+                                                className="one-of-two-graphs",
+                                            ),
+                                        ],
+                                        className="container two-graphs-box",
                                     ),
                                 ],
-                                className="container two-graphs-box",
+                                className="container metrics-output",
                             ),
                         ],
-                        className="super-section metrics-output"
+                        className="super-section metrics-output",
                     ),
                     equivalents_metrics.embed(HOME_PAGE),
                 ],

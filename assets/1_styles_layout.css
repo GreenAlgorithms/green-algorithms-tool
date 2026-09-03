@@ -259,7 +259,7 @@ hr {
 }
 
 .form-row {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: flex-start;
     flex-direction: row;
@@ -519,10 +519,13 @@ hr {
     width: 100%;
     display: flex;
     flex-direction: column;
+    background-color: #C1F272 !important;
 
     justify-content: center;
     margin-top: 6px;
     margin-bottom: 6px;
+    padding: 5px;
+    font-size: 1.4rem;
 }
 
 .import-error-message {
@@ -561,19 +564,57 @@ hr {
 }
 
 .btn-download_csv {
-    color: #1773D0;
-    text-decoration: underline;
+    height:55px;
+    width: max-content;
+    margin-right: 6px;
+    padding: 10px 24px;
+    border-radius: 5px;       
+    border: none;
+    background-color: #C1F272;  
+    color: #273453;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+}
+.btn-download_csv:hover {
+    background-color: #A4CE61
+}
+
+.btn-download_csv:focus-visible {
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.35);
 }
 
 .btn-download_csv:visited{
     color: #653096
 }
 
+.upload-data {
+    background-color: #C1F272; 
+    height:55px;
+    text-align: center;
+    width: max-content;
+    border-radius: 5px;
+    padding: 10px 24px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.15s ease;
+}
+
+.upload-data:hover {
+    background-color: #A4CE61
+}
+
+.upload-data:focus-visible {
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.35);
+}
+
 .import-export-buttons{
     display: flex;
     flex-direction: row;
-
-    width: 100%;
+    justify-self: flex-end;
 }
 
 .import-export-container{
@@ -584,6 +625,10 @@ hr {
 /*
 ---------------------------------- MINI-BOX ----------------------------------------
 */
+.container.metrics-output {
+    box-shadow: none;
+    background-color: #f9f9f9;
+}
 
 .mini-boxes {
     flex-direction: column;
@@ -594,6 +639,26 @@ hr {
 .metrics-output {
     flex-direction: column;
     flex: 8 1 0%;
+    background-color: rgba(249, 249, 249, 0.6);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 6px 0;
+}
+
+.mini-boxes-core{
+    background-color: #98BF5A;
+    padding: 10px;
+    justify-content: space-around;
+}
+
+.mini-boxes-core p:first-of-type {
+    font-size: 3rem;
+}
+
+.mini-boxes-core .caption-icons{
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
 .mini-box {
@@ -617,8 +682,8 @@ hr {
 }
 
 .style-icon {
-    height: 100px;
-    width: 100px;
+    height: 80px;
+    width: 80px;
     margin-top:0;
     margin-bottom:0;
 }
@@ -640,6 +705,7 @@ hr {
     flex-wrap: wrap;
     /*justify-content: space-around;*/
     align-items: flex-start;
+    box-shadow: none;
 }
 
 .graph-container {

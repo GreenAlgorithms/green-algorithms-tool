@@ -62,6 +62,36 @@ class CoreImpactsBlueprint(DashBlueprint):
         return html.Div(
             [
                 dcc.Store(id="base_results"),
+
+                #### ELECTRICITY CONSUMPTION ####
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.Img(
+                                    src=os.path.join(image_dir, "logo_power_1.svg"),
+                                    id="logo_power",
+                                    className="style-icon",
+                                    style={"margin": "0px", "padding": "10px", "margin-right": "4px"},
+                                ),
+                                html.Div(
+                                    [
+                                        loading_wrapper(html.Div(id="energy_text")),
+                                        html.P(
+                                            translatable_div_text(
+                                                "Energy_needed"
+                                            ).embed(self)
+                                        ),
+                                    ],
+                                    className="caption-icons",
+                                ),
+                            ],
+                            className="mini-box-main-content",
+                        ),
+                        self.energy_needed_details,
+                    ],
+                    # className="container mini-box",
+                ),
                 #### CARBON EMISSIONS ####
                 html.Div(
                     [
@@ -74,6 +104,7 @@ class CoreImpactsBlueprint(DashBlueprint):
                                     style={
                                         "margin-top": "-7px",
                                         "margin-bottom": "7px",
+                                        "margin-right": "4px",
                                     },
                                 ),
                                 html.Div(
@@ -94,37 +125,9 @@ class CoreImpactsBlueprint(DashBlueprint):
                         ),
                         self.carbon_footprint_details,
                     ],
-                    className="container mini-box",
+                    # className="container mini-box",
                 ),
-                #### ELECTRICITY CONSUMPTION ####
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.Img(
-                                    src=os.path.join(image_dir, "logo_power_1.svg"),
-                                    id="logo_power",
-                                    className="style-icon",
-                                    style={"margin": "0px", "padding": "15px"},
-                                ),
-                                html.Div(
-                                    [
-                                        loading_wrapper(html.Div(id="energy_text")),
-                                        html.P(
-                                            translatable_div_text(
-                                                "Energy_needed"
-                                            ).embed(self)
-                                        ),
-                                    ],
-                                    className="caption-icons",
-                                ),
-                            ],
-                            className="mini-box-main-content",
-                        ),
-                        self.energy_needed_details,
-                    ],
-                    className="container mini-box",
-                ),
+                
             ],
             className="super-section mini-boxes-core",
         )
